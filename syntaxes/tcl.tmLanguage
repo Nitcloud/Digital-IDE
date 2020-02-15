@@ -1,9 +1,3 @@
----
-name: tcl
-scopeName: source.tcl
-fileTypes: [tcl, xdc, sdc]
-uuid: 45aff42e-4fcd-4717-829b-4cdaf9d707aa
-
 variables:
 
 patterns:
