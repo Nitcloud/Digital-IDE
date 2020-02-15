@@ -4,7 +4,6 @@
   "description": "Language support for TCL&HDL",
   "version": "0.0.1",
   "publisher": "sterben",
-  "repository": "https://github.com/go2sh/tcl-language-support",
   "engines": {
     "vscode": "^1.41.0"
   },
@@ -19,7 +18,8 @@
 		"onLanguage:verilog",
     "onLanguage:systemverilog",
     "onCommand:extension.instance",
-    "onCommand:extension.testbench"
+    "onCommand:extension.testbench",
+    "onCommand:extension.startfpga"
   ],
   "main": "./src/extension",
   "contributes": {
@@ -157,6 +157,18 @@
       {
           "command": "extension.testbench",
           "title": "Testbench"
+      },
+      {
+          "command": "extension.startfpga",
+          "title": "startfpga"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "extension.startfpga",
+        "key": "shift+z",
+        "mac": "shift+z",
+        "when": "editorTextFocus"
       }
     ]
   },

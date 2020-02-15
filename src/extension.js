@@ -1,3 +1,11 @@
+/*
+ * #Author       : sterben(Duan)
+ * #LastAuthor   : sterben(Duan)
+ * #Date         : 2020-02-15 15:44:35
+ * #lastTime     : 2020-02-15 17:26:23
+ * #FilePath     : \src\extension.js
+ * #Description  : 
+ */
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 // The module 'vscode' contains the VS Code extensibility API
@@ -38,6 +46,17 @@ function activate(context) {
         vscode.window.showInformationMessage('Generate testbench successfully!');
     });
     context.subscriptions.push(testbench);
+    let startfpga = vscode.commands.registerCommand('extension.startfpga', () => {
+        // The code can get the document name and then it activates python code to generate testbench
+        let editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            return;
+        }
+        let ter1 = vscode.window.createTerminal({ name: 'startfpga' });
+        ter1.show(true);
+        ter1.sendText(`python ${__dirname}\\start.py `);
+    });
+    context.subscriptions.push(startfpga);
 }
 exports.activate = activate;
 // this method is called when your extension is deactivated
