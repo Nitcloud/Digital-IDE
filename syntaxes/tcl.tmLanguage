@@ -1,0 +1,190 @@
+---
+name: tcl
+scopeName: source.tcl
+fileTypes: [tcl, xdc, sdc]
+uuid: 45aff42e-4fcd-4717-829b-4cdaf9d707aa
+
+variables:
+
+patterns:
+  - include: "#comment"
+  - include: "#command"
+
+repository:
+  comment:
+    patterns:
+      - name: comment.line.tcl
+        match: \s*\#.+
+
+  command:
+    patterns:
+      - include: "#tcl_commands"
+      - include: "#default_command"
+
+  expression:
+    patterns:
+      - include: "#variable"
+      - include: "#brackets"
+      - name: constant.numeric.tcl
+        match: (?:0(?:x|o|b))?\d+(?!\.)
+      - name: constant.numeric.tcl
+        match: \d+\.(?:\d+(?:[eE][+-]?\d+)?)?
+      - name: keyword.operator.tcl
+        match: (?:\+|\-|\~|\!|\*\*|\*|\%|\<\<|\>\>|\<\=|\>\=|\<|\>|\=\=|\!\=|eq|ne|in|ni|\&\&|\&|\|\||\||\^|\?|\:)
+
+  double_quotes:
+    patterns:
+      - name: string.quoted.double.tcl
+        begin: '"'
+        end: '"'
+        patterns:
+          - include: "#variable"
+
+  variable:
+    patterns:
+      - begin: (\$(?:(?:\:\:)?[a-zA-Z0-9_]+))\(
+        beginCaptures:
+          "1": { name: variable.other.tcl }
+        end: \)
+        patterns:
+          - include: "#brackets"
+          - include: "#variable"
+      - name: variable.other.tcl
+        match: \$(?:(?:\:\:)?[a-zA-Z0-9_]+)
+      - name: variable.other.tcl
+        begin: '\$\{'
+        end: \}
+
+  braces:
+    patterns:
+      - begin: \{
+        end: \}
+        patterns:
+          - include: "#braces"
+
+  tcl_braces:
+    patterns:
+      - begin: \{
+        end: \}
+        patterns:
+          - include: "#comment"
+          - include: "#command"
+
+  expr_braces:
+    patterns:
+      - begin: \{
+        end: \}
+        patterns:
+          - include: "#expression"
+
+  brackets:
+    patterns:
+      - begin: '\['
+        end: '\]'
+        patterns:
+          - include: "#comment"
+          - include: "#command"
+
+  proc:
+    patterns:
+      - name: meta.command.proc.tcl
+        begin: (proc)
+        beginCaptures:
+          "1": { name: storage.type.function.tcl }
+        end: (?:(;)|(?=\})|(?=\])|$)
+        endCaptures:
+          "1": { name: punctuation.end.semicolon.tcl }
+        patterns:
+          - match: '(?:"([^"]+)"|\{([^}]+)\}|([^\{\"\s]+)\b)\s*(?:"([^"]+)"|\{([^}]+)\}|([^\{\"\s]+)\b)'
+            captures:
+              "1": { name: entity.name.function.tcl }
+              "2": { name: entity.name.function.tcl }
+              "3": { name: entity.name.function.tcl }
+              "4": { name: variable.parameter.tcl }
+              "5": { name: variable.parameter.tcl }
+              "6": { name: variable.parameter.tcl }
+          - include: "#double_quotes"
+          - include: "#brackets"
+          - include: "#tcl_braces"
+  for:
+    patterns:
+      - name: meta.command.for.tcl
+        begin: (for)
+        beginCaptures:
+          "1": { name: keyword.control.for.tcl }
+        end: (?:(;)|(?=\})|(?=\])|$)
+        endCaptures:
+          "1": { name: punctuation.end.semicolon.tcl }
+        patterns:
+          - begin: '(?=\{)(?=(?:.+?\{){3})'
+            end: '(?<=\})'
+            patterns:
+              - include: "#tcl_braces"
+          - begin: '(?=\{)(?=(?:.+?\{){2})'
+            end: '(?<=\})'
+            patterns:
+              - include: "#expr_braces"
+          - begin: '(?=\{)(?=(?:.+?\{){1})'
+            end: '(?<=\})'
+            patterns:
+              - include: "#tcl_braces"
+          - begin: '(?=\{)'
+            end: '(?<=\})'
+            patterns:
+              - include: "#tcl_braces"
+          - include: "#brackets"
+          - include: "#braces"
+  if:
+    patterns:
+      - name: meta.command.for.tcl
+        begin: (if)
+        beginCaptures:
+          "1": { name: keyword.control.if.tcl }
+        end: (?:(;)|(?=\})|(?=\])|$)
+        endCaptures:
+          "1": { name: punctuation.end.semicolon.tcl }
+        patterns:
+          - begin: '(?=\{)(?=(?:.+?\{))'
+            end: '(?<=\})'
+            patterns:
+              - include: "#expr_braces"
+          - begin: '(?=\{)'
+            end: '(?<=\})'
+            patterns:
+              - include: "#tcl_braces"
+          - include: "#brackets"
+          - include: "#braces"
+
+  expr:
+    patterns:
+      - name: meta.command.expr.tcl
+        begin: (expr)
+        beginCaptures:
+          "1": { name: support.function.expr.tcl }
+        end: (?:(;)|(?=\})|(?=\])|$)
+        endCaptures:
+          "1": { name: punctuation.end.semicolon.tcl }
+        patterns:
+          - include: "#expr_braces"
+          - include: "#expression"
+
+  default_command:
+    patterns:
+      - begin: (\S+)
+        beginCaptures:
+          "1": { name: entity.name.function.tcl }
+        end: (?:(;)|(?=\})|(?=\])|$)
+        endCaptures:
+          "1": { name: punctuation.end.semicolon.tcl }
+        patterns:
+          - include: "#variable"
+          - include: "#double_quotes"
+          - include: "#brackets"
+          - include: "#braces"
+
+  tcl_commands:
+    patterns:
+      - include: "#proc"
+      - include: "#for"
+      - include: "#if"
+      - include: "#expr"
