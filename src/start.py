@@ -14,7 +14,6 @@ import glob
 import os
 
 def del_file(file_param):
-
      for infile in glob.glob(os.path.join(file_param, '*.jou')):
           os.remove(infile)
      for infile in glob.glob(os.path.join(file_param, '*.log')):
@@ -26,21 +25,25 @@ def del_file(file_param):
      for infile in glob.glob(os.path.join(file_param, "prj/", '*.log')):
           os.remove(infile)
 
-def find_file(file_param,file_name):
+
+def Handle_file(file_param,file_name):
      file_num = 0
      f_list = os.listdir(file_param)
      for file in f_list:
           if os.path.splitext(file)[1] == file_name:
-               os.system("vivado -mode tcl -s ./.TOOL/xilinx/run.tcl ./prj/xilinx/template.xpr -notrace")
+               tcl_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/xilinx/run.tcl")
+               cmd = "vivado -mode tcl -s %s ./prj/xilinx/template.xpr -notrace" % (tcl_file.replace("\\", "/"))
+               os.system(cmd)
                file_num = file_num + 1
      if file_num == 0:
-          os.system("vivado -mode tcl -s ./.TOOL/xilinx/start.tcl -notrace")
-
+          tcl_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/xilinx/start.tcl")
+          cmd = "vivado -mode tcl -s %s -notrace" % (tcl_file.replace("\\", "/"))
+          os.system(cmd)
 
 
 def main():
      del_file("./")
-     find_file("./prj/xilinx",".xpr")
+     Handle_file("./prj/xilinx",".xpr")
      del_file("./")
 
 if __name__ == "__main__":
