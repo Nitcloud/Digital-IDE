@@ -5,7 +5,7 @@
   "version": "0.0.1",
   "publisher": "sterben",
   "engines": {
-    "vscode": "^1.41.0"
+    "vscode": "^1.43.0"
   },
   "categories": [
     "Extension Packs",
@@ -15,7 +15,7 @@
   "activationEvents": [
     "onLanguage:tcl",
     "onLanguage:vhdl",
-		"onLanguage:verilog",
+    "onLanguage:verilog",
     "onLanguage:systemverilog",
     "onCommand:extension.instance",
     "onCommand:extension.testbench",
@@ -23,36 +23,36 @@
   ],
   "main": "./src/extension",
   "contributes": {
-		"configuration": {
-			"title": "HDL configuration",
-			"properties": {
-				"verilog.linting.linter": {
-					"scope": "window",
-					"type": "string",
-					"enum": [
-						"xvlog",
-						"iverilog",
-						"verilator",
-						"modelsim",
-						"none"
-					],
-					"default": "none",
-					"description": "Select the verilog linter. Possible values are 'iverilog', 'verilator', xvlog' or 'none'"
-				},
-				"verilog.ctags.path": {
-					"scope": "window",
-					"type": "string",
-					"default": "ctags",
-					"description": "A path to the installation of Universal Ctags"
-				},
-				"verilog.logging.enabled": {
-					"scope": "window",
-					"type": "boolean",
-					"default": false,
-					"description": "Enable logging for this extension"
-				}
-			}
-		},
+    "configuration": {
+      "title": "HDL configuration",
+      "properties": {
+        "verilog.linting.linter": {
+          "scope": "window",
+          "type": "string",
+          "enum": [
+            "xvlog",
+            "iverilog",
+            "verilator",
+            "modelsim",
+            "none"
+          ],
+          "default": "none",
+          "description": "Select the verilog linter. Possible values are 'iverilog', 'verilator', xvlog' or 'none'"
+        },
+        "verilog.ctags.path": {
+          "scope": "window",
+          "type": "string",
+          "default": "ctags",
+          "description": "A path to the installation of Universal Ctags"
+        },
+        "verilog.logging.enabled": {
+          "scope": "window",
+          "type": "boolean",
+          "default": false,
+          "description": "Enable logging for this extension"
+        }
+      }
+    },
     "languages": [
       {
         "id": "tcl",
@@ -71,7 +71,7 @@
       {
         "id": "vhdl",
         "aliases": [
-          "VHDL", 
+          "VHDL",
           "vhdl"
         ],
         "extensions": [
@@ -82,32 +82,32 @@
         ],
         "configuration": "./config/vhdl.configuration.json"
       },
-			{
-				"id": "verilog",
-				"aliases": [
-					"Verilog",
-					"verilog"
-				],
-				"extensions": [
+      {
+        "id": "verilog",
+        "aliases": [
+          "Verilog",
+          "verilog"
+        ],
+        "extensions": [
           ".v",
           ".V",
-					".vh",
-					".vl"
-				],
-				"configuration": "./config/verilog.configuration.json"
-			},
-			{
-				"id": "systemverilog",
-				"aliases": [
-					"System Verilog",
-					"systemverilog"
-				],
-				"extensions": [
-					".sv",
-					".SV"
-				],
-				"configuration": "./config/systemverilog.configuration.json"
-			}
+          ".vh",
+          ".vl"
+        ],
+        "configuration": "./config/verilog.configuration.json"
+      },
+      {
+        "id": "systemverilog",
+        "aliases": [
+          "System Verilog",
+          "systemverilog"
+        ],
+        "extensions": [
+          ".sv",
+          ".SV"
+        ],
+        "configuration": "./config/systemverilog.configuration.json"
+      }
     ],
     "grammars": [
       {
@@ -120,16 +120,16 @@
         "scopeName": "source.vhdl",
         "path": "./syntaxes/vhdl.json"
       },
-			{
-				"language": "verilog",
-				"scopeName": "source.verilog",
-				"path": "./syntaxes/verilog.json"
-			},
-			{
-				"language": "systemverilog",
-				"scopeName": "source.systemverilog",
-				"path": "./syntaxes/systemverilog.json"
-			}
+      {
+        "language": "verilog",
+        "scopeName": "source.verilog",
+        "path": "./syntaxes/verilog.json"
+      },
+      {
+        "language": "systemverilog",
+        "scopeName": "source.systemverilog",
+        "path": "./syntaxes/systemverilog.json"
+      }
     ],
     "snippets": [
       {
@@ -140,27 +140,27 @@
         "language": "vhdl",
         "path": "./snippets/vhdl.json"
       },
-			{
-				"language": "verilog",
-				"path": "./snippets/verilog.json"
-			},
-			{
-				"language": "systemverilog",
-				"path": "./snippets/systemverilog.json"
-			}
+      {
+        "language": "verilog",
+        "path": "./snippets/verilog.json"
+      },
+      {
+        "language": "systemverilog",
+        "path": "./snippets/systemverilog.json"
+      }
     ],
     "commands": [
       {
-          "command": "extension.instance",
-          "title": "Instance"
+        "command": "extension.instance",
+        "title": "Instance"
       },
       {
-          "command": "extension.testbench",
-          "title": "Testbench"
+        "command": "extension.testbench",
+        "title": "Testbench"
       },
       {
-          "command": "extension.startfpga",
-          "title": "startfpga"
+        "command": "extension.startfpga",
+        "title": "startfpga"
       }
     ],
     "keybindings": [
@@ -172,17 +172,15 @@
       }
     ]
   },
-  "scripts": {
-    "vscode:prepublish": "npm run build:grammar",
-    "build:grammar": "ts-node --files ./scripts/build.ts"
-  },
-  "devDependencies": {
-    "@types/js-yaml": "^3.12.1",
-    "@types/node": "^13.5.0",
-    "@types/plist": "^3.0.2",
-    "js-yaml": "^3.13.1",
-    "plist": "^3.0.1",
-    "ts-node": "^8.6.2",
-    "typescript": "^3.7.5"
-  }
+	"devDependencies": {
+		"@types/glob": "^7.1.1",
+		"@types/mocha": "^7.0.1",
+		"@types/node": "^12.11.7",
+		"@types/vscode": "^1.42.0",
+		"eslint": "^6.8.0",
+		"glob": "^7.1.6",
+		"mocha": "^7.0.1",
+		"typescript": "^3.7.5",
+		"vscode-test": "^1.3.0"
+	}
 }
