@@ -17,11 +17,14 @@
     "onLanguage:tcl",
     "onLanguage:vhdl",
 		"onLanguage:verilog",
-		"onLanguage:systemverilog"
-	],
+    "onLanguage:systemverilog",
+    "onCommand:extension.instance",
+    "onCommand:extension.testbench"
+  ],
+  "main": "./src/extension",
   "contributes": {
 		"configuration": {
-			"title": "Verilog configuration",
+			"title": "HDL configuration",
 			"properties": {
 				"verilog.linting.linter": {
 					"scope": "window",
@@ -35,48 +38,6 @@
 					],
 					"default": "none",
 					"description": "Select the verilog linter. Possible values are 'iverilog', 'verilator', xvlog' or 'none'"
-				},
-				"verilog.linting.iverilog.arguments": {
-					"scope": "window",
-					"type": "string",
-					"default": "",
-					"description": "Add Icarus Verilog arguments here (like macros). They will be added to Icarus Verilog while linting (The command \"-t null\" will be added by the linter by default)"
-				},
-				"verilog.linting.iverilog.runAtFileLocation": {
-					"scope": "window",
-					"type": "boolean",
-					"default": false,
-					"description": "If enabled, Icarus Verilog will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
-				},
-				"verilog.linting.modelsim.runAtFileLocation": {
-					"scope": "window",
-					"type": "boolean",
-					"default": false,
-					"description": "If enabled, Modelsim will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
-				},
-				"verilog.linting.modelsim.arguments": {
-					"scope": "window",
-					"type": "string",
-					"default": "",
-					"description": "Add Modelsim arguments here. They will be added to Modelsim while linting."
-				},
-				"verilog.linting.modelsim.work": {
-					"scope": "window",
-					"type": "string",
-					"default": "",
-					"description": "Add Modelsim work library here."
-				},
-				"verilog.linting.verilator.arguments": {
-					"scope": "window",
-					"type": "string",
-					"default": "",
-					"description": "Add Verilator arguments here (like macros). They will be added to Verilator while linting (The command \"--lint-only -I<document folder>\" will be added by the linter by default)"
-				},
-				"verilog.linting.verilator.runAtFileLocation": {
-					"scope": "window",
-					"type": "boolean",
-					"default": false,
-					"description": "If enabled, Verilator will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
 				},
 				"verilog.ctags.path": {
 					"scope": "window",
@@ -152,22 +113,22 @@
       {
         "language": "tcl",
         "scopeName": "source.tcl",
-        "path": "./syntaxes/tcl.tmLanguage"
+        "path": "./syntaxes/tcl.json"
       },
       {
         "language": "vhdl",
         "scopeName": "source.vhdl",
-        "path": "./syntaxes/vhdl.tmLanguage"
+        "path": "./syntaxes/vhdl.json"
       },
 			{
 				"language": "verilog",
 				"scopeName": "source.verilog",
-				"path": "./syntaxes/verilog.tmLanguage"
+				"path": "./syntaxes/verilog.json"
 			},
 			{
 				"language": "systemverilog",
 				"scopeName": "source.systemverilog",
-				"path": "./syntaxes/systemverilog.tmLanguage"
+				"path": "./syntaxes/systemverilog.json"
 			}
     ],
     "snippets": [
@@ -188,16 +149,16 @@
 				"path": "./snippets/systemverilog.json"
 			}
     ],
-		"commands": [
-			{
-				"command": "verilog.instantiateModule",
-				"title": "Verilog: Instantiate Module"
-			},
-			{
-				"command": "verilog.lint",
-				"title": "Verilog: Rerun lint tool"
-			}
-		]
+    "commands": [
+      {
+          "command": "extension.instance",
+          "title": "Instance"
+      },
+      {
+          "command": "extension.testbench",
+          "title": "Testbench"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run build:grammar",
