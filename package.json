@@ -2,8 +2,16 @@
   "name": "fpga-support",
   "displayName": "FPGA Develop Support",
   "description": "Language support for TCL&HDL",
-  "version": "0.0.1",
   "publisher": "sterben",
+  "homepage": "https://github.com/Bestduan/fpga_support_plug",
+  "version": "0.0.1",
+  "repository": {
+		"type": "git",
+		"url": "https://github.com/Bestduan/fpga_support_plug.git"
+	},
+	"bugs": {
+		"url": "https://github.com/Bestduan/fpga_support_plug/issues"
+	},
   "engines": {
     "vscode": "^1.43.0"
   },
@@ -12,6 +20,7 @@
     "Programming Languages",
     "Snippets"
   ],
+  "icon":"images/FPGAs-Icon.png",
   "activationEvents": [
     "onLanguage:tcl",
     "onLanguage:vhdl",
