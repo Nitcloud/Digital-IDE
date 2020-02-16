@@ -10,3 +10,5 @@
 # fpga_support_plug
 
 在vscode上的fpga开发插件
+包含了对fpga开发过程中所需要语言的支持
+有如下：vhdl，Verilog，systemvVerilog，TCL，xdc，sdc
