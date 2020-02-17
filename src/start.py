@@ -31,19 +31,19 @@ def Handle_file(file_param,file_name):
      f_list = os.listdir(file_param)
      for file in f_list:
           if os.path.splitext(file)[1] == file_name:
-               tcl_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/xilinx/run.tcl")
-               cmd = "vivado -mode tcl -s %s ./prj/xilinx/template.xpr -notrace" % (tcl_file.replace("\\", "/"))
+               tcl_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/run.tcl")
+               cmd = "vivado -mode tcl -s %s ./prj/Xilinx/template.xpr -notrace" % (tcl_file.replace("\\", "/"))
                os.system(cmd)
                file_num = file_num + 1
      if file_num == 0:
-          tcl_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/xilinx/start.tcl")
+          tcl_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/start.tcl")
           cmd = "vivado -mode tcl -s %s -notrace" % (tcl_file.replace("\\", "/"))
           os.system(cmd)
 
 
 def main():
      del_file("./")
-     Handle_file("./prj/xilinx",".xpr")
+     Handle_file("./prj/Xilinx",".xpr")
      del_file("./")
 
 if __name__ == "__main__":

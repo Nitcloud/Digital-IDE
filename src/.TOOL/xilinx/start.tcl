@@ -1,16 +1,61 @@
 set_param general.maxThreads 6
-puts "---------which device you want to create---------"
-puts "1) xc7z020clg400-2"
-puts "2) xc7a35tftg256-1"
-puts "3) exit"
-gets stdin your_device;
-switch $your_device {
-    1 {create_project template ./prj/xilinx -part xc7z020clg400-2;}
-    2 {create_project template ./prj/xilinx -part xc7a35tftg256-1;}
-    3 {exit 1}
+
+variable current_Location [file normalize [info script]]
+set device_file     "[file dirname $current_Location]/Data/Device.txt"
+set device_file_tmp "[file dirname $current_Location]/Data/Device.txt.tmp"
+
+set device_num      0
+set add_param       1
+
+set your_chooce  a
+while {$your_chooce == "a" || $your_chooce == "d"} {
+    puts \f
+    puts "---------which device you want to create---------"
+    puts "#note:input the number to choose the device"
+    puts "#     input the a to Add the device"
+    puts "#     input the b to Delete the device"
+    puts "#     input the e to exit"
+    set fp [open $device_file r]
+    while { [gets $fp data] >= 0 } {
+        set device_num [expr $device_num + $add_param]
+        set device_arr($device_num) $data
+        puts "$device_num) $device_arr($device_num)"
+    }
+    close $fp
+    set device_num 0
+    puts "---------please input your chooce---------"
+    gets stdin your_chooce
+    switch $your_chooce {
+        a {
+            puts "please input the name of device"
+            gets stdin Device
+            set fp [open $device_file a+]
+            puts $fp $Device
+            close $fp
+        }
+        d {
+            puts "please input the number of device"
+            gets stdin Device_num
+            set fd [open $device_file r]
+            set newfd [open $device_file_tmp w]
+            while {[gets $fd line] >= 0} {
+                if {[string compare $line $device_arr($Device_num)] != 0} {
+                    set newline $line
+                    puts $newfd $newline
+                }
+            }
+            close $fd
+            close $newfd
+            file rename -force $device_file_tmp $device_file
+        }
+        e {exit 1;}
+    }
 }
-add_file ./.LIB/Hardware
-add_file ./user/Hardware
+
+create_project template ./prj/xilinx -part $device_arr($your_chooce) -force -quiet
+
+add_file ./.LIB/Hardware -force -quiet
+add_file ./user/Hardware -force -quiet
 
 variable current_Location [file normalize [info script]]
 
