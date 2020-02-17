@@ -79,7 +79,7 @@ function activate(context) {
         }
         let ter1 = vscode.window.createTerminal({ name: 'startfpga' });
         ter1.show(true);
-        ter1.sendText(`python ${__dirname}\\start.py `);
+        ter1.sendText(`python ${__dirname}\\start.py`);
     });
     context.subscriptions.push(startfpga);
 }

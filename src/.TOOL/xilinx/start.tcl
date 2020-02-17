@@ -57,8 +57,6 @@ create_project template ./prj/xilinx -part $device_arr($your_chooce) -force -qui
 add_file ./.LIB/Hardware -force -quiet
 add_file ./user/Hardware -force -quiet
 
-variable current_Location [file normalize [info script]]
-
 set_property top TOP [current_fileset]
 add_files -fileset constrs_1 ./user/data
 set_property SOURCE_SET sources_1 [get_filesets sim_1]
