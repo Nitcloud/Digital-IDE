@@ -25,13 +25,35 @@ def del_file(file_param):
 		os.remove(infile)
 	for infile in glob.glob(os.path.join(file_param, "prj/", '*.log')):
 		os.remove(infile)
-	shutil.rmtree(os.path.join(file_param,".Xil"))
+	folder = os.path.exists(os.path.join(file_param,".Xil"))
+	if folder:
+		shutil.rmtree(os.path.join(file_param,".Xil"))
 
 def mkdir(path):
 	folder = os.path.exists(path)
 	if not folder:                  
 		os.makedirs(path)         
 
+def tb_file(path):
+	folder = os.path.exists(path)
+	if not folder:                  
+		tb_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/Data/testbench.v")
+		shutil.copy(tb_file_path,path)  
+
+def make_boot():
+	folder = os.path.exists("./user/BOOT")
+	if not folder:
+		output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/BOOT/")                  
+		f = open(os.path.join(output_path,"output.bif"), 'w')
+		output_file = "//arch = zynq; split = false; format = BIN\nthe_ROM_image:\n{\n\t[bootloader]%sfsbl.elf\n\t./template.bit\n\t%sps_test.elf\n}" % ((output_path.replace("\\", "/")),(output_path.replace("\\", "/")))
+		f.write(output_file)
+		f.close()
+	else :
+		f = open("./user/BOOT/output.bif", 'w')
+		output_file = "//arch = zynq; split = false; format = BIN\nthe_ROM_image:\n{\n\t[bootloader]./user/BOOT/fsbl.elf\n\t./template.bit\n\t./user/BOOT/ps_test.elf\n}"
+		f.write(output_file)
+		f.close()
+		
 def Handle_file(file_param,file_name):
      file_num = 0
      f_list = os.listdir(file_param)
@@ -47,11 +69,17 @@ def Handle_file(file_param,file_name):
           os.system(cmd)
 
 
+
 def main():
 	del_file("./")
+	make_boot()
 	mkdir("./prj/xilinx")
 	mkdir("./prj/alter")
 	mkdir("./prj/modelsim")
+	mkdir("./user/data")
+	mkdir("./user/src")
+	mkdir("./user/sim")
+	tb_file("./user/sim/testbench.v")
 	Handle_file("./prj/xilinx",".xpr")
 	del_file("./")
 

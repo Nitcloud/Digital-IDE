@@ -72,14 +72,13 @@ if {$your_chooce == y || $your_chooce == Y} {
 if {$your_chooce == n || $your_chooce == N} {
 	add_file ./.LIB -force -quiet
 	add_file ./user -force -quiet
-	set_property top TOP [current_fileset]
+	set_property top TOP [current_fileset] -force -quiet
 	add_files -fileset constrs_1 ./user/data -force -quiet
-	set_property SOURCE_SET sources_1 [get_filesets sim_1]
+	set_property SOURCE_SET sources_1 [get_filesets sim_1] -force -quiet
 	add_files -fileset sim_1 -norecurse ./user/sim/testbench.v -force -quiet
-	update_compile_order -fileset sim_1
-	set_property top testbench [get_filesets sim_1]
-	set_property top_lib xil_defaultlib [get_filesets sim_1]
-	update_compile_order -fileset sim_1
+	set_property top testbench [get_filesets sim_1] -force -quiet
+	set_property top_lib xil_defaultlib [get_filesets sim_1] -force -quiet
+	update_compile_order -fileset sim_1 -force -quiet
 }
 
 #source ./.TOOL/xilinx/zynq_ps.tcl -notrace;
