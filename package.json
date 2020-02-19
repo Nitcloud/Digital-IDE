@@ -20,7 +20,7 @@
     "Programming Languages",
     "Snippets"
   ],
-  "icon":"images/FPGAs-Icon.png",
+  "icon":"images/FPGAs.png",
   "activationEvents": [
     "onLanguage:tcl",
     "onLanguage:vhdl",
