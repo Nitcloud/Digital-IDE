@@ -1,5 +1,4 @@
-gets stdin yorn
-set device $yorn
+set device "xc"
 open_hw
 connect_hw_server
 set found 0
@@ -7,7 +6,8 @@ foreach { hw_target } [get_hw_targets] {
     current_hw_target $hw_target
     open_hw_target
     foreach { hw_device } [get_hw_devices] {
-    if { [string first [get_property PART $hw_device] $device] == 0 } {
+	puts [get_property PART $hw_device]
+    if { [string equal -length 2 [get_property PART $hw_device] $device] == 0 } {
         puts "------Successfully Found Hardware Target with a ${device} device------ "
         current_hw_device $hw_device
         set found 1

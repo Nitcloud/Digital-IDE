@@ -5,7 +5,7 @@ while {1} {
     puts "1] synth"
     puts "2] impl"
     puts "3] bits"
-    puts "4) sim"
+    puts "4) Updata_file"
     puts "5) progarm"
     puts "6) Debug"
     puts "7) GUI"
@@ -14,7 +14,7 @@ while {1} {
     if {$your_choose == 1} {source [file dirname $current_Location]/synth.tcl -notrace;}
     if {$your_choose == 2} {source [file dirname $current_Location]/impl.tcl -notrace;}
     if {$your_choose == 3} {source [file dirname $current_Location]/bits.tcl -notrace;}
-    if {$your_choose == 4} {source [file dirname $current_Location]/sim.tcl -notrace;}
+    if {$your_choose == 4} {add_file ./user/Hardware -force -quiet;}
     if {$your_choose == 5} {source [file dirname $current_Location]/progarm.tcl -notrace;}
     if {$your_choose == 6} {source [file dirname $current_Location]/Debug.tcl -notrace;}
     if {$your_choose == 7} {break;}

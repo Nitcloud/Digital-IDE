@@ -1,0 +1,28 @@
+#-----------------------------------------------------------
+# Vivado v2018.3 (64-bit)
+# SW Build 2405991 on Thu Dec  6 23:38:27 MST 2018
+# IP Build 2404404 on Fri Dec  7 01:43:56 MST 2018
+# Start of session at: Wed Feb 19 12:37:25 2020
+# Process ID: 1464
+# Current directory: D:/project/Code/Plug/fpga_support
+# Command line: vivado.exe -mode tcl -s D:\project\Code\Plug\fpga_support\src\.TOOL\Xilinx\program.tcl -notrace
+# Log file: D:/project/Code/Plug/fpga_support/vivado.log
+# Journal file: D:/project/Code/Plug/fpga_support\vivado.jou
+#-----------------------------------------------------------
+Sourcing tcl script 'D:/APP/vivado_18_3/Vivado/2018.3/scripts/Vivado_init.tcl'
+source {D:\project\Code\Plug\fpga_support\src\.TOOL\Xilinx\program.tcl} -notrace
+INFO: [Labtools 27-2285] Connecting to hw_server url TCP:localhost:3121
+INFO: [Labtools 27-2222] Launching hw_server...
+INFO: [Labtools 27-2221] Launch Output:
+
+****** Xilinx hw_server v2018.3
+  **** Build date : Dec  7 2018-00:40:27
+    ** Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
+
+
+connect_hw_server: Time (s): cpu = 00:00:00 ; elapsed = 00:00:07 . Memory (MB): peak = 268.254 ; gain = 0.000
+INFO: [Labtoolstcl 44-466] Opening hw_target localhost:3121/xilinx_tcf/Digilent/201706300081
+arm_dap
+------Successfully Found Hardware Target with a xc device------ 
+xc7z020
+Vivado% 

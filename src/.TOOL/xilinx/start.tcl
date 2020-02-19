@@ -1,6 +1,7 @@
-set_param general.maxThreads 6
+set_param general.maxThreads 8
 
 variable current_Location [file normalize [info script]]
+
 set device_file     "[file dirname $current_Location]/Data/Device.txt"
 set device_file_tmp "[file dirname $current_Location]/Data/Device.txt.tmp"
 
@@ -54,17 +55,16 @@ while {$your_chooce == "a" || $your_chooce == "d"} {
 
 create_project template ./prj/xilinx -part $device_arr($your_chooce) -force -quiet
 
-add_file ./.LIB/Hardware -force -quiet
-add_file ./user/Hardware -force -quiet
-
-set_property top TOP [current_fileset]
-add_files -fileset constrs_1 ./user/data
-set_property SOURCE_SET sources_1 [get_filesets sim_1]
-add_files -fileset sim_1 -norecurse ./user/Hardware/sim/testbench.v
-update_compile_order -fileset sim_1
-set_property top testbench [get_filesets sim_1]
-set_property top_lib xil_defaultlib [get_filesets sim_1]
-update_compile_order -fileset sim_1
+#add_file ./.LIB/Hardware -force -quiet
+#add_file ./user/Hardware -force -quiet
+#set_property top TOP [current_fileset]
+#add_files -fileset constrs_1 ./user/data
+#set_property SOURCE_SET sources_1 [get_filesets sim_1]~
+#add_files -fileset sim_1 -norecurse ./user/Hardware/sim/testbench.v
+#update_compile_order -fileset sim_1
+#set_property top testbench [get_filesets sim_1]
+#set_property top_lib xil_defaultlib [get_filesets sim_1]
+#update_compile_order -fileset sim_1
 
 #source ./.TOOL/xilinx/zynq_ps.tcl -notrace;
 source [file dirname $current_Location]/run.tcl -notrace;
