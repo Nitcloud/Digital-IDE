@@ -10,7 +10,6 @@ set add_param       1
 
 set your_chooce  a
 while {$your_chooce == "a" || $your_chooce == "d"} {
-    puts \f
     puts "---------which device you want to create---------"
     puts "#note:input the number to choose the device"
     puts "#     input the a to Add the device"
@@ -55,16 +54,16 @@ while {$your_chooce == "a" || $your_chooce == "d"} {
 
 create_project template ./prj/xilinx -part $device_arr($your_chooce) -force -quiet
 
-#add_file ./.LIB/Hardware -force -quiet
-#add_file ./user/Hardware -force -quiet
-#set_property top TOP [current_fileset]
-#add_files -fileset constrs_1 ./user/data
-#set_property SOURCE_SET sources_1 [get_filesets sim_1]~
-#add_files -fileset sim_1 -norecurse ./user/Hardware/sim/testbench.v
-#update_compile_order -fileset sim_1
-#set_property top testbench [get_filesets sim_1]
+add_file ./.LIB/Hardware -force -quiet
+add_file ./user/Hardware -force -quiet
+set_property top TOP [current_fileset]
+add_files -fileset constrs_1 ./user/data
+set_property SOURCE_SET sources_1 [get_filesets sim_1]
+add_files -fileset sim_1 -norecurse ./user/Hardware/sim/testbench.v
+update_compile_order -fileset sim_1
+set_property top testbench [get_filesets sim_1]
 #set_property top_lib xil_defaultlib [get_filesets sim_1]
-#update_compile_order -fileset sim_1
+update_compile_order -fileset sim_1
 
 #source ./.TOOL/xilinx/zynq_ps.tcl -notrace;
 source [file dirname $current_Location]/run.tcl -notrace;
