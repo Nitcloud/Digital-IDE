@@ -54,16 +54,33 @@ while {$your_chooce == "a" || $your_chooce == "d"} {
 
 create_project template ./prj/xilinx -part $device_arr($your_chooce) -force -quiet
 
-add_file ./.LIB/Hardware -force -quiet
-add_file ./user/Hardware -force -quiet
-set_property top TOP [current_fileset]
-add_files -fileset constrs_1 ./user/data
-set_property SOURCE_SET sources_1 [get_filesets sim_1]
-add_files -fileset sim_1 -norecurse ./user/Hardware/sim/testbench.v
-update_compile_order -fileset sim_1
-set_property top testbench [get_filesets sim_1]
-#set_property top_lib xil_defaultlib [get_filesets sim_1]
-update_compile_order -fileset sim_1
+puts "*******Do you want to add Soc in your project?(y/n)*******"
+gets stdin your_chooce
+if {$your_chooce == y || $your_chooce == Y} {
+	add_file ./.LIB/Hardware -force -quiet
+	add_file ./user/Hardware -force -quiet
+	set_property top TOP [current_fileset]
+	add_files -fileset constrs_1 ./user/data -force -quiet
+	set_property SOURCE_SET sources_1 [get_filesets sim_1]
+	add_files -fileset sim_1 -norecurse ./user/Hardware/sim/testbench.v -force -quiet
+	update_compile_order -fileset sim_1
+	set_property top testbench [get_filesets sim_1]
+	set_property top_lib xil_defaultlib [get_filesets sim_1]
+	update_compile_order -fileset sim_1
+}
+
+if {$your_chooce == n || $your_chooce == N} {
+	add_file ./.LIB -force -quiet
+	add_file ./user -force -quiet
+	set_property top TOP [current_fileset]
+	add_files -fileset constrs_1 ./user/data -force -quiet
+	set_property SOURCE_SET sources_1 [get_filesets sim_1]
+	add_files -fileset sim_1 -norecurse ./user/sim/testbench.v -force -quiet
+	update_compile_order -fileset sim_1
+	set_property top testbench [get_filesets sim_1]
+	set_property top_lib xil_defaultlib [get_filesets sim_1]
+	update_compile_order -fileset sim_1
+}
 
 #source ./.TOOL/xilinx/zynq_ps.tcl -notrace;
 source [file dirname $current_Location]/run.tcl -notrace;

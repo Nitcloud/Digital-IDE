@@ -12,19 +12,25 @@
 
 import glob 
 import os
+import shutil
 
 def del_file(file_param):
-     for infile in glob.glob(os.path.join(file_param, '*.jou')):
-          os.remove(infile)
-     for infile in glob.glob(os.path.join(file_param, '*.log')):
-          os.remove(infile)
-     for infile in glob.glob(os.path.join(file_param, '*.str')):
-          os.remove(infile)
-     for infile in glob.glob(os.path.join(file_param, "prj/", '*.jou')):
-          os.remove(infile)
-     for infile in glob.glob(os.path.join(file_param, "prj/", '*.log')):
-          os.remove(infile)
+	for infile in glob.glob(os.path.join(file_param, '*.jou')):
+		os.remove(infile)
+	for infile in glob.glob(os.path.join(file_param, '*.log')):
+		os.remove(infile)
+	for infile in glob.glob(os.path.join(file_param, '*.str')):
+		os.remove(infile)
+	for infile in glob.glob(os.path.join(file_param, "prj/", '*.jou')):
+		os.remove(infile)
+	for infile in glob.glob(os.path.join(file_param, "prj/", '*.log')):
+		os.remove(infile)
+	shutil.rmtree(os.path.join(file_param,".Xil"))
 
+def mkdir(path):
+	folder = os.path.exists(path)
+	if not folder:                  
+		os.makedirs(path)         
 
 def Handle_file(file_param,file_name):
      file_num = 0
@@ -42,9 +48,12 @@ def Handle_file(file_param,file_name):
 
 
 def main():
-     del_file("./")
-     Handle_file("./prj/Xilinx",".xpr")
-     del_file("./")
+	del_file("./")
+	mkdir("./prj/xilinx")
+	mkdir("./prj/alter")
+	mkdir("./prj/modelsim")
+	Handle_file("./prj/xilinx",".xpr")
+	del_file("./")
 
 if __name__ == "__main__":
     main()
