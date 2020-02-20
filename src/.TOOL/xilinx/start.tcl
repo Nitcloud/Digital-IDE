@@ -8,6 +8,7 @@ set device_file_tmp "[file dirname $current_Location]/Data/Device.txt.tmp"
 set device_num      0
 set add_param       1
 
+#creat project
 set your_chooce  a
 while {$your_chooce == "a" || $your_chooce == "d"} {
     puts "---------which device you want to create---------"
@@ -54,32 +55,40 @@ while {$your_chooce == "a" || $your_chooce == "d"} {
 
 create_project template ./prj/xilinx -part $device_arr($your_chooce) -force -quiet
 
-puts "*******Do you want to add Soc in your project?(y/n)*******"
-gets stdin your_chooce
-if {$your_chooce == y || $your_chooce == Y} {
-	add_file ./.LIB/Hardware -force -quiet
-	add_file ./user/Hardware -force -quiet
-	set_property top TOP [current_fileset]
-	add_files -fileset constrs_1 ./user/data -force -quiet
-	set_property SOURCE_SET sources_1 [get_filesets sim_1]
-	add_files -fileset sim_1 -norecurse ./user/Hardware/sim/testbench.v -force -quiet
-	update_compile_order -fileset sim_1
-	set_property top testbench [get_filesets sim_1]
-	set_property top_lib xil_defaultlib [get_filesets sim_1]
-	update_compile_order -fileset sim_1
+#add file
+set fp [open "./config.txt" r]
+while { [gets $fp config_data] >= 0 } {
+	if {[string equal -length 3 $config_data Soc] == 1} {
+		gets $fp config_data
+		if {[string equal -length 4 $config_data none] == 1} {
+			add_file ./.LIB -force -quiet
+			add_file ./user -force -quiet
+			#set top
+			set_property top TOP [current_fileset]
+			#add xdc
+			add_files -fileset constrs_1 ./user/data -force -quiet
+			#set sim
+			set_property SOURCE_SET sources_1 [get_filesets sim_1]
+			add_files -fileset sim_1 -norecurse ./user/sim/testbench.v -force -quiet
+			set_property top testbench [get_filesets sim_1]
+			set_property top_lib xil_defaultlib [get_filesets sim_1]
+			update_compile_order -fileset sim_1 -quiet
+		} else {
+			add_file ./.LIB/Hardware -force -quiet
+			add_file ./user/Hardware -force -quiet
+			set_property top TOP [current_fileset]
+			add_files -fileset constrs_1 ./user/data -force -quiet
+			set_property SOURCE_SET sources_1 [get_filesets sim_1]
+			add_files -fileset sim_1 -norecurse ./user/Hardware/sim/testbench.v -force -quiet
+			update_compile_order -fileset sim_1
+			set_property top testbench [get_filesets sim_1]
+			set_property top_lib xil_defaultlib [get_filesets sim_1]
+			update_compile_order -fileset sim_1
+		}
+		break
+	}
 }
-
-if {$your_chooce == n || $your_chooce == N} {
-	add_file ./.LIB -force -quiet
-	add_file ./user -force -quiet
-	set_property top TOP [current_fileset] -force -quiet
-	add_files -fileset constrs_1 ./user/data -force -quiet
-	set_property SOURCE_SET sources_1 [get_filesets sim_1] -force -quiet
-	add_files -fileset sim_1 -norecurse ./user/sim/testbench.v -force -quiet
-	set_property top testbench [get_filesets sim_1] -force -quiet
-	set_property top_lib xil_defaultlib [get_filesets sim_1] -force -quiet
-	update_compile_order -fileset sim_1 -force -quiet
-}
+close $fp
 
 #source ./.TOOL/xilinx/zynq_ps.tcl -notrace;
 source [file dirname $current_Location]/run.tcl -notrace;

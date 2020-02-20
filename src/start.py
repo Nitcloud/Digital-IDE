@@ -13,6 +13,7 @@
 import glob 
 import os
 import shutil
+import linecache
 
 def del_file(file_param):
 	for infile in glob.glob(os.path.join(file_param, '*.jou')):
@@ -42,45 +43,65 @@ def tb_file(path):
 
 def make_boot():
 	folder = os.path.exists("./user/BOOT")
+	output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/BOOT/")                  
+	f = open(os.path.join(output_path,"output.bif"), 'w')
 	if not folder:
-		output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/BOOT/")                  
-		f = open(os.path.join(output_path,"output.bif"), 'w')
 		output_file = "//arch = zynq; split = false; format = BIN\nthe_ROM_image:\n{\n\t[bootloader]%sfsbl.elf\n\t./template.bit\n\t%sps_test.elf\n}" % ((output_path.replace("\\", "/")),(output_path.replace("\\", "/")))
 		f.write(output_file)
 		f.close()
 	else :
-		f = open("./user/BOOT/output.bif", 'w')
 		output_file = "//arch = zynq; split = false; format = BIN\nthe_ROM_image:\n{\n\t[bootloader]./user/BOOT/fsbl.elf\n\t./template.bit\n\t./user/BOOT/ps_test.elf\n}"
 		f.write(output_file)
 		f.close()
 		
-def Handle_file(file_param,file_name):
-     file_num = 0
-     f_list = os.listdir(file_param)
-     for file in f_list:
-          if os.path.splitext(file)[1] == file_name:
-               tcl_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/run.tcl")
-               cmd = "vivado -mode tcl -s %s ./prj/Xilinx/template.xpr -notrace" % (tcl_file.replace("\\", "/"))
-               os.system(cmd)
-               file_num = file_num + 1
-     if file_num == 0:
-          tcl_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/start.tcl")
-          cmd = "vivado -mode tcl -s %s -notrace" % (tcl_file.replace("\\", "/"))
-          os.system(cmd)
+def Handle_file():
+	#handle xilinx
+	f_list = os.listdir("./prj/xilinx")
+	for file in f_list:
+		if os.path.splitext(file)[1] == ".xpr":
+			tcl_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/run.tcl")
+			cmd = "vivado -mode tcl -s %s ./prj/Xilinx/template.xpr -notrace" % (tcl_file.replace("\\", "/"))
+			os.system(cmd)
+			return 1
+	return 0     
 
-
-
-def main():
-	del_file("./")
-	make_boot()
+def mkconfig(path) :
 	mkdir("./prj/xilinx")
 	mkdir("./prj/alter")
 	mkdir("./prj/modelsim")
-	mkdir("./user/data")
-	mkdir("./user/src")
-	mkdir("./user/sim")
-	tb_file("./user/sim/testbench.v")
-	Handle_file("./prj/xilinx",".xpr")
+	if Handle_file() :
+		return 1
+	else:
+		folder = os.path.exists(path)
+		if not folder:
+			config_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/config.txt")
+			shutil.copy(config_file_path,path)
+		fpga_Version = linecache.getline(path,2)
+		fpga_include = linecache.getline(path,5)
+		if fpga_include.replace('\n', '') == "none" :
+			mkdir("./user/data")
+			mkdir("./user/src")
+			mkdir("./user/sim")
+			tb_file("./user/sim/testbench.v")
+		else:
+			mkdir("./user/Software/data")
+			mkdir("./user/Software/src")
+			mkdir("./user/Hardware/data")
+			mkdir("./user/Hardware/src")
+			mkdir("./user/Hardware/sim")
+			tb_file("./user/Hardware/sim/testbench.v")
+		if fpga_Version.replace('\n', '') == "xilinx" :
+			tcl_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/start.tcl")
+			cmd = "vivado -mode tcl -s %s -notrace" % (tcl_file.replace("\\", "/"))
+			os.system(cmd)
+		else:
+			pass
+		return 0
+
+def main():
+	del_file("./")
+	mkconfig("./config.txt")
+	make_boot()
 	del_file("./")
 
 if __name__ == "__main__":
