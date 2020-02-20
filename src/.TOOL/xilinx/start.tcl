@@ -53,6 +53,9 @@ while {$your_chooce == "a" || $your_chooce == "d"} {
     }
 }
 
+set fp [open "./config.txt" a+]
+puts $fp $device_arr($your_chooce)
+close $fp
 create_project template ./prj/xilinx -part $device_arr($your_chooce) -force -quiet
 
 #add file
@@ -62,7 +65,8 @@ while { [gets $fp config_data] >= 0 } {
 		gets $fp config_data
 		if {[string equal -length 4 $config_data none] == 1} {
 			add_file ./.LIB -force -quiet
-			add_file ./user -force -quiet
+			add_file ./user/src -force -quiet
+			add_file ./user/TOP.v -force -quiet
 			#set top
 			set_property top TOP [current_fileset]
 			#add xdc
@@ -75,7 +79,8 @@ while { [gets $fp config_data] >= 0 } {
 			update_compile_order -fileset sim_1 -quiet
 		} else {
 			add_file ./.LIB/Hardware -force -quiet
-			add_file ./user/Hardware -force -quiet
+			add_file ./user/Hardware/src -force -quiet
+			add_file ./user/Hardware/TOP.v -force -quiet
 			set_property top TOP [current_fileset]
 			add_files -fileset constrs_1 ./user/data -force -quiet
 			set_property SOURCE_SET sources_1 [get_filesets sim_1]

@@ -41,6 +41,12 @@ def tb_file(path):
 		tb_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/Data/testbench.v")
 		shutil.copy(tb_file_path,path)  
 
+def top_file(path):
+	folder = os.path.exists(path)
+	if not folder:                  
+		tb_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/Data/TOP.v")
+		shutil.copy(tb_file_path,path)  
+
 def make_boot():
 	folder = os.path.exists("./user/BOOT")
 	output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/BOOT/")                  
@@ -83,6 +89,7 @@ def mkconfig(path) :
 			mkdir("./user/src")
 			mkdir("./user/sim")
 			tb_file("./user/sim/testbench.v")
+			top_file("./user/TOP.v")
 		else:
 			mkdir("./user/Software/data")
 			mkdir("./user/Software/src")
@@ -90,6 +97,7 @@ def mkconfig(path) :
 			mkdir("./user/Hardware/src")
 			mkdir("./user/Hardware/sim")
 			tb_file("./user/Hardware/sim/testbench.v")
+			top_file("./user/Hardware/TOP.v")
 		make_boot()
 		if fpga_Version.replace('\n', '') == "xilinx" :
 			tcl_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/start.tcl")

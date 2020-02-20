@@ -14,7 +14,7 @@ while {1} {
     if {$your_choose == 3} {source [file dirname $current_Location]/program.tcl -notrace;}
     if {$your_choose == 4} {source [file dirname $current_Location]/Debug.tcl -notrace;}
     if {$your_choose == 5} {break;}
-    if {$your_choose == 6} {close_project -quiet;break;}
+    if {$your_choose == 6} {break;}
 }
 if {$your_choose == 5} {
     start_gui -quiet

@@ -9,4 +9,11 @@ DSP
 /*****************/if include Driver,you can choose 0/1
 Driver
 0
-/*****************/
+/*****************/download typle TEST  BOOT
+Download
+TEST
+/*****************/flash typle
+Flash
+TEST
+/*****************/The info of device Note: auto generate do not touch
+Device
