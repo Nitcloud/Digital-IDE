@@ -69,9 +69,9 @@ def mkconfig(path) :
 	mkdir("./prj/xilinx")
 	mkdir("./prj/alter")
 	mkdir("./prj/modelsim")
-	if Handle_file() :
+	if Handle_file() : #Open existing project
 		return 1
-	else:
+	else:              #Creat New project
 		folder = os.path.exists(path)
 		if not folder:
 			config_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/config.txt")
@@ -90,6 +90,7 @@ def mkconfig(path) :
 			mkdir("./user/Hardware/src")
 			mkdir("./user/Hardware/sim")
 			tb_file("./user/Hardware/sim/testbench.v")
+		make_boot()
 		if fpga_Version.replace('\n', '') == "xilinx" :
 			tcl_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/start.tcl")
 			cmd = "vivado -mode tcl -s %s -notrace" % (tcl_file.replace("\\", "/"))
@@ -101,7 +102,6 @@ def mkconfig(path) :
 def main():
 	del_file("./")
 	mkconfig("./config.txt")
-	make_boot()
 	del_file("./")
 
 if __name__ == "__main__":
