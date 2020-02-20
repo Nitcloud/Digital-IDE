@@ -69,13 +69,13 @@ def mkconfig(path) :
 	mkdir("./prj/xilinx")
 	mkdir("./prj/alter")
 	mkdir("./prj/modelsim")
+	folder = os.path.exists(path)
+	if not folder:
+		config_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/config.txt")
+		shutil.copy(config_file_path,path)
 	if Handle_file() : #Open existing project
 		return 1
 	else:              #Creat New project
-		folder = os.path.exists(path)
-		if not folder:
-			config_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/config.txt")
-			shutil.copy(config_file_path,path)
 		fpga_Version = linecache.getline(path,2)
 		fpga_include = linecache.getline(path,5)
 		if fpga_include.replace('\n', '') == "none" :
