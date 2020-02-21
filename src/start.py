@@ -77,13 +77,13 @@ def mkconfig(path) :
 	mkdir("./prj/modelsim")
 	folder = os.path.exists(path)
 	if not folder:
-		config_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/config.txt")
+		config_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Makefile")
 		shutil.copy(config_file_path,path)
 	if Handle_file() : #Open existing project
 		return 1
 	else:              #Creat New project
-		fpga_Version = linecache.getline(path,2)
-		fpga_include = linecache.getline(path,5)
+		fpga_Version = linecache.getline(path,3)
+		fpga_include = linecache.getline(path,7)
 		if fpga_include.replace('\n', '') == "none" :
 			mkdir("./user/data")
 			mkdir("./user/src")
@@ -100,7 +100,7 @@ def mkconfig(path) :
 			top_file("./user/Hardware/TOP.v")
 		make_boot()
 		if fpga_Version.replace('\n', '') == "xilinx" :
-			tcl_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/start.tcl")
+			tcl_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/Start.tcl")
 			cmd = "vivado -mode tcl -s %s -notrace" % (tcl_file.replace("\\", "/"))
 			os.system(cmd)
 		else:
@@ -109,7 +109,7 @@ def mkconfig(path) :
 
 def main():
 	del_file("./")
-	mkconfig("./config.txt")
+	mkconfig("./Makefile")
 	del_file("./")
 
 if __name__ == "__main__":

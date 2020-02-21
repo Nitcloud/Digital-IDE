@@ -1,11 +1,21 @@
 set_param general.maxThreads 6
 variable current_Location [file normalize [info script]]
 
-set found 0
-set fp [open "./config.txt" r]
+set found   0
+set showlog 0
+set fp [open "./Makefile" r]
 while { [gets $fp data] >= 0 } {
 	if { [string equal -length 4 $data xc7z] == 1 } {
         set found 1
+    }
+	if { [string equal -length 6 $data Showlog] == 1 } {
+        gets $fp data
+		if { [string equal -length 3 $data yes] == 1 } {
+        	set showlog 1
+    	}
+		if { [string equal -length 2 $data no] == 1 } {
+        	set showlog 0
+    	}
     }
 }
 close $fp
@@ -18,12 +28,18 @@ if {$found == 0 } {
 reset_run synth_1 -quiet
 launch_run synth_1 -quiet
 wait_on_run synth_1 -quiet
+if {$showlog == 1} {
+	exec python [file dirname $current_Location]/Script/showlog.py -quiet
+}
 exec python [file dirname $current_Location]/Script/Log.py -quiet
 write_checkpoint -force ./prj/xilinx/template.runs/synth_1/TOP.dcp -quiet
 #run impl
 reset_run impl_1 -quiet
 launch_run impl_1 -quiet
 wait_on_run impl_1 -quiet
+if {$showlog == 1} {
+	exec python [file dirname $current_Location]/Script/showlog.py -quiet
+}
 exec python [file dirname $current_Location]/Script/Log.py -quiet
 open_run impl_1 -quiet
 report_timing_summary -quiet

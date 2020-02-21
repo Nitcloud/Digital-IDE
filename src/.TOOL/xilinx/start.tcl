@@ -53,13 +53,13 @@ while {$your_chooce == "a" || $your_chooce == "d"} {
     }
 }
 
-set fp [open "./config.txt" a+]
+set fp [open "./Makefile" a+]
 puts $fp $device_arr($your_chooce)
 close $fp
 create_project template ./prj/xilinx -part $device_arr($your_chooce) -force -quiet
 
 #add file
-set fp [open "./config.txt" r]
+set fp [open "./Makefile" r]
 while { [gets $fp config_data] >= 0 } {
 	if {[string equal -length 3 $config_data Soc] == 1} {
 		gets $fp config_data
@@ -96,4 +96,4 @@ while { [gets $fp config_data] >= 0 } {
 close $fp
 
 #source ./.TOOL/xilinx/zynq_ps.tcl -notrace;
-source [file dirname $current_Location]/run.tcl -notrace;
+source [file dirname $current_Location]/Run.tcl -notrace;

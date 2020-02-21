@@ -1,5 +1,5 @@
 #updata file
-set fp [open "./config.txt" r]
+set fp [open "./Makefile" r]
 while { [gets $fp config_data] >= 0 } {
 	if {[string equal -length 3 $config_data Soc] == 1} {
 		gets $fp config_data

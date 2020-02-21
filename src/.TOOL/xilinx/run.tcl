@@ -11,7 +11,7 @@ while {1} {
     gets stdin your_choose;
     if {$your_choose == 1} {source [file dirname $current_Location]/Updata.tcl -notrace;}
     if {$your_choose == 2} {source [file dirname $current_Location]/Build.tcl -notrace;}
-    if {$your_choose == 3} {source [file dirname $current_Location]/program.tcl -notrace;}
+    if {$your_choose == 3} {source [file dirname $current_Location]/Program.tcl -notrace;}
     if {$your_choose == 4} {source [file dirname $current_Location]/Debug.tcl -notrace;}
     if {$your_choose == 5} {break;}
     if {$your_choose == 6} {break;}

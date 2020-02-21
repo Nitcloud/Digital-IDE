@@ -1,5 +1,5 @@
 #find the hw_targets
-set fp [open "./config.txt" r]
+set fp [open "./Makefile" r]
 while { [gets $fp data] >= 0 } {
 	if { [string equal -length 6 $data Device] == 1 } {
 		gets $fp data
@@ -8,12 +8,12 @@ while { [gets $fp data] >= 0 } {
 }
 close $fp
 
-open_hw
-connect_hw_server
+open_hw -quiet
+connect_hw_server -quiet
 set found 0
 foreach { hw_target } [get_hw_targets] {
     current_hw_target $hw_target
-    open_hw_target
+    open_hw_target -quiet
     foreach { hw_device } [get_hw_devices] {
     if { [string equal -length 6 [get_property PART $hw_device] $device] == 1 } {
         puts "------Successfully Found Hardware Target with a ${device} device------ "
@@ -25,14 +25,13 @@ foreach { hw_target } [get_hw_targets] {
     close_hw_target
 }   
 
-
 #download the hw_targets
 if {$found == 0 } {
     puts "******ERROR : Did not find any Hardware Target with a ${device} device****** "
 } else {
 	set_property PROGRAM.FILE ./[current_project].bit [current_hw_device]
-	program_hw_devices [current_hw_device]
-	disconnect_hw_server
+	program_hw_devices [current_hw_device] -quiet
+	disconnect_hw_server -quiet
 }
 
 
