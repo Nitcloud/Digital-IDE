@@ -52,5 +52,5 @@ if {$found == 0} {
 
 if {$found == 1} {
 	write_bitstream ./[current_project].bit -force -quiet
-    exec bootgen -arch zynq -image [file dirname $current_Location]/BOOT/output.bif -o ./BOOT.bin
+    exec bootgen -arch zynq -image [file dirname $current_Location]/BOOT/output.bif -o ./BOOT.bin -w on
 } 
