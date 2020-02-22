@@ -34,6 +34,14 @@ It need **python3** **vivado** environment.
 
 * 步骤三：将以有的文件放在在相应的文件夹下，约束文件在data下，代码在src下，TOP.v在user下(新建的工程时已经添加进去了，可以直接覆盖或者粘贴进去)(注意，TOP.v是一定要的，而且模块名也一定要TOP，因为之后Update选项会强制将TOP作为顶层)，之后再命令行中选择1）进行Update，到此新建就结束了，之后要添加文件放入对应的文件夹下再选择Update就行了
 
+# START GIF
+
+![image](https://github.com/Bestduan/fpga_support_plug/images/note/start.gif)
+
+# ERROR GIF
+
+![image](https://github.com/Bestduan/fpga_support_plug/images/note/error.gif)
+
 ## Configuration Settings
 
 Use the following settings to configure the extension to your needs
