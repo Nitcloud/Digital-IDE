@@ -36,13 +36,13 @@ It need **python3** **vivado** environment.
 
 ## START GIF
 
-![image](https://github.com/Bestduan/fpga_support_plug/blob/master/images/note/start.gif)
+![image](images/note/start.gif)
 
 ## ERROR GIF
 
 * 综合布局布线时出错自动弹出
 
-![image](https://github.com/Bestduan/fpga_support_plug/blob/master/images/note/error.gif)
+![image](images/note/error.gif)
 
 ## Configuration Settings
 
