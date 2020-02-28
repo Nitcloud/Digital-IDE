@@ -34,15 +34,17 @@ It need **python3** **vivado** environment.
 
 * 步骤三：将以有的文件放在在相应的文件夹下，约束文件在data下，代码在src下，TOP.v在user下(新建的工程时已经添加进去了，可以直接覆盖或者粘贴进去)(注意，TOP.v是一定要的，而且模块名也一定要TOP，因为之后Update选项会强制将TOP作为顶层)，之后再命令行中选择1）进行Update，到此新建就结束了，之后要添加文件放入对应的文件夹下再选择Update就行了
 
+-----
+
 ## START GIF
 
-![image](images/note/start.gif)
+![START GIF](https://ftp.bmp.ovh/imgs/2020/02/85216ff13beedcc6.gif)
 
 ## ERROR GIF
 
 * 综合布局布线时出错自动弹出
 
-![image](images/note/error.gif)
+![ERROR GIF](https://ftp.bmp.ovh/imgs/2020/02/c31b45ac7ee3edb0.gif)
 
 ## Configuration Settings
 
@@ -58,7 +60,16 @@ Choose the linter for you. Possible values are
 * `verilator`
 * `none`
 
+note：由于之前已经添加vivado的路径到环境变量所以建议这里选择xvlog。
+
+-----
+0.0.2 新增testbench/instance功能，右键菜单栏里选择testbench，即可将本文件写出tb文件并且写入默认的testbench.v文件中。右键菜单栏里选择instance，即可将本文件例化并且在终端中显示(本来想直接复制到剪贴板中，但是tkinter库好像没效果，实现成功大佬的希望教一下我(T ^ T)。)
+
+注：0.0.2版本的功能需要依赖chardet，安装方式**pip install chardet**
+
 ## Thanks
 
-* [Verilog HDL/SystemVerilog](https://github.com/mshr-h/vscode-verilog-hdl-support)
+* [VHDL](https://github.com/puorc/awesome-vhdl)
 * [Verilog_Testbench](https://github.com/truecrab/VSCode_Extension_Verilog)
+* [TCL Language Support](https://github.com/go2sh/tcl-language-support)
+* [Verilog HDL/SystemVerilog](https://github.com/mshr-h/vscode-verilog-hdl-support)

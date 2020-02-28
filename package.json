@@ -4,7 +4,7 @@
   "description": "Language support for TCL&HDL",
   "publisher": "sterben",
   "homepage": "https://github.com/Bestduan/fpga_support_plug",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": {
 		"type": "git",
 		"url": "https://github.com/Bestduan/fpga_support_plug.git"
@@ -213,10 +213,10 @@
         "command": "extension.startfpga",
         "title": "startfpga"
       },
-			{
-				"command": "verilog.lint",
-				"title": "Verilog: Rerun lint tool"
-			}
+	  {
+		 "command": "verilog.lint",
+		"title": "Verilog: Rerun lint tool"
+	  }
     ],
     "keybindings": [
       {
@@ -225,7 +225,26 @@
         "mac": "shift+z",
         "when": "editorTextFocus"
       }
-    ]
+	],
+	"menus": {
+		"editor/context": [
+			{
+				"when": "editorFocus",
+				"command": "extension.startfpga",
+				"group": "navigation@5"
+			},
+			{
+				"when": "editorFocus",
+				"command": "extension.testbench",
+				"group": "navigation@6"
+			},
+			{
+				"when": "editorFocus",
+				"command": "extension.instance",
+				"group": "navigation@7"
+			}
+		]
+	}
   },
 	"devDependencies": {
 		"@types/glob": "^7.1.1",

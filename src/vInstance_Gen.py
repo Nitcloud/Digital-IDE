@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 '''
-vTbgenerator.py -- generate verilog module Testbench
+vInstance_Gen.py -- generate verilog module Instance
 generated bench file like this:
 
         fifo_sc #(
@@ -20,7 +20,7 @@ generated bench file like this:
         );
 
 Usage:
-      python vTbgenerator.py ModuleFileName.v
+      python vInstance_Gen.py ModuleFileName.v
 
 '''
 

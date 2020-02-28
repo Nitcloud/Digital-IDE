@@ -24,9 +24,13 @@ Usage:
 
 '''
 
+import os
 import re
 import sys
+import glob 
+import shutil
 import chardet
+import linecache
 
 def delComment( Text ):
     """ removed comment """
@@ -102,7 +106,7 @@ def formatPort(AllPortList,isPortRange =1) :
 
         strList = []
         for pl in AllPortList :
-            if pl  != [] :
+            if pl  != ["clk"] :
                 str = ',\n'.join( [' '*4+'.'+ i[0].ljust(l3)
                                   + '( '+ (i[0].ljust(l1 )+i[1].ljust(l2))
                                   + ' )' for i in pl ] )
@@ -117,7 +121,7 @@ def formatDeclare(PortList,portArr, initial = "" ):
     if initial !="" :
         initial = " = " + initial
 
-    if PortList!=[] :
+    if PortList!=["clk"] :
         str = '\n'.join( [ portArr.ljust(4) +'  '+(i[1]+min(len(i[1]),1)*'  '
                            +i[0]).ljust(36)+ initial + ' ;' for i in PortList])
     return str
@@ -140,10 +144,8 @@ def formatPara(ParaList) :
     else:
         l1 = 6
         l2 = 2
-    preDec = '\n'.join( ['parameter %s = %s;\n'
-                             %('PERIOD'.ljust(l1 +1), '10'.ljust(l2 ))])
-    paraDec = preDec + paraDec
     return paraDec,paraDef
+
 
 def writeTestBench(input_file):
     """ write testbench to file """
@@ -176,49 +178,79 @@ def writeTestBench(input_file):
     output = formatDeclare(output ,'wire')
     inout  = formatDeclare(inout ,'wire')
 
+    fpga_include = linecache.getline("./Makefile",7)
+    if fpga_include.replace('\n', '') == "none" :
+        f = open("./user/sim/testbench.v", 'w')
+    else:
+        f = open("./user/Hardware/sim/testbench.v", 'w')
+
     # write testbench
     timescale = '`timescale  1ns / 1ps\n'
-    print("//~ `New testbench")
-    print(timescale)
-    print("module tb_%s;\n" % name)
+    f.write("//~ `New testbench\n")
+    f.write(timescale)
+    f.write("module testbench();\n")
+
+	# print clock
+    port = '''
+parameter DATA_WIDTH = 32;
+parameter ADDR_WIDTH = 32;
+parameter MAIN_FRE   = 100; //unit MHz
+reg                   clk_main  = 0;
+reg                   sys_rst_n = 0;
+reg                   valid_out = 0;
+reg [DATA_WIDTH-1:0]  data = 0;
+reg [ADDR_WIDTH-1:0]  addr = 0;'''
+    clk = '''
+always begin
+    #(500/MAIN_FRE) clk_main = ~clk_main;
+end'''
+    rst = '''
+always begin
+    #50 sys_rst_n = 1;
+end'''
+    valid = '''
+//addr output
+always begin
+    if (valid_out) begin
+        #10 addr = addr + 1;#10;
+    end
+    else begin     
+        #10 addr = 0;#10;
+    end
+end
+//data output
+always begin
+    if (valid_out) begin
+        #10 data = data + 1;#10;
+    end
+    else begin     
+        #10 data = 0;#10;
+    end
+end '''
+    f.write("%s\n%s\n%s\n%s\n" % (port,clk,rst,valid))
 
     # module_parameter_port_list
     if(paraDec!=''):
-        print("// %s Parameters\n%s\n" % (name, paraDec))
+        f.write("// %s Parameters\n%s\n" % (name, paraDec))
 
     # list_of_port_declarations
-    print("// %s Inputs\n%s\n"  % (name, input ))
-    print("// %s Outputs\n%s\n" % (name, output))
+    f.write("// %s Inputs\n%s\n"  % (name, input ))
+    f.write("// %s Outputs\n%s\n" % (name, output))
     if(inout!=''):
-        print("// %s Bidirs\n%s\n"  % (name, inout ))
-
-    # print clock
-    clk = '''
-initial
-begin
-    forever #(PERIOD/2)  clk=~clk;
-end'''
-    rst = '''
-initial
-begin
-    #(PERIOD*2) rst_n  =  1;
-end
-'''
-    print("%s\n%s" % (clk,rst))
+        f.write("// %s Bidirs\n%s\n"  % (name, inout ))
 
     # UUT
-    print("%s %s u_%s (\n%s\n);" %(name,paraDef,name,portList))
+    f.write("%s %s u_%s (\n%s\n);" %(name,paraDef,name,portList))
 
     # print operation
     operation = '''
-initial
-begin
-
+initial begin
     $finish;
 end
 '''
-    print(operation)
-    print("endmodule")
+    f.write(operation)
+    f.write("endmodule")
+    f.close()
 
 if __name__ == '__main__':
     writeTestBench(sys.argv[1])

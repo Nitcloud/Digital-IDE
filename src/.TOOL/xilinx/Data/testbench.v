@@ -2,14 +2,15 @@ module testbench();
 
 parameter DATA_WIDTH = 32;
 parameter ADDR_WIDTH = 32;
-reg                   clk_100m  = 0;
+parameter MAIN_FRE   = 100; //unit MHz
+reg                   clk       = 0;
 reg                   sys_rst_n = 0;
+reg                   valid_out = 0;
 reg [DATA_WIDTH-1:0]  data = 0;
 reg [ADDR_WIDTH-1:0]  addr = 0;
 
-wire         valid_out;
 always begin
-    #10 clk_100m = ~clk_100m;
+    #(500/MAIN_FRE) clk = ~clk;
 end
 always begin
     #50 sys_rst_n = 1;
