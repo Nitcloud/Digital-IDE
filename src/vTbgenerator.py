@@ -240,7 +240,7 @@ end '''
         f.write("// %s Bidirs\n%s\n"  % (name, inout ))
 
     # UUT
-    f.write("%s %s u_%s (\n%s\n);" %(name,paraDef,name,portList))
+    f.write("%s %s %s_u (\n%s\n);" %(name,paraDef,name,portList))
 
     # print operation
     operation = '''

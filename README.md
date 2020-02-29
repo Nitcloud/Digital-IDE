@@ -11,15 +11,13 @@
 
 在vscode上的fpga开发插件
 
-包含了对fpga开发过程中所需要语言的支持
+-----
 
-有如下：vhdl，Verilog，systemvVerilog，TCL，xdc，sdc
+* 包含了对fpga开发过程中所需要语言的支持(如：**vhdl**，**Verilog**，**systemvVerilog**，**TCL**，**xdc**，**sdc**)。
 
-截止于2020/2/16已完成如下
+* 支持自动生成testbench(并且**以文件形式保存**)。
 
-* 1：对vivado的开发支持
-
-* 2：语法自动校测
+* 支持在vivado上快速开发，**一键新建工程**，**一键综合**，甚至**一键下载**。
 
 ## Requirements
 
@@ -46,6 +44,8 @@ It need **python3** **vivado** environment.
 
 ![ERROR GIF](https://ftp.bmp.ovh/imgs/2020/02/c31b45ac7ee3edb0.gif)
 
+-----
+
 ## Configuration Settings
 
 Use the following settings to configure the extension to your needs
@@ -63,7 +63,7 @@ Choose the linter for you. Possible values are
 note：由于之前已经添加vivado的路径到环境变量所以建议这里选择xvlog。
 
 -----
-0.0.2 新增testbench/instance功能，右键菜单栏里选择testbench，即可将本文件写出tb文件并且写入默认的testbench.v文件中。右键菜单栏里选择instance，即可将本文件例化并且在终端中显示(本来想直接复制到剪贴板中，但是tkinter库好像没效果，实现成功大佬的希望教一下我(T ^ T)。)
+0.0.2 新增testbench/instance功能，右键菜单栏里选择testbench，即可将本文件写出tb文件并且写入默认的testbench.v文件中。右键菜单栏里选择instance，即可将本文件例化并且在终端中显示(本来想直接复制到剪贴板中，但是tkinter库好像没效果，希望实现成功的大佬能教一下我(T ^ T)。)
 
 注：0.0.2版本的功能需要依赖chardet，安装方式**pip install chardet**
 
