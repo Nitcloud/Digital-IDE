@@ -67,42 +67,34 @@ while { [gets $fp config_data] >= 0 } {
 		if {[string equal -length 4 $config_data none] == 1} {
 			add_file ./.LIB -force -quiet
 			add_file ./user/src -force -quiet
-			remove_files  ./user/Hardware/src -quiet
 			add_file ./user/TOP.v -force -quiet
-			remove_files  ./user/Hardware/TOP.v -quiet
 
 			#set top
 			set_property top TOP [current_fileset]
 
 			#add xdc
 			add_files -fileset constrs_1 ./user/data -force -quiet
-			remove_files -fileset constrs_1 ./user/Hardware/data/ -quiet
 
 			#set sim
 			set_property SOURCE_SET sources_1 [get_filesets sim_1]
 			add_files -fileset sim_1 -norecurse ./user/sim/testbench.v -force -quiet
-			remove_files -fileset sim_1 ./user/Hardware/sim/testbench.v -quiet
 			set_property top testbench [get_filesets sim_1]
 			set_property top_lib xil_defaultlib [get_filesets sim_1]
 			update_compile_order -fileset sim_1 -quiet
 		} else {
 			add_file ./.LIB/Hardware -force -quiet
 			add_file ./user/Hardware/src -force -quiet
-			remove_files ./user/src -quiet
 			add_file ./user/Hardware/TOP.v -force -quiet
-			remove_files ./user/TOP.v -quiet
 
 			#set top
 			set_property top TOP [current_fileset]
 
 			#add xdc	
 			add_files -fileset constrs_1 ./user/Hardware/data/ -quiet
-			remove_files -fileset constrs_1 ./user/data -quiet
 
 			#set sim
 			set_property SOURCE_SET sources_1 [get_filesets sim_1]
 			add_files -fileset sim_1 -norecurse ./user/Hardware/sim/testbench.v -force -quiet
-			remove_files -fileset sim_1 ./user/sim/testbench.v -quiet
 			update_compile_order -fileset sim_1
 			set_property top testbench [get_filesets sim_1]
 			set_property top_lib xil_defaultlib [get_filesets sim_1]
