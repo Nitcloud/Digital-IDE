@@ -10,10 +10,42 @@
 #Description  : 
 '''
 
-import glob 
 import os
+import sys
+import glob 
 import shutil
 import linecache
+
+def deldir(path):
+	folder = os.path.exists(path)
+	if folder:                  
+		shutil.rmtree(path)    
+
+def movedir(sourse_path,target_path,gen_path):
+	folder = os.path.exists(os.path.join(sourse_path,gen_path))
+	if folder :                  
+		deldir(os.path.join(target_path,gen_path))
+		shutil.move(os.path.join(sourse_path,gen_path),target_path)
+	else :
+		if gen_path != "TOP.v" :
+			mkdir(os.path.join(target_path,gen_path))
+
+def file_update(path) :
+	fpga_include = linecache.getline(path,7)
+	if fpga_include.replace('\n', '') == "none" :
+		movedir("./user/Hardware","./user","data")
+		movedir("./user/Hardware","./user","src")
+		movedir("./user/Hardware","./user","sim")
+		movedir("./user/Hardware","./user","TOP.v")
+		deldir("./user/Hardware")
+		deldir("./user/Software")
+	else :
+		movedir("./user","./user/Hardware","data")
+		movedir("./user","./user/Hardware","src")
+		movedir("./user","./user/Hardware","sim")
+		movedir("./user","./user/Hardware","TOP.v")
+		mkdir("./user/Software/data")
+		mkdir("./user/Software/src")
 
 def del_file(file_param):
 	for infile in glob.glob(os.path.join(file_param, '*.jou')):
@@ -80,19 +112,12 @@ def mkconfig(path) :
 		config_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Makefile")
 		shutil.copy(config_file_path,path)
 	fpga_Version = linecache.getline(path,3)
+	file_update(path)
 	fpga_include = linecache.getline(path,7)
 	if fpga_include.replace('\n', '') == "none" :
-		mkdir("./user/data")
-		mkdir("./user/src")
-		mkdir("./user/sim")
 		tb_file("./user/sim/testbench.v")
 		top_file("./user/TOP.v")
 	else:
-		mkdir("./user/Software/data")
-		mkdir("./user/Software/src")
-		mkdir("./user/Hardware/data")
-		mkdir("./user/Hardware/src")
-		mkdir("./user/Hardware/sim")
 		tb_file("./user/Hardware/sim/testbench.v")
 		top_file("./user/Hardware/TOP.v")
 	make_boot()

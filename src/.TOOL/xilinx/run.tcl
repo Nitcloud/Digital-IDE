@@ -1,5 +1,7 @@
 set_param general.maxThreads 6
 variable current_Location [file normalize [info script]]
+source [file dirname $current_Location]/Update.tcl -notrace;
+
 while {1} {
     puts "---------what do you want to do next---------"
     puts "1) Update_file"
@@ -8,14 +10,17 @@ while {1} {
     puts "4) Debug"
     puts "5) GUI"
     puts "6) exit"
-    gets stdin your_choose;
-    if {$your_choose == 1} {source [file dirname $current_Location]/Update.tcl -notrace;}
-    if {$your_choose == 2} {source [file dirname $current_Location]/Build.tcl -notrace;}
-    if {$your_choose == 3} {source [file dirname $current_Location]/Program.tcl -notrace;}
-    if {$your_choose == 4} {source [file dirname $current_Location]/Debug.tcl -notrace;}
-    if {$your_choose == 5} {break;}
-    if {$your_choose == 6} {break;}
+    gets stdin your_choice;
+	switch $your_choice {
+        1 {source [file dirname $current_Location]/Update.tcl -notrace;}
+        2 {source [file dirname $current_Location]/Build.tcl -notrace;}
+        3 {source [file dirname $current_Location]/Program.tcl -notrace;}
+		4 {source [file dirname $current_Location]/Debug.tcl -notrace;}
+		5 {break;}
+		6 {exit 1;}
+		default {puts "please input right choice"}
+    }
 }
-if {$your_choose == 5} {
+if {$your_choice == 5} {
     start_gui -quiet
 }

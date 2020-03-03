@@ -4,7 +4,7 @@
   "description": "Language support for TCL&HDL",
   "publisher": "sterben",
   "homepage": "https://github.com/Bestduan/fpga_support_plug",
-  "version": "0.0.2",
+  "version": "0.1.2",
   "repository": {
 		"type": "git",
 		"url": "https://github.com/Bestduan/fpga_support_plug.git"
