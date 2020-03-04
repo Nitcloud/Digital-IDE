@@ -82,7 +82,15 @@ while { [gets $fp config_data] >= 0 } {
 			set_property top_lib xil_defaultlib [get_filesets sim_1]
 			update_compile_order -fileset sim_1 -quiet
 		} else {
-			add_file ./.LIB/Hardware -force -quiet
+			#add IP
+			if {[string equal -length 8 $config_data cortexM3] == 1} {
+				set_property ip_repo_paths [file dirname $current_Location]/.LIB/Soc/Cortex_M3/Xilinx [current_project]
+				file copy [file dirname $current_Location]/.LIB/Soc/Cortex_M3/Xilinx/Example/tri_io_buf.v ./user/Hardware/src
+				file copy [file dirname $current_Location]/.LIB/Soc/Cortex_M3/Xilinx/Example/m3_for_xilinx.bd ./user/Hardware/src
+				add_file ./user/Hardware/src/m3_for_xilinx.bd -force -quiet
+			}
+
+			#add src
 			add_file ./user/Hardware/src -force -quiet
 			add_file ./user/Hardware/TOP.v -force -quiet
 
@@ -99,10 +107,6 @@ while { [gets $fp config_data] >= 0 } {
 			set_property top testbench [get_filesets sim_1]
 			set_property top_lib xil_defaultlib [get_filesets sim_1]
 			update_compile_order -fileset sim_1
-
-			if {[string equal -length 8 $config_data cortexM3] == 1} {
-				set_property  ip_repo_paths  [file dirname $current_Location]/.LIB/Soc/Cortex_M3/Xilinx [current_project]
-			}
 		}
 		break
 	}

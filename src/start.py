@@ -113,18 +113,21 @@ def mkconfig(path) :
 		config_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Makefile")
 		shutil.copy(config_file_path,path)
 	fpga_Version = linecache.getline(path,3)
-	file_update(path)
 	fpga_include = linecache.getline(path,7)
-	if fpga_include.replace('\n', '') == "none" :
-		tb_file("./user/sim/testbench.v")
-		top_file("./user/TOP.v")
-	else:
-		tb_file("./user/Hardware/sim/testbench.v")
-		top_file("./user/Hardware/TOP.v")
 	make_boot()
 	if Handle_file() : #Open existing project
 		return 1
 	else:              #Creat New project
+		# os.remove("./Makefile")
+		# config_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Makefile")
+		# shutil.copy(config_file_path,path)
+		file_update(path)
+		if fpga_include.replace('\n', '') == "none" :
+			tb_file("./user/sim/testbench.v")
+			top_file("./user/TOP.v")
+		else:
+			tb_file("./user/Hardware/sim/testbench.v")
+			top_file("./user/Hardware/TOP.v")
 		if fpga_Version.replace('\n', '') == "xilinx" :
 			tcl_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/Start.tcl")
 			cmd = "vivado -mode tcl -s %s -notrace" % (tcl_file.replace("\\", "/"))
