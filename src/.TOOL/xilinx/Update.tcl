@@ -39,8 +39,8 @@ proc cortexM3_IP_add { current_Location } {
 while { [gets $fp config_data] >= 0 } {
 	if {[string equal -length 3 $config_data Soc] == 1} {
 		gets $fp config_data
+		remove_files [get_files]
 		if {[string equal -length 6 $state changed] == 1} {
-			remove_files [get_files]
 			switch $config_data {
 				cortexM3 {
 					cortexM3_IP_add $current_Location
