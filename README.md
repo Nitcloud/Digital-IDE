@@ -120,6 +120,8 @@ note：由于之前已经添加vivado的路径到环境变量所以建议这里�
 
 0.1.2 新增Soc的cortexM3的xilinx IP,并且给出示例m3_for_xilinx.bd，修改文件结构转换问题。
 
+0.1.4 修改0.1.3存在的BUG，0.1.3版本无法新建工程设计失误，请见谅，本插件对IP开发还不完善，因此在本版本中删除bd设计，之后如果需要bd或者IP设计请直接双击*.xpr工程文件打开进行设计
+
 ## Thanks
 
 * [VHDL](https://github.com/puorc/awesome-vhdl)

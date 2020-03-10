@@ -1,6 +1,12 @@
 set_param general.maxThreads 6
 variable current_Location [file normalize [info script]]
 
+# unset ::env(PYTHONPATH)
+# unset ::env(PYTHONHOME)
+
+# set ::env(PYTHONPATH) "C:/Program Files/Python38/python38.zip:C:/Program Files/Python38/DLLs:C:/Program Files/Python38/lib:C:/Program Files/Python38:C:/Program Files/Python38/lib/site-packages"
+# set ::env(PYTHONHOME) "C:/Program Files/Python38"
+
 set found   0
 set showlog 0
 set fp [open "./Makefile" r]

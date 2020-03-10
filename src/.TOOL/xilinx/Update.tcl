@@ -1,15 +1,22 @@
 #updata file
 
+# unset ::env(PYTHONPATH)
+# unset ::env(PYTHONHOME)
+
+# set ::env(PYTHONPATH) "C:/Program Files/Python38/python38.zip:C:/Program Files/Python38/DLLs:C:/Program Files/Python38/lib:C:/Program Files/Python38:C:/Program Files/Python38/lib/site-packages"
+# set ::env(PYTHONHOME) "C:/Program Files/Python38"
+
 variable current_Location [file normalize [info script]]
 set state [exec python [file dirname $current_Location]/Script/fileupdate.py -quiet]
 #puts $state
 set fp [open "./Makefile" r]
 
+
 proc none_add {} {
 	add_file ./user/src -quiet
-	foreach bd_file [glob -nocomplain ./user/src/*.bd] {
-		add_file $bd_file -quiet
-	}
+	# foreach bd_file [glob -nocomplain ./user/src/*.bd] {
+	# 	add_file $bd_file -quiet
+	# }
 	#set top
 	add_file ./user/TOP.v -quiet
 	set_property top TOP [current_fileset]
@@ -22,9 +29,9 @@ proc none_add {} {
 
 proc soc_add {} {
 	add_file ./user/Hardware/src -quiet
-	foreach bd_file [glob -nocomplain ./user/Hardware/src/*.bd] {
-		add_file $bd_file -quiet
-	}
+	# foreach bd_file [glob -nocomplain ./user/Hardware/src/*.bd] {
+	# 	add_file $bd_file -quiet
+	# }
 	#set top
 	add_file ./user/Hardware/TOP.v -quiet
 	set_property top TOP [current_fileset]
@@ -37,9 +44,9 @@ proc soc_add {} {
 
 proc cortexM3_IP_add { current_Location } {
 	set_property ip_repo_paths [file dirname $current_Location]/.LIB/Soc/Cortex_M3/Xilinx [current_project]
-	file copy -force [file dirname $current_Location]/.LIB/Soc/Cortex_M3/Xilinx/Example/tri_io_buf.v ./user/Hardware/src
-	file copy -force [file dirname $current_Location]/.LIB/Soc/Cortex_M3/Xilinx/Example/m3_for_xilinx.bd ./user/Hardware/src
-	add_file ./user/Hardware/src/m3_for_xilinx.bd -force -quiet
+	#file copy -force [file dirname $current_Location]/.LIB/Soc/Cortex_M3/Xilinx/Example/tri_io_buf.v ./user/Hardware/src
+	#file copy -force [file dirname $current_Location]/.LIB/Soc/Cortex_M3/Xilinx/Example/m3_for_xilinx.bd ./user/Hardware/src
+	#add_file ./user/Hardware/src/m3_for_xilinx.bd -force -quiet
 }
 
 while { [gets $fp config_data] >= 0 } {
