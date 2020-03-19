@@ -6,7 +6,7 @@
 #LastAuthor   : sterben(Duan)
 #Date         : 2020-02-03 17:09:48
 #lastTime     : 2020-02-11 16:49:33
-#FilePath     : ./.TOOL/Link/start.py
+#FilePath     : ./.TOOL/Script/start.py
 #Description  : 
 '''
 
@@ -34,7 +34,7 @@ def del_file(file_param):
 
 def make_boot():
 	folder = os.path.exists("./user/BOOT")
-	output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/BOOT/")                  
+	output_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"Xilinx/BOOT/")                  
 	f = open(os.path.join(output_path,"output.bif"), 'w')
 	if not folder:
 		output_file = "//arch = zynq; split = false; format = BIN\nthe_ROM_image:\n{\n\t[bootloader]%sfsbl.elf\n\t./template.bit\n\t%sps_test.elf\n}" % ((output_path.replace("\\", "/")),(output_path.replace("\\", "/")))
@@ -50,7 +50,7 @@ def Handle_file():
 	f_list = os.listdir("./prj/xilinx")
 	for file in f_list:
 		if os.path.splitext(file)[1] == ".xpr":
-			tcl_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/run.tcl")
+			tcl_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"Xilinx/run.tcl")
 			cmd = "vivado -mode tcl -s %s ./prj/Xilinx/template.xpr -notrace" % (tcl_file.replace("\\", "/"))
 			os.system(cmd)
 			return 1
@@ -62,7 +62,7 @@ def mkconfig(path) :
 	fileupdate.mkdir("./prj/modelsim")
 	folder = os.path.exists(path)
 	if not folder:
-		config_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Makefile")
+		config_file_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"Makefile")
 		shutil.copy(config_file_path,path)
 	fpga_Version = linecache.getline(path,3)
 	fpga_include = linecache.getline(path,7)
@@ -71,7 +71,7 @@ def mkconfig(path) :
 		return 1
 	else:              #Creat New project
 		# os.remove("./Makefile")
-		# config_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Makefile")
+		# config_file_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"Makefile")
 		# shutil.copy(config_file_path,path)
 		fileupdate.file_update(path)
 		if fpga_include.replace('\n', '') == "none" :
@@ -81,7 +81,7 @@ def mkconfig(path) :
 			fileupdate.tb_file("./user/Hardware/sim/testbench.v")
 			fileupdate.top_file("./user/Hardware/TOP.v")
 		if fpga_Version.replace('\n', '') == "xilinx" :
-			tcl_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/Start.tcl")
+			tcl_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"Xilinx/Start.tcl")
 			cmd = "vivado -mode tcl -s %s -notrace" % (tcl_file.replace("\\", "/"))
 			os.system(cmd)
 		else:

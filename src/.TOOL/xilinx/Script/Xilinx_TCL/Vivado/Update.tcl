@@ -44,8 +44,8 @@ proc soc_add {} {
 }
 
 proc cortexM3_IP_add { current_Location } {
-	set_property ip_repo_paths $xilinx_path/IP [current_project]
-	file copy -force $xilinx_path/IP/Example_bd/m3_for_xilinx.bd ./user/Hardware/bd
+	set_property ip_repo_paths $current_Location/IP [current_project]
+	file copy -force $current_Location/IP/Example_bd/m3_for_xilinx.bd ./user/Hardware/bd
 	add_file ./user/Hardware/bd/m3_for_xilinx.bd -force -quiet
 }
 
@@ -56,7 +56,7 @@ while { [gets $fp config_data] >= 0 } {
 		if {[string equal -length 6 $state changed] == 1} {
 			switch $config_data {
 				cortexM3 {
-					cortexM3_IP_add $current_Location
+					cortexM3_IP_add $xilinx_path
 				}
 				default {}
 			}
