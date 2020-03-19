@@ -1,32 +1,157 @@
 {
-  "proc command": {
-    "prefix": "proc",
-    "description": "Specify a tcl proc",
-    "body": ["proc ${1:name} {${2:vars}} {", "\t$0", "}"]
-  },
-  "if command": {
-    "prefix": "if",
-    "description": "An if statement",
-    "body": ["if {${1:expression}} {", "\t$0", "}"]
-  },
-  "for command": {
-    "prefix": "for",
-    "description": "A for loop",
-    "body": ["for {${1:set i 0}} {${2:\\$i < 1}} {${3:incr i}} {", "\t$0", "}"]
-  },
+    "for": {
+		"prefix": "for",
+		"body": [
+            "for {set ${1:index} ${2:0}} {\\$${1:index} < ${3:length}} {incr ${1:index}} {",
+            "\t$0",
+            "}"
+		],
+		"description": "For Loop"
+	},
+	"foreach": {
+		"prefix": "foreach",
+		"body": [
+            "foreach ${1:var} ${2:list} {",
+            "\t$0",
+            "}"
+		],
+		"description": "Foreach Loop"
+	},
+	"if": {
+		"prefix": "if",
+		"body": [
+            "if {${1:var}} {",
+            "\t$0",
+            "}"
+		],
+		"description": "If Condition"
+	},
+	"elseif": {
+		"prefix": "elseif",
+		"body": [
+            "elseif {${1:var}} {",
+            "\t$0",
+            "}"
+		],
+		"description": "ElseIf Condition"
+	},
+	"else": {
+		"prefix": "else",
+		"body": [
+            "else {",
+            "\t$0",
+            "}"
+		],
+		"description": "Else Block"
+	},
+	"proc": {
+		"prefix": "proc",
+		"body": [
+            "proc ${1:name} {${2:args}} {",
+            "\t$0",
+            "}"
+		],
+		"description": "Proc Block"
+	},
+	"while": {
+		"prefix": "while",
+		"body": [
+            "while {${1:var}} {",
+            "\t$0",
+            "}"
+		],
+		"description": "While Loop"
+	},
+	"catch": {
+		"prefix": "catch",
+		"body": [
+			"catch {${1:body}} ${2:var}"
+		],
+		"description": "Catch Block"
+	},
+	"try": {
+		"prefix": "try",
+		"body": [
+			"try {",
+			"\t$1",
+			"} finally {",
+			"\t$0",
+			"}"
+		],
+		"description": "Try Block"
+	},
+	"switch": {
+		"prefix": "switch",
+		"body": [
+			"switch ${1:var} {",
+			"\t${2:case} {$3}",
+			"\tdefault {$0}",
+			"}"
+		],
+		"description": "Switch Block"
+	},
+	"oo::class create": {
+		"prefix": "oo::class create",
+		"body": [
+			"oo::class create ${1:name} {",
+			"\t${2:superclass s}",
+			"\tconstructor {} {",
+			"\t\t$3",
+			"\t}",
+			"\tmethod ${4:m} {} {",
+			"\t\t$0",
+			"\t}",
+			"}"
+		],
+		"description": "Class Create"
+	},
+	"tk_chooseDirectory": {
+		"prefix": "tk_chooseDirectory",
+		"body": [
+			"tk_chooseDirectory ${-initialdir dirname -mustexist boolean -title titleString}"
+		],
+		"description": "Choose Directory"
+	},
+	"tk_getOpenFile": {
+		"prefix": "tk_getOpenFile",
+		"body": [
+			"tk_getOpenFile -filetypes {",
+			"\t\t{{Text Files}       {.txt}        }",
+			"\t\t{{All Files}        *             }",
+			"\t}"
+		],
+		"description": "Open File Dialog"
+	},
+	"tk_getSaveFile": {
+		"prefix": "tk_getSaveFile",
+		"body": [
+			"tk_getSaveFile -filetypes {",
+			"\t\t{{Text Files}       {.txt}        }",
+			"\t\t{{All Files}        *             }",
+			"\t}"
+		],
+		"description": "Save File Dialog"
+	},
+	"tk_messageBox": {
+		"prefix": "tk_messageBox",
+		"body": [
+			"tk_messageBox ${-message msg}"
+		],
+		"description": "Message Box"
+	},
   
-  "ILA_CORE": {
-    "prefix": "create_ILA_CORE",
-    "body": [
+    "ILA_CORE": {
+        "prefix": "create_ILA_CORE",
+        "body": [
   "set_property C_CLK_INPUT_FREQ_HZ  ${1:100000000} [get_debug_cores dbg_hub]",
   "set_property C_ENABLE_CLK_DIVIDER false     [get_debug_cores dbg_hub]",
   "set_property C_USER_SCAN_CHAIN    1         [get_debug_cores dbg_hub]",
   "connect_debug_port dbg_hub/clk              [get_nets [list CLK_Global_u/clk_out${2:3}]]"
   ]
   },
-  "Debug_CORE": {
-    "prefix": "create_Debug_CORE",
-    "body": [
+    "Debug_CORE": {
+        "prefix": "create_Debug_CORE",
+        "body": [
   "create_debug_core u_ila_${1:0} ila",
   "set_property ALL_PROBE_SAME_MU true  [get_debug_cores u_ila_$1]",
   "set_property ALL_PROBE_SAME_MU_CNT 4 [get_debug_cores u_ila_$1]",
@@ -40,9 +165,9 @@
   "connect_debug_port u_ila_$1/clk       [get_nets [list CLK_Global_u/clk_out${3:3}]]"
   ]
   },
-  "Debug_add_port": {
-    "prefix": "add_port",
-    "body": [
+    "Debug_add_port": {
+        "prefix": "add_port",
+        "body": [
   "set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_${1:0}/probe0]",
   "set_property port_width         12       [get_debug_ports u_ila_$1/probe0]",
   "connect_debug_port u_ila_$1/probe${2:0}        [get_nets [list ${3:}]]"
