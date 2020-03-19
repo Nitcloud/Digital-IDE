@@ -247,6 +247,11 @@ end '''
 initial begin
     $finish;
 end
+
+initial begin            
+    $dumpfile("wave.vcd");        
+    $dumpvars(0, testbench);   
+end
 '''
     f.write(operation)
     f.write("endmodule")

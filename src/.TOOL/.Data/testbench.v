@@ -35,8 +35,13 @@ end
 
 
 
+initial begin
+    $finish;
+end
 
-
-
+initial begin            
+    $dumpfile("wave.vcd");        //生成的vcd文件名称
+    $dumpvars(0, testbench);    //tb模块名称
+end
 
 endmodule  //TOP

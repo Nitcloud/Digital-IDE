@@ -57,7 +57,7 @@ function activate(context) {
         }
         let ter1 = vscode.window.createTerminal({ name: 'instance' });
         ter1.show(true);
-        ter1.sendText(`python ${__dirname}\\vInstance_Gen.py ${editor.document.fileName}`);
+        ter1.sendText(`python ${__dirname}/.TOOL/Script/vInstance_Gen.py ${editor.document.fileName}`);
         vscode.window.showInformationMessage('Generate instance successfully!');
     });
     context.subscriptions.push(disposable);
@@ -67,8 +67,10 @@ function activate(context) {
             return;
         }
         let ter1 = vscode.window.createTerminal({ name: 'testbench' });
-        ter1.show(true);
-        ter1.sendText(`python ${__dirname}\\vTbgenerator.py ${editor.document.fileName}`);
+        //ter1.show(true);
+        ter1.hide
+        ter1.dispose
+        ter1.sendText(`python ${__dirname}/.TOOL/Script/vTbgenerator.py ${editor.document.fileName}`);
         vscode.window.showInformationMessage('Generate testbench successfully!');
     });
     context.subscriptions.push(testbench);
@@ -79,7 +81,7 @@ function activate(context) {
         }
         let ter1 = vscode.window.createTerminal({ name: 'startfpga' });
         ter1.show(true);
-        ter1.sendText(`python ${__dirname}\\start.py`);
+        ter1.sendText(`python ${__dirname}/.TOOL/Script/start.py`);
     });
     context.subscriptions.push(startfpga);
 }
