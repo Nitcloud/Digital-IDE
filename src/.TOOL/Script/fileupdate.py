@@ -23,7 +23,6 @@ def movedir(sourse_path,target_path,gen_path):
 		if gen_path != "TOP.v" :
 			mkdir(os.path.join(target_path,gen_path).replace("\\", "/"))
 
-
 def tb_file(path):
 	folder = os.path.exists(path)
 	if not folder:                  

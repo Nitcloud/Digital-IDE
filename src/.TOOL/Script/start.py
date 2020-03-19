@@ -15,38 +15,7 @@ import sys
 import glob 
 import shutil
 import linecache
-
-def deldir(path):
-	folder = os.path.exists(path)
-	if folder:                  
-		shutil.rmtree(path.replace("\\", "/"))    
-
-def movedir(sourse_path,target_path,gen_path):
-	folder = os.path.exists(os.path.join(sourse_path,gen_path).replace("\\", "/"))
-	if folder :                  
-		deldir(os.path.join(target_path,gen_path).replace("\\", "/"))
-		shutil.move(os.path.join(sourse_path,gen_path).replace("\\", "/"),target_path)
-	else :
-		if gen_path != "TOP.v" :
-			mkdir(os.path.join(target_path,gen_path).replace("\\", "/"))
-
-def file_update(path) :
-	fpga_include = linecache.getline(path,7)
-	if fpga_include.replace('\n', '') == "none" :
-		movedir("./user/Hardware","./user","data")
-		movedir("./user/Hardware","./user","src")
-		movedir("./user/Hardware","./user","sim")
-		movedir("./user/Hardware","./user","TOP.v")
-		deldir("./user/Hardware")
-		deldir("./user/Software")
-	else :
-		mkdir("./user/Hardware")
-		movedir("./user","./user/Hardware","data")
-		movedir("./user","./user/Hardware","src")
-		movedir("./user","./user/Hardware","sim")
-		movedir("./user","./user/Hardware","TOP.v")
-		mkdir("./user/Software/data")
-		mkdir("./user/Software/src")
+import fileupdate
 
 def del_file(file_param):
 	for infile in glob.glob(os.path.join(file_param, '*.jou')):
@@ -62,23 +31,6 @@ def del_file(file_param):
 	folder = os.path.exists(os.path.join(file_param,".Xil"))
 	if folder:
 		shutil.rmtree(os.path.join(file_param,".Xil"))
-
-def mkdir(path):
-	folder = os.path.exists(path)
-	if not folder:                  
-		os.makedirs(path)         
-
-def tb_file(path):
-	folder = os.path.exists(path)
-	if not folder:                  
-		tb_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/Data/testbench.v")
-		shutil.copy(tb_file_path,path)  
-
-def top_file(path):
-	folder = os.path.exists(path)
-	if not folder:                  
-		tb_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/Data/TOP.v")
-		shutil.copy(tb_file_path,path)  
 
 def make_boot():
 	folder = os.path.exists("./user/BOOT")
@@ -105,9 +57,9 @@ def Handle_file():
 	return 0     
 
 def mkconfig(path) :
-	mkdir("./prj/xilinx")
-	mkdir("./prj/alter")
-	mkdir("./prj/modelsim")
+	fileupdate.mkdir("./prj/xilinx")
+	fileupdate.mkdir("./prj/alter")
+	fileupdate.mkdir("./prj/modelsim")
 	folder = os.path.exists(path)
 	if not folder:
 		config_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Makefile")
@@ -121,13 +73,13 @@ def mkconfig(path) :
 		# os.remove("./Makefile")
 		# config_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Makefile")
 		# shutil.copy(config_file_path,path)
-		file_update(path)
+		fileupdate.file_update(path)
 		if fpga_include.replace('\n', '') == "none" :
-			tb_file("./user/sim/testbench.v")
-			top_file("./user/TOP.v")
+			fileupdate.tb_file("./user/sim/testbench.v")
+			fileupdate.top_file("./user/TOP.v")
 		else:
-			tb_file("./user/Hardware/sim/testbench.v")
-			top_file("./user/Hardware/TOP.v")
+			fileupdate.tb_file("./user/Hardware/sim/testbench.v")
+			fileupdate.top_file("./user/Hardware/TOP.v")
 		if fpga_Version.replace('\n', '') == "xilinx" :
 			tcl_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),".TOOL/Xilinx/Start.tcl")
 			cmd = "vivado -mode tcl -s %s -notrace" % (tcl_file.replace("\\", "/"))
