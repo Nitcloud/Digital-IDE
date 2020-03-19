@@ -8,9 +8,9 @@
 
 variable current_Location [file normalize [info script]]
 set xilinx_path [file dirname [file dirname [file dirname [file dirname $current_Location]]]]
-set state [exec python [file dirname $xilinx_path]/Script/fileupdate.py -quiet]
+set state [exec python [file dirname $xilinx_path]/.Script/fileupdate.py -quiet]
 #puts $state
-set makefile_path $xilinx_path/Makefile
+set makefile_path "$xilinx_path/Makefile"
 set fp [open $makefile_path r]
 
 proc none_add {} {

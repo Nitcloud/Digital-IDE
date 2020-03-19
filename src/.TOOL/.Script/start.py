@@ -6,7 +6,7 @@
 #LastAuthor   : sterben(Duan)
 #Date         : 2020-02-03 17:09:48
 #lastTime     : 2020-02-11 16:49:33
-#FilePath     : ./.TOOL/Script/start.py
+#FilePath     : ./.TOOL/.Script/start.py
 #Description  : 
 '''
 
@@ -50,7 +50,7 @@ def Handle_file():
 	f_list = os.listdir("./prj/xilinx")
 	for file in f_list:
 		if os.path.splitext(file)[1] == ".xpr":
-			tcl_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"Xilinx/run.tcl")
+			tcl_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"Xilinx/Script/Xilinx_TCL/Vivado/run.tcl")
 			cmd = "vivado -mode tcl -s %s ./prj/Xilinx/template.xpr -notrace" % (tcl_file.replace("\\", "/"))
 			os.system(cmd)
 			return 1
@@ -81,7 +81,7 @@ def mkconfig(path) :
 			fileupdate.tb_file("./user/Hardware/sim/testbench.v")
 			fileupdate.top_file("./user/Hardware/TOP.v")
 		if fpga_Version.replace('\n', '') == "xilinx" :
-			tcl_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"Xilinx/Start.tcl")
+			tcl_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"Xilinx/Script/Xilinx_TCL/Vivado/Start.tcl")
 			cmd = "vivado -mode tcl -s %s -notrace" % (tcl_file.replace("\\", "/"))
 			os.system(cmd)
 		else:

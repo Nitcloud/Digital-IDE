@@ -26,13 +26,13 @@ def movedir(sourse_path,target_path,gen_path):
 def tb_file(path):
 	folder = os.path.exists(path)
 	if not folder:                  
-		tb_file_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"Xilinx/Data/testbench.v")
+		tb_file_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),".Data/testbench.v")
 		shutil.copy(tb_file_path,path)  
 
 def top_file(path):
 	folder = os.path.exists(path)
 	if not folder:                  
-		tb_file_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"Xilinx/Data/TOP.v")
+		tb_file_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),".Data/TOP.v")
 		shutil.copy(tb_file_path,path)  
 
 def file_update(path) :

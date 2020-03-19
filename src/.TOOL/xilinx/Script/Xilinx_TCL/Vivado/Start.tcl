@@ -1,14 +1,14 @@
 set_param general.maxThreads 8
 variable current_Location [file normalize [info script]]
-
+set xilinx_path [file dirname [file dirname [file dirname [file dirname $current_Location]]]]
 # unset ::env(PYTHONPATH)
 # unset ::env(PYTHONHOME)
 
 # set ::env(PYTHONPATH) "C:/Program Files/Python38/python38.zip:C:/Program Files/Python38/DLLs:C:/Program Files/Python38/lib:C:/Program Files/Python38:C:/Program Files/Python38/lib/site-packages"
 # set ::env(PYTHONHOME) "C:/Program Files/Python38"
 
-set device_file     "[file dirname $current_Location]/Data/Device.txt"
-set device_file_tmp "[file dirname $current_Location]/Data/Device.txt.tmp"
+set device_file     "$xilinx_path/Device.txt"
+set device_file_tmp "$xilinx_path/Device.txt.tmp"
 
 set device_num      0
 set add_param       1
@@ -63,7 +63,7 @@ puts $fp $device_arr($your_choice)
 close $fp
 create_project template ./prj/xilinx -part $device_arr($your_choice) -force -quiet
 
-exec python [file dirname $current_Location]/Script/fileupdate.py -quiet
+exec python [file dirname $xilinx_path]/.Script/fileupdate.py -quiet
 #add file
 set fp [open "./Makefile" r]
 while { [gets $fp config_data] >= 0 } {
@@ -89,10 +89,9 @@ while { [gets $fp config_data] >= 0 } {
 		} else {
 			#add IP
 			if {[string equal -length 8 $config_data cortexM3] == 1} {
-				set_property ip_repo_paths [file dirname $current_Location]/.LIB/Soc/Cortex_M3/Xilinx [current_project]
-				file copy [file dirname $current_Location]/.LIB/Soc/Cortex_M3/Xilinx/Example/tri_io_buf.v ./user/Hardware/src
-				file copy [file dirname $current_Location]/.LIB/Soc/Cortex_M3/Xilinx/Example/m3_for_xilinx.bd ./user/Hardware/src
-				add_file ./user/Hardware/src/m3_for_xilinx.bd -force -quiet
+				set_property ip_repo_paths $xilinx_path/IP [current_project]
+				file copy -force $xilinx_path/IP/Example_bd/m3_for_xilinx.bd ./user/Hardware/bd
+	            add_file ./user/Hardware/bd/m3_for_xilinx.bd -force -quiet
 			}
 
 			#add src
