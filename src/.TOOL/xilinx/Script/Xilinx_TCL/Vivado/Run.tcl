@@ -31,4 +31,11 @@ while {1} \
 }
 if {$your_choice == 5} {
     start_gui -quiet
+	# foreach bd_file_list [glob -nocomplain ./prj/xilinx/template.src/source1/bd/*] {
+	# 	file copy -force $bd_file_list ./user/Hardware/bd
+	# }
+	# foreach IP_file_list [glob -nocomplain ./prj/xilinx/template.src/source1/ip/*] {
+	# 	file copy -force $IP_file_list ./user/Hardware/IP
+	# }
+	# file delete -force ./prj/xilinx/template.src/source1
 }

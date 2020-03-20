@@ -12,18 +12,30 @@ set state [exec python [file dirname $xilinx_path]/.Script/fileupdate.py -quiet]
 #puts $state
 set fp [open "./Makefile" r]
 
-proc none_add {} {
-	add_file ./user/src -quiet
-	foreach bd_file [glob -nocomplain ./user/bd/*.bd] {
-        #puts $bd_file
-		add_file $bd_file -quiet
-	}
-    foreach IP_file [glob -nocomplain ./user/IP/*] {
+proc update_ip {IP_path} {
+	foreach IP_file [glob -nocomplain $IP_path] {
         foreach xci_file [glob -nocomplain $IP_file/*.xci] {
             #puts $xci_file
             add_file $xci_file -quiet
         }
 	}
+}
+
+proc update_bd {bd_path} {
+	foreach bd_file_list [glob -nocomplain $bd_path] {
+		foreach bd_file [glob -nocomplain $bd_file_list/*.bd] {
+            #puts $bd_file
+			add_file $bd_file -quiet
+        }
+	}
+}
+
+proc none_add {} {
+	add_file  ./user/src -quiet
+	update_bd ./user/bd/*
+	update_ip ./user/IP/*
+	update_bd ./prj/xilinx/template.src/source1/bd/*
+	update_ip ./prj/xilinx/template.src/source1/ip/*
 	#set top
 	add_file ./user/TOP.v -quiet
 	set_property top TOP [current_fileset]
@@ -35,17 +47,11 @@ proc none_add {} {
 }
 
 proc soc_add {} {
-	add_file ./user/Hardware/src -quiet
-	foreach bd_file [glob -nocomplain ./user/Hardware/bd/*.bd] {
-        #puts $bd_file
-		add_file $bd_file -quiet
-	}
-    foreach IP_file [glob -nocomplain ./user/Hardware/IP/*] {
-        foreach xci_file [glob -nocomplain $IP_file/*.xci] {
-            #puts $xci_file
-            add_file $xci_file -quiet
-        }
-	}
+	add_file  ./user/Hardware/src -quiet
+	update_bd ./user/Hardware/bd/*
+	update_ip ./user/Hardware/IP/*
+	update_bd ./prj/xilinx/template.src/source1/bd/*
+	update_ip ./prj/xilinx/template.src/source1/ip/*
 	#set top
 	add_file ./user/Hardware/TOP.v -quiet
 	set_property top TOP [current_fileset]
@@ -58,8 +64,9 @@ proc soc_add {} {
 
 proc cortexM3_IP_add { current_Location } {
 	set_property ip_repo_paths $current_Location/IP [current_project]
-	file copy -force $current_Location/IP/Example_bd/m3_for_xilinx.bd ./user/Hardware/bd
-	add_file ./user/Hardware/bd/m3_for_xilinx.bd -force -quiet
+	file mkdir ./user/Hardware/bd/m3_for_xilinx
+	file copy -force $current_Location/IP/Example_bd/m3_for_xilinx.bd ./user/Hardware/bd/m3_for_xilinx
+	add_file ./user/Hardware/bd/m3_for_xilinx/m3_for_xilinx.bd -force -quiet
 }
 
 while { [gets $fp config_data] >= 0 } \
@@ -68,7 +75,7 @@ while { [gets $fp config_data] >= 0 } \
     {
 		gets $fp config_data
 		remove_files -quiet [get_files]
-        puts $state
+        #puts $state
 		if {[string equal -length 6 $state changed] == 1} \
         {
 			switch $config_data \

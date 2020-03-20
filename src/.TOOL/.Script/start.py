@@ -45,7 +45,17 @@ def make_boot():
 		f.write(output_file)
 		f.close()
 		
-def Handle_file():
+def move_bd_IP(sourse_path,target_path,Goal):
+	folder = os.path.exists(sourse_path)
+	if folder:
+		files = os.listdir(sourse_path) 
+		for file in files: 
+			#if os.path.isdir(file): 
+			#print(os.path.join(sourse_path,file).replace("\\", "/"))
+			fileupdate.deldir(os.path.join(target_path,Goal,file).replace("\\", "/"))
+			shutil.move(os.path.join(sourse_path,file).replace("\\", "/"),os.path.join(target_path,Goal).replace("\\", "/"))
+
+def Open_prj():
 	#handle xilinx
 	f_list = os.listdir("./prj/xilinx")
 	for file in f_list:
@@ -53,7 +63,7 @@ def Handle_file():
 			tcl_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"Xilinx/Script/Xilinx_TCL/Vivado/run.tcl")
 			cmd = "vivado -mode tcl -s %s ./prj/Xilinx/template.xpr -notrace" % (tcl_file.replace("\\", "/"))
 			os.system(cmd)
-			return 1
+			return "xilinx"
 	return 0     
 
 def mkconfig(path) :
@@ -67,26 +77,30 @@ def mkconfig(path) :
 	fpga_Version = linecache.getline(path,3)
 	fpga_include = linecache.getline(path,7)
 	make_boot()
-	if Handle_file() : #Open existing project
-		return 1
+	if Open_prj() == "xilinx": #Open existing project
+		if fpga_include.replace('\n', '') == "none" :
+			move_bd_IP("./prj/xilinx/template.srcs/sources_1/ip","./user","IP")
+			move_bd_IP("./prj/xilinx/template.srcs/sources_1/bd","./user","bd")
+		else :
+			move_bd_IP("./prj/xilinx/template.srcs/sources_1/ip","./user/Hardware","IP")
+			move_bd_IP("./prj/xilinx/template.srcs/sources_1/bd","./user/Hardware","bd")
 	else:              #Creat New project
 		# os.remove("./Makefile")
 		# config_file_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"Makefile")
 		# shutil.copy(config_file_path,path)
 		fileupdate.file_update(path)
-		if fpga_include.replace('\n', '') == "none" :
-			fileupdate.tb_file("./user/sim/testbench.v")
-			fileupdate.top_file("./user/TOP.v")
-		else:
-			fileupdate.tb_file("./user/Hardware/sim/testbench.v")
-			fileupdate.top_file("./user/Hardware/TOP.v")
 		if fpga_Version.replace('\n', '') == "xilinx" :
 			tcl_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"Xilinx/Script/Xilinx_TCL/Vivado/Start.tcl")
 			cmd = "vivado -mode tcl -s %s -notrace" % (tcl_file.replace("\\", "/"))
 			os.system(cmd)
+			if fpga_include.replace('\n', '') == "none" :
+				move_bd_IP("./prj/xilinx/template.srcs/sources_1/ip","./user","IP")
+				move_bd_IP("./prj/xilinx/template.srcs/sources_1/bd","./user","bd")
+			else :
+				move_bd_IP("./prj/xilinx/template.srcs/sources_1/ip","./user/Hardware","IP")
+				move_bd_IP("./prj/xilinx/template.srcs/sources_1/bd","./user/Hardware","bd")
 		else:
 			pass
-		return 0
 
 def main():
 	del_file("./")
