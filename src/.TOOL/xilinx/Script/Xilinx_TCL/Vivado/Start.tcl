@@ -15,14 +15,16 @@ set add_param       1
 
 #creat project
 set your_choice  a
-while {$your_choice == "a" || $your_choice == "d"} {
+while {$your_choice == "a" || $your_choice == "d"} \
+{
     puts "---------which device you want to create---------"
     puts "#note:input the number to choose the device"
     puts "#     input the a to Add the device"
     puts "#     input the b to Delete the device"
     puts "#     input the e to exit"
     set fp [open $device_file r]
-    while { [gets $fp data] >= 0 } {
+    while { [gets $fp data] >= 0 } \
+    {
         set device_num [expr $device_num + $add_param]
         set device_arr($device_num) $data
         puts "$device_num) $device_arr($device_num)"
@@ -31,15 +33,18 @@ while {$your_choice == "a" || $your_choice == "d"} {
     set device_num 0
     puts "---------please input your choice---------"
     gets stdin your_choice
-    switch $your_choice {
-        a {
+    switch $your_choice \
+    {
+        a \
+        {
             puts "please input the name of device"
             gets stdin Device
             set fp [open $device_file a+]
             puts $fp $Device
             close $fp
         }
-        d {
+        d \
+        {
             puts "please input the number of device"
             gets stdin Device_num
             set fd [open $device_file r]
@@ -66,7 +71,8 @@ create_project template ./prj/xilinx -part $device_arr($your_choice) -force -qui
 exec python [file dirname $xilinx_path]/.Script/fileupdate.py -quiet
 #add file
 set fp [open "./Makefile" r]
-while { [gets $fp config_data] >= 0 } {
+while { [gets $fp config_data] >= 0 } \
+{
 	if {[string equal -length 3 $config_data Soc] == 1} {
 		gets $fp config_data
 		if {[string equal -length 4 $config_data none] == 1} {
@@ -86,7 +92,8 @@ while { [gets $fp config_data] >= 0 } {
 			set_property top testbench [get_filesets sim_1]
 			set_property top_lib xil_defaultlib [get_filesets sim_1]
 			update_compile_order -fileset sim_1 -quiet
-		} else {
+		} else \
+        {
 			#add IP
 			if {[string equal -length 8 $config_data cortexM3] == 1} {
 				set_property ip_repo_paths $xilinx_path/IP [current_project]

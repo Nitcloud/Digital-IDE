@@ -28,7 +28,8 @@
     "onLanguage:systemverilog",
     "onCommand:extension.instance",
     "onCommand:extension.testbench",
-    "onCommand:extension.startfpga"
+    "onCommand:extension.StartFPGA",
+    "onCommand:extension.OpenGUI"
   ],
   "main": "./src/extension",
   "contributes": {
@@ -210,8 +211,12 @@
         "title": "Testbench"
       },
       {
-        "command": "extension.startfpga",
-        "title": "startfpga"
+        "command": "extension.StartFPGA",
+        "title": "StartFPGA"
+      },
+      {
+        "command": "extension.OpenGUI",
+        "title": "OpenGUI"
       },
 	  {
 		 "command": "verilog.lint",
@@ -220,9 +225,15 @@
     ],
     "keybindings": [
       {
-        "command": "extension.startfpga",
-        "key": "shift+z",
-        "mac": "shift+z",
+        "command": "extension.StartFPGA",
+        "key": "Shift+Alt+z",
+        "mac": "Shift+Alt+z",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "extension.OpenGUI",
+        "key": "Alt+a",
+        "mac": "Alt+a",
         "when": "editorTextFocus"
       }
 	],
@@ -230,10 +241,10 @@
 		"editor/context": [
 			{
 				"when": "editorFocus",
-				"command": "extension.startfpga",
+				"command": "extension.StartFPGA",
 				"group": "navigation@5"
-			},
-			{
+            },
+            {
 				"when": "editorFocus",
 				"command": "extension.testbench",
 				"group": "navigation@6"
@@ -242,6 +253,11 @@
 				"when": "editorFocus",
 				"command": "extension.instance",
 				"group": "navigation@7"
+			},
+            {
+				"when": "editorFocus",
+				"command": "extension.OpenGUI",
+				"group": "navigation@8"
 			}
 		]
 	}

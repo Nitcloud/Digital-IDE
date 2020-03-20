@@ -10,12 +10,12 @@ variable current_Location [file normalize [info script]]
 set xilinx_path [file dirname [file dirname [file dirname [file dirname $current_Location]]]]
 set state [exec python [file dirname $xilinx_path]/.Script/fileupdate.py -quiet]
 #puts $state
-set makefile_path "$xilinx_path/Makefile"
-set fp [open $makefile_path r]
+set fp [open "./Makefile" r]
 
 proc none_add {} {
 	add_file ./user/src -quiet
 	foreach bd_file [glob -nocomplain ./user/bd/*.bd] {
+        #puts $bd_file
 		add_file $bd_file -quiet
 	}
 	#set top
@@ -31,6 +31,7 @@ proc none_add {} {
 proc soc_add {} {
 	add_file ./user/Hardware/src -quiet
 	foreach bd_file [glob -nocomplain ./user/Hardware/bd/*.bd] {
+        #puts $bd_file
 		add_file $bd_file -quiet
 	}
 	#set top
@@ -49,21 +50,29 @@ proc cortexM3_IP_add { current_Location } {
 	add_file ./user/Hardware/bd/m3_for_xilinx.bd -force -quiet
 }
 
-while { [gets $fp config_data] >= 0 } {
-	if {[string equal -length 3 $config_data Soc] == 1} {
+while { [gets $fp config_data] >= 0 } \
+{
+	if {[string equal -length 3 $config_data Soc] == 1} \
+    {
 		gets $fp config_data
 		remove_files [get_files]
-		if {[string equal -length 6 $state changed] == 1} {
-			switch $config_data {
-				cortexM3 {
+        #puts $state
+		if {[string equal -length 6 $state changed] == 1} \
+        {
+			switch $config_data \
+            {
+				cortexM3 \
+                {
 					cortexM3_IP_add $xilinx_path
 				}
 				default {}
 			}
 		}
-		if {[string equal -length 4 $config_data none] == 1} {
+		if {[string equal -length 4 $config_data none] == 1} \
+        {
 			none_add
-		} else {
+		} else \
+        {
 			soc_add
 		}
 		break

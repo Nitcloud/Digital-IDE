@@ -50,17 +50,17 @@ function activate(context) {
     context.subscriptions.push(vscode_1.languages.registerDefinitionProvider(verilogSelector, defProvider));
     vscode_1.commands.registerCommand("verilog.lint", lintManager.RunLintTool);
 
-    let disposable = vscode.commands.registerCommand('extension.instance', () => {
+    let instance = vscode.commands.registerCommand('extension.instance', () => {
         let editor = vscode.window.activeTextEditor;
         if (!editor) {
             return;
         }
         let ter1 = vscode.window.createTerminal({ name: 'instance' });
         ter1.show(true);
-        ter1.sendText(`python ${__dirname}/.TOOL/Script/vInstance_Gen.py ${editor.document.fileName}`);
+        ter1.sendText(`python ${__dirname}/.TOOL/.Script/vInstance_Gen.py ${editor.document.fileName}`);
         vscode.window.showInformationMessage('Generate instance successfully!');
     });
-    context.subscriptions.push(disposable);
+    context.subscriptions.push(instance);
     let testbench = vscode.commands.registerCommand('extension.testbench', () => {
         let editor = vscode.window.activeTextEditor;
         if (!editor) {
@@ -70,20 +70,30 @@ function activate(context) {
         //ter1.show(true);
         ter1.hide
         ter1.dispose
-        ter1.sendText(`python ${__dirname}/.TOOL/Script/vTbgenerator.py ${editor.document.fileName}`);
+        ter1.sendText(`python ${__dirname}/.TOOL/.Script/vTbgenerator.py ${editor.document.fileName}`);
         vscode.window.showInformationMessage('Generate testbench successfully!');
     });
     context.subscriptions.push(testbench);
-    let startfpga = vscode.commands.registerCommand('extension.startfpga', () => {
+    let startfpga = vscode.commands.registerCommand('extension.StartFPGA', () => {
         let editor = vscode.window.activeTextEditor;
         if (!editor) {
             return;
         }
-        let ter1 = vscode.window.createTerminal({ name: 'startfpga' });
+        let ter1 = vscode.window.createTerminal({ name: 'StartFPGA' });
         ter1.show(true);
-        ter1.sendText(`python ${__dirname}/.TOOL/Script/start.py`);
+        ter1.sendText(`python ${__dirname}/.TOOL/.Script/start.py`);
     });
     context.subscriptions.push(startfpga);
+    let OpenGUI = vscode.commands.registerCommand('extension.OpenGUI', () => {
+        let editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            return;
+        }
+        let ter1 = vscode.window.createTerminal({ name: 'OpenGUI' });
+        ter1.show(true);
+        ter1.sendText(`python ${__dirname}/.TOOL/.Script/start.py`);
+    });
+    context.subscriptions.push(OpenGUI);
 }
 exports.activate = activate;
 // this method is called when your extension is deactivated
