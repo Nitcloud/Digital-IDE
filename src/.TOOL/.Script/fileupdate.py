@@ -43,6 +43,8 @@ def file_update(path) :
 			print("changed")
 		else :
 			print("unchanged")
+		movedir("./user/Hardware","./user","bd")
+		movedir("./user/Hardware","./user","IP")
 		movedir("./user/Hardware","./user","src")
 		movedir("./user/Hardware","./user","data")
 		movedir("./user/Hardware","./user","sim")
@@ -62,6 +64,8 @@ def file_update(path) :
 		movedir("./user","./user/Hardware","src")
 		movedir("./user","./user/Hardware","data")
 		movedir("./user","./user/Hardware","sim")
+		movedir("./user","./user/Hardware","IP")
+		movedir("./user","./user/Hardware","bd")
 		mkdir("./user/Software/data")
 		mkdir("./user/Software/src")
 		tb_file("./user/Hardware/sim/testbench.v")

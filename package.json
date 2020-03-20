@@ -226,8 +226,8 @@
     "keybindings": [
       {
         "command": "extension.StartFPGA",
-        "key": "Shift+Alt+z",
-        "mac": "Shift+Alt+z",
+        "key": "Alt+z",
+        "mac": "Alt+z",
         "when": "editorTextFocus"
       },
       {

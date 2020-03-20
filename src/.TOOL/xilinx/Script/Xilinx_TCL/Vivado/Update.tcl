@@ -18,6 +18,12 @@ proc none_add {} {
         #puts $bd_file
 		add_file $bd_file -quiet
 	}
+    foreach IP_file [glob -nocomplain ./user/IP/*] {
+        foreach xci_file [glob -nocomplain $IP_file/*.xci] {
+            #puts $xci_file
+            add_file $xci_file -quiet
+        }
+	}
 	#set top
 	add_file ./user/TOP.v -quiet
 	set_property top TOP [current_fileset]
@@ -33,6 +39,12 @@ proc soc_add {} {
 	foreach bd_file [glob -nocomplain ./user/Hardware/bd/*.bd] {
         #puts $bd_file
 		add_file $bd_file -quiet
+	}
+    foreach IP_file [glob -nocomplain ./user/Hardware/IP/*] {
+        foreach xci_file [glob -nocomplain $IP_file/*.xci] {
+            #puts $xci_file
+            add_file $xci_file -quiet
+        }
 	}
 	#set top
 	add_file ./user/Hardware/TOP.v -quiet
@@ -55,8 +67,8 @@ while { [gets $fp config_data] >= 0 } \
 	if {[string equal -length 3 $config_data Soc] == 1} \
     {
 		gets $fp config_data
-		remove_files [get_files]
-        #puts $state
+		remove_files -quiet [get_files]
+        puts $state
 		if {[string equal -length 6 $state changed] == 1} \
         {
 			switch $config_data \
