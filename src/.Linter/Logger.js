@@ -19,7 +19,7 @@ var Logger = /** @class */ (function () {
         this.CheckIfEnabled();
     }
     Logger.prototype.CheckIfEnabled = function () {
-        this.isEnabled = vscode_1.workspace.getConfiguration().get('verilog.logging.enabled');
+        this.isEnabled = vscode_1.workspace.getConfiguration().get('HDL.logging.enabled');
     };
     Logger.prototype.log = function (msg, severity) {
         if (severity === void 0) { severity = Log_Severity.Info; }

@@ -29,8 +29,8 @@ var VerilatorLinter = /** @class */ (function (_super) {
         return _this;
     }
     VerilatorLinter.prototype.getConfig = function () {
-        this.verilatorArgs = vscode_1.workspace.getConfiguration().get('verilog.linting.verilator.arguments', '');
-        this.runAtFileLocation = vscode_1.workspace.getConfiguration().get('verilog.linting.verilator.runAtFileLocation');
+        this.verilatorArgs = vscode_1.workspace.getConfiguration().get('HDL.linting.verilator.arguments', '');
+        this.runAtFileLocation = vscode_1.workspace.getConfiguration().get('HDL.linting.verilator.runAtFileLocation');
     };
     VerilatorLinter.prototype.splitTerms = function (line) {
         var terms = line.split(':');

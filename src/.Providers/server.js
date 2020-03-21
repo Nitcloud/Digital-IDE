@@ -22,11 +22,11 @@ let documentCompiler;
 /* `configurations` is used to store the workspace's configs */
 let configurations = new Map();
 let compilerConfigurationsKeys = [
-    "systemverilog.compilerType",
-    "systemverilog.compileOnSave",
-    "systemverilog.launchConfiguration",
-    "systemverilog.antlrVerification",
-    "systemverilog.verifyOnOpen"
+    "HDL.compilerType",
+    "HDL.compileOnSave",
+    "HDL.launchConfiguration",
+    "HDL.antlrVerification",
+    "HDL.verifyOnOpen"
 ];
 let backend = new ANTLRBackend_1.ANTLRBackend();
 connection.onInitialize((params) => {

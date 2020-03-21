@@ -52,7 +52,7 @@ var LintManager = /** @class */ (function () {
     }
     LintManager.prototype.configLinter = function () {
         var linter_name;
-        linter_name = vscode_1.workspace.getConfiguration("verilog.linting").get("linter");
+        linter_name = vscode_1.workspace.getConfiguration("HDL.linting").get("linter");
         if (this.linter == null || this.linter.name != linter_name) {
             switch (linter_name) {
                 case "iverilog":

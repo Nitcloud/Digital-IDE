@@ -29,9 +29,9 @@ var ModelsimLinter = /** @class */ (function (_super) {
     }
     ModelsimLinter.prototype.getConfig = function () {
         //get custom arguments
-        this.modelsimArgs = vscode_1.workspace.getConfiguration().get('verilog.linting.modelsim.arguments');
-        this.modelsimWork = vscode_1.workspace.getConfiguration().get('verilog.linting.modelsim.work');
-        this.runAtFileLocation = vscode_1.workspace.getConfiguration().get('verilog.linting.modelsim.runAtFileLocation');
+        this.modelsimArgs = vscode_1.workspace.getConfiguration().get('HDL.linting.modelsim.arguments');
+        this.modelsimWork = vscode_1.workspace.getConfiguration().get('HDL.linting.modelsim.work');
+        this.runAtFileLocation = vscode_1.workspace.getConfiguration().get('HDL.linting.modelsim.runAtFileLocation');
     };
     ModelsimLinter.prototype.lint = function (doc) {
         var _this = this;

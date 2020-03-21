@@ -123,7 +123,7 @@ export class Ctags {
     execCtags(filepath: string) : Thenable<string> {
         console.log("executing ctags");
 
-        let ctags: string = <string>workspace.getConfiguration().get('verilog.ctags.path');
+        let ctags: string = <string>workspace.getConfiguration().get('HDL.ctags.path');
         let command: string = ctags + ' -f - --fields=+K --sort=no --excmd=n "' + filepath + '"';
         console.log(command);
         this.logger.log(command, Log_Severity.Command)

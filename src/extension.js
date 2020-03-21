@@ -1,3 +1,4 @@
+// @ts-nocheck
 /*
  * #Author       : sterben(Duan)
  * #LastAuthor   : sterben(Duan)
@@ -7,15 +8,7 @@
  * #Description  : 
  */
 'use strict';
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
+
 Object.defineProperty(exports, "__esModule", { value: true });
 
 var vscode   = require("vscode");
@@ -45,7 +38,6 @@ const WorkspaceSymbolProvider_1 = require("./.Providers/providers/WorkspaceSymbo
 
 function activate(context) {
     console.log('Congratulations, your extension "FPGA-Support" is now active!');
-
     // Configure lint manager
     exports.ctagsManager.configure();
     lintManager = new LintManager_1["default"](logger);
@@ -64,21 +56,15 @@ function activate(context) {
     const parser = new parser_1.SystemVerilogParser();
     const indexer = new indexer_1.SystemVerilogIndexer(statusBar, parser, outputChannel);
     // Providers
-    const docProvider = new DocumentSymbolProvider_1.SystemVerilogDocumentSymbolProvider(parser);
-    const symProvider = new WorkspaceSymbolProvider_1.SystemVerilogWorkspaceSymbolProvider(indexer);
-    const defProvider = new DefintionProvider_1.SystemVerilogDefinitionProvider(symProvider);
+    const docProvider   = new DocumentSymbolProvider_1.SystemVerilogDocumentSymbolProvider(parser);
+    const symProvider   = new WorkspaceSymbolProvider_1.SystemVerilogWorkspaceSymbolProvider(indexer);
+    const defProvider   = new DefintionProvider_1.SystemVerilogDefinitionProvider(symProvider);
     const hoverProvider = new HoverProvider_1.SystemVerilogHoverProvider();
-    const moduleInstantiator = new ModuleInstantiator_1.SystemVerilogModuleInstantiator();
     context.subscriptions.push(statusBar);
     context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(selector, docProvider));
     context.subscriptions.push(vscode.languages.registerDefinitionProvider(selector, defProvider));
     context.subscriptions.push(vscode.languages.registerHoverProvider(selector, hoverProvider));
     context.subscriptions.push(vscode.languages.registerWorkspaceSymbolProvider(symProvider));
-    const build_handler = () => { indexer.build_index(); };
-    const instantiate_handler = () => { moduleInstantiator.instantiateModule(); };
-    context.subscriptions.push(vscode.commands.registerCommand('systemverilog.build_index', build_handler));
-    context.subscriptions.push(vscode.commands.registerCommand('systemverilog.auto_instantiate', instantiate_handler));
-    context.subscriptions.push(vscode.commands.registerCommand('systemverilog.compile', compileOpenedDocument));
     // Background processes
     context.subscriptions.push(vscode.workspace.onDidSaveTextDocument((doc) => { indexer.onChange(doc); }));
     context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor((editor) => { indexer.onChange(editor.document); }));
@@ -87,37 +73,7 @@ function activate(context) {
     context.subscriptions.push(watcher.onDidDelete((uri) => { indexer.onDelete(uri); }));
     context.subscriptions.push(watcher.onDidChange((uri) => { indexer.onDelete(uri); }));
     context.subscriptions.push(watcher);
-    /**
-      Sends a notification to the LSP to compile the opened document.
-      Keeps the `Progress` window opened until `extensionLanguageClient.closeWindowProgress` is set to true or
-      the interval iterations count reaches the maximum value.
-      `closeWindowProgress` is updated to true when a notification is sent to the client from LSP.
-    */
-    function compileOpenedDocument() {
-        let document = vscode.window.activeTextEditor.document;
-        if (!document) {
-            vscode.window.showErrorMessage("There is no open document!");
-            return;
-        }
-        closeWindowProgress = false;
-        Promise.resolve(vscode.window.withProgress({
-            location: vscode.ProgressLocation.Notification,
-            title: "SystemVerilog Document compiling...",
-            cancellable: true
-        }, (_progress, token) => __awaiter(this, void 0, void 0, function* () {
-            client.sendNotification("compileOpenedDocument", document.uri.toString());
-            var intervalCount = 0;
-            var interval = setInterval(function () {
-                if (closeWindowProgress || intervalCount > 5) {
-                    clearInterval(interval);
-                }
-                intervalCount++;
-            }, 500);
-        }))).catch((error) => {
-            outputChannel.appendLine(error);
-            vscode.window.showErrorMessage(error);
-        });
-    }
+
     /** Starts the `LanguageClient` */
     // point to the path of the server's module
     let serverModule = context.asAbsolutePath(path.join('src/.Providers', 'server.js'));

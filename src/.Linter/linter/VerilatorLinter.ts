@@ -20,8 +20,8 @@ export default class VerilatorLinter extends BaseLinter {
     }
 
     private getConfig() {
-        this.verilatorArgs = <string>workspace.getConfiguration().get('verilog.linting.verilator.arguments', '');
-        this.runAtFileLocation = <boolean>workspace.getConfiguration().get('verilog.linting.verilator.runAtFileLocation')
+        this.verilatorArgs = <string>workspace.getConfiguration().get('HDL.linting.verilator.arguments', '');
+        this.runAtFileLocation = <boolean>workspace.getConfiguration().get('HDL.linting.verilator.runAtFileLocation')
     }
 
     protected splitTerms(line: string){

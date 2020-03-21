@@ -20,9 +20,9 @@ export default class ModelsimLinter extends BaseLinter {
 
     private getConfig() {
         //get custom arguments
-        this.modelsimArgs = <string>workspace.getConfiguration().get('verilog.linting.modelsim.arguments');
-        this.modelsimWork = <string>workspace.getConfiguration().get('verilog.linting.modelsim.work');
-        this.runAtFileLocation = <boolean>workspace.getConfiguration().get('verilog.linting.modelsim.runAtFileLocation')
+        this.modelsimArgs = <string>workspace.getConfiguration().get('HDL.linting.modelsim.arguments');
+        this.modelsimWork = <string>workspace.getConfiguration().get('HDL.linting.modelsim.work');
+        this.runAtFileLocation = <boolean>workspace.getConfiguration().get('HDL.linting.modelsim.runAtFileLocation')
     }
 
     protected lint(doc: TextDocument) {

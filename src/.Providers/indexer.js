@@ -25,7 +25,7 @@ class SystemVerilogIndexer {
         this.outputChannel = channel;
         this.symbols = new Map();
         const settings = vscode_1.workspace.getConfiguration();
-        if (settings.get('systemverilog.disableIndexing')) {
+        if (settings.get('HDL.disableIndexing')) {
             this.statusbar.text = "SystemVerilog: Indexing disabled on boot";
         }
         else {
@@ -49,9 +49,9 @@ class SystemVerilogIndexer {
             this.symbolsCount = 0;
             this.statusbar.text = "SystemVerilog: Indexing..";
             const settings = vscode_1.workspace.getConfiguration();
-            this.parallelProcessing = settings.get('systemverilog.parallelProcessing');
-            this.forceFastIndexing = settings.get('systemverilog.forceFastIndexing');
-            let exclude = settings.get('systemverilog.excludeIndexing');
+            this.parallelProcessing = settings.get('HDL.parallelProcessing');
+            this.forceFastIndexing = settings.get('HDL.forceFastIndexing');
+            let exclude = settings.get('HDL.excludeIndexing');
             if (exclude == "insert globPattern here") {
                 exclude = undefined;
             }

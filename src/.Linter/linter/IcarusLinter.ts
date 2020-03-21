@@ -18,8 +18,8 @@ export default class IcarusLinter extends BaseLinter {
     }
 
     private getConfig() {
-        this.iverilogArgs = <string>workspace.getConfiguration().get('verilog.linting.iverilog.arguments');
-        this.runAtFileLocation = <boolean>workspace.getConfiguration().get('verilog.linting.iverilog.runAtFileLocation')
+        this.iverilogArgs = <string>workspace.getConfiguration().get('HDL.linting.iverilog.arguments');
+        this.runAtFileLocation = <boolean>workspace.getConfiguration().get('HDL.linting.iverilog.runAtFileLocation')
     }
 
     protected lint(doc: TextDocument) {

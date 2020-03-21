@@ -29,8 +29,8 @@ var IcarusLinter = /** @class */ (function (_super) {
         return _this;
     }
     IcarusLinter.prototype.getConfig = function () {
-        this.iverilogArgs = vscode_1.workspace.getConfiguration().get('verilog.linting.iverilog.arguments');
-        this.runAtFileLocation = vscode_1.workspace.getConfiguration().get('verilog.linting.iverilog.runAtFileLocation');
+        this.iverilogArgs = vscode_1.workspace.getConfiguration().get('HDL.linting.iverilog.arguments');
+        this.runAtFileLocation = vscode_1.workspace.getConfiguration().get('HDL.linting.iverilog.runAtFileLocation');
     };
     IcarusLinter.prototype.lint = function (doc) {
         var _this = this;

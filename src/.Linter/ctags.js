@@ -102,7 +102,7 @@ var Ctags = /** @class */ (function () {
     };
     Ctags.prototype.execCtags = function (filepath) {
         console.log("executing ctags");
-        var ctags = vscode_1.workspace.getConfiguration().get('verilog.ctags.path');
+        var ctags = vscode_1.workspace.getConfiguration().get('HDL.ctags.path');
         var command = ctags + ' -f - --fields=+K --sort=no --excmd=n "' + filepath + '"';
         console.log(command);
         this.logger.log(command, Logger_1.Log_Severity.Command);

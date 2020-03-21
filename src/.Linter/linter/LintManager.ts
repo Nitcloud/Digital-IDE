@@ -26,7 +26,7 @@ export default class LintManager {
 
     configLinter() {
         let linter_name;
-        linter_name = workspace.getConfiguration("verilog.linting").get<string>("linter");
+        linter_name = workspace.getConfiguration("HDL.linting").get<string>("linter");
 
         if (this.linter == null || this.linter.name != linter_name) {
             switch (linter_name) {

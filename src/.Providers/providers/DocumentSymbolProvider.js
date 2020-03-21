@@ -6,7 +6,7 @@ class SystemVerilogDocumentSymbolProvider {
         this.depth = -1;
         this.parser = parser;
         const settings = vscode_1.workspace.getConfiguration();
-        this.precision = settings.get("systemverilog.documentSymbolsPrecision");
+        this.precision = settings.get("HDL.documentSymbolsPrecision");
         if (this.precision != "full") {
             this.depth = 1;
         }

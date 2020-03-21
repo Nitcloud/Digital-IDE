@@ -36,74 +36,143 @@
     "configuration": {
       "title": "HDL configuration",
       "properties": {
-				"verilog.linting.linter": {
-					"scope": "window",
-					"type": "string",
-					"enum": [
-						"xvlog",
-						"iverilog",
-						"verilator",
-						"modelsim",
-						"none"
-					],
-					"default": "none",
-					"description": "Select the verilog linter. Possible values are 'iverilog', 'verilator', xvlog' or 'none'"
-				},
-				"verilog.linting.iverilog.arguments": {
-					"scope": "window",
-					"type": "string",
-					"default": "",
-					"description": "Add Icarus Verilog arguments here (like macros). They will be added to Icarus Verilog while linting (The command \"-t null\" will be added by the linter by default)"
-				},
-				"verilog.linting.iverilog.runAtFileLocation": {
-					"scope": "window",
-					"type": "boolean",
-					"default": false,
-					"description": "If enabled, Icarus Verilog will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
-				},
-				"verilog.linting.modelsim.runAtFileLocation": {
-					"scope": "window",
-					"type": "boolean",
-					"default": false,
-					"description": "If enabled, Modelsim will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
-				},
-				"verilog.linting.modelsim.arguments": {
-					"scope": "window",
-					"type": "string",
-					"default": "",
-					"description": "Add Modelsim arguments here. They will be added to Modelsim while linting."
-				},
-				"verilog.linting.modelsim.work": {
-					"scope": "window",
-					"type": "string",
-					"default": "",
-					"description": "Add Modelsim work library here."
-				},
-				"verilog.linting.verilator.arguments": {
-					"scope": "window",
-					"type": "string",
-					"default": "",
-					"description": "Add Verilator arguments here (like macros). They will be added to Verilator while linting (The command \"--lint-only -I<document folder>\" will be added by the linter by default)"
-				},
-				"verilog.linting.verilator.runAtFileLocation": {
-					"scope": "window",
-					"type": "boolean",
-					"default": false,
-					"description": "If enabled, Verilator will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
-				},
-				"verilog.ctags.path": {
-					"scope": "window",
-					"type": "string",
-					"default": "ctags",
-					"description": "A path to the installation of Universal Ctags"
-				},
-				"verilog.logging.enabled": {
-					"scope": "window",
-					"type": "boolean",
-					"default": false,
-					"description": "Enable logging for this extension"
-				}
-			}
+		"HDL.disableIndexing": {
+			"type": "boolean",
+			"default": false,
+			"description": "Disable the automatic indexing when opening a folder or workspace"
+		},
+		"HDL.parallelProcessing": {
+			"type": "integer",
+			"default": 10,
+			"description": "This is the number of files it should attempt to process in parallel. Processing consist of opening found files and perform matching to find symbols."
+		},
+		"HDL.excludeIndexing": {
+			"type": "string",
+			"default": "insert globPattern here",
+			"description": "Exclude files from indexing by a globPattern"
+		},
+		"HDL.forceFastIndexing": {
+			"type": "boolean",
+			"default": true,
+			"description": "Force indexing to use fast regex parsing"
+		},
+		"HDL.documentSymbolsPrecision": {
+			"type": "string",
+			"enum": [
+				"full",
+				"declaration",
+				"fast"
+			],
+			"default": "full",
+			"description": "The level of detail the parser should look for when looking for symbols"
+		},
+		"HDL.compilerType": {
+			"type": "string",
+			"enum": [
+				"Verilator",
+				"VCS"
+			],
+			"default": "Verilator",
+			"description": "Select the compiler type from the drop down list."
+		},
+		"HDL.launchConfiguration": {
+			"type": "string",
+			"default": "verilator --sv --lint-only --language 1800-2012 --Wall",
+			"description": "Launch command for running the compiler"
+		},
+		"HDL.compileOnSave": {
+			"type": "boolean",
+			"default": false,
+			"description": "Compile SystemVerilog/Verilog files when saved."
+		},
+		"HDL.trace.server": {
+			"type": "string",
+			"enum": [
+				"off",
+				"messages",
+				"verbose"
+			],
+			"default": "off",
+			"description": "Traces the communication between VS Code and the SystemVerilog language server"
+		},
+		"HDL.antlrVerification": {
+			"type": "boolean",
+			"default": false,
+			"description": "Use ANTLR parser to verify text documents when edited."
+		},
+		"HDL.verifyOnOpen": {
+			"type": "boolean",
+			"default": false,
+			"description": "Run ANTLR verification on all files when opened."
+		},
+		"HDL.linting.linter": {
+			"scope": "window",
+			"type": "string",
+			"enum": [
+				"xvlog",
+				"iverilog",
+				"verilator",
+				"modelsim",
+				"none"
+			],
+			"default": "xvlog",
+			"description": "Select the verilog linter. Possible values are 'iverilog', 'verilator', xvlog' or 'none'"
+		},
+		"HDL.linting.iverilog.arguments": {
+			"scope": "window",
+			"type": "string",
+			"default": "",
+			"description": "Add Icarus Verilog arguments here (like macros). They will be added to Icarus Verilog while linting (The command \"-t null\" will be added by the linter by default)"
+		},
+		"HDL.linting.iverilog.runAtFileLocation": {
+			"scope": "window",
+			"type": "boolean",
+			"default": false,
+			"description": "If enabled, Icarus Verilog will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
+		},
+		"HDL.linting.modelsim.runAtFileLocation": {
+			"scope": "window",
+			"type": "boolean",
+			"default": false,
+			"description": "If enabled, Modelsim will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
+		},
+		"HDL.linting.modelsim.arguments": {
+			"scope": "window",
+			"type": "string",
+			"default": "",
+			"description": "Add Modelsim arguments here. They will be added to Modelsim while linting."
+		},
+		"HDL.linting.modelsim.work": {
+			"scope": "window",
+			"type": "string",
+			"default": "",
+			"description": "Add Modelsim work library here."
+		},
+		"HDL.linting.verilator.arguments": {
+			"scope": "window",
+			"type": "string",
+			"default": "",
+			"description": "Add Verilator arguments here (like macros). They will be added to Verilator while linting (The command \"--lint-only -I<document folder>\" will be added by the linter by default)"
+		},
+		"HDL.linting.verilator.runAtFileLocation": {
+			"scope": "window",
+			"type": "boolean",
+			"default": false,
+			"description": "If enabled, Verilator will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
+		},
+		"HDL.ctags.path": {
+			"scope": "window",
+			"type": "string",
+			"default": "ctags",
+			"description": "A path to the installation of Universal Ctags"
+		},
+		"HDL.logging.enabled": {
+			"scope": "window",
+			"type": "boolean",
+			"default": false,
+			"description": "Enable logging for this extension"
+		}
+	  }
     },
     "languages": [
       {
@@ -260,17 +329,25 @@
 				"group": "navigation@8"
 			}
 		]
-	}
+	  }
   },
-	"devDependencies": {
-		"@types/glob": "^7.1.1",
-		"@types/mocha": "^7.0.1",
-		"@types/node": "^12.11.7",
-		"@types/vscode": "^1.42.0",
-		"eslint": "^6.8.0",
-		"glob": "^7.1.6",
-		"mocha": "^7.0.1",
-		"typescript": "^3.7.5",
-		"vscode-test": "^1.3.0"
-	}
+  "scripts": {
+	"vscode:prepublish": "npm run compile",
+	"compile": "npm run antlr4ts_compile && tsc -p ./",
+	"watch": "tsc -watch -p ./",
+	"test": "npm run compile && node ./out/test/runTest.js",
+	"coverage": "nyc npm test",
+	"antlr4ts_compile": "antlr4ts -visitor ./src/.Providers/compiling/ANTLR/grammar/SystemVerilog.g4 -o ./src/compiling/ANTLR/grammar/build"
+  },
+  "devDependencies": {
+	"@types/glob": "^7.1.1",
+	"@types/mocha": "^7.0.1",
+	"@types/node": "^12.11.7",
+	"@types/vscode": "^1.42.0",
+	"eslint": "^6.8.0",
+	"glob": "^7.1.6",
+	"mocha": "^7.0.1",
+	"typescript": "^3.7.5",
+	"vscode-test": "^1.3.0"
+  }
 }
