@@ -115,7 +115,7 @@
 				"modelsim",
 				"none"
 			],
-			"default": "xvlog",
+			"default": "none",
 			"description": "Select the verilog linter. Possible values are 'iverilog', 'verilator', xvlog' or 'none'"
 		},
 		"HDL.linting.iverilog.arguments": {
@@ -330,14 +330,6 @@
 			}
 		]
 	  }
-  },
-  "scripts": {
-	"vscode:prepublish": "npm run compile",
-	"compile": "npm run antlr4ts_compile && tsc -p ./",
-	"watch": "tsc -watch -p ./",
-	"test": "npm run compile && node ./out/test/runTest.js",
-	"coverage": "nyc npm test",
-	"antlr4ts_compile": "antlr4ts -visitor ./src/.Providers/compiling/ANTLR/grammar/SystemVerilog.g4 -o ./src/compiling/ANTLR/grammar/build"
   },
   "devDependencies": {
 	"@types/glob": "^7.1.1",
