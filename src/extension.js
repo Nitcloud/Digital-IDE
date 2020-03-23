@@ -21,22 +21,22 @@ var LintManager_1 = require("./.Linter/linter/LintManager");
 var lintManager;
 exports.ctagsManager = new ctags_1.CtagsManager(logger);
 
-var fs   = require("fs");
+// var fs   = require("fs");
  
-var root = path.dirname(__dirname);
-fs.rename(root+"/modules",root+"/node_modules", function(err){
-	if(err){
-	 throw err;
-	}
-	console.log('done!');
-   })
+// var root = path.dirname(__dirname);
+// fs.rename(root+"/modules",root+"/node_modules", function(err){
+// 	if(err){
+// 	 throw err;
+// 	}
+// 	console.log('done!');
+//    })
 
 
 //the var of the providers
 let client;
 let closeWindowProgress = true;
 
-const vscode_languageclient_1 	= require("vscode-languageclient");
+const vscode_languageclient_1 	= require("../modules/vscode-languageclient");
 const parser_1 					= require("./.Providers/parser");
 const indexer_1 				= require("./.Providers/indexer");
 const HoverProvider_1 			= require("./.Providers/providers/HoverProvider");
@@ -45,7 +45,8 @@ const ModuleInstantiator_1 		= require("./.Providers/providers/ModuleInstantiato
 const DocumentSymbolProvider_1 	= require("./.Providers/providers/DocumentSymbolProvider");
 const WorkspaceSymbolProvider_1 = require("./.Providers/providers/WorkspaceSymbolProvider");
 
-
+const vhdlMode    = require('./vhdlMode');
+const VhdlSuggest = require('./VhdlSuggest');
 
 function activate(context) {
     // Configure lint manager
@@ -128,6 +129,39 @@ function activate(context) {
         });
     });
 
+	//VHDL Language sever
+	ctx.subscriptions.push(vscode.languages.registerCompletionItemProvider(vhdlMode.VHDL_MODE, new VhdlSuggest.VhdlCompletionItemProvider(), '.', '\"'));
+    vscode.languages.setLanguageConfiguration(vhdlMode.VHDL_MODE.language, {
+        indentationRules: {
+            // ^(.*\*/)?\s*\}.*$
+            decreaseIndentPattern: /^end\s+\w*$/,
+            // ^.*\{[^}'']*$
+            increaseIndentPattern: /^.*(begin|then|loop|is)$/
+        },
+        wordPattern: /(-?\d*\.\d\w*)|([^\`\~\!\@\#\%\^\&\*\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g,
+        comments: {
+            lineComment: '--',
+        },
+        brackets: [
+            ['(', ')'],
+        ],
+        __electricCharacterSupport: {
+            brackets: [
+                { tokenType: 'delimiter.curly.ts',  open: '{', close: '}', isElectric: true },
+                { tokenType: 'delimiter.square.ts', open: '[', close: ']', isElectric: true },
+                { tokenType: 'delimiter.paren.ts',  open: '(', close: ')', isElectric: true }
+            ]
+        },
+        __characterPairSupport: {
+            autoClosingPairs: [
+                { open: '(', close: ')' },
+                { open: '`', close: '`', notIn: ['string'] },
+                { open: '"', close: '"', notIn: ['string'] },
+            ]
+        }
+    });
+    if (vscode.window.activeTextEditor) {}
+	
 	//My Cmd
     let instance = vscode.commands.registerCommand('extension.instance', () => {
         let editor = vscode.window.activeTextEditor;
