@@ -1,345 +1,345 @@
 {
-  "name": "fpga-support",
-  "displayName": "FPGA Develop Support",
-  "description": "Language support for TCL&HDL",
-  "publisher": "sterben",
-  "homepage": "https://github.com/Bestduan/fpga_support_plug",
-  "version": "0.1.6",
-  "repository": {
+	"name": "fpga-support",
+	"displayName": "FPGA Develop Support",
+	"description": "Language support for TCL&HDL",
+	"publisher": "sterben",
+	"homepage": "https://github.com/Bestduan/fpga_support_plug",
+	"version": "0.1.6",
+	"repository": {
 		"type": "git",
 		"url": "https://github.com/Bestduan/fpga_support_plug.git"
 	},
 	"bugs": {
 		"url": "https://github.com/Bestduan/fpga_support_plug/issues"
 	},
-  "engines": {
-    "vscode": "^1.42.1"
-  },
-  "categories": [
-    "Extension Packs",
-    "Programming Languages",
-    "Snippets"
-  ],
-  "icon":"images/FPGAs.png",
-  "activationEvents": [
-	  "onLanguage:tcl",
-	  "onLanguage:vhdl",
-	  "onLanguage:verilog",
-	  "onLanguage:systemverilog",
-	  "onCommand:extension.instance",
-	  "onCommand:extension.testbench",
-	  "onCommand:extension.StartFPGA",
-	  "onCommand:extension.OpenGUI"
-  ],
-  "main": "./src/extension",
-  "contributes": {
-    "configuration": {
-      "title": "HDL configuration",
-      "properties": {
-		"HDL.disableIndexing": {
-			"type": "boolean",
-			"default": false,
-			"description": "Disable the automatic indexing when opening a folder or workspace"
-		},
-		"HDL.parallelProcessing": {
-			"type": "integer",
-			"default": 10,
-			"description": "This is the number of files it should attempt to process in parallel. Processing consist of opening found files and perform matching to find symbols."
-		},
-		"HDL.excludeIndexing": {
-			"type": "string",
-			"default": "insert globPattern here",
-			"description": "Exclude files from indexing by a globPattern"
-		},
-		"HDL.forceFastIndexing": {
-			"type": "boolean",
-			"default": true,
-			"description": "Force indexing to use fast regex parsing"
-		},
-		"HDL.documentSymbolsPrecision": {
-			"type": "string",
-			"enum": [
-				"full",
-				"declaration",
-				"fast"
-			],
-			"default": "full",
-			"description": "The level of detail the parser should look for when looking for symbols"
-		},
-		"HDL.compilerType": {
-			"type": "string",
-			"enum": [
-				"Verilator",
-				"VCS"
-			],
-			"default": "Verilator",
-			"description": "Select the compiler type from the drop down list."
-		},
-		"HDL.launchConfiguration": {
-			"type": "string",
-			"default": "verilator --sv --lint-only --language 1800-2012 --Wall",
-			"description": "Launch command for running the compiler"
-		},
-		"HDL.compileOnSave": {
-			"type": "boolean",
-			"default": false,
-			"description": "Compile SystemVerilog/Verilog files when saved."
-		},
-		"HDL.trace.server": {
-			"type": "string",
-			"enum": [
-				"off",
-				"messages",
-				"verbose"
-			],
-			"default": "off",
-			"description": "Traces the communication between VS Code and the SystemVerilog language server"
-		},
-		"HDL.antlrVerification": {
-			"type": "boolean",
-			"default": false,
-			"description": "Use ANTLR parser to verify text documents when edited."
-		},
-		"HDL.verifyOnOpen": {
-			"type": "boolean",
-			"default": false,
-			"description": "Run ANTLR verification on all files when opened."
-		},
-		"HDL.linting.linter": {
-			"scope": "window",
-			"type": "string",
-			"enum": [
-				"xvlog",
-				"iverilog",
-				"verilator",
-				"modelsim",
-				"none"
-			],
-			"default": "xvlog",
-			"description": "Select the verilog linter. Possible values are 'iverilog', 'verilator', xvlog' or 'none'"
-		},
-		"HDL.linting.iverilog.arguments": {
-			"scope": "window",
-			"type": "string",
-			"default": "",
-			"description": "Add Icarus Verilog arguments here (like macros). They will be added to Icarus Verilog while linting (The command \"-t null\" will be added by the linter by default)"
-		},
-		"HDL.linting.iverilog.runAtFileLocation": {
-			"scope": "window",
-			"type": "boolean",
-			"default": false,
-			"description": "If enabled, Icarus Verilog will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
-		},
-		"HDL.linting.modelsim.runAtFileLocation": {
-			"scope": "window",
-			"type": "boolean",
-			"default": false,
-			"description": "If enabled, Modelsim will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
-		},
-		"HDL.linting.modelsim.arguments": {
-			"scope": "window",
-			"type": "string",
-			"default": "",
-			"description": "Add Modelsim arguments here. They will be added to Modelsim while linting."
-		},
-		"HDL.linting.modelsim.work": {
-			"scope": "window",
-			"type": "string",
-			"default": "",
-			"description": "Add Modelsim work library here."
-		},
-		"HDL.linting.verilator.arguments": {
-			"scope": "window",
-			"type": "string",
-			"default": "",
-			"description": "Add Verilator arguments here (like macros). They will be added to Verilator while linting (The command \"--lint-only -I<document folder>\" will be added by the linter by default)"
-		},
-		"HDL.linting.verilator.runAtFileLocation": {
-			"scope": "window",
-			"type": "boolean",
-			"default": false,
-			"description": "If enabled, Verilator will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
-		},
-		"HDL.ctags.path": {
-			"scope": "window",
-			"type": "string",
-			"default": "ctags",
-			"description": "A path to the installation of Universal Ctags"
-		},
-		"HDL.logging.enabled": {
-			"scope": "window",
-			"type": "boolean",
-			"default": false,
-			"description": "Enable logging for this extension"
-		}
-	  }
-    },
-    "languages": [
-      {
-        "id": "tcl",
-        "aliases": [
-          "TCL",
-          "Xilinx Constraints File",
-          "Synopsis Constraints File"
-        ],
-        "extensions": [
-          ".tcl",
-          ".sdc",
-          ".xdc"
-        ],
-        "configuration": "./config/tcl.configuration.json"
-      },
-      {
-        "id": "vhdl",
-        "aliases": [
-          "VHDL",
-          "vhdl"
-        ],
-        "extensions": [
-          ".vhd",
-          ".vhdl",
-          ".vho",
-          ".vht"
-        ],
-        "configuration": "./config/vhdl.configuration.json"
-      },
-      {
-        "id": "verilog",
-        "aliases": [
-          "Verilog",
-          "verilog"
-        ],
-        "extensions": [
-          ".v",
-          ".V",
-          ".vh",
-          ".vl"
-        ],
-        "configuration": "./config/verilog.configuration.json"
-      },
-      {
-        "id": "systemverilog",
-        "aliases": [
-          "System Verilog",
-          "systemverilog"
-        ],
-        "extensions": [
-          ".sv",
-          ".SV"
-        ],
-        "configuration": "./config/systemverilog.configuration.json"
-      }
-    ],
-    "grammars": [
-      {
-        "language": "tcl",
-        "scopeName": "source.tcl",
-        "path": "./syntaxes/tcl.json"
-      },
-      {
-        "language": "vhdl",
-        "scopeName": "source.vhdl",
-        "path": "./syntaxes/vhdl.json"
-      },
-      {
-        "language": "verilog",
-        "scopeName": "source.verilog",
-        "path": "./syntaxes/verilog.json"
-      },
-      {
-        "language": "systemverilog",
-        "scopeName": "source.systemverilog",
-        "path": "./syntaxes/systemverilog.json"
-      }
-    ],
-    "snippets": [
-      {
-        "language": "tcl",
-        "path": "./snippets/tcl.json"
-      },
-      {
-        "language": "vhdl",
-        "path": "./snippets/vhdl.json"
-      },
-      {
-        "language": "verilog",
-        "path": "./snippets/verilog.json"
-      },
-      {
-        "language": "systemverilog",
-        "path": "./snippets/systemverilog.json"
-      }
-    ],
-    "commands": [
-      {
-        "command": "extension.instance",
-        "title": "Instance"
-      },
-      {
-        "command": "extension.testbench",
-        "title": "Testbench"
-      },
-      {
-        "command": "extension.StartFPGA",
-        "title": "StartFPGA"
-      },
-      {
-        "command": "extension.OpenGUI",
-        "title": "OpenGUI"
-	  },
-	  {
-		 "command": "verilog.lint",
-		"title": "Verilog: Rerun lint tool"
-	  }
-    ],
-    "keybindings": [
-      {
-        "command": "extension.StartFPGA",
-        "key": "Alt+z",
-        "mac": "Alt+z",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "extension.OpenGUI",
-        "key": "Alt+a",
-        "mac": "Alt+a",
-        "when": "editorTextFocus"
-      }
+	"engines": {
+		"vscode": "^1.42.1"
+	},
+	"categories": [
+		"Extension Packs",
+		"Programming Languages",
+		"Snippets"
 	],
-	"menus": {
-		"editor/context": [
-			{
-				"when": "editorFocus",
-				"command": "extension.StartFPGA",
-				"group": "navigation@5"
-            },
-            {
-				"when": "editorFocus",
-				"command": "extension.testbench",
-				"group": "navigation@6"
-			},
-			{
-				"when": "editorFocus",
-				"command": "extension.instance",
-				"group": "navigation@7"
-			},
-            {
-				"when": "editorFocus",
-				"command": "extension.OpenGUI",
-				"group": "navigation@8"
+	"icon": "images/FPGAs.png",
+	"activationEvents": [
+		"onLanguage:tcl",
+		"onLanguage:vhdl",
+		"onLanguage:verilog",
+		"onLanguage:systemverilog",
+		"onCommand:extension.instance",
+		"onCommand:extension.testbench",
+		"onCommand:extension.StartFPGA",
+		"onCommand:extension.OpenGUI"
+	],
+	"main": "./src/extension",
+	"contributes": {
+		"configuration": {
+			"title": "HDL configuration",
+			"properties": {
+				"HDL.disableIndexing": {
+					"type": "boolean",
+					"default": false,
+					"description": "Disable the automatic indexing when opening a folder or workspace"
+				},
+				"HDL.parallelProcessing": {
+					"type": "integer",
+					"default": 10,
+					"description": "This is the number of files it should attempt to process in parallel. Processing consist of opening found files and perform matching to find symbols."
+				},
+				"HDL.excludeIndexing": {
+					"type": "string",
+					"default": "insert globPattern here",
+					"description": "Exclude files from indexing by a globPattern"
+				},
+				"HDL.forceFastIndexing": {
+					"type": "boolean",
+					"default": true,
+					"description": "Force indexing to use fast regex parsing"
+				},
+				"HDL.documentSymbolsPrecision": {
+					"type": "string",
+					"enum": [
+						"full",
+						"declaration",
+						"fast"
+					],
+					"default": "full",
+					"description": "The level of detail the parser should look for when looking for symbols"
+				},
+				"HDL.compilerType": {
+					"type": "string",
+					"enum": [
+						"Verilator",
+						"VCS"
+					],
+					"default": "Verilator",
+					"description": "Select the compiler type from the drop down list."
+				},
+				"HDL.launchConfiguration": {
+					"type": "string",
+					"default": "verilator --sv --lint-only --language 1800-2012 --Wall",
+					"description": "Launch command for running the compiler"
+				},
+				"HDL.compileOnSave": {
+					"type": "boolean",
+					"default": false,
+					"description": "Compile SystemVerilog/Verilog files when saved."
+				},
+				"HDL.trace.server": {
+					"type": "string",
+					"enum": [
+						"off",
+						"messages",
+						"verbose"
+					],
+					"default": "off",
+					"description": "Traces the communication between VS Code and the SystemVerilog language server"
+				},
+				"HDL.antlrVerification": {
+					"type": "boolean",
+					"default": false,
+					"description": "Use ANTLR parser to verify text documents when edited."
+				},
+				"HDL.verifyOnOpen": {
+					"type": "boolean",
+					"default": false,
+					"description": "Run ANTLR verification on all files when opened."
+				},
+				"HDL.linting.linter": {
+					"scope": "window",
+					"type": "string",
+					"enum": [
+						"xvlog",
+						"iverilog",
+						"verilator",
+						"modelsim",
+						"none"
+					],
+					"default": "xvlog",
+					"description": "Select the verilog linter. Possible values are 'iverilog', 'verilator', xvlog' or 'none'"
+				},
+				"HDL.linting.iverilog.arguments": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "Add Icarus Verilog arguments here (like macros). They will be added to Icarus Verilog while linting (The command \"-t null\" will be added by the linter by default)"
+				},
+				"HDL.linting.iverilog.runAtFileLocation": {
+					"scope": "window",
+					"type": "boolean",
+					"default": false,
+					"description": "If enabled, Icarus Verilog will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
+				},
+				"HDL.linting.modelsim.runAtFileLocation": {
+					"scope": "window",
+					"type": "boolean",
+					"default": false,
+					"description": "If enabled, Modelsim will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
+				},
+				"HDL.linting.modelsim.arguments": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "Add Modelsim arguments here. They will be added to Modelsim while linting."
+				},
+				"HDL.linting.modelsim.work": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "Add Modelsim work library here."
+				},
+				"HDL.linting.verilator.arguments": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "Add Verilator arguments here (like macros). They will be added to Verilator while linting (The command \"--lint-only -I<document folder>\" will be added by the linter by default)"
+				},
+				"HDL.linting.verilator.runAtFileLocation": {
+					"scope": "window",
+					"type": "boolean",
+					"default": false,
+					"description": "If enabled, Verilator will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
+				},
+				"HDL.ctags.path": {
+					"scope": "window",
+					"type": "string",
+					"default": "ctags",
+					"description": "A path to the installation of Universal Ctags"
+				},
+				"HDL.logging.enabled": {
+					"scope": "window",
+					"type": "boolean",
+					"default": false,
+					"description": "Enable logging for this extension"
+				}
 			}
-		]
-	  }
-  },
-  "devDependencies": {
-	"@types/glob": "^7.1.1",
-	"@types/mocha": "^7.0.1",
-	"@types/node": "^12.11.7",
-	"@types/vscode": "^1.42.0",
-	"eslint": "^6.8.0",
-	"glob": "^7.1.6",
-	"mocha": "^7.0.1",
-	"typescript": "^3.7.5",
-	"vscode-test": "^1.3.0"
-  }
+		},
+		"languages": [
+			{
+				"id": "tcl",
+				"aliases": [
+					"TCL",
+					"Xilinx Constraints File",
+					"Synopsis Constraints File"
+				],
+				"extensions": [
+					".tcl",
+					".sdc",
+					".xdc"
+				],
+				"configuration": "./config/tcl.configuration.json"
+			},
+			{
+				"id": "vhdl",
+				"aliases": [
+					"VHDL",
+					"vhdl"
+				],
+				"extensions": [
+					".vhd",
+					".vhdl",
+					".vho",
+					".vht"
+				],
+				"configuration": "./config/vhdl.configuration.json"
+			},
+			{
+				"id": "verilog",
+				"aliases": [
+					"Verilog",
+					"verilog"
+				],
+				"extensions": [
+					".v",
+					".V",
+					".vh",
+					".vl"
+				],
+				"configuration": "./config/verilog.configuration.json"
+			},
+			{
+				"id": "systemverilog",
+				"aliases": [
+					"System Verilog",
+					"systemverilog"
+				],
+				"extensions": [
+					".sv",
+					".SV"
+				],
+				"configuration": "./config/systemverilog.configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "tcl",
+				"scopeName": "source.tcl",
+				"path": "./syntaxes/tcl.json"
+			},
+			{
+				"language": "vhdl",
+				"scopeName": "source.vhdl",
+				"path": "./syntaxes/vhdl.json"
+			},
+			{
+				"language": "verilog",
+				"scopeName": "source.verilog",
+				"path": "./syntaxes/verilog.json"
+			},
+			{
+				"language": "systemverilog",
+				"scopeName": "source.systemverilog",
+				"path": "./syntaxes/systemverilog.json"
+			}
+		],
+		"snippets": [
+			{
+				"language": "tcl",
+				"path": "./snippets/tcl.json"
+			},
+			{
+				"language": "vhdl",
+				"path": "./snippets/vhdl.json"
+			},
+			{
+				"language": "verilog",
+				"path": "./snippets/verilog.json"
+			},
+			{
+				"language": "systemverilog",
+				"path": "./snippets/systemverilog.json"
+			}
+		],
+		"commands": [
+			{
+				"command": "extension.instance",
+				"title": "Instance"
+			},
+			{
+				"command": "extension.testbench",
+				"title": "Testbench"
+			},
+			{
+				"command": "extension.StartFPGA",
+				"title": "StartFPGA"
+			},
+			{
+				"command": "extension.OpenGUI",
+				"title": "OpenGUI"
+			},
+			{
+				"command": "verilog.lint",
+				"title": "Verilog: Rerun lint tool"
+			}
+		],
+		"keybindings": [
+			{
+				"command": "extension.StartFPGA",
+				"key": "Alt+z",
+				"mac": "Alt+z",
+				"when": "editorTextFocus"
+			},
+			{
+				"command": "extension.OpenGUI",
+				"key": "Alt+a",
+				"mac": "Alt+a",
+				"when": "editorTextFocus"
+			}
+		],
+		"menus": {
+			"editor/context": [
+				{
+					"when": "editorFocus",
+					"command": "extension.StartFPGA",
+					"group": "navigation@5"
+				},
+				{
+					"when": "editorFocus",
+					"command": "extension.testbench",
+					"group": "navigation@6"
+				},
+				{
+					"when": "editorFocus",
+					"command": "extension.instance",
+					"group": "navigation@7"
+				},
+				{
+					"when": "editorFocus",
+					"command": "extension.OpenGUI",
+					"group": "navigation@8"
+				}
+			]
+		}
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.1",
+		"@types/mocha": "^7.0.1",
+		"@types/node": "^12.11.7",
+		"@types/vscode": "^1.42.0",
+		"eslint": "^6.8.0",
+		"glob": "^7.1.6",
+		"mocha": "^7.0.1",
+		"typescript": "^3.7.5",
+		"vscode-test": "^1.3.0"
+	}
 }

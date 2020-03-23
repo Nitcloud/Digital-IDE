@@ -33,10 +33,10 @@ exports.ctagsManager = new ctags_1.CtagsManager(logger);
 
 
 //the var of the providers
-let client;
-let closeWindowProgress = true;
+// let client;
+// let closeWindowProgress = true;
 
-const vscode_languageclient_1 	= require("../modules/vscode-languageclient");
+// const vscode_languageclient_1 	= require("../modules/vscode-languageclient");
 const parser_1 					= require("./.Providers/parser");
 const indexer_1 				= require("./.Providers/indexer");
 const HoverProvider_1 			= require("./.Providers/providers/HoverProvider");
@@ -45,8 +45,8 @@ const ModuleInstantiator_1 		= require("./.Providers/providers/ModuleInstantiato
 const DocumentSymbolProvider_1 	= require("./.Providers/providers/DocumentSymbolProvider");
 const WorkspaceSymbolProvider_1 = require("./.Providers/providers/WorkspaceSymbolProvider");
 
-const vhdlMode    = require('./vhdlMode');
-const VhdlSuggest = require('./VhdlSuggest');
+const vhdlMode    = require('./.Providers/vhdl/vhdlMode');
+const VhdlSuggest = require('./.Providers/vhdl/VhdlSuggest');
 
 function activate(context) {
     // Configure lint manager
@@ -88,49 +88,50 @@ function activate(context) {
 
     /** Starts the `LanguageClient` */
     // point to the path of the server's module
-    let serverModule = context.asAbsolutePath(path.join('src/.Providers', 'server.js'));
+    //let serverModule = context.asAbsolutePath(path.join('src/.Providers', 'server.js'));
     // If the extension is launched in debug mode then the debug server options are used
     // Otherwise the run options are used
     // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
-    let serverOptions = {
-        run: {
-            module: serverModule,
-            transport: vscode_languageclient_1.TransportKind.ipc
-        },
-        debug: {
-            module: serverModule,
-            transport: vscode_languageclient_1.TransportKind.ipc,
-            options: { execArgv: ['--nolazy', '--inspect=6009'] }
-        }
-    };
+    // let serverOptions = {
+    //     run: {
+    //         module: serverModule,
+    //         transport: vscode_languageclient_1.TransportKind.ipc
+    //     },
+    //     debug: {
+    //         module: serverModule,
+    //         transport: vscode_languageclient_1.TransportKind.ipc,
+    //         options: { execArgv: ['--nolazy', '--inspect=6009'] }
+    //     }
+    // };
     // Options to control the language client
-    let clientOptions = {
-        // Register the server for selected documents
-        documentSelector: selector
-        /*
-        synchronize: {
-          // Notify the server about file changes to SystemVerilog/Verilog files contained in the workspace
-          fileEvents: workspace.createFileSystemWatcher(indexer.globPattern)
-        }*/
-    };
-    // Create the language client and start the client.
-    client = new vscode_languageclient_1.LanguageClient('systemverilog', 'System Verilog Language Server', serverOptions, clientOptions);
-    // Start the client. This will also launch the server
-    client.start();
-    client.onReady().then(() => {
-        client.sendNotification("workspaceRootPath", vscode.workspace.workspaceFolders[0].uri.fsPath);
-        /* Update `closeWindowProgress` to true when the client is notified by the server. */
-        client.onNotification("closeWindowProgress", function () {
-            closeWindowProgress = true;
-        });
-        /* Notify the server that the workspace configuration has been changed */
-        vscode.workspace.onDidChangeConfiguration(() => {
-            client.sendNotification("onDidChangeConfiguration");
-        });
-    });
+    // let clientOptions = {
+    //     // Register the server for selected documents
+    //     documentSelector: selector
+    //     /*
+    //     synchronize: {
+    //       // Notify the server about file changes to SystemVerilog/Verilog files contained in the workspace
+    //       fileEvents: workspace.createFileSystemWatcher(indexer.globPattern)
+    //     }*/
+    // };
+	// Create the language client and start the client.
+	
+    // client = new vscode_languageclient_1.LanguageClient('systemverilog', 'System Verilog Language Server', serverOptions, clientOptions);
+    // // Start the client. This will also launch the server
+    // client.start();
+    // client.onReady().then(() => {
+    //     client.sendNotification("workspaceRootPath", vscode.workspace.workspaceFolders[0].uri.fsPath);
+    //     /* Update `closeWindowProgress` to true when the client is notified by the server. */
+    //     client.onNotification("closeWindowProgress", function () {
+    //         closeWindowProgress = true;
+    //     });
+    //     /* Notify the server that the workspace configuration has been changed */
+    //     vscode.workspace.onDidChangeConfiguration(() => {
+    //         client.sendNotification("onDidChangeConfiguration");
+    //     });
+    // });
 
 	//VHDL Language sever
-	ctx.subscriptions.push(vscode.languages.registerCompletionItemProvider(vhdlMode.VHDL_MODE, new VhdlSuggest.VhdlCompletionItemProvider(), '.', '\"'));
+	context.subscriptions.push(vscode.languages.registerCompletionItemProvider(vhdlMode.VHDL_MODE, new VhdlSuggest.VhdlCompletionItemProvider(), '.', '\"'));
     vscode.languages.setLanguageConfiguration(vhdlMode.VHDL_MODE.language, {
         indentationRules: {
             // ^(.*\*/)?\s*\}.*$
