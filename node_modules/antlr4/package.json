@@ -1,0 +1,50 @@
+{
+  "_args": [
+    [
+      "antlr4@4.7.2",
+      "C:\\Users\\eipr\\Desktop\\SystemVerilog"
+    ]
+  ],
+  "_from": "antlr4@4.7.2",
+  "_id": "antlr4@4.7.2",
+  "_inBundle": false,
+  "_integrity": "sha512-vZA1xYufXLe3LX+ja9rIVxjRmILb1x3k7KYZHltRbfJtXjJ1DlFIqt+CbPYmghx0EuzY9DajiDw+MdyEt1qAsQ==",
+  "_location": "/antlr4",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "antlr4@4.7.2",
+    "name": "antlr4",
+    "escapedName": "antlr4",
+    "rawSpec": "4.7.2",
+    "saveSpec": null,
+    "fetchSpec": "4.7.2"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/antlr4/-/antlr4-4.7.2.tgz",
+  "_spec": "4.7.2",
+  "_where": "C:\\Users\\eipr\\Desktop\\SystemVerilog",
+  "bugs": {
+    "url": "https://github.com/antlr/antlr4/issues"
+  },
+  "description": "JavaScript runtime for ANTLR4",
+  "homepage": "https://github.com/antlr/antlr4",
+  "keywords": [
+    "lexer",
+    "parser",
+    "antlr",
+    "antlr4",
+    "grammar"
+  ],
+  "license": "BSD-3-Clause",
+  "main": "src/antlr4/index.js",
+  "name": "antlr4",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/antlr/antlr4.git"
+  },
+  "version": "4.7.2"
+}

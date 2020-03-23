@@ -34,8 +34,8 @@ proc none_add {} {
 	add_file  ./user/src -quiet
 	update_bd ./user/bd/*
 	update_ip ./user/IP/*
-	update_bd ./prj/xilinx/template.src/source_1/bd/*
-	update_ip ./prj/xilinx/template.src/source_1/ip/*
+	update_bd ./prj/xilinx/template.srcs/sources_1/bd/*
+	update_ip ./prj/xilinx/template.srcs/sources_1/ip/*
 	#set top
 	add_file ./user/TOP.v -quiet
 	set_property top TOP [current_fileset]
@@ -50,8 +50,8 @@ proc soc_add {} {
 	add_file  ./user/Hardware/src -quiet
 	update_bd ./user/Hardware/bd/*
 	update_ip ./user/Hardware/IP/*
-	update_bd ./prj/xilinx/template.src/source_1/bd/*
-	update_ip ./prj/xilinx/template.src/source_1/ip/*
+	update_bd ./prj/xilinx/template.srcs/sources_1/bd/*
+	update_ip ./prj/xilinx/template.srcs/sources_1/ip/*
 	#set top
 	add_file ./user/Hardware/TOP.v -quiet
 	set_property top TOP [current_fileset]
@@ -81,7 +81,7 @@ while { [gets $fp config_data] >= 0 } \
 			switch $config_data \
             {
 				cortexM3 \
-                {
+				{
 					cortexM3_IP_add $xilinx_path
 				}
 				default {}
