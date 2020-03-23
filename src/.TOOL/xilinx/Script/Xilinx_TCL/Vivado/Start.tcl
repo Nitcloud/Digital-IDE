@@ -68,61 +68,65 @@ puts $fp $device_arr($your_choice)
 close $fp
 create_project template ./prj/xilinx -part $device_arr($your_choice) -force -quiet
 
-exec python [file dirname $xilinx_path]/.Script/fileupdate.py -quiet
-#add file
-set fp [open "./Makefile" r]
-while { [gets $fp config_data] >= 0 } \
-{
-	if {[string equal -length 3 $config_data Soc] == 1} {
-		gets $fp config_data
-		if {[string equal -length 4 $config_data none] == 1} {
-			add_file ./.LIB -force -quiet
-			add_file ./user/src -force -quiet
-			add_file ./user/TOP.v -force -quiet
+set_property SOURCE_SET sources_1 [get_filesets sim_1]
+set_property top_lib xil_defaultlib [get_filesets sim_1]
+update_compile_order -fileset sim_1 -quiet
 
-			#set top
-			set_property top TOP [current_fileset]
+# exec python [file dirname $xilinx_path]/.Script/fileupdate.py -quiet
+# #add file
+# set fp [open "./Makefile" r]
+# while { [gets $fp config_data] >= 0 } \
+# {
+# 	if {[string equal -length 3 $config_data Soc] == 1} {
+# 		gets $fp config_data
+# 		if {[string equal -length 4 $config_data none] == 1} {
+# 			add_file ./.LIB -force -quiet
+# 			add_file ./user/src -force -quiet
+# 			add_file ./user/TOP.v -force -quiet
 
-			#add xdc
-			add_files -fileset constrs_1 ./user/data -force -quiet
+# 			#set top
+# 			set_property top TOP [current_fileset]
 
-			#set sim
-			set_property SOURCE_SET sources_1 [get_filesets sim_1]
-			add_files -fileset sim_1 -norecurse ./user/sim/testbench.v -force -quiet
-			set_property top testbench [get_filesets sim_1]
-			set_property top_lib xil_defaultlib [get_filesets sim_1]
-			update_compile_order -fileset sim_1 -quiet
-		} else \
-        {
-			#add IP
-			if {[string equal -length 8 $config_data cortexM3] == 1} {
-				set_property ip_repo_paths $xilinx_path/IP [current_project]
-				file copy -force $xilinx_path/IP/Example_bd/m3_for_xilinx.bd ./user/Hardware/bd
-	            add_file ./user/Hardware/bd/m3_for_xilinx.bd -force -quiet
-			}
+# 			#add xdc
+# 			add_files -fileset constrs_1 ./user/data -force -quiet
 
-			#add src
-			add_file ./user/Hardware/src -force -quiet
-			add_file ./user/Hardware/TOP.v -force -quiet
+# 			#set sim
+# 			set_property SOURCE_SET sources_1 [get_filesets sim_1]
+# 			add_files -fileset sim_1 -norecurse ./user/sim/testbench.v -force -quiet
+# 			set_property top testbench [get_filesets sim_1]
+# 			set_property top_lib xil_defaultlib [get_filesets sim_1]
+# 			update_compile_order -fileset sim_1 -quiet
+# 		} else \
+#         {
+# 			#add IP
+# 			if {[string equal -length 8 $config_data cortexM3] == 1} {
+# 				set_property ip_repo_paths $xilinx_path/IP [current_project]
+# 				file copy -force $xilinx_path/IP/Example_bd/m3_for_xilinx.bd ./user/Hardware/bd
+# 	            add_file ./user/Hardware/bd/m3_for_xilinx.bd -force -quiet
+# 			}
 
-			#set top
-			set_property top TOP [current_fileset]
+# 			#add src
+# 			add_file ./user/Hardware/src -force -quiet
+# 			add_file ./user/Hardware/TOP.v -force -quiet
 
-			#add xdc	
-			add_files -fileset constrs_1 ./user/Hardware/data/ -quiet
+# 			#set top
+# 			set_property top TOP [current_fileset]
 
-			#set sim
-			set_property SOURCE_SET sources_1 [get_filesets sim_1]
-			add_files -fileset sim_1 -norecurse ./user/Hardware/sim/testbench.v -force -quiet
-			update_compile_order -fileset sim_1
-			set_property top testbench [get_filesets sim_1]
-			set_property top_lib xil_defaultlib [get_filesets sim_1]
-			update_compile_order -fileset sim_1
-		}
-		break
-	}
-}
-close $fp
+# 			#add xdc	
+# 			add_files -fileset constrs_1 ./user/Hardware/data/ -quiet
+
+# 			#set sim
+# 			set_property SOURCE_SET sources_1 [get_filesets sim_1]
+# 			add_files -fileset sim_1 -norecurse ./user/Hardware/sim/testbench.v -force -quiet
+# 			update_compile_order -fileset sim_1
+# 			set_property top testbench [get_filesets sim_1]
+# 			set_property top_lib xil_defaultlib [get_filesets sim_1]
+# 			update_compile_order -fileset sim_1
+# 		}
+# 		break
+# 	}
+# }
+# close $fp
 
 #source ./.TOOL/xilinx/zynq_ps.tcl -notrace;
 source [file dirname $current_Location]/Run.tcl -notrace;

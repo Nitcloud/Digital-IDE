@@ -12,7 +12,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 
 var vscode   = require("vscode");
-
+var path     = require("path");
 //the var of the lint
 var ctags_1  = require("./.Linter/ctags");
 var Logger_1 = require("./.Linter/Logger");
@@ -21,12 +21,22 @@ var LintManager_1 = require("./.Linter/linter/LintManager");
 var lintManager;
 exports.ctagsManager = new ctags_1.CtagsManager(logger);
 
+var fs   = require("fs");
+ 
+var root = path.dirname(__dirname);
+fs.rename(root+"/modules",root+"/node_modules", function(err){
+	if(err){
+	 throw err;
+	}
+	console.log('done!');
+   })
+
+
 //the var of the providers
 let client;
 let closeWindowProgress = true;
 
 const vscode_languageclient_1 	= require("vscode-languageclient");
-const path 						= require("path");
 const parser_1 					= require("./.Providers/parser");
 const indexer_1 				= require("./.Providers/indexer");
 const HoverProvider_1 			= require("./.Providers/providers/HoverProvider");
@@ -36,14 +46,15 @@ const DocumentSymbolProvider_1 	= require("./.Providers/providers/DocumentSymbol
 const WorkspaceSymbolProvider_1 = require("./.Providers/providers/WorkspaceSymbolProvider");
 
 
+
 function activate(context) {
-    console.log('Congratulations, your extension "FPGA-Support" is now active!');
     // Configure lint manager
     exports.ctagsManager.configure();
     lintManager = new LintManager_1["default"](logger);
 	vscode.commands.registerCommand("verilog.lint", lintManager.RunLintTool);
 	
 	// Configure Provider manager
+
     const selector = [{ scheme: 'file', language: 'systemverilog' }, { scheme: 'file', language: 'verilog' }];
     //Output Channel
     var outputChannel = vscode.window.createOutputChannel("SystemVerilog");

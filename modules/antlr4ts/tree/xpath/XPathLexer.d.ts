@@ -1,0 +1,36 @@
+import { ATN } from "../../atn/ATN";
+import { CharStream } from "../../CharStream";
+import { Lexer } from "../../Lexer";
+import { RuleContext } from "../../RuleContext";
+import { Vocabulary } from "../../Vocabulary";
+export declare class XPathLexer extends Lexer {
+    static readonly TOKEN_REF: number;
+    static readonly RULE_REF: number;
+    static readonly ANYWHERE: number;
+    static readonly ROOT: number;
+    static readonly WILDCARD: number;
+    static readonly BANG: number;
+    static readonly ID: number;
+    static readonly STRING: number;
+    static readonly channelNames: string[];
+    static readonly modeNames: string[];
+    static readonly ruleNames: string[];
+    private static readonly _LITERAL_NAMES;
+    private static readonly _SYMBOLIC_NAMES;
+    static readonly VOCABULARY: Vocabulary;
+    readonly vocabulary: Vocabulary;
+    constructor(input: CharStream);
+    readonly grammarFileName: string;
+    readonly ruleNames: string[];
+    readonly serializedATN: string;
+    readonly channelNames: string[];
+    readonly modeNames: string[];
+    action(_localctx: RuleContext, ruleIndex: number, actionIndex: number): void;
+    private ID_action(_localctx, actionIndex);
+    private static readonly _serializedATNSegments;
+    private static readonly _serializedATNSegment0;
+    private static readonly _serializedATNSegment1;
+    static readonly _serializedATN: string;
+    static __ATN: ATN;
+    static readonly _ATN: ATN;
+}

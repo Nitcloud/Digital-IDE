@@ -22,14 +22,14 @@
   ],
   "icon":"images/FPGAs.png",
   "activationEvents": [
-    "onLanguage:tcl",
-    "onLanguage:vhdl",
-    "onLanguage:verilog",
-    "onLanguage:systemverilog",
-    "onCommand:extension.instance",
-    "onCommand:extension.testbench",
-    "onCommand:extension.StartFPGA",
-    "onCommand:extension.OpenGUI"
+	  "onLanguage:tcl",
+	  "onLanguage:vhdl",
+	  "onLanguage:verilog",
+	  "onLanguage:systemverilog",
+	  "onCommand:extension.instance",
+	  "onCommand:extension.testbench",
+	  "onCommand:extension.StartFPGA",
+	  "onCommand:extension.OpenGUI"
   ],
   "main": "./src/extension",
   "contributes": {
@@ -286,7 +286,7 @@
       {
         "command": "extension.OpenGUI",
         "title": "OpenGUI"
-      },
+	  },
 	  {
 		 "command": "verilog.lint",
 		"title": "Verilog: Rerun lint tool"
@@ -331,7 +331,6 @@
 		]
 	  }
   },
-
   "devDependencies": {
 	"@types/glob": "^7.1.1",
 	"@types/mocha": "^7.0.1",
