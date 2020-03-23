@@ -2,10 +2,8 @@
   "design": {
     "design_info": {
       "boundary_crc": "0x1CBED0B5287DFD82",
-      "device": "xc7z020clg400-2",
       "name": "m3_for_xilinx",
       "synth_flow_mode": "None",
-      "tool_version": "2018.3",
       "validated": "true"
     },
     "design_tree": {

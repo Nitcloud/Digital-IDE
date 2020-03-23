@@ -102,7 +102,7 @@ It needs **python3** **vivado** environment.
 
 Use the following settings to configure the extension to your needs
 
-* `verilog.linting.linter` (Default: `none`)
+* `HDL.linting.linter` (Default: `none`)
 
 Choose the linter for you. Possible values are
 
