@@ -1,6 +1,6 @@
 set_param general.maxThreads 6
 variable current_Location [file normalize [info script]]
-
+set xilinx_path [file dirname [file dirname [file dirname [file dirname $current_Location]]]]
 # unset ::env(PYTHONPATH)
 # unset ::env(PYTHONHOME)
 
@@ -35,18 +35,18 @@ reset_run synth_1 -quiet
 launch_run synth_1 -quiet
 wait_on_run synth_1 -quiet
 if {$showlog == 1} {
-	exec python [file dirname $current_Location]/Script/showlog.py -quiet
+	exec python $xilinx_path/Script/Python/showlog.py -quiet
 }
-exec python [file dirname $current_Location]/Script/Log.py -quiet
+exec python $xilinx_path/Script/Python/Log.py -quiet
 write_checkpoint -force ./prj/xilinx/template.runs/synth_1/TOP.dcp -quiet
 #run impl
 reset_run impl_1 -quiet
 launch_run impl_1 -quiet
 wait_on_run impl_1 -quiet
 if {$showlog == 1} {
-	exec python [file dirname $current_Location]/Script/showlog.py -quiet
+	exec python $xilinx_path/Script/Python/showlog.py -quiet
 }
-exec python [file dirname $current_Location]/Script/Log.py -quiet
+exec python $xilinx_path/Script/Python/Log.py -quiet
 open_run impl_1 -quiet
 report_timing_summary -quiet
 
@@ -58,5 +58,5 @@ if {$found == 0} {
 
 if {$found == 1} {
 	write_bitstream ./[current_project].bit -force -quiet
-    exec bootgen -arch zynq -image [file dirname $current_Location]/BOOT/output.bif -o ./BOOT.bin -w on
+    exec bootgen -arch zynq -image $xilinx_path/BOOT/output.bif -o ./BOOT.bin -w on
 } 
