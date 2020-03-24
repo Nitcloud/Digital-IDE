@@ -24,6 +24,18 @@
 
 * 包含了**cortexM3**的xilinx IP，方便Soc的快速开发。
 
+-----
+
+0.1.6 加入对IP设计和bd设计的支持，加入模块跳转(`Alt+F12`或`F12`)，更改启动快捷键，修复部分bug增强鲁棒性。
+
+0.1.4 修改0.1.3存在的BUG，0.1.3版本无法新建工程设计失误，请见谅，本插件对IP开发还不完善，因此在本版本中删除bd设计，之后如果需要bd或者IP设计请直接双击*.xpr工程文件打开进行设计
+
+0.1.2 新增Soc的cortexM3的xilinx IP,并且给出示例m3_for_xilinx.bd，修改文件结构转换问题。
+
+0.0.2 新增testbench/instance功能。
+
+-----
+
 ## START GIF
 
 * 启动界面
@@ -45,7 +57,8 @@ It needs **python3** **vivado** environment.
 * `./SDK/2018.3/bin`
 * `./Microsoft VS Code/bin`
 
-最后要求安装python，并且请在安装过程中请选择自动添加到环境变量。需要自动编写testbench的还需安装chardet包，安装方式**pip install chardet**。
+最后要求安装python，并且请在安装过程中请选择自动添加到环境变量，以及安装pip工具。如果需要自动编写testbench以及instance功能的还需安装chardet包。
+安装方式**pip install chardet**。
 
 检测配置成功的方式：在shell中输入**xsct**、**vivado -version**、**python**、**code** 均能执行即为成功
 
@@ -88,13 +101,15 @@ It needs **python3** **vivado** environment.
 
 * 3、Build功能，完成综合，布局布线，你可以在Makefile下的**Showlog**里选择实时显示综合布线的日志。当出错的时候会自动跳出错误日志，在设置时如果出现**[CRITICAL WARNING]**时也会跳出，如果正常生成bit和bin文件啧可以忽略。
 
-注：bin文件的生成是附带的，和bit一起在工程根目录下，当器件为zynq时生成的bin是可以直接固化的，因为我自制了fsbl.elf和ps_test.elf用于生成可固化的bin，我的fsbl是按照microphase的板子来设计的，他的SD0的IO是MIO40~MIO45，QSPI是MIO1~MIO6，如果相同估计就可以直接用了，如果不相同就需要你自己生成fsbl.elf和ps_test.elf，放到./user/BOOT下，注意名称要一直，插件会自动生成output.bif从而生成对应的可固化的bin文件。
+注：bin文件的生成是附带的，和bit一起在工程根目录下，当器件为zynq时生成的bin是可以直接固化的，因为我自制了fsbl.elf和ps_test.elf用于生成可固化的bin，我的fsbl是按照microphase的板子来设计的，他的SD0的IO是MIO40-MIO45，QSPI是MIO1-MIO6，如果相同估计就可以直接用了，如果不相同就需要你自己生成fsbl.elf和ps_test.elf，放到./user/BOOT下，注意名称要一直，插件会自动生成output.bif从而生成对应的可固化的bin文件。
 
 * 4、Program功能，一键下载，只是下载，固化功能后续补上，不过有zynq的bin文件直接下载到SD卡上插入即可固化。
 
 * 5、GUI功能，如果需要IP设计，sim时序仿真或者bd设计选择**5) GUI**,之后就会自动打开图形界面。
 
 注：打开GUI后，打开对应工程的vscode，以及对应的startfpga运行终端不能关闭，关闭后GUI会自动关闭
+
+* 6、在0.1.6版本中添加了对IP和bd设计的支持，具体设计还是打开GUI进行设计，重点在关闭工程后插件会自动将prj下的IP和bd设计内容剪贴到user下方便移植，此外如果需要从其他工程移植IP和bd设计只需将其设计内容复制到user下对应的IP和bd文件夹下再选择update即可。
 
 -----
 
@@ -115,12 +130,6 @@ Choose the linter for you. Possible values are
 note：由于之前已经添加vivado的路径到环境变量所以建议这里选择xvlog。
 
 -----
-
-0.0.2 新增testbench/instance功能。
-
-0.1.2 新增Soc的cortexM3的xilinx IP,并且给出示例m3_for_xilinx.bd，修改文件结构转换问题。
-
-0.1.4 修改0.1.3存在的BUG，0.1.3版本无法新建工程设计失误，请见谅，本插件对IP开发还不完善，因此在本版本中删除bd设计，之后如果需要bd或者IP设计请直接双击*.xpr工程文件打开进行设计
 
 ## Thanks
 

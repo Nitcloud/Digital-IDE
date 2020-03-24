@@ -140,16 +140,6 @@ function activate(context) {
         ter1.sendText(`python ${__dirname}/.TOOL/.Script/start.py`);
     });
     context.subscriptions.push(startfpga);
-    let OpenGUI = vscode.commands.registerCommand('extension.OpenGUI', () => {
-        let editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            return;
-        }
-        let ter1 = vscode.window.createTerminal({ name: 'OpenGUI' });
-        ter1.show(true);
-        ter1.sendText(`python ${__dirname}/.TOOL/.Script/start.py`);
-    });
-    context.subscriptions.push(OpenGUI);
 }
 exports.activate = activate;
 
