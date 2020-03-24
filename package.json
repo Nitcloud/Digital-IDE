@@ -66,45 +66,6 @@
 					"default": "full",
 					"description": "The level of detail the parser should look for when looking for symbols"
 				},
-				"HDL.compilerType": {
-					"type": "string",
-					"enum": [
-						"Verilator",
-						"VCS"
-					],
-					"default": "Verilator",
-					"description": "Select the compiler type from the drop down list."
-				},
-				"HDL.launchConfiguration": {
-					"type": "string",
-					"default": "verilator --sv --lint-only --language 1800-2012 --Wall",
-					"description": "Launch command for running the compiler"
-				},
-				"HDL.compileOnSave": {
-					"type": "boolean",
-					"default": false,
-					"description": "Compile SystemVerilog/Verilog files when saved."
-				},
-				"HDL.trace.server": {
-					"type": "string",
-					"enum": [
-						"off",
-						"messages",
-						"verbose"
-					],
-					"default": "off",
-					"description": "Traces the communication between VS Code and the SystemVerilog language server"
-				},
-				"HDL.antlrVerification": {
-					"type": "boolean",
-					"default": false,
-					"description": "Use ANTLR parser to verify text documents when edited."
-				},
-				"HDL.verifyOnOpen": {
-					"type": "boolean",
-					"default": false,
-					"description": "Run ANTLR verification on all files when opened."
-				},
 				"HDL.linting.linter": {
 					"scope": "window",
 					"type": "string",

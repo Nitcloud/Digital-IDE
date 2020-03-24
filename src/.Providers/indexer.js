@@ -26,7 +26,7 @@ class SystemVerilogIndexer {
         this.symbols = new Map();
         const settings = vscode_1.workspace.getConfiguration();
         if (settings.get('HDL.disableIndexing')) {
-            this.statusbar.text = "SystemVerilog: Indexing disabled on boot";
+            this.statusbar.text = "HDL: Indexing disabled on boot";
         }
         else {
             this.build_index().then(() => {
@@ -47,7 +47,7 @@ class SystemVerilogIndexer {
             var cancelled = false;
             this.building = true;
             this.symbolsCount = 0;
-            this.statusbar.text = "SystemVerilog: Indexing..";
+            this.statusbar.text = "HDL: Indexing..";
             const settings = vscode_1.workspace.getConfiguration();
             this.parallelProcessing = settings.get('HDL.parallelProcessing');
             this.forceFastIndexing = settings.get('HDL.forceFastIndexing');
@@ -57,7 +57,7 @@ class SystemVerilogIndexer {
             }
             return yield vscode_1.window.withProgress({
                 location: vscode_1.ProgressLocation.Notification,
-                title: "SystemVerilog Indexing...",
+                title: "HDL Indexing...",
                 cancellable: true
             }, (_progress, token) => __awaiter(this, void 0, void 0, function* () {
                 this.symbols = new Map();
@@ -77,10 +77,10 @@ class SystemVerilogIndexer {
                 this.building = false;
                 console.timeEnd('build_index');
                 if (cancelled) {
-                    this.statusbar.text = "SystemVerilog: Indexing cancelled";
+                    this.statusbar.text = "HDL: Indexing cancelled";
                 }
                 else {
-                    this.statusbar.text = 'SystemVerilog: ' + this.symbolsCount + ' indexed objects';
+                    this.statusbar.text = 'HDL: ' + this.symbolsCount + ' indexed objects';
                 }
             });
         });
@@ -115,11 +115,11 @@ class SystemVerilogIndexer {
                     }
                     this.symbols.set(uri.fsPath, output);
                     if (total_files == 0) { // If total files is 0, it is being used onChange
-                        this.statusbar.text = 'SystemVerilog: ' + this.symbolsCount + ' indexed objects';
+                        this.statusbar.text = 'HDL: ' + this.symbolsCount + ' indexed objects';
                     }
                 }
             }).catch((error) => {
-                this.outputChannel.appendLine("SystemVerilog: Indexing: Unable to process file: " + uri.toString());
+                this.outputChannel.appendLine("HDL: Indexing: Unable to process file: " + uri.toString());
                 this.outputChannel.appendLine(error);
                 if (this.symbols.has(uri.fsPath)) {
                     this.symbolsCount -= this.symbols.get(uri.fsPath).length;
