@@ -12,50 +12,55 @@
 
 import os
 import re
+import sys
 import glob 
 import shutil
 import linecache
 
 def showlog(path):
-	log_flag = 0
-	f_build = open(os.path.join(path,"Build.log"), 'w')
+	xlog_flag = 0
+	# if type == "sim":
+	# 	path = "./prj/xilinx/template.sim/sim_1/behav/xsim"
+	# 	f_log = open(os.path.join(path,"Sim.log"), 'w')
 
-	folder = os.path.exists(os.path.join(path,"synth_1/runme.log"))
-	if folder:                  
-		f_synth = open(os.path.join(path,"synth_1/runme.log"), 'r')
-		synth_line = f_synth.readline()
-		while synth_line:
-			if re.match("ERROR:", synth_line)  :
-				f_build.write(synth_line)
-				log_flag = 1
-			if re.match("CRITICAL WARNING:", synth_line) :
-				f_build.write(synth_line)
-				log_flag = 1
-			synth_line = f_synth.readline()
-		f_synth.close()
-
-	folder = os.path.exists(os.path.join(path,"impl_1/runme.log"))
-	if folder: 
-		f_impl = open(os.path.join(path,"impl_1/runme.log"), 'r')
-		impl_line = f_impl.readline()
-		while impl_line:
-			if re.match("ERROR:", impl_line) :
-				f_build.write(impl_line)
-				log_flag = 1
-			if re.match("CRITICAL WARNING:", impl_line) :
-				f_build.write(impl_line)
-				log_flag = 1
-			impl_line = f_impl.readline()
-		f_impl.close()
-
-	f_build.close()
-	return log_flag
-
+	f_log = open("./prj/xilinx/LOG.log", 'w')
+	folder = os.path.exists(path)
+	if folder:
+		f_xlog = open(path, 'r')
+	log_line = f_xlog.readline()
+	while log_line:
+		if re.match("ERROR:", log_line)  :
+			f_log.write(log_line)
+			xlog_flag = 1
+		if re.match("CRITICAL WARNING:", log_line) :
+			f_log.write(log_line)
+			xlog_flag = 1
+		log_line = f_xlog.readline()
+	f_log.close()
+	f_xlog.close()
+	return xlog_flag
 
 def main():
-	if showlog("./prj/xilinx/template.runs") :
-		os.system("code ./prj/xilinx/template.runs/Build.log")
-	os.system("cls")
+	log_flag = 0
+	if sys.argv[1] == "synth":
+		if showlog("./prj/xilinx/template.runs/synth_1/runme.log") :
+			os.system("code ./prj/xilinx/LOG.log")
+			log_flag = 1
+	elif sys.argv[1] == "impl":
+		if showlog("./prj/xilinx/template.runs/impl_1/runme.log") :
+			os.system("code ./prj/xilinx/LOG.log")
+			log_flag = 1
+	elif sys.argv[1] == "sim":
+		if showlog("./prj/xilinx/template.sim/sim_1/behav/xsim/xvlog.log") :
+			os.system("code ./prj/xilinx/LOG.log")
+			log_flag = 1
+		if showlog("./prj/xilinx/template.sim/sim_1/behav/xsim/elaborate.log") :
+			os.system("code ./prj/xilinx/LOG.log")
+			log_flag = 1
+	if log_flag == 1:
+		print("error")
+	elif log_flag == 0:
+		print("none")
 
 if __name__ == "__main__":
     main()

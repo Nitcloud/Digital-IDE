@@ -37,26 +37,32 @@ wait_on_run synth_1 -quiet
 if {$showlog == 1} {
 	exec python $xilinx_path/Script/Python/showlog.py -quiet
 }
-exec python $xilinx_path/Script/Python/Log.py -quiet
-write_checkpoint -force ./prj/xilinx/template.runs/synth_1/TOP.dcp -quiet
-#run impl
-reset_run impl_1 -quiet
-launch_run impl_1 -quiet
-wait_on_run impl_1 -quiet
-if {$showlog == 1} {
-	exec python $xilinx_path/Script/Python/showlog.py -quiet
+
+set snyth_state [exec python $xilinx_path/Script/Python/Log.py synth]
+if {$snyth_state == "none"} {
+	write_checkpoint -force ./prj/xilinx/template.runs/synth_1/TOP.dcp -quiet
+	#run impl
+	reset_run impl_1 -quiet
+	launch_run impl_1 -quiet
+	wait_on_run impl_1 -quiet
+	if {$showlog == 1} {
+		exec python $xilinx_path/Script/Python/showlog.py -quiet
+	}
 }
-exec python $xilinx_path/Script/Python/Log.py -quiet
-open_run impl_1 -quiet
-report_timing_summary -quiet
 
-write_checkpoint -force ./prj/xilinx/template.runs/impl_1/TOP_routed.dcp -quiet
-#Gen boot
-if {$found == 0} {
-	write_bitstream ./[current_project].bit -force -quiet -bin_file
-} 
+set impl_state [exec python $xilinx_path/Script/Python/Log.py impl]
+if {$impl_state == "none"} {
+	open_run impl_1 -quiet
+	report_timing_summary -quiet
 
-if {$found == 1} {
-	write_bitstream ./[current_project].bit -force -quiet
-    exec bootgen -arch zynq -image $xilinx_path/BOOT/output.bif -o ./BOOT.bin -w on
-} 
+	write_checkpoint -force ./prj/xilinx/template.runs/impl_1/TOP_routed.dcp -quiet
+	#Gen boot
+	if {$found == 0} {
+		write_bitstream ./[current_project].bit -force -quiet -bin_file
+	} 
+
+	if {$found == 1} {
+		write_bitstream ./[current_project].bit -force -quiet
+		exec bootgen -arch zynq -image $xilinx_path/BOOT/output.bif -o ./BOOT.bin -w on
+	} 
+}
