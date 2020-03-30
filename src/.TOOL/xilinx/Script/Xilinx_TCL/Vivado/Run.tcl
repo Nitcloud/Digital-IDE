@@ -5,7 +5,6 @@ set update  "[file dirname $current_Location]/Update.tcl"
 set build   "[file dirname $current_Location]/Build.tcl"
 set program "[file dirname $current_Location]/Program.tcl"
 set debug   "[file dirname $current_Location]/Debug.tcl"
-set sim     "[file dirname $current_Location]/Simulation.tcl"
 
 open_project ./prj/Xilinx/template.xpr -quiet
 
@@ -18,8 +17,8 @@ while {1} \
     puts "2) Build"
     puts "3) program"
     puts "4) Debug"
-    puts "5) Simulation"
-    puts "6) GUI"
+    puts "5) GUI"
+    puts "6) exit"
     gets stdin your_choice;
 	switch $your_choice \
     {
@@ -27,9 +26,8 @@ while {1} \
         2 {source $build   -notrace;}
         3 {source $program -notrace;}
 		4 {source $debug   -notrace;}
-		5 {source $sim     -notrace;}
-		6 {break;}
-		e {exit 1;}
+		5 {break;}
+		6 {exit 1;}
 		default {puts "please input right choice"}
     }
 }

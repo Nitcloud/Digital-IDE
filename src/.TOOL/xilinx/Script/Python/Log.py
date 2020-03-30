@@ -19,10 +19,6 @@ import linecache
 
 def showlog(path):
 	xlog_flag = 0
-	# if type == "sim":
-	# 	path = "./prj/xilinx/template.sim/sim_1/behav/xsim"
-	# 	f_log = open(os.path.join(path,"Sim.log"), 'w')
-
 	f_log = open("./prj/xilinx/LOG.log", 'w')
 	folder = os.path.exists(path)
 	if folder:
@@ -48,13 +44,6 @@ def main():
 			log_flag = 1
 	elif sys.argv[1] == "impl":
 		if showlog("./prj/xilinx/template.runs/impl_1/runme.log") :
-			os.system("code ./prj/xilinx/LOG.log")
-			log_flag = 1
-	elif sys.argv[1] == "sim":
-		if showlog("./prj/xilinx/template.sim/sim_1/behav/xsim/xvlog.log") :
-			os.system("code ./prj/xilinx/LOG.log")
-			log_flag = 1
-		if showlog("./prj/xilinx/template.sim/sim_1/behav/xsim/elaborate.log") :
 			os.system("code ./prj/xilinx/LOG.log")
 			log_flag = 1
 	if log_flag == 1:
