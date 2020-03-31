@@ -68,7 +68,7 @@ def Open_prj():
 
 def mkconfig(path) :
 	fileupdate.mkdir("./prj/xilinx")
-	fileupdate.mkdir("./prj/alter")
+	fileupdate.mkdir("./prj/intel")
 	fileupdate.mkdir("./prj/modelsim")
 	folder = os.path.exists(path)
 	if not folder:

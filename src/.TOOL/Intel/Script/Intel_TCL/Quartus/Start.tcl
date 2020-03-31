@@ -1,14 +1,13 @@
-set_param general.maxThreads 8
 variable current_Location [file normalize [info script]]
-set xilinx_path [file dirname [file dirname [file dirname [file dirname $current_Location]]]]
+set intel_path [file dirname [file dirname [file dirname [file dirname $current_Location]]]]
 # unset ::env(PYTHONPATH)
 # unset ::env(PYTHONHOME)
 
 # set ::env(PYTHONPATH) "C:/Program Files/Python38/python38.zip:C:/Program Files/Python38/DLLs:C:/Program Files/Python38/lib:C:/Program Files/Python38:C:/Program Files/Python38/lib/site-packages"
 # set ::env(PYTHONHOME) "C:/Program Files/Python38"
 
-set device_file     "$xilinx_path/Device.txt"
-set device_file_tmp "$xilinx_path/Device.txt.tmp"
+set device_file     "$intel_path/Device.txt"
+set device_file_tmp "$intel_path/Device.txt.tmp"
 
 set device_num      0
 set add_param       1
@@ -108,7 +107,7 @@ while {$your_choice == "a" || $your_choice == "d"} \
 				set fp [open "./Makefile" a+]
 				puts $fp $device_arr($your_choice)
 				close $fp
-				create_project template ./prj/xilinx -part $device_arr($your_choice) -force -quiet
+				project_new ./prj/intel/template -part $device_arr($your_choice)
 				break
 			} else {
 				puts "please input right choice"
@@ -122,6 +121,5 @@ set_property SOURCE_SET sources_1 [get_filesets sim_1]
 set_property top_lib xil_defaultlib [get_filesets sim_1]
 update_compile_order -fileset sim_1 -quiet
 
-close_project
 #source ./.TOOL/xilinx/zynq_ps.tcl -notrace;
 source [file dirname $current_Location]/Run.tcl -notrace;
