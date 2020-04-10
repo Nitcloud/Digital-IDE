@@ -9,6 +9,8 @@ set_param general.maxThreads 6
 variable current_Location [file normalize [info script]]
 set xilinx_path [file dirname [file dirname [file dirname [file dirname $current_Location]]]]
 
+exec python $xilinx_path/Script/Python/MakeBoot.py
+
 set found   0
 set showlog 0
 set fp [open "./Makefile" r]
@@ -51,21 +53,21 @@ if {$snyth_state == "none"} {
 	if {$showlog == 1} {
 		exec python $xilinx_path/Script/Python/showlog.py -quiet
 	}
+	set impl_state [exec python $xilinx_path/Script/Python/Log.py impl]
+	if {$impl_state == "none"} {
+		open_run impl_1 -quiet
+		report_timing_summary -quiet
+
+		write_checkpoint -force ./prj/xilinx/template.runs/impl_1/TOP_routed.dcp -quiet
+		#Gen boot
+		if {$found == 0} {
+			write_bitstream ./[current_project].bit -force -quiet -bin_file
+		} 
+
+		if {$found == 1} {
+			write_bitstream ./[current_project].bit -force -quiet
+			exec bootgen -arch zynq -image $xilinx_path/BOOT/output.bif -o ./BOOT.bin -w on
+		} 
+	}
 }
 
-set impl_state [exec python $xilinx_path/Script/Python/Log.py impl]
-if {$impl_state == "none"} {
-	open_run impl_1 -quiet
-	report_timing_summary -quiet
-
-	write_checkpoint -force ./prj/xilinx/template.runs/impl_1/TOP_routed.dcp -quiet
-	#Gen boot
-	if {$found == 0} {
-		write_bitstream ./[current_project].bit -force -quiet -bin_file
-	} 
-
-	if {$found == 1} {
-		write_bitstream ./[current_project].bit -force -quiet
-		exec bootgen -arch zynq -image $xilinx_path/BOOT/output.bif -o ./BOOT.bin -w on
-	} 
-}

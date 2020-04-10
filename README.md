@@ -14,6 +14,8 @@ FPGA development plugin for VS Code
 If you have any questions, please post them under [issues](https://github.com/Bestduan/fpga_support_plug/issues).
 Development is not easy, please [star](https://github.com/Bestduan/fpga_support_plug) if you like it.
 
+[中文教程](https://bestduan.github.io/2020/03/03/FPGA-Develop-Support%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/)
+
 -----
 
 * Contains support for languages ​​required during FPGA development (e.g.:**VHDL**, **Verilog**, **SystemvVerilog**, **TCL**, **XDC**, **SDC**).
@@ -22,15 +24,18 @@ Development is not easy, please [star](https://github.com/Bestduan/fpga_support_
 * The Xilinx IP of **CortexM3** is included to facilitate the rapid development of SoCs.
 
 -----
-0.1.8 - Fixed the problem of repeatedly opening a new project and supported adding devices directly from the Makefile
 
-0.1.6 - Add support for IP design and bd design, add module jump (`Alt + F12` or `F12`), change the startup shortcut key, fix some bugs to enhance robustness.
+0.1.10 - Added simulation function, automatically pop up error message
 
-0.1.4 - Modify the BUG existing in 0.1.3, the 0.1.3 version cannot create new engineering design errors, please forgive me, this plug-in is not perfect for IP development, so delete the bd design in this version, and then if you need bd or IP design, please Directly double-click the * .xpr project file to open it for design
+0.1.8  - Fixed the problem of repeatedly opening a new project and supported adding devices directly from the Makefile
 
-0.1.2 - Add Xilinx IP of Soc's cortexM3, and give an example m3_for_xilinx.bd, modify the file structure conversion problem.
+0.1.6  - Add support for IP design and bd design, add module jump (`Alt + F12` or `F12`), change the startup shortcut key, fix some bugs to enhance robustness.
 
-0.0.2 - Added testbench / instance function.
+0.1.4  - Modify the BUG existing in 0.1.3, the 0.1.3 version cannot create new engineering design errors, please forgive me, this plug-in is not perfect for IP development, so delete the bd design in this version, and then if you need bd or IP design, please Directly double-click the * .xpr project file to open it for design
+
+0.1.2  - Add Xilinx IP of Soc's cortexM3, and give an example m3_for_xilinx.bd, modify the file structure conversion problem.
+
+0.0.2  - Added testbench / instance function.
 
 -----
 
@@ -109,13 +114,13 @@ Ways to detect successful configuration: enter `xsct`, `vivado -version`, `pytho
 * **Build function, complete synthesis, layout and wiring:**\
   You can choose to display the log of integrated wiring in real time in **Showlog** under **Makefile**. When an error occurs, the error log will automatically pop up. If **`[CRITICAL WARNING]`** appears during setup, it will also pop up. If the bit and bin files are generated normally, it can be ignored.
 
-  **Note:** The generation of the bin file is incidental. In the root directory of the project together with the bit, the bin generated when the device is Zynq can be directly used, because I have made `fsbl.elf` and `ps_test.elf` for executable outputs. Bin, my fsbl is designed according to the microphase board, his `SD0 IO` is `MIO40` to `MIO45`, QSPI is `MIO1` to `MIO6`, if the same estimate can be used directly, if not the same, you need to generate `fsbl.elf` And `ps_test.elf`, put it under `./user/BOOT`, pay attention to the name, the plug-in will automatically generate `output.bif` to generate the corresponding executable bin file.
+  **Note:** The generation of the bin file is incidental. In the root directory of the project together with the bit, the bin generated when the device is Zynq can be directly used, because I have made `fsbl.elf` and `ps_test.elf` for executable outputs. Bin, my fsbl is designed according to the microphase board, his **`SD0 IO`** is `MIO40` to `MIO45`, **`QSPI`** is `MIO1` to `MIO6`, if the same estimate can be used directly, if not the same, you need to generate `fsbl.elf` And `*.elf`, put it under `./user/BOOT`, pay attention to the name, the plug-in will automatically generate `output.bif` to generate the corresponding executable bin file.
 
 * **Program function, one-click download:**\
   Just download, and the flashing function will be added later, but the bin file of Zynq is directly downloaded to the SD card and inserted to solidify.
 
 * **GUI function:**\
-  If you need IP design, sim timing simulation, or bd design selection **5) GUI**, then the graphical interface will automatically open.
+  If you need IP design, sim timing simulation, or bd design selection **6) GUI**, then the graphical interface will automatically open.
 
   **Note:** After opening the GUI, open the corresponding project's vscode, and the corresponding `startfpga` running terminal cannot be closed, and the GUI will automatically close after closing
 
@@ -148,3 +153,4 @@ Use the following settings to configure the extension to your needs
 * [Verilog_Testbench](https://github.com/truecrab/VSCode_Extension_Verilog)
 * [TCL Language Support](https://github.com/go2sh/tcl-language-support)
 * [Verilog HDL / SystemVerilog](https://github.com/mshr-h/vscode-verilog-hdl-support)
+* [SystemVerilog - Language Support](https://github.com/eirikpre/VSCode-SystemVerilog)
