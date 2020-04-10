@@ -19,31 +19,38 @@ import linecache
 
 def showlog(path):
 	xlog_flag = 0
-	f_log = open("./prj/xilinx/LOG.log", 'w')
 	folder = os.path.exists(path)
 	if folder:
+		f_log  = open("./prj/xilinx/LOG.log", 'w')
 		f_xlog = open(path, 'r')
-	log_line = f_xlog.readline()
-	while log_line:
-		if re.match("ERROR:", log_line)  :
-			f_log.write(log_line)
-			xlog_flag = 1
-		if re.match("CRITICAL WARNING:", log_line) :
-			f_log.write(log_line)
-			xlog_flag = 1
 		log_line = f_xlog.readline()
-	f_log.close()
-	f_xlog.close()
+		while log_line:
+			if re.match("ERROR:", log_line) :
+				f_log.write(log_line)
+				xlog_flag = 1
+			if re.match("CRITICAL WARNING:", log_line) :
+				f_log.write(log_line)
+				xlog_flag = 1
+			log_line = f_xlog.readline()
+		f_log.close()
+		f_xlog.close()
 	return xlog_flag
 
-def main():
+def main(type):
 	log_flag = 0
-	if sys.argv[1] == "synth":
+	if type == "synth":
 		if showlog("./prj/xilinx/template.runs/synth_1/runme.log") :
 			os.system("code ./prj/xilinx/LOG.log")
 			log_flag = 1
-	elif sys.argv[1] == "impl":
+	elif type == "impl":
 		if showlog("./prj/xilinx/template.runs/impl_1/runme.log") :
+			os.system("code ./prj/xilinx/LOG.log")
+			log_flag = 1
+	elif type == "sim":
+		if showlog("./prj/xilinx/template.sim/sim_1/behav/xsim/xvlog.log") :
+			os.system("code ./prj/xilinx/LOG.log")
+			log_flag = 1	
+		if showlog("./prj/xilinx/template.sim/sim_1/behav/xsim/elaborate.log") :
 			os.system("code ./prj/xilinx/LOG.log")
 			log_flag = 1
 	if log_flag == 1:
@@ -52,4 +59,4 @@ def main():
 		print("none")
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1])

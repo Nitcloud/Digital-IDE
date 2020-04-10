@@ -4,7 +4,7 @@
 	"description": "Language support for TCL&HDL",
 	"publisher": "sterben",
 	"homepage": "https://github.com/Bestduan/fpga_support_plug",
-	"version": "0.1.8",
+	"version": "0.1.10",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Bestduan/fpga_support_plug.git"
@@ -37,7 +37,7 @@
 			"properties": {
 				"HDL.disableIndexing": {
 					"type": "boolean",
-					"default": false,
+					"default": true,
 					"description": "Disable the automatic indexing when opening a folder or workspace"
 				},
 				"HDL.parallelProcessing": {

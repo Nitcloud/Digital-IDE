@@ -26,6 +26,7 @@ set_property PROGRAM.FILE ./[current_project].bit [current_hw_device]
 set_property PROBES.FILE ./[current_project].ltx [current_hw_device]
 set_property FULL_PROBES.FILE ./[current_project].ltx [current_hw_device]
 program_hw_devices [current_hw_device]
+break
 start_gui
 display_hw_ila_data [ get_hw_ila_data hw_ila_data_1 -of_objects [get_hw_ilas -of_objects [current_hw_device] -filter {CELL_NAME=~"u_ila_0"}]]
 run_hw_ila [get_hw_ilas -of_objects [current_hw_device] -filter {CELL_NAME=~"u_ila_0"}]

@@ -11,10 +11,12 @@ close $fp
 open_hw -quiet
 connect_hw_server -quiet
 set found 0
-foreach { hw_target } [get_hw_targets] {
+foreach { hw_target } [get_hw_targets] \
+{
     current_hw_target $hw_target
     open_hw_target -quiet
-    foreach { hw_device } [get_hw_devices] {
+    foreach { hw_device } [get_hw_devices] \
+	{
     if { [string equal -length 6 [get_property PART $hw_device] $device] == 1 } {
         puts "------Successfully Found Hardware Target with a ${device} device------ "
         current_hw_device $hw_device
