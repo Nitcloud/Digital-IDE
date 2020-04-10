@@ -7,109 +7,120 @@
  * #Description  : 
  -->
 
-# FPGA_Develop_Support
+# FPGA Develop Support
 
-在vscode上的fpga开发插件
+FPGA development plugin for VS Code
 
-有问题的话请在[issues](https://github.com/Bestduan/fpga_support_plug/issues)上发表。
-开发不易，喜欢的话请给个[star](https://github.com/Bestduan/fpga_support_plug)吧
-
------
-
-* 包含了对fpga开发过程中所需要语言的支持(如：**vhdl**，**Verilog**，**systemvVerilog**，**TCL**，**xdc**，**sdc**)。
-
-* 支持自动生成testbench(并且**以文件形式保存**)。
-
-* 支持在vivado上快速开发，`一键新建工程`，`一键综合`，以及`一键下载`。
-
-* 包含了**cortexM3**的xilinx IP，方便Soc的快速开发。
+If you have any questions, please post them under [issues](https://github.com/Bestduan/fpga_support_plug/issues).
+Development is not easy, please [star](https://github.com/Bestduan/fpga_support_plug) if you like it.
 
 -----
 
-0.1.6 加入对IP设计和bd设计的支持，加入模块跳转(`Alt+F12`或`F12`)，更改启动快捷键，修复部分bug增强鲁棒性。
+* Contains support for languages ​​required during FPGA development (e.g.:**VHDL**, **Verilog**, **SystemvVerilog**, **TCL**, **XDC**, **SDC**).
+* Supports automatic testbench generation (and **save as file**).
+* Supports rapid development with Vivado, `one-key new project`, `one-key synthesis`, and `one-key download`.
+* The Xilinx IP of **CortexM3** is included to facilitate the rapid development of SoCs.
 
-0.1.4 修改0.1.3存在的BUG，0.1.3版本无法新建工程设计失误，请见谅，本插件对IP开发还不完善，因此在本版本中删除bd设计，之后如果需要bd或者IP设计请直接双击*.xpr工程文件打开进行设计
+-----
+0.1.8 - Fixed the problem of repeatedly opening a new project and supported adding devices directly from the Makefile
 
-0.1.2 新增Soc的cortexM3的xilinx IP,并且给出示例m3_for_xilinx.bd，修改文件结构转换问题。
+0.1.6 - Add support for IP design and bd design, add module jump (`Alt + F12` or `F12`), change the startup shortcut key, fix some bugs to enhance robustness.
 
-0.0.2 新增testbench/instance功能。
+0.1.4 - Modify the BUG existing in 0.1.3, the 0.1.3 version cannot create new engineering design errors, please forgive me, this plug-in is not perfect for IP development, so delete the bd design in this version, and then if you need bd or IP design, please Directly double-click the * .xpr project file to open it for design
+
+0.1.2 - Add Xilinx IP of Soc's cortexM3, and give an example m3_for_xilinx.bd, modify the file structure conversion problem.
+
+0.0.2 - Added testbench / instance function.
 
 -----
 
 ## START GIF
 
-* 启动界面
+* Start interface
 ![START GIF](https://ftp.bmp.ovh/imgs/2020/02/85216ff13beedcc6.gif)
 
 ## ERROR GIF
 
-* 综合布局布线时出错自动弹出
+* Error pops up automatically when integrated layout
 ![ERROR GIF](https://ftp.bmp.ovh/imgs/2020/02/c31b45ac7ee3edb0.gif)
 
 -----
 
 ## Requirements
 
-It needs **python3** **vivado** environment.
-需要添加的变量如下(**添加一定要添加绝对路径，我写相对路径的形式只是告知需要添加哪些**)
+It needs **python3** and **Vivado** installed and available on the system `PATH`.  The `PATH` variables that need to be added are as follows:\
+(**NOTE:** To add, you must add the absolute path. I wrote the relative path form to tell which ones to add)
 
 * `./Vivado/2018.3/bin`
 * `./SDK/2018.3/bin`
 * `./Microsoft VS Code/bin`
 
-最后要求安装python，并且请在安装过程中请选择自动添加到环境变量，以及安装pip工具。如果需要自动编写testbench以及instance功能的还需安装chardet包。
-安装方式**pip install chardet**。
+Finally, Python is required, so when installing it please choose to automatically add to the environment variables during the installation process, and install the pip tool. If you need to automatically write testbench and instance functions, you need to install the `chardet` package.
 
-检测配置成功的方式：在shell中输入**xsct**、**vivado -version**、**python**、**code** 均能执行即为成功
+Installation method: `pip install chardet`.
+
+Ways to detect successful configuration: enter `xsct`, `vivado -version`, `python`, `code` in the shell, and check that all can be executed successfully.
 
 -----
 
 ## Start With A New Project
 
-* 步骤一：将已有的文件代码放入新建的文件夹中用vscode打开，在这里新建文件夹所在的路径不要有中文。因为vivado无法打开含有中文路径的文件夹。
+1. Put the existing file code in the newly created folder and open it with VS Code.\
+   **NOTE:** The path where the newly created folder is located should not have non-ASCII characters (e.g. Chinese characters) because Vivado cannot open the folder containing the those characters.
+2. The startup method is as follows:
+    * Use the shortcut key `ctrl`+`shift`+`p` / `F1` to open the command box, and enter `StartFPGA` to start
+    * Use the shortcut key `alt`+`z` to open the startup command
+    * Randomly open a file, right-click and select `StartFPGA` to start
 
-* 步骤二：启动方式如下：
-* `使用快捷键 ctrl+shfit+p/F1 打开命令框，输入 **StartFPGA** 来启动`
-* `使用快捷键 Alt+z 打开启动命令`
-* `随意打开一个文件右键选择 **StartFPGA** 来启动`
+    After startup, the file structure is automatically generated.
 
-启动后会自动生成文件结构。
+    Here are the following points to note:
 
-在此有以下注意点：
+      * `testbench.v` and `TOP.v` are built-in for top-level instantiation and simulation, so these two files will be **forced** to be automatically defined as the top level for simulation and synthesis
+      * If there is no `Makefile` in the folder, the `Makefile` file will be automatically generated. Please do not delete it. The configuration content is included. Later file updates and integrated wiring will be used. (Of course, nothing was added at the beginning, which means that the DSP library was not added, but the CortexM3 Xilinx IP core was added in the 0.1.2 version, which can be used.)\
+        If the `Makefile` is deleted, it will be automatically generated.\
+        If there is a `Makefile` plugin in the folder, the project will be configured according to the existing `Makefile` file. Because many functions of the plug-in have not been added, the `Makefile` file needs to be configured very little, basically only in the SoC version 0.1.2.
 
-1、**testbench.v** 和 **TOP.v** 是自带的，用于顶层例化和仿真，因此这两个文件会被**强制**自动定义为仿真和综合的顶层
+        **Note:** When the SoC is set to non-none, the file structure will be changed. **If the file structure is changed from the SoC structure back to none, the folder Software will be forcibly deleted. If you have important files, please save them properly!!!!!**.
 
-2、如果文件夹下没有**Makefile**就会自动生成**Makefile**文件，请不要删除，里面含配置内容，之后的文件更新和综合布线都会用到。（当然刚开始啥都没加，就是说DSP库没有加进去，但在0.1.2的版本中加入了cortexM3的xilinx的IP核，可以使用。）另外**Makefile**删了还是会自动生成。最后如果文件夹下本来有**Makefile**插件就会根据该存在的**Makefile**文件来配置工程。由于刚刚设计插件很多功能没有加上去，所以**Makefile**文件需要配置的很少，基本只有在0.1.2版本的Soc一项。
+      * After startup, the plug-in will automatically find whether there is a project under the current `prj` folder. If there is a project, it will automatically open. If not, it will automatically enter the new mode. Follow the prompts to select or add or delete devices. Makefile New project, so if there is no `Makefile` file, please configure the automatically generated Makefile before selecting the device.
 
-注：在设置Soc为非none时，文件结构会被更改，**在文件结构更改的时候如果从有soc结构改回none，文件夹Software会被强制删除，如有重要文件请妥善保存！！！！！**。
+3. Place the existing design files in the **corresponding folders**:
+    * Constraint files under `./user/data`,
+    * Code under `./user/src`,
+    * `TOP.v` is under `./user` (new project has been added, you can directly overwrite or paste it).
+    * Under SoC's design, the hardware design is moved to the `./user/Hardware` folder. The conversion is automatically transplanted in the past, and it will be ok when you add it later. Then select `1) Update` in the command line to update, and the new creation is over. After that, you need to add files to the corresponding folder and select `Update`.
 
-3、插件在启动后会自动查找当前**prj**文件夹下是否有工程，有的话会自动打开，没有的话会自动进入新建模式，按照提示可以选择或者增删器件，之后会根据**Makefile**新建工程，因此原本没有**Makefile**文件的话请在选择器件之前将自动生成的Makefile配置好。
+    Of course, this step can also be completed before selecting the device, because the design file will be added once after the new creation.
 
-* 步骤三：将已经有的设计文件放在**相应的文件夹**下，**约束文件在./user/data**下，**代码在./user/src**下，**TOP.v在./user**下(新建的工程时已经添加进去了，可以直接覆盖或者粘贴进去)。在Soc的设计下硬件设计全部移到./user/Hardware文件夹下，转换时是自动移植过去的，后续添加的时候注意一下就ok了。之后再命令行中选择 **1) Update** 进行Update，到此新建就结束了，之后要添加文件放入对应的文件夹下再选择Update就行了。
-
-当然这一步也可以在选择器件之前就完成，因为新建之后会自动添加一次设计文件。
-
-注：TOP.v是一定要的，而且模块名也一定要TOP，因为之后Update选项会强制将TOP作为顶层。
+    **Note:** `TOP.v` is a must, and the module name must also be `TOP`, because then the Update option will force TOP as the top layer.
 
 -----
 
-## 功能介绍
+## Features
 
-* 1、testbench/instance功能，右键菜单栏里选择testbench，即可将本文件写出tb文件并且写入默认的testbench.v文件中。右键菜单栏里选择instance，即可将本文件例化并且在终端中显示(本来想直接复制到剪贴板中，但是tkinter库好像没效果，希望实现成功的大佬能教一下我(T ^ T)。)
+* **testbench / instance function:**\
+  Select **testbench** in the right-click menu bar, you can write this file out of tb file and write it into the default `testbench.v` file.\
+  Select **instance** in the right-click menu bar to instantiate this file and display it in the terminal (I originally wanted to copy it directly to the clipboard, but the tkinter library seems to have no effect. I hope the successful guy can teach me (T^T).)
 
-* 2、Update功能，更新xilinx工程下所包含的文件，因为包含的形式是全包含，所以在./user/src和./user/sim下都会包含进去，所以你在src，data，sim下的文件就是你的工程已经包含的文件。更新机制是先全删除再全包含，所以你在文件夹里增删文件，选择**1) Update**后，工程里也会一起更新。
+* **Update function:**\
+  Update the files included under the Xilinx project, because the included form is all included, so it will be included under `./user/src` and `./user/sim`, so you are under `src`, `data`, `sim` Is the file that your project already contains. The update mechanism is to delete all files first and then include them all, so if you add or delete files in the folder, select **1) Update** and the project will be updated together.
 
-* 3、Build功能，完成综合，布局布线，你可以在Makefile下的**Showlog**里选择实时显示综合布线的日志。当出错的时候会自动跳出错误日志，在设置时如果出现**[CRITICAL WARNING]**时也会跳出，如果正常生成bit和bin文件啧可以忽略。
+* **Build function, complete synthesis, layout and wiring:**\
+  You can choose to display the log of integrated wiring in real time in **Showlog** under **Makefile**. When an error occurs, the error log will automatically pop up. If **`[CRITICAL WARNING]`** appears during setup, it will also pop up. If the bit and bin files are generated normally, it can be ignored.
 
-注：bin文件的生成是附带的，和bit一起在工程根目录下，当器件为zynq时生成的bin是可以直接固化的，因为我自制了fsbl.elf和ps_test.elf用于生成可固化的bin，我的fsbl是按照microphase的板子来设计的，他的SD0的IO是MIO40-MIO45，QSPI是MIO1-MIO6，如果相同估计就可以直接用了，如果不相同就需要你自己生成fsbl.elf和ps_test.elf，放到./user/BOOT下，注意名称要一直，插件会自动生成output.bif从而生成对应的可固化的bin文件。
+  **Note:** The generation of the bin file is incidental. In the root directory of the project together with the bit, the bin generated when the device is Zynq can be directly used, because I have made `fsbl.elf` and `ps_test.elf` for executable outputs. Bin, my fsbl is designed according to the microphase board, his `SD0 IO` is `MIO40` to `MIO45`, QSPI is `MIO1` to `MIO6`, if the same estimate can be used directly, if not the same, you need to generate `fsbl.elf` And `ps_test.elf`, put it under `./user/BOOT`, pay attention to the name, the plug-in will automatically generate `output.bif` to generate the corresponding executable bin file.
 
-* 4、Program功能，一键下载，只是下载，固化功能后续补上，不过有zynq的bin文件直接下载到SD卡上插入即可固化。
+* **Program function, one-click download:**\
+  Just download, and the flashing function will be added later, but the bin file of Zynq is directly downloaded to the SD card and inserted to solidify.
 
-* 5、GUI功能，如果需要IP设计，sim时序仿真或者bd设计选择**5) GUI**,之后就会自动打开图形界面。
+* **GUI function:**\
+  If you need IP design, sim timing simulation, or bd design selection **5) GUI**, then the graphical interface will automatically open.
 
-注：打开GUI后，打开对应工程的vscode，以及对应的startfpga运行终端不能关闭，关闭后GUI会自动关闭
+  **Note:** After opening the GUI, open the corresponding project's vscode, and the corresponding `startfpga` running terminal cannot be closed, and the GUI will automatically close after closing
 
-* 6、在0.1.6版本中添加了对IP和bd设计的支持，具体设计还是打开GUI进行设计，重点在关闭工程后插件会自动将prj下的IP和bd设计内容剪贴到user下方便移植，此外如果需要从其他工程移植IP和bd设计只需将其设计内容复制到user下对应的IP和bd文件夹下再选择update即可。
+* **Added support for IP and bd design:** (Version 0.1.6+)\
+  The specific design is to open the GUI for design. The key point is that after closing the project, the plug-in will automatically move the IP and bd design content under `prj` to the `user` for easy porting. In addition, if you need to migrate IP and bd designs from other projects, simply copy their design contents to the corresponding IP and bd folders under user and select **1) Update**.
 
 -----
 
@@ -117,17 +128,17 @@ It needs **python3** **vivado** environment.
 
 Use the following settings to configure the extension to your needs
 
-* `HDL.linting.linter` (Default: `none`)
+* `HDL.linting.linter` (Default: `xvlog`)
 
-Choose the linter for you. Possible values are
+  Choose the linter for you. Possible values ​​are:
 
-* `iverilog`
-* `xvlog`
-* `modelsim`
-* `verilator`
-* `none`
+  * `iverilog`
+  * `xvlog`
+  * `modelsim`
+  * `verilator`
+  * `none`
 
-note：由于之前已经添加vivado的路径到环境变量所以建议这里选择xvlog。
+  *Note:* Since the path of Vivado has been added to the environment variable before, it is recommended to select `xvlog` here.
 
 -----
 
@@ -136,4 +147,4 @@ note：由于之前已经添加vivado的路径到环境变量所以建议这里�
 * [VHDL](https://github.com/puorc/awesome-vhdl)
 * [Verilog_Testbench](https://github.com/truecrab/VSCode_Extension_Verilog)
 * [TCL Language Support](https://github.com/go2sh/tcl-language-support)
-* [Verilog HDL/SystemVerilog](https://github.com/mshr-h/vscode-verilog-hdl-support)
+* [Verilog HDL / SystemVerilog](https://github.com/mshr-h/vscode-verilog-hdl-support)

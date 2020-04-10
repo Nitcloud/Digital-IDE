@@ -2,7 +2,7 @@
 #/*****************/which project you want to build,you can choose[ xilinx alter modelsim ]
 xilinx
 ///////////////////////////LIB Config///////////////////////////
-#/*****************/if include Soc,you can choose none[ cortexM0 cortexM3 cortexA9 ]
+#/*****************/if include Soc,you can choose none[ cortexM3 ]
 Soc
 none
 #/*****************/if include DSP,you can choose 0/1

@@ -42,7 +42,7 @@ proc none_add {} {
 	#add xdc
 	add_files -fileset constrs_1 ./user/data -quiet
 	#add sim
-	add_files -fileset sim_1 -norecurse ./user/sim -force -quiet
+	add_files -fileset sim_1 ./user/sim -force -quiet
 	set_property top testbench [get_filesets sim_1]
 }
 
@@ -58,7 +58,7 @@ proc soc_add {} {
 	#add xdc
 	add_files -fileset constrs_1 ./user/Hardware/data -quiet
 	#add sim
-	add_files -fileset sim_1 -norecurse ./user/Hardware/sim -force -quiet
+	add_files -fileset sim_1 ./user/Hardware/sim -force -quiet
 	set_property top testbench [get_filesets sim_1]
 }
 
