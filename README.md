@@ -122,6 +122,8 @@ Ways to detect successful configuration: enter `xsct`, `vivado -version`, `pytho
 * **GUI function:**\
   If you need IP design, sim timing simulation, or bd design selection **6) GUI**, then the graphical interface will automatically open.
 
+  You can input **source + `$updta` / `$sim` / `$build` / `$program`** to **TCL Console** if you want to use the one-key feature in the GUI 
+
   **Note:** After opening the GUI, open the corresponding project's vscode, and the corresponding `startfpga` running terminal cannot be closed, and the GUI will automatically close after closing
 
 * **Added support for IP and bd design:** (Version 0.1.6+)\
