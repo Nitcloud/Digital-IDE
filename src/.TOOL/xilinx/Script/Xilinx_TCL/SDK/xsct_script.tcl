@@ -1,5 +1,5 @@
 # Set SDK workspace
-setws ./
+setws ./user/Software/src
 # Create a HW project
 createhw -name hw1 -hwspec /tmp/system.hdf
 # Create a BSP project
