@@ -18,6 +18,9 @@ import linecache
 import fileupdate
 
 def del_file(file_param):
+	folder = os.path.exists(os.path.join(file_param,".Xil"))
+	if folder:
+		shutil.rmtree(os.path.join(file_param,".Xil"))
 	for infile in glob.glob(os.path.join(file_param, '*.jou')):
 		os.remove(infile)
 	for infile in glob.glob(os.path.join(file_param, '*.log')):
@@ -28,9 +31,7 @@ def del_file(file_param):
 		os.remove(infile)
 	for infile in glob.glob(os.path.join(file_param, "prj/", '*.log')):
 		os.remove(infile)
-	folder = os.path.exists(os.path.join(file_param,".Xil"))
-	if folder:
-		shutil.rmtree(os.path.join(file_param,".Xil"))
+
 		
 def move_bd_IP(sourse_path,target_path,Goal):
 	folder = os.path.exists(sourse_path)

@@ -12,17 +12,22 @@ createapp -name $prj_name -hwproject $hw_name -bsp $bsp_name -proc ps7_cortexa9_
 -lang C -app {Hello World}
 # Build all projects
 projects -build
-# Connect to a remote hw_server
-connect
-# Select a target
-targets 2
-#System Reset
-rst -system
-# PS7 initialization
-namespace eval xsdb \
-{ 
-	source ./user/Software/src/$hw_name/ps7_init.tcl
+
+proc software_down {} {
+	connect -url tcp:127.0.0.1:3121
+	source ./src/zynq_wrapper/ps7_init.tcl
+	targets -set -nocase -filter {name =~"APU*" && jtag_cable_name =~ "Digilent JTAG-HS2 201706300081"} -index 0
+	loadhw -hw D:/project/FPGA/My_FPGA/TCL_project/Test/Soc_A9_test/user/Software/src/zynq_wrapper/system.hdf -mem-ranges [list {0x40000000 0xbfffffff}]
+	configparams force-mem-access 1
+	targets -set -nocase -filter {name =~"APU*" && jtag_cable_name =~ "Digilent JTAG-HS2 201706300081"} -index 0
+	stop
 	ps7_init
+	ps7_post_config
+	targets -set -nocase -filter {name =~ "ARM*#0" && jtag_cable_name =~ "Digilent JTAG-HS2 201706300081"} -index 0
+	rst -processor
+	targets -set -nocase -filter {name =~ "ARM*#0" && jtag_cable_name =~ "Digilent JTAG-HS2 201706300081"} -index 0
+	dow D:/project/FPGA/My_FPGA/TCL_project/Test/Soc_A9_test/user/Software/src/test/Debug/test.elf
+	configparams force-mem-access 0
+	targets -set -nocase -filter {name =~ "ARM*#0" && jtag_cable_name =~ "Digilent JTAG-HS2 201706300081"} -index 0
+	con
 }
-# Download the elf
-#dow ./user/Software/src/$prj_name/Debug/$prj_name.elf
