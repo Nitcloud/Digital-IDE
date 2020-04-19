@@ -1,5 +1,5 @@
 ////////////////////////////Prj Info////////////////////////////
-#/*****************/which project you want to build,you can choose[ xilinx alter modelsim ]
+#/*****************/which project you want to build,you can choose[ xilinx intel ]
 xilinx
 ///////////////////////////LIB Config///////////////////////////
 #/*****************/if include Soc,you can choose none[ cortexM3 ]
