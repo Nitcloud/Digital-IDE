@@ -32,7 +32,6 @@ def del_file(file_param):
 	for infile in glob.glob(os.path.join(file_param, "prj/", '*.log')):
 		os.remove(infile)
 
-		
 def move_bd_IP(sourse_path,target_path,Goal):
 	folder = os.path.exists(sourse_path)
 	if folder:
@@ -89,10 +88,16 @@ def mkconfig(path) :
 		else:
 			pass
 
-def main():
+def start_sdk():
+	return 0
+
+def main(type):
 	del_file("./")
-	mkconfig("./Makefile")
+	if type == "fpga":
+		mkconfig("./Makefile")
+	elif type == "sdk":
+		start_sdk
 	del_file("./")
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1])

@@ -28,7 +28,8 @@
 		"onLanguage:systemverilog",
 		"onCommand:extension.instance",
 		"onCommand:extension.testbench",
-		"onCommand:extension.StartFPGA"
+		"onCommand:extension.StartFPGA",
+		"onCommand:extension.StartSDK"
 	],
 	"main": "./src/extension",
 	"contributes": {
@@ -244,6 +245,10 @@
 				"title": "StartFPGA"
 			},
 			{
+				"command": "extension.StartSDK",
+				"title": "StartSDK"
+			},
+			{
 				"command": "verilog.lint",
 				"title": "Verilog: Rerun lint tool"
 			}
@@ -254,6 +259,12 @@
 				"key": "Alt+z",
 				"mac": "Alt+z",
 				"when": "editorTextFocus"
+			},
+			{
+				"command": "extension.StartSDK",
+				"key": "Alt+x",
+				"mac": "Alt+x",
+				"when": "editorTextFocus"
 			}
 		],
 		"menus": {
@@ -261,6 +272,11 @@
 				{
 					"when": "editorFocus",
 					"command": "extension.StartFPGA",
+					"group": "navigation@4"
+				},
+				{
+					"when": "editorFocus",
+					"command": "extension.StartSDK",
 					"group": "navigation@5"
 				},
 				{

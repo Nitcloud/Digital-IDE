@@ -130,16 +130,26 @@ function activate(context) {
         vscode.window.showInformationMessage('Generate testbench successfully!');
     });
     context.subscriptions.push(testbench);
-    let startfpga = vscode.commands.registerCommand('extension.StartFPGA', () => {
+    let StartFPGA = vscode.commands.registerCommand('extension.StartFPGA', () => {
         let editor = vscode.window.activeTextEditor;
         if (!editor) {
             return;
         }
         let ter1 = vscode.window.createTerminal({ name: 'StartFPGA' });
         ter1.show(true);
-        ter1.sendText(`python ${__dirname}/.TOOL/.Script/start.py`);
+        ter1.sendText(`python ${__dirname}/.TOOL/.Script/start.py fpga`);
     });
-    context.subscriptions.push(startfpga);
+	context.subscriptions.push(StartFPGA);
+	let StartSDK = vscode.commands.registerCommand('extension.StartSDK', () => {
+        let editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            return;
+        }
+        let ter1 = vscode.window.createTerminal({ name: 'StartSDK' });
+        ter1.show(true);
+        ter1.sendText(`python ${__dirname}/.TOOL/.Script/start.py sdk`);
+    });
+    context.subscriptions.push(StartSDK);
 }
 exports.activate = activate;
 
