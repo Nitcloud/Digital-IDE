@@ -23,21 +23,6 @@ Development is not easy, please [star](https://github.com/Bestduan/fpga_support_
 * Supports rapid development with Vivado, `one-key new project`, `one-key synthesis`, and `one-key download`.
 * The Xilinx IP of **CortexM3** is included to facilitate the rapid development of SoCs.
 
------
-
-0.1.10 - Added simulation function, automatically pop up error message
-
-0.1.8  - Fixed the problem of repeatedly opening a new project and supported adding devices directly from the Makefile
-
-0.1.6  - Add support for IP design and bd design, add module jump (`Alt + F12` or `F12`), change the startup shortcut key, fix some bugs to enhance robustness.
-
-0.1.4  - Modify the BUG existing in 0.1.3, the 0.1.3 version cannot create new engineering design errors, please forgive me, this plug-in is not perfect for IP development, so delete the bd design in this version, and then if you need bd or IP design, please Directly double-click the * .xpr project file to open it for design
-
-0.1.2  - Add Xilinx IP of Soc's cortexM3, and give an example m3_for_xilinx.bd, modify the file structure conversion problem.
-
-0.0.2  - Added testbench / instance function.
-
------
 
 ## START GIF
 
