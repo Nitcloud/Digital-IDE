@@ -89,7 +89,9 @@ def mkconfig(path) :
 			pass
 
 def start_sdk():
-	return 0
+	tcl_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"Xilinx/Script/Xilinx_TCL/SDK/xsct_run.tcl")
+	cmd = "xsct %s" % (tcl_file.replace("\\", "/"))
+	os.system(cmd)
 
 def main(type):
 	del_file("./")
