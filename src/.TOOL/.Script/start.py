@@ -98,7 +98,7 @@ def main(type):
 	if type == "fpga":
 		mkconfig("./Makefile")
 	elif type == "sdk":
-		start_sdk
+		start_sdk()
 	del_file("./")
 
 if __name__ == "__main__":
