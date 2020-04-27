@@ -149,7 +149,16 @@ function activate(context) {
         ter1.show(true);
         ter1.sendText(`python ${__dirname}/.TOOL/.Script/start.py sdk`);
     });
-    context.subscriptions.push(StartSDK);
+	context.subscriptions.push(StartSDK);
+	let Overwrite_tb = vscode.commands.registerCommand('extension.Overwrite testbench', () => {
+		const path = `${__dirname}/.TOOL/.Data/testbench.v`;
+		const options = {
+			preview: false,
+			viewColumn: vscode.ViewColumn.Active
+		};
+		vscode.window.showTextDocument(vscode.Uri.file(path), options);
+    });
+    context.subscriptions.push(Overwrite_tb);
 }
 exports.activate = activate;
 

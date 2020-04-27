@@ -29,7 +29,8 @@
 		"onCommand:extension.instance",
 		"onCommand:extension.testbench",
 		"onCommand:extension.StartFPGA",
-		"onCommand:extension.StartSDK"
+		"onCommand:extension.StartSDK",
+		"onCommand:extension.Overwrite testbench"
 	],
 	"main": "./src/extension",
 	"contributes": {
@@ -146,7 +147,8 @@
 				"extensions": [
 					".tcl",
 					".sdc",
-					".xdc"
+					".xdc",
+					".fdc"
 				],
 				"configuration": "./config/tcl.configuration.json"
 			},
@@ -249,8 +251,8 @@
 				"title": "StartSDK"
 			},
 			{
-				"command": "verilog.lint",
-				"title": "Verilog: Rerun lint tool"
+				"command": "extension.Overwrite testbench",
+				"title": "Overwrite the template of testbench"
 			}
 		],
 		"keybindings": [

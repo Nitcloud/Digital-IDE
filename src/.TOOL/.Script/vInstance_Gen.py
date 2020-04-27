@@ -27,6 +27,7 @@ Usage:
 import re
 import sys
 import chardet
+import pyperclip
 
 def delComment( Text ):
     """ removed comment """
@@ -170,17 +171,20 @@ def writeTestBench(input_file):
 
     # module_parameter_port_list
     if(paraDec!=''):
+        pyperclip.copy("// %s Parameters\n%s\n" % (name, paraDec))
         print("// %s Parameters\n%s\n" % (name, paraDec))
 
     # list_of_port_declarations
+    pyperclip.copy("// %s Inputs\n%s\n"  % (name, input ))
     print("// %s Inputs\n%s\n"  % (name, input ))
+    pyperclip.copy("// %s Outputs\n%s\n" % (name, output))
     print("// %s Outputs\n%s\n" % (name, output))
     if(inout!=''):
+        pyperclip.copy("// %s Bidirs\n%s\n"  % (name, inout ))
         print("// %s Bidirs\n%s\n"  % (name, inout ))
-
     # UUT
+    pyperclip.copy("%s %s u_%s (\n%s\n);" %(name,paraDef,name,portList))
     print("%s %s u_%s (\n%s\n);" %(name,paraDef,name,portList))
-
 
 if __name__ == '__main__':
     writeTestBench(sys.argv[1])

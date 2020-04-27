@@ -47,7 +47,7 @@ def Open_prj():
 	f_list = os.listdir("./prj/xilinx")
 	for file in f_list:
 		if os.path.splitext(file)[1] == ".xpr":
-			tcl_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"Xilinx/Script/Xilinx_TCL/Vivado/run.tcl")
+			tcl_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"Xilinx/Script/Xilinx_TCL/Vivado/Run.tcl")
 			cmd = "vivado -mode tcl -s %s -notrace" % (tcl_file.replace("\\", "/"))
 			os.system(cmd)
 			return "xilinx"
