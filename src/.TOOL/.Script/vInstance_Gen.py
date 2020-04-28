@@ -139,52 +139,53 @@ def formatPara(ParaList) :
 def writeTestBench(input_file):
     """ write testbench to file """
     with open(input_file, 'rb') as f:
-        f_info =  chardet.detect(f.read())
+        f_info = chardet.detect(f.read())
         f_encoding = f_info['encoding']
     with open(input_file, encoding=f_encoding) as inFile:
-        inText  = inFile.read()
+        inText = inFile.read()
 
     # removed comment,task,function
     inText = delComment(inText)
-    inText = delBlock  (inText)
+    inText = delBlock(inText)
 
     # moduel ... endmodule  #
-    moPos_begin = re.search(r'(\b|^)module\b', inText ).end()
-    moPos_end   = re.search(r'\bendmodule\b', inText ).start()
+    moPos_begin = re.search(r'(\b|^)module\b', inText).end()
+    moPos_end = re.search(r'\bendmodule\b', inText).start()
     inText = inText[moPos_begin:moPos_end]
 
-    name  = findName(inText)
-    paraList = paraDeclare(inText,'parameter')
-    paraDec , paraDef = formatPara(paraList)
+    name = findName(inText)
+    paraList = paraDeclare(inText, 'parameter')
+    paraDec, paraDef = formatPara(paraList)
 
-    ioPadAttr = [ 'input','output','inout']
-    input  =  portDeclare(inText,ioPadAttr[0])
-    output =  portDeclare(inText,ioPadAttr[1])
-    inout  =  portDeclare(inText,ioPadAttr[2])
+    ioPadAttr = ['input', 'output', 'inout']
+    input = portDeclare(inText, ioPadAttr[0])
+    output = portDeclare(inText, ioPadAttr[1])
+    inout = portDeclare(inText, ioPadAttr[2])
 
-    portList = formatPort( [input , output , inout] )
-    input  = formatDeclare(input ,'reg')
-    output = formatDeclare(output ,'wire')
-    inout  = formatDeclare(inout ,'wire')
+    portList = formatPort([input, output, inout])
+    input = formatDeclare(input, 'reg')
+    output = formatDeclare(output, 'wire')
+    inout = formatDeclare(inout, 'wire')
 
     # write Instance
-
+    instance_data = ""
     # module_parameter_port_list
-    if(paraDec!=''):
-        pyperclip.copy("// %s Parameters\n%s\n" % (name, paraDec))
+    if (paraDec != ''):
         print("// %s Parameters\n%s\n" % (name, paraDec))
+        instance_data += "// " + name + " Parameters\n" + paraDec + "\n"
 
     # list_of_port_declarations
-    pyperclip.copy("// %s Inputs\n%s\n"  % (name, input ))
-    print("// %s Inputs\n%s\n"  % (name, input ))
-    pyperclip.copy("// %s Outputs\n%s\n" % (name, output))
+    print("// %s Inputs\n%s\n" % (name, input))
+    instance_data += "// " + name + " Inputs\n" + input + "\n"
     print("// %s Outputs\n%s\n" % (name, output))
-    if(inout!=''):
-        pyperclip.copy("// %s Bidirs\n%s\n"  % (name, inout ))
-        print("// %s Bidirs\n%s\n"  % (name, inout ))
-    # UUT
-    pyperclip.copy("%s %s u_%s (\n%s\n);" %(name,paraDef,name,portList))
-    print("%s %s u_%s (\n%s\n);" %(name,paraDef,name,portList))
+    instance_data += "// " + name + " Outputs\n" + output + "\n"
+    if (inout != ''):
+        print("// %s Bidirs\n%s\n" % (name, inout))
+        instance_data += "// " + name + " Bidirs\n" + inout + "\n"
 
+    print("%s %s %s_u (\n%s\n);" % (name, paraDef, name, portList))
+    instance_data += name + " " + paraDef + " " + name + "_u (\n" + portList + "\n);"
+    pyperclip.copy(instance_data)
+	
 if __name__ == '__main__':
     writeTestBench(sys.argv[1])
