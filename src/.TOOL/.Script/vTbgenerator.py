@@ -172,8 +172,8 @@ def writeTestBench(input_file):
     output = formatDeclare(output ,'wire')
     inout  = formatDeclare(inout ,'wire')
 
-   # write Instance
-    instance_data = ""
+    #write Instance
+    instance_data = "\n"
     # module_parameter_port_list
     if (paraDec != ''):
         instance_data += "// " + name + " Parameters\n" + paraDec + "\n"
@@ -184,17 +184,44 @@ def writeTestBench(input_file):
     if (inout != ''):
         instance_data += "// " + name + " Bidirs\n" + inout + "\n"
 
-    instance_data += name + " " + paraDef + " " + name + "_u (\n" + portList + "\n);"
-
+    instance_data += name + " " + paraDef + " " + name + "_u (\n" + portList + "\n);\n"
+    
+    # write in file
     fpga_include = linecache.getline("./Makefile",7)
     if fpga_include.replace('\n', '') == "none" :
-        f = open("./user/sim/testbench.v", 'a')
+        fp = open("./user/sim/testbench.v", 'r')
+        lines = []
+        line_cnt = 0
+        instance_line = 0
+        for line in fp:
+            line_cnt = line_cnt + 1
+            lines.append(line)
+            if line == "//Instance\n":
+                instance_line = line_cnt - 2
+        fp.close()
+        
+        lines.insert(instance_line, instance_data)
+        s = ''.join(lines)
+        fp = open("./user/sim/testbench.v", 'w')
+        fp.write(s)
+        fp.close()
     else:
-        f = open("./user/Hardware/sim/testbench.v", 'a')
-
-	# write in file
-
-    f.close()
+        fp = open("./user/Hardware/sim/testbench.v", 'a')
+        lines = []
+        line_cnt = 0
+        instance_line = 0
+        for line in fp:
+            line_cnt = line_cnt + 1
+            lines.append(line)
+            if line == "//Instance\n":
+                instance_line = line_cnt - 2
+        fp.close()
+        
+        lines.insert(instance_line, instance_data)
+        s = ''.join(lines)
+        fp = open("./user/Hardware/sim/testbench.v", 'a')
+        fp.write(s)
+        fp.close()
 
 if __name__ == '__main__':
     writeTestBench(sys.argv[1])

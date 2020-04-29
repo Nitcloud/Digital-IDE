@@ -2,7 +2,7 @@
   "design": {
     "design_info": {
       "boundary_crc": "0x1CBED0B5287DFD82",
-      "name": "m3_for_xilinx",
+      "name": "m3_xIP_default",
       "synth_flow_mode": "None",
       "validated": "true"
     },

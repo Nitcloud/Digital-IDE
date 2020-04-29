@@ -31,7 +31,13 @@ always begin
     end
 end
 
+
+
+
 //Instance 
+
+
+
 
 initial begin            
     $dumpfile("wave.vcd");        

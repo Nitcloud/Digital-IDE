@@ -87,7 +87,7 @@ proc ope {} {
 			2 \
 			{
 				connect
-				targets
+				puts [targets]
 				puts "which one you want to connect"
 				gets stdin index;
 				targets $index
