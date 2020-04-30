@@ -20,22 +20,26 @@ if {$boot_state == "none"} {
 		gets stdin Index
 		puts [exec python $xilinx_path/Script/Python/MakeBoot.py $Index]
 	}
-	set found   0
-	set showlog 0
+	set found     0
+	set showlog   0
+	set soc_exsit 0
 	set fp [open "./Makefile" r]
 	while { [gets $fp data] >= 0 } \
 	{
-		if { [string equal -length 4 $data xc7z] == 1 } {
-			set found 1
+		if { [string equal -length 3 $data soc] == 1 } {
+			gets $fp data
+			if { [string equal -length 4 $data none] != 1 } {
+				set soc_exsit 1
+			}
 		}
 		if { [string equal -length 6 $data Showlog] == 1 } {
 			gets $fp data
 			if { [string equal -length 3 $data yes] == 1 } {
 				set showlog 1
 			}
-			if { [string equal -length 2 $data no] == 1 } {
-				set showlog 0
-			}
+		}
+		if { [string equal -length 4 $data xc7z] == 1 } {
+			set found 1
 		}
 	}
 	close $fp
@@ -76,7 +80,11 @@ if {$boot_state == "none"} {
 			if {$found == 1} {
 				write_bitstream ./[current_project].bit -force -quiet
 				exec bootgen -arch zynq -image $xilinx_path/BOOT/output.bif -o ./BOOT.bin -w on
-			} 
+			}
+			#Gen hdf file
+			if {$soc_exsit == 1} {
+				write_hwdef -force -file ./user/Software/data/[current_project].hdf
+			}
 		}
 	}
 }

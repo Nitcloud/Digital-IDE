@@ -39,10 +39,6 @@ def file_update(path) :
 	fpga_include = linecache.getline(path,7)
 	if fpga_include.replace('\n', '') == "none" :
 		folder = os.path.exists("./user/Hardware")
-		if folder:                  
-			print("changed")
-		else :
-			print("unchanged")
 		movedir("./user/Hardware","./user","bd")
 		movedir("./user/Hardware","./user","IP")
 		movedir("./user/Hardware","./user","src")
@@ -55,10 +51,6 @@ def file_update(path) :
 		top_file("./user/TOP.v")
 	else :
 		folder = os.path.exists("./user/Hardware")
-		if folder:                  
-			print("unchanged")
-		else :
-			print("changed")
 		mkdir("./user/Hardware")
 		movedir("./user","./user/Hardware","TOP.v")
 		movedir("./user","./user/Hardware","src")
@@ -70,7 +62,6 @@ def file_update(path) :
 		mkdir("./user/Software/src")
 		tb_file("./user/Hardware/sim/testbench.v")
 		top_file("./user/Hardware/TOP.v")
-
 
 if __name__ == "__main__":
     file_update("./Makefile")

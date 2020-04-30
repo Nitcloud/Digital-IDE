@@ -63,14 +63,7 @@ proc soc_add {} {
 proc cortexM3_IP_add { current_Location } {
 	set_property ip_repo_paths $current_Location/IP [current_project]
 
-	set cortexM3_bd_exsit 0
-	foreach bd_file [glob -nocomplain ./user/Hardware/*] {
-		if { $bd_file == "m3_xIP_default" } \
-		{
-			set cortexM3_bd_exsit 1
-		}
-	}
-	if {$cortexM3_bd_exsit == 0} {		
+	if {[glob -nocomplain ./user/Hardware/bd/*] == ""} {		
 		file mkdir ./user/Hardware/bd/m3_xIP_default
 		file copy  -force $current_Location/IP/Example_bd/m3_xIP_default.bd ./user/Hardware/bd/m3_xIP_default
 		add_file   ./user/Hardware/bd/m3_xIP_default/m3_xIP_default.bd -force -quiet
@@ -80,14 +73,7 @@ proc cortexM3_IP_add { current_Location } {
 }
 
 proc cortexA9_IP_add { current_Location } {
-	set cortexA9_bd_exsit 0
-	foreach bd_file [glob -nocomplain ./user/Hardware/*] {
-		if { $bd_file == "zynq_default"} \
-		{
-			set cortexA9_bd_exsit 1
-		}
-	}
-	if {$cortexA9_bd_exsit == 0} {		
+	if {[glob -nocomplain ./user/Hardware/bd/*] == ""} {		
 		file mkdir ./user/Hardware/bd/zynq_default
 		file copy  -force $current_Location/IP/Example_bd/zynq_default.bd ./user/Hardware/bd/zynq_default
 		add_file   ./user/Hardware/bd/zynq_default/zynq_default.bd -force -quiet
@@ -97,14 +83,7 @@ proc cortexA9_IP_add { current_Location } {
 }
 
 proc MicroBlaze_IP_add { current_Location } {
-	set MicroBlaze_bd_exsit 0
-	foreach bd_file [glob -nocomplain ./user/Hardware/*] {
-		if { $bd_file == "MicroBlaze_default"} \
-		{
-			set MicroBlaze_bd_exsit 1
-		}
-	}
-	if {$MicroBlaze_bd_exsit == 0} {		
+	if {[glob -nocomplain ./user/Hardware/bd/*] == ""} {		
 		file mkdir ./user/Hardware/bd/MicroBlaze_default
 		file copy  -force $current_Location/IP/Example_bd/MicroBlaze_default.bd ./user/Hardware/bd/MicroBlaze_default
 		add_file   ./user/Hardware/bd/MicroBlaze_default/MicroBlaze_default.bd -force -quiet
