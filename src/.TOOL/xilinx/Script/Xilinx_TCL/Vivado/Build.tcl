@@ -22,14 +22,14 @@ if {$boot_state == "none"} {
 	}
 	set found     0
 	set showlog   0
-	set soc_exsit 0
+	set soc_exsit 1
 	set fp [open "./Makefile" r]
 	while { [gets $fp data] >= 0 } \
 	{
 		if { [string equal -length 3 $data soc] == 1 } {
 			gets $fp data
-			if { [string equal -length 4 $data none] != 1 } {
-				set soc_exsit 1
+			if { [string equal -length 4 $data none] == 1 } {
+				set soc_exsit 0
 			}
 		}
 		if { [string equal -length 6 $data Showlog] == 1 } {
@@ -72,6 +72,10 @@ if {$boot_state == "none"} {
 			report_timing_summary -quiet
 
 			write_checkpoint -force ./prj/xilinx/[current_project].runs/impl_1/TOP_routed.dcp -quiet
+			#Gen hdf file
+			if {$soc_exsit == 1} {
+				write_hwdef -force -file ./user/Software/data/[current_project].hdf
+			}
 			#Gen boot
 			if {$found == 0} {
 				write_bitstream ./[current_project].bit -force -quiet -bin_file
@@ -80,10 +84,6 @@ if {$boot_state == "none"} {
 			if {$found == 1} {
 				write_bitstream ./[current_project].bit -force -quiet
 				exec bootgen -arch zynq -image $xilinx_path/BOOT/output.bif -o ./BOOT.bin -w on
-			}
-			#Gen hdf file
-			if {$soc_exsit == 1} {
-				write_hwdef -force -file ./user/Software/data/[current_project].hdf
 			}
 		}
 	}

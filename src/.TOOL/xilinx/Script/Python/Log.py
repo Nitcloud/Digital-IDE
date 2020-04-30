@@ -30,7 +30,8 @@ def showlog(path):
 				xlog_flag = 1
 			if re.match("CRITICAL WARNING:", log_line) :
 				f_log.write(log_line)
-				xlog_flag = 1
+				if xlog_flag == 0:
+					xlog_flag = 2
 			log_line = f_xlog.readline()
 		f_log.close()
 		f_xlog.close()
@@ -39,23 +40,23 @@ def showlog(path):
 def main(type):
 	log_flag = 0
 	if type == "synth":
-		if showlog("./prj/xilinx/template.runs/synth_1/runme.log") :
+		log_flag = showlog("./prj/xilinx/template.runs/synth_1/runme.log")
+		if log_flag:
 			os.system("code ./prj/xilinx/LOG.log")
-			log_flag = 1
 	elif type == "impl":
-		if showlog("./prj/xilinx/template.runs/impl_1/runme.log") :
+		log_flag = showlog("./prj/xilinx/template.runs/impl_1/runme.log")
+		if log_flag:
 			os.system("code ./prj/xilinx/LOG.log")
-			log_flag = 1
 	elif type == "sim":
-		if showlog("./prj/xilinx/template.sim/sim_1/behav/xsim/xvlog.log") :
+		log_flag = showlog("./prj/xilinx/template.sim/sim_1/behav/xsim/xvlog.log")
+		if log_flag:
 			os.system("code ./prj/xilinx/LOG.log")
-			log_flag = 1	
-		if showlog("./prj/xilinx/template.sim/sim_1/behav/xsim/elaborate.log") :
+		log_flag = showlog("./prj/xilinx/template.sim/sim_1/behav/xsim/elaborate.log")
+		if log_flag:
 			os.system("code ./prj/xilinx/LOG.log")
-			log_flag = 1
 	if log_flag == 1:
 		print("error")
-	elif log_flag == 0:
+	else :
 		print("none")
 
 if __name__ == "__main__":
