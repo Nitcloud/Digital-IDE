@@ -7,7 +7,7 @@ set_param general.maxThreads 6
 # set ::env(PYTHONHOME) "C:/Program Files/Python38"
 
 variable current_Location [file normalize [info script]]
-set xilinx_path [file dirname [file dirname [file dirname [file dirname $current_Location]]]]
+variable xilinx_path [file dirname [file dirname [file dirname [file dirname $current_Location]]]]
 
 set boot_state [exec python $xilinx_path/Script/Python/MakeBoot.py first]
 
@@ -54,7 +54,7 @@ if {$boot_state == "none"} {
 
 	set snyth_state [exec python $xilinx_path/Script/Python/Log.py synth]
 	if {$snyth_state == "none"} {
-		write_checkpoint -force ./prj/xilinx/template.runs/synth_1/TOP.dcp -quiet
+		write_checkpoint -force ./prj/xilinx/[current_project].runs/synth_1/TOP.dcp -quiet
 		#run impl
 		reset_run impl_1 -quiet
 		launch_run impl_1 -quiet
@@ -67,7 +67,7 @@ if {$boot_state == "none"} {
 			open_run impl_1 -quiet
 			report_timing_summary -quiet
 
-			write_checkpoint -force ./prj/xilinx/template.runs/impl_1/TOP_routed.dcp -quiet
+			write_checkpoint -force ./prj/xilinx/[current_project].runs/impl_1/TOP_routed.dcp -quiet
 			#Gen boot
 			if {$found == 0} {
 				write_bitstream ./[current_project].bit -force -quiet -bin_file

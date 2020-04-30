@@ -1,8 +1,8 @@
 ////////////////////////////Prj Info////////////////////////////
-#/*****************/which project you want to build,you can choose[ xilinx intel ]
+#/*****************/which project you want to build,you can choose[ xilinx intel ] -prj_name template
 xilinx
 ///////////////////////////LIB Config///////////////////////////
-#/*****************/if include Soc,you can choose [ none ] or [ cortexM3 cortexA9 ] + { -prj_name test -os standalone -app HelloWorld}
+#/*****************/if include Soc,you can choose [ none ] or [ cortexM3 cortexA9 MicroBlaze] + { -prj_name test -os standalone -app HelloWorld}
 Soc
 none
 #/*****************/if include DSP,you can choose 0/1

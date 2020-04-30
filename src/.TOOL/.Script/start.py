@@ -71,9 +71,6 @@ def mkconfig(path) :
 			move_bd_IP("./prj/xilinx/template.srcs/sources_1/ip","./user/Hardware","IP")
 			move_bd_IP("./prj/xilinx/template.srcs/sources_1/bd","./user/Hardware","bd")
 	else:              #Creat New project
-		# os.remove("./Makefile")
-		# config_file_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"Makefile")
-		# shutil.copy(config_file_path,path)
 		fileupdate.file_update(path)
 		if fpga_Version.replace('\n', '') == "xilinx" :
 			tcl_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"Xilinx/Script/Xilinx_TCL/Vivado/Start.tcl")

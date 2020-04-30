@@ -1,5 +1,7 @@
 set_param general.maxThreads 6
-variable current_Location [file normalize [info script]]
+
+set current_Location [file normalize [info script]]
+set prj_name         template
 
 set update  "[file dirname $current_Location]/Update.tcl"
 set sim     "[file dirname $current_Location]/Simulation.tcl"
@@ -40,7 +42,7 @@ proc ope {} {
 	while {1} \
 	{
 		puts "---------what do you want to do next---------"
-		puts "*** input e to exit ***"
+		puts "*** input e to break , ee to exit ***"
 		puts "1) Update_file"
 		puts "2) Simulation"
 		puts "3) Build"
@@ -66,7 +68,7 @@ proc ope {} {
 	}
 }
 
-open_project ./prj/Xilinx/template.xpr -quiet
+open_project ./prj/Xilinx/$prj_name.xpr -quiet
 
 update
 
