@@ -8,8 +8,8 @@
 
 variable current_Location [file normalize [info script]]
 
-set state       [exec python [file dirname $xilinx_path]/.Script/fileupdate.py -quiet]
 set xilinx_path [file dirname [file dirname [file dirname [file dirname $current_Location]]]]
+set state       [exec python [file dirname $xilinx_path]/.Script/fileupdate.py -quiet]
 #puts $state
 set fp [open "./Makefile" r]
 
