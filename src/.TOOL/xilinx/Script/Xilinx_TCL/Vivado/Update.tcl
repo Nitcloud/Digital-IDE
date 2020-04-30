@@ -7,8 +7,9 @@
 # set ::env(PYTHONHOME) "C:/Program Files/Python38"
 
 variable current_Location [file normalize [info script]]
+
+set state       [exec python [file dirname $xilinx_path]/.Script/fileupdate.py -quiet]
 set xilinx_path [file dirname [file dirname [file dirname [file dirname $current_Location]]]]
-set state [exec python [file dirname $xilinx_path]/.Script/fileupdate.py -quiet]
 #puts $state
 set fp [open "./Makefile" r]
 
@@ -64,9 +65,16 @@ proc soc_add {} {
 
 proc cortexM3_IP_add { current_Location } {
 	set_property ip_repo_paths $current_Location/IP [current_project]
-	file mkdir ./user/Hardware/bd/m3_for_xilinx
-	file copy -force $current_Location/IP/Example_bd/m3_for_xilinx.bd ./user/Hardware/bd/m3_for_xilinx
-	add_file ./user/Hardware/bd/m3_for_xilinx/m3_for_xilinx.bd -force -quiet
+	file mkdir ./user/Hardware/bd/m3_xIP_default
+	file copy  -force $current_Location/IP/Example_bd/m3_xIP_default.bd ./user/Hardware/bd/m3_xIP_default
+	add_file   ./user/Hardware/bd/m3_xIP_default/m3_xIP_default.bd -force -quiet
+}
+
+proc cortexA9_IP_add { current_Location } {
+	set_property ip_repo_paths $current_Location/IP [current_project]
+	file mkdir ./user/Hardware/bd/zynq_default
+	file copy  -force $current_Location/IP/Example_bd/zynq_default.bd ./user/Hardware/bd/zynq_default
+	add_file   ./user/Hardware/bd/zynq_default/zynq_default.bd -force -quiet
 }
 
 while { [gets $fp config_data] >= 0 } \
@@ -78,20 +86,16 @@ while { [gets $fp config_data] >= 0 } \
         #puts $state
 		if {[string equal -length 6 $state changed] == 1} \
         {
-			switch $config_data \
-            {
-				cortexM3 \
-				{
-					cortexM3_IP_add $xilinx_path
-				}
-				default {}
+			scan $config_data "%s" cpu
+			switch $cpu \
+			{
+				cortexM3 {cortexM3_IP_add $xilinx_path}
+				cortexA9 {cortexA9_IP_add $xilinx_path}
 			}
 		}
-		if {[string equal -length 4 $config_data none] == 1} \
-        {
+		if {[string equal -length 4 $config_data none] == 1} {
 			none_add
-		} else \
-        {
+		} else {
 			soc_add
 		}
 		break

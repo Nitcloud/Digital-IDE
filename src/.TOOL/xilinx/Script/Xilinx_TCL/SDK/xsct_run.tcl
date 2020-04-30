@@ -11,16 +11,18 @@ set app HelloWorld
 
 setws $ws_path
 
-proc software_down {prj_name} {
+proc software_down {} {
 	#System Reset
 	rst -system
 	# PS7 initialization
 	namespace eval xsdb \
 	{ 
+		global hw_name
 		source ./user/Software/src/$hw_name/ps7_init.tcl
 		ps7_init
 	}
 	# Download the elf
+	global prj_name
 	dow ./user/Software/src/$prj_name/Debug/$prj_name.elf
 	con
 }
@@ -46,8 +48,7 @@ while { [gets $fp data] >= 0 } \
 	if { [string equal -length 3 $data Soc] == 1 } {
 		if { [gets $fp data] >= 0 } {
         	scan $data "%s -prj_name %s -os %s -app %s" cpu prj_name os app
-			if { $cpu == "cortexA9" } \
-			{
+			if { $cpu == "cortexA9" } {
 				set cpu "ps7_cortexa9_0"
 			}
 			if { $app == "HelloWorld" } {

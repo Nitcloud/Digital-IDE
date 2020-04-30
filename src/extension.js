@@ -122,12 +122,13 @@ function activate(context) {
         if (!editor) {
             return;
         }
-        let ter1 = vscode.window.createTerminal({ name: 'testbench' });
-        //ter1.show(true);
-        ter1.hide
-        ter1.dispose
-        ter1.sendText(`python ${__dirname}/.TOOL/.Script/vTbgenerator.py ${editor.document.fileName}`);
-        vscode.window.showInformationMessage('Generate testbench successfully!');
+        // let ter1 = vscode.window.createTerminal({ name: 'testbench' });
+        // //ter1.show(true);
+        // ter1.hide
+        // ter1.dispose
+        // ter1.sendText(`python ${__dirname}/.TOOL/.Script/vTbgenerator.py ${editor.document.fileName}`);
+		commands.executeCommand(`python ${__dirname}/.TOOL/.Script/vTbgenerator.py ${editor.document.fileName}`);
+		vscode.window.showInformationMessage('Generate testbench successfully!');
     });
     context.subscriptions.push(testbench);
     let StartFPGA = vscode.commands.registerCommand('extension.StartFPGA', () => {

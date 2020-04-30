@@ -36,7 +36,6 @@ proc gui {} {
 	start_gui -quiet
 }
 
-
 proc ope {} {	
 	while {1} \
 	{
@@ -51,13 +50,14 @@ proc ope {} {
 		gets stdin your_choice;
 		switch $your_choice \
 		{
-			1 {update }
-			2 {sim    }
-			3 {build  }
-			4 {program}
-			5 {debug  }
-			6 {break  }
-			e {break  }
+			1  {update }
+			2  {sim    }
+			3  {build  }
+			4  {program}
+			5  {debug  }
+			6  {break  }
+			e  {break  }
+			ee {exit 1 }
 			default {puts "please input right choice"}
 		}
 	}
