@@ -68,6 +68,16 @@ proc ope {} {
 	}
 }
 
+set fp [open "./Makefile" r]
+while { [gets $fp data] >= 0 } \
+{
+	if { [string first project $data] != -1 } {
+		gets $fp data
+		scan $data "xilinx -prj_name %s" prj_name
+	}
+}
+close $fp
+
 open_project ./prj/Xilinx/$prj_name.xpr -quiet
 
 update

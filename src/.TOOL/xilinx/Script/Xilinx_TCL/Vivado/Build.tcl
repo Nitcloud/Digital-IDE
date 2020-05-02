@@ -9,7 +9,7 @@ set_param general.maxThreads 6
 variable current_Location [file normalize [info script]]
 variable xilinx_path [file dirname [file dirname [file dirname [file dirname $current_Location]]]]
 
-set boot_state [exec python $xilinx_path/Script/Python/MakeBoot.py first]
+set boot_state [exec python $xilinx_path/Script/Python/MakeBoot.py first [current_project]]
 
 if {$boot_state == "none"} {
 	puts "ERROR: The ./user/BOOT folder exists, but there are no elf files in it"
@@ -18,7 +18,7 @@ if {$boot_state == "none"} {
 	if {$boot_state != "one"} {
 		puts $boot_state
 		gets stdin Index
-		puts [exec python $xilinx_path/Script/Python/MakeBoot.py $Index]
+		puts [exec python $xilinx_path/Script/Python/MakeBoot.py $Index [current_project]]
 	}
 	set found     0
 	set showlog   0
@@ -53,10 +53,10 @@ if {$boot_state == "none"} {
 	launch_run synth_1 -quiet
 	wait_on_run synth_1 -quiet
 	if {$showlog == 1} {
-		exec python $xilinx_path/Script/Python/showlog.py -quiet
+		exec python $xilinx_path/Script/Python/showlog.py [current_project]
 	}
 
-	set snyth_state [exec python $xilinx_path/Script/Python/Log.py synth]
+	set snyth_state [exec python $xilinx_path/Script/Python/Log.py synth [current_project]]
 	if {$snyth_state == "none"} {
 		write_checkpoint -force ./prj/xilinx/[current_project].runs/synth_1/TOP.dcp -quiet
 		#run impl
@@ -64,9 +64,9 @@ if {$boot_state == "none"} {
 		launch_run impl_1 -quiet
 		wait_on_run impl_1 -quiet
 		if {$showlog == 1} {
-			exec python $xilinx_path/Script/Python/showlog.py -quiet
+			exec python $xilinx_path/Script/Python/showlog.py [current_project]
 		}
-		set impl_state [exec python $xilinx_path/Script/Python/Log.py impl]
+		set impl_state [exec python $xilinx_path/Script/Python/Log.py impl [current_project]]
 		if {$impl_state == "none"} {
 			open_run impl_1 -quiet
 			report_timing_summary -quiet

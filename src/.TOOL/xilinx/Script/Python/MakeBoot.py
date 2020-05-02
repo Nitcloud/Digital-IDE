@@ -40,7 +40,7 @@ def Find_elf(path,type):
 		print("none")
 		return "none"
 
-def make_boot(type):
+def make_boot(type,prj_name):
 	BOOT_folder = os.path.exists("./user/BOOT")
 	output_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),"BOOT")  
               
@@ -53,7 +53,7 @@ def make_boot(type):
 		bootloader = "\t[bootloader]%s/fsbl.elf\n" % (output_path.replace("\\", "/"))
 		ps_elf = "\t%s/%s\n" % (output_path.replace("\\", "/"),Find_elf(output_path.replace("\\", "/"),type))
 		f.write(bootloader)
-		f.write("\t./template.bit\n")
+		f.write("\t./template.bit\n".replace("template",prj_name))
 		f.write(ps_elf)
 	else :
 		if os.path.exists("./user/BOOT/fsbl.elf") :
@@ -62,11 +62,11 @@ def make_boot(type):
 			bootloader = "\t[bootloader]%s/fsbl.elf\n" % (output_path.replace("\\", "/"))
 		ps_elf = "\t./user/BOOT/%s\n" % Find_elf("./user/BOOT",type)
 		f.write(bootloader)
-		f.write("\t./template.bit\n")
+		f.write("\t./template.bit\n".replace("template",prj_name))
 		f.write(ps_elf)
 
 	f.write("}")
 	f.close()
 
 if __name__ == "__main__":
-    make_boot(sys.argv[1])
+    make_boot(sys.argv[1],sys.argv[2])

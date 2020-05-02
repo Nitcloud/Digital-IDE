@@ -206,10 +206,10 @@ def writeTestBench(input_file):
         fp.write(s)
         fp.close()
     else:
-        fp = open("./user/Hardware/sim/testbench.v", 'a')
         lines = []
         line_cnt = 0
         instance_line = 0
+        fp = open("./user/Hardware/sim/testbench.v", 'a')
         for line in fp:
             line_cnt = line_cnt + 1
             lines.append(line)

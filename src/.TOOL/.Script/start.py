@@ -32,15 +32,50 @@ def del_file(file_param):
 	for infile in glob.glob(os.path.join(file_param, "prj/", '*.log')):
 		os.remove(infile)
 
-def move_bd_IP(sourse_path,target_path,Goal):
-	folder = os.path.exists(sourse_path)
+def fpga_info():
+    lines = []
+    line_cnt = 0
+
+    Version_line = 2
+    prj_name_line = 2
+    mode_line = 0
+
+    fp = open("./Makefile", 'r')
+    for line in fp:
+        lines.append(line)
+        line_cnt = line_cnt + 1
+        if line == "Soc\n":
+            mode_line = line_cnt
+    fp.close()
+
+    prj_info = lines[Version_line].replace('\n', '').split(' ')
+    fpga_Version = prj_info[0]
+    prj_name = prj_info[2]
+    mode = lines[mode_line].replace('\n', '')
+    info = [fpga_Version,prj_name,mode]
+    return info
+
+def move_xbd_xIP(prj_name,mode):
+	source_IP_path = "./prj/xilinx/template.srcs/sources_1/ip".replace("template",prj_name)
+	source_bd_path = "./prj/xilinx/template.srcs/sources_1/bd".replace("template",prj_name)
+	if mode == "none":
+		target_path = "./user"
+	elif mode == "soc":
+		target_path = "./user/Hardware"
+	
+	folder = os.path.exists(source_IP_path)
 	if folder:
-		files = os.listdir(sourse_path) 
+		files = os.listdir(source_IP_path) 
 		for file in files: 
-			#if os.path.isdir(file): 
-			#print(os.path.join(sourse_path,file).replace("\\", "/"))
-			fileupdate.deldir(os.path.join(target_path,Goal,file).replace("\\", "/"))
-			shutil.move(os.path.join(sourse_path,file).replace("\\", "/"),os.path.join(target_path,Goal).replace("\\", "/"))
+			fileupdate.deldir(os.path.join(target_path,"IP",file).replace("\\", "/"))
+			shutil.move(os.path.join(source_IP_path,file).replace("\\", "/"),os.path.join(target_path,"IP").replace("\\", "/"))
+	
+	folder = os.path.exists(source_bd_path)
+	if folder:
+		files = os.listdir(source_bd_path) 
+		for file in files: 
+			fileupdate.deldir(os.path.join(target_path,"bd",file).replace("\\", "/"))
+			shutil.move(os.path.join(source_bd_path,file).replace("\\", "/"),os.path.join(target_path,"bd").replace("\\", "/"))
 
 def Open_prj():
 	#handle xilinx
@@ -61,40 +96,26 @@ def mkconfig(path) :
 	if not folder:
 		config_file_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"Makefile")
 		shutil.copy(config_file_path,path)
-	fpga_Version = linecache.getline(path,3)
-	fpga_include = linecache.getline(path,7)
+	info = fpga_info()
 	if Open_prj() == "xilinx": #Open existing project
-		if fpga_include.replace('\n', '') == "none" :
-			move_bd_IP("./prj/xilinx/template.srcs/sources_1/ip","./user","IP")
-			move_bd_IP("./prj/xilinx/template.srcs/sources_1/bd","./user","bd")
-		else :
-			move_bd_IP("./prj/xilinx/template.srcs/sources_1/ip","./user/Hardware","IP")
-			move_bd_IP("./prj/xilinx/template.srcs/sources_1/bd","./user/Hardware","bd")
+		move_xbd_xIP(info[1],info[2])
 	else:              #Creat New project
-		fileupdate.file_update(path)
-		if fpga_Version.replace('\n', '') == "xilinx" :
+		if info[0] == "xilinx" :
 			tcl_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"Xilinx/Script/Xilinx_TCL/Vivado/Start.tcl")
 			cmd = "vivado -mode tcl -s %s -notrace" % (tcl_file.replace("\\", "/"))
 			os.system(cmd)
-			if fpga_include.replace('\n', '') == "none" :
-				move_bd_IP("./prj/xilinx/template.srcs/sources_1/ip","./user","IP")
-				move_bd_IP("./prj/xilinx/template.srcs/sources_1/bd","./user","bd")
-			else :
-				move_bd_IP("./prj/xilinx/template.srcs/sources_1/ip","./user/Hardware","IP")
-				move_bd_IP("./prj/xilinx/template.srcs/sources_1/bd","./user/Hardware","bd")
-		else:
-			pass
+			move_xbd_xIP(info[1],info[2])
 
 def start_sdk():
 	tcl_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"Xilinx/Script/Xilinx_TCL/SDK/xsct_run.tcl")
 	cmd = "xsct %s" % (tcl_file.replace("\\", "/"))
 	os.system(cmd)
 
-def main(type):
+def main(mode):
 	del_file("./")
-	if type == "fpga":
+	if mode == "fpga":
 		mkconfig("./Makefile")
-	elif type == "sdk":
+	elif mode == "sdk":
 		start_sdk()
 	del_file("./")
 

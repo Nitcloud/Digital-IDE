@@ -9,11 +9,11 @@ set_param general.maxThreads 8
 if {[current_sim] != ""} \
 {
 	relaunch_sim -quiet
-	set sim_state [exec python $xilinx_path/Script/Python/Log.py sim]
+	set sim_state [exec python $xilinx_path/Script/Python/Log.py sim [current_project]]
 } else \
 {
 	launch_simulation -quiet
-	set sim_state [exec python $xilinx_path/Script/Python/Log.py sim]
+	set sim_state [exec python $xilinx_path/Script/Python/Log.py sim [current_project]]
 }
 
 if {$sim_state == "none"} {

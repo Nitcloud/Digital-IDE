@@ -14,11 +14,11 @@ def deldir(path):
 	if folder:                  
 		shutil.rmtree(path.replace("\\", "/"))    
 
-def movedir(sourse_path,target_path,gen_path):
-	folder = os.path.exists(os.path.join(sourse_path,gen_path).replace("\\", "/"))
+def movedir(source_path,target_path,gen_path):
+	folder = os.path.exists(os.path.join(source_path,gen_path).replace("\\", "/"))
 	if folder :                  
 		deldir(os.path.join(target_path,gen_path).replace("\\", "/"))
-		shutil.move(os.path.join(sourse_path,gen_path).replace("\\", "/"),target_path)
+		shutil.move(os.path.join(source_path,gen_path).replace("\\", "/"),target_path)
 	else :
 		if gen_path != "TOP.v" :
 			mkdir(os.path.join(target_path,gen_path).replace("\\", "/"))

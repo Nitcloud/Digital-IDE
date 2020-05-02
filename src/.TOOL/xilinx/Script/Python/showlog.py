@@ -12,21 +12,22 @@
 
 import os
 import re
+import sys
 import glob 
 import shutil
 import linecache
 
-def showlog(path):
+def showlog(path,prj_name):
 	folder = os.path.exists(os.path.join(path,"synth_1/runme.log"))
 	if folder:                  
-		os.system("code ./prj/xilinx/template.runs/synth_1/runme.log")
+		os.system("code ./prj/xilinx/template.runs/synth_1/runme.log".replace("template",prj_name))
 	folder = os.path.exists(os.path.join(path,"impl_1/runme.log"))
 	if folder: 
-		os.system("code ./prj/xilinx/template.runs/impl_1/runme.log")
+		os.system("code ./prj/xilinx/template.runs/impl_1/runme.log".replace("template",prj_name))
 
 
-def main():
-	showlog("./prj/xilinx/template.runs")
+def main(prj_name):
+	showlog("./prj/xilinx/template.runs".replace("template",prj_name),prj_name)
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1])

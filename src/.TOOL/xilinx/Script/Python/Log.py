@@ -37,21 +37,21 @@ def showlog(path):
 		f_xlog.close()
 	return xlog_flag
 
-def main(type):
+def main(mode,prj_name):
 	log_flag = 0
-	if type == "synth":
-		log_flag = showlog("./prj/xilinx/template.runs/synth_1/runme.log")
+	if mode == "synth":
+		log_flag = showlog("./prj/xilinx/template.runs/synth_1/runme.log".replace("template",prj_name))
 		if log_flag:
 			os.system("code ./prj/xilinx/LOG.log")
-	elif type == "impl":
-		log_flag = showlog("./prj/xilinx/template.runs/impl_1/runme.log")
+	elif mode == "impl":
+		log_flag = showlog("./prj/xilinx/template.runs/impl_1/runme.log".replace("template",prj_name))
 		if log_flag:
 			os.system("code ./prj/xilinx/LOG.log")
-	elif type == "sim":
-		log_flag = showlog("./prj/xilinx/template.sim/sim_1/behav/xsim/xvlog.log")
+	elif mode == "sim":
+		log_flag = showlog("./prj/xilinx/template.sim/sim_1/behav/xsim/xvlog.log".replace("template",prj_name))
 		if log_flag:
 			os.system("code ./prj/xilinx/LOG.log")
-		log_flag = showlog("./prj/xilinx/template.sim/sim_1/behav/xsim/elaborate.log")
+		log_flag = showlog("./prj/xilinx/template.sim/sim_1/behav/xsim/elaborate.log".replace("template",prj_name))
 		if log_flag:
 			os.system("code ./prj/xilinx/LOG.log")
 	if log_flag == 1:
@@ -60,4 +60,4 @@ def main(type):
 		print("none")
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(sys.argv[1],sys.argv[2])

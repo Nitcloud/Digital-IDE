@@ -123,6 +123,10 @@ proc choose_device {} {
 set fp [open "./Makefile" r]
 while { [gets $fp data] >= 0 } \
 {
+	if { [string first project $data] != -1 } {
+		gets $fp data
+		scan $data "xilinx -prj_name %s" prj_name
+	}
 	if { [string equal -length 6 $data Device] == 1 } {
 		if { [gets $fp data] >= 0 } {
 			create_project $prj_name ./prj/xilinx -part $data -force -quiet
