@@ -95,7 +95,7 @@ proc ope {} {
 			}
 			3 \
 			{
-				software_down [getprojects -type app]
+				software_down
 			}
 			4 \
 			{

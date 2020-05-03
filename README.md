@@ -47,7 +47,7 @@ It needs **python3** and **Vivado** installed and available on the system `PATH`
 
 Finally, Python is required, so when installing it please choose to automatically add to the environment variables during the installation process, and install the pip tool. If you need to automatically write testbench and instance functions, you need to install the `chardet` package.
 
-Installation method: `pip install chardet`.
+Installation method: `pip install chardet`,`pip install pyperclip`.
 
 Ways to detect successful configuration: enter `xsct`, `vivado -version`, `python`, `code` in the shell, and check that all can be executed successfully.
 
@@ -91,7 +91,7 @@ Ways to detect successful configuration: enter `xsct`, `vivado -version`, `pytho
 
 * **testbench / instance function:**\
   Select **testbench** in the right-click menu bar, you can write this file out of tb file and write it into the default `testbench.v` file.\
-  Select **instance** in the right-click menu bar to instantiate this file and display it in the terminal (I originally wanted to copy it directly to the clipboard, but the tkinter library seems to have no effect. I hope the successful guy can teach me (T^T).)
+  Select **instance** in the right-click menu bar to instantiate this file and display it in the terminal
 
 * **Update function:**\
   Update the files included under the Xilinx project, because the included form is all included, so it will be included under `./user/src` and `./user/sim`, so you are under `src`, `data`, `sim` Is the file that your project already contains. The update mechanism is to delete all files first and then include them all, so if you add or delete files in the folder, select **1) Update** and the project will be updated together.

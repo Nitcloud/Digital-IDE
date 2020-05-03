@@ -30,7 +30,8 @@
 		"onCommand:extension.testbench",
 		"onCommand:extension.StartFPGA",
 		"onCommand:extension.StartSDK",
-		"onCommand:extension.Overwrite testbench"
+		"onCommand:extension.Overwrite testbench",
+		"onCommand:extension.Overwrite bd_file"
 	],
 	"main": "./src/extension",
 	"contributes": {
@@ -253,6 +254,10 @@
 			{
 				"command": "extension.Overwrite testbench",
 				"title": "Overwrite the template of testbench"
+			},
+			{
+				"command": "extension.Overwrite bd_file",
+				"title": "Overwrite the bd_file"
 			}
 		],
 		"keybindings": [

@@ -4,5 +4,10 @@
 		"**/.project": true,
 		"**/.settings": true,
 		"**/.factorypath": true
+	},
+	"git.ignoreLimitWarning": true,
+	"files.associations": {
+		"Makefile": "makefile",
+		"EX.C": "cpp"
 	}
 }
