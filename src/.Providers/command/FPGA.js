@@ -41,7 +41,7 @@ function register(context,current_path) {
     });
 	context.subscriptions.push(testbench);
 
-	let StartFPGA_init = vscode.commands.registerCommand('FPGA.Init', () => {
+	let Init = vscode.commands.registerCommand('FPGA.Init', () => {
 		StartFPGA = vscode.window.createTerminal({ name: 'StartFPGA' });
         let editor = vscode.window.activeTextEditor;
         if (!editor) {
@@ -51,7 +51,7 @@ function register(context,current_path) {
 		StartFPGA.show(true);
 		StartFPGA.sendText(`python ${current_path}/.TOOL/.Script/start.py fpga`);
 	});
-	context.subscriptions.push(StartFPGA_init);
+	context.subscriptions.push(Init);
     let Update = vscode.commands.registerCommand('FPGA.Update', () => {
 		StartFPGA.show(true);
 		StartFPGA.sendText(`update`);

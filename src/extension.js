@@ -35,6 +35,7 @@ const vhdlMode    = require('./.Providers/vhdl/vhdlMode');
 const VhdlSuggest = require('./.Providers/vhdl/VhdlSuggest');
 
 const FPGA        = require("./.Providers/command/FPGA");
+const SDK         = require("./.Providers/command/SDK");
 const FPGA_option = require("./.Providers/treedata/fpga_option");
 
 function activate(context) {
@@ -111,19 +112,10 @@ function activate(context) {
 	//My Command
 	let current_path = `${__dirname}`;
 	FPGA.register(context,current_path);
+	SDK.register(context,current_path);
 	
 	vscode.window.registerTreeDataProvider('TOOL.fpga_options', new FPGA_option.Provider());
 
-	let StartSDK = vscode.commands.registerCommand('SDK.StartSDK', () => {
-        let editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            return;
-        }
-        let ter1 = vscode.window.createTerminal({ name: 'StartSDK' });
-        ter1.show(true);
-        ter1.sendText(`python ${__dirname}/.TOOL/.Script/start.py sdk`);
-	});
-	context.subscriptions.push(StartSDK);
 }
 exports.activate = activate;
 
