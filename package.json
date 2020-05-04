@@ -26,12 +26,17 @@
 		"onLanguage:vhdl",
 		"onLanguage:verilog",
 		"onLanguage:systemverilog",
-		"onCommand:extension.instance",
-		"onCommand:extension.testbench",
-		"onCommand:extension.StartFPGA",
-		"onCommand:extension.StartSDK",
-		"onCommand:extension.Overwrite testbench",
-		"onCommand:extension.Overwrite bd_file"
+		"onCommand:FPGA.instance",
+		"onCommand:FPGA.testbench",
+		"onCommand:FPGA.Init",
+		"onCommand:FPGA.Update",
+		"onCommand:FPGA.Sim",
+		"onCommand:FPGA.Build",
+		"onCommand:FPGA.Progarm",
+		"onCommand:FPGA.GUI",
+		"onCommand:FPGA.Overwrite testbench",
+		"onCommand:FPGA.Overwrite bd_file",
+		"onCommand:SDK.StartSDK"
 	],
 	"main": "./src/extension",
 	"contributes": {
@@ -136,6 +141,27 @@
 					"description": "Enable logging for this extension"
 				}
 			}
+		},		
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "TOOL",
+					"title": "FPGA Tool",
+					"icon": "images/svg/FPGAs.svg"
+				}
+			]
+		},
+		"views": {
+			"TOOL": [
+				{
+					"id": "TOOL.fpga_options",
+					"name": "FPGA Options"
+				},
+				{
+					"id": "TOOL.sdk_options",
+					"name": "SDK Options"
+				}
+			]
 		},
 		"languages": [
 			{
@@ -236,39 +262,71 @@
 		],
 		"commands": [
 			{
-				"command": "extension.instance",
-				"title": "Instance"
+				"command": "FPGA.instance",
+				"title": "Instance the current module",
+				"category": "FPGA.instance"
 			},
 			{
-				"command": "extension.testbench",
-				"title": "Testbench"
+				"command": "FPGA.testbench",
+				"title": "Instance the current module into Testbench file",
+				"category": "FPGA.testbench"
+				
 			},
 			{
-				"command": "extension.StartFPGA",
-				"title": "StartFPGA"
+				"command": "FPGA.Init",
+				"title": "Init",
+				"category": "FPGA.Init"
 			},
 			{
-				"command": "extension.StartSDK",
-				"title": "StartSDK"
+				"command": "FPGA.Update",
+				"title": "Update designed file",
+				"category": "FPGA.Update"
 			},
 			{
-				"command": "extension.Overwrite testbench",
-				"title": "Overwrite the template of testbench"
+				"command": "FPGA.Sim",
+				"title": "Run the Simulation",
+				"category": "FPGA.Sim"
 			},
 			{
-				"command": "extension.Overwrite bd_file",
-				"title": "Overwrite the bd_file"
+				"command": "FPGA.Build",
+				"title": "Build the current fpga project",
+				"category": "FPGA.Build"
+			},
+			{
+				"command": "FPGA.Progarm",
+				"title": "Download the bit file into the device",
+				"category": "FPGA.Progarm"
+			},
+			{
+				"command": "FPGA.GUI",
+				"title": "Open the GUI",
+				"category": "FPGA.GUI"
+			},
+			{
+				"command": "SDK.StartSDK",
+				"title": "StartSDK",
+				"category": "SDK.StartSDK"
+			},
+			{
+				"command": "FPGA.Overwrite testbench",
+				"title": "Overwrite the template of testbench",
+				"category": "FPGA.Overwrite testbench"
+			},
+			{
+				"command": "FPGA.Overwrite bd_file",
+				"title": "Overwrite the bd_file",
+				"category": "FPGA.Overwrite bd_file"
 			}
 		],
 		"keybindings": [
 			{
-				"command": "extension.StartFPGA",
+				"command": "FPGA.Init",
 				"key": "Alt+z",
 				"mac": "Alt+z",
 				"when": "editorTextFocus"
 			},
 			{
-				"command": "extension.StartSDK",
+				"command": "SDK.StartSDK",
 				"key": "Alt+x",
 				"mac": "Alt+x",
 				"when": "editorTextFocus"
@@ -278,22 +336,17 @@
 			"editor/context": [
 				{
 					"when": "editorFocus",
-					"command": "extension.StartFPGA",
-					"group": "navigation@4"
-				},
-				{
-					"when": "editorFocus",
-					"command": "extension.StartSDK",
+					"command": "SDK.StartSDK",
 					"group": "navigation@5"
 				},
 				{
 					"when": "editorFocus",
-					"command": "extension.testbench",
+					"command": "FPGA.testbench",
 					"group": "navigation@6"
 				},
 				{
 					"when": "editorFocus",
-					"command": "extension.instance",
+					"command": "FPGA.instance",
 					"group": "navigation@7"
 				}
 			]

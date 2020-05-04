@@ -82,6 +82,6 @@ open_project ./prj/Xilinx/$prj_name.xpr -quiet
 
 update
 
-ope
+# ope
 
 

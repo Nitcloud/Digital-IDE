@@ -11,9 +11,9 @@
 
 Object.defineProperty(exports, "__esModule", { value: true });
 
-var vscode   = require("vscode");
-var path     = require("path");
-
+var vscode = require("vscode");
+var exec   = require('child_process').exec;
+var path   = require("path");
 //the var of the lint
 var ctags_1  = require("./.Linter/ctags");
 var Logger_1 = require("./.Linter/Logger");
@@ -33,6 +33,9 @@ const WorkspaceSymbolProvider_1 = require("./.Providers/providers/WorkspaceSymbo
 
 const vhdlMode    = require('./.Providers/vhdl/vhdlMode');
 const VhdlSuggest = require('./.Providers/vhdl/VhdlSuggest');
+
+const FPGA        = require("./.Providers/command/FPGA");
+const FPGA_option = require("./.Providers/treedata/fpga_option");
 
 function activate(context) {
     // Configure lint manager
@@ -106,7 +109,8 @@ function activate(context) {
     if (vscode.window.activeTextEditor) {}
 	
 	//My Command
-    let instance = vscode.commands.registerCommand('extension.instance', () => {
+
+	let instance = vscode.commands.registerCommand('FPGA.instance', () => {
         let editor = vscode.window.activeTextEditor;
         if (!editor) {
             return;
@@ -117,11 +121,21 @@ function activate(context) {
         vscode.window.showInformationMessage('Generate instance successfully!');
     });
     context.subscriptions.push(instance);
-    let testbench = vscode.commands.registerCommand('extension.testbench', () => {
+    let testbench = vscode.commands.registerCommand('FPGA.testbench', () => {
         let editor = vscode.window.activeTextEditor;
         if (!editor) {
             return;
-        }
+		}
+		// var command = `python ${__dirname}/.TOOL/.Script/vTbgenerator.py ${editor.document.fileName}`;
+		// var process = child_process.exec(command);
+		// exec(command, function(error, stdout, stderr){
+		// 	if(error) {
+		// 		console.error('error: ' + error);
+		// 		return;
+		// 	}
+		// 	console.log('stdout: ' + stdout);
+		// 	console.log('stderr: ' + typeof stderr);
+		// });
         let ter1 = vscode.window.createTerminal({ name: 'testbench' });
         //ter1.show(true);
         ter1.hide
@@ -129,18 +143,13 @@ function activate(context) {
         ter1.sendText(`python ${__dirname}/.TOOL/.Script/vTbgenerator.py ${editor.document.fileName}`);
 		vscode.window.showInformationMessage('Generate testbench successfully!');
     });
-    context.subscriptions.push(testbench);
-    let StartFPGA = vscode.commands.registerCommand('extension.StartFPGA', () => {
-        let editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            return;
-        }
-        let ter1 = vscode.window.createTerminal({ name: 'StartFPGA' });
-        ter1.show(true);
-        ter1.sendText(`python ${__dirname}/.TOOL/.Script/start.py fpga`);
-    });
-	context.subscriptions.push(StartFPGA);
-	let StartSDK = vscode.commands.registerCommand('extension.StartSDK', () => {
+	context.subscriptions.push(testbench);
+
+	FPGA.register(context);
+	
+	vscode.window.registerTreeDataProvider('TOOL.fpga_options', new FPGA_option.Provider());
+
+	let StartSDK = vscode.commands.registerCommand('SDK.StartSDK', () => {
         let editor = vscode.window.activeTextEditor;
         if (!editor) {
             return;
@@ -148,54 +157,8 @@ function activate(context) {
         let ter1 = vscode.window.createTerminal({ name: 'StartSDK' });
         ter1.show(true);
         ter1.sendText(`python ${__dirname}/.TOOL/.Script/start.py sdk`);
-    });
+	});
 	context.subscriptions.push(StartSDK);
-	let Overwrite_tb = vscode.commands.registerCommand('extension.Overwrite testbench', () => {
-		const path = `${__dirname}/.TOOL/.Data/testbench.v`;
-		const options = {
-			preview: false,
-			viewColumn: vscode.ViewColumn.Active
-		};
-		vscode.window.showTextDocument(vscode.Uri.file(path), options);
-    });
-	context.subscriptions.push(Overwrite_tb);
-	let Overwrite_bd = vscode.commands.registerCommand('extension.Overwrite bd_file', () => {
-		vscode.window.showQuickPick(['m3_xIP_default.bd','MicroBlaze_default.bd','zynq_default.bd']).then(selection => {
-		  // the user canceled the selection
-		  if (!selection) {
-			return;
-		  }
-		  // the user selected some item. You could use `selection.name` too
-		  switch (selection) {
-			case "m3_xIP_default.bd": 
-				const m3_xIP_default_path = `${__dirname}/.TOOL/Xilinx/IP/Example_bd/m3_xIP_default.bd`;
-				const m3_xIP_default_options = {
-					preview: false,
-					viewColumn: vscode.ViewColumn.Active
-				};
-				vscode.window.showTextDocument(vscode.Uri.file(m3_xIP_default_path), m3_xIP_default_options);
-			break;
-			case "MicroBlaze_default.bd": 
-				const MicroBlaze_default_path = `${__dirname}/.TOOL/Xilinx/IP/Example_bd/MicroBlaze_default.bd`;
-				const MicroBlaze_default_options = {
-					preview: false,
-					viewColumn: vscode.ViewColumn.Active
-				};
-				vscode.window.showTextDocument(vscode.Uri.file(MicroBlaze_default_path), MicroBlaze_default_options);
-			break;
-			case "zynq_default.bd": 
-				const zynq_default_path = `${__dirname}/.TOOL/Xilinx/IP/Example_bd/zynq_default.bd`;
-				const zynq_default_options = {
-					preview: false,
-					viewColumn: vscode.ViewColumn.Active
-				};
-				vscode.window.showTextDocument(vscode.Uri.file(zynq_default_path), zynq_default_options);
-			break;
-			default: break;
-		  }
-		});
-    });
-    context.subscriptions.push(Overwrite_bd);
 }
 exports.activate = activate;
 
