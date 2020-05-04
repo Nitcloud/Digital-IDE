@@ -109,43 +109,8 @@ function activate(context) {
     if (vscode.window.activeTextEditor) {}
 	
 	//My Command
-
-	let instance = vscode.commands.registerCommand('FPGA.instance', () => {
-        let editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            return;
-        }
-        let ter1 = vscode.window.createTerminal({ name: 'instance' });
-        ter1.show(true);
-        ter1.sendText(`python ${__dirname}/.TOOL/.Script/vInstance_Gen.py ${editor.document.fileName}`);
-        vscode.window.showInformationMessage('Generate instance successfully!');
-    });
-    context.subscriptions.push(instance);
-    let testbench = vscode.commands.registerCommand('FPGA.testbench', () => {
-        let editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            return;
-		}
-		// var command = `python ${__dirname}/.TOOL/.Script/vTbgenerator.py ${editor.document.fileName}`;
-		// var process = child_process.exec(command);
-		// exec(command, function(error, stdout, stderr){
-		// 	if(error) {
-		// 		console.error('error: ' + error);
-		// 		return;
-		// 	}
-		// 	console.log('stdout: ' + stdout);
-		// 	console.log('stderr: ' + typeof stderr);
-		// });
-        let ter1 = vscode.window.createTerminal({ name: 'testbench' });
-        //ter1.show(true);
-        ter1.hide
-        ter1.dispose
-        ter1.sendText(`python ${__dirname}/.TOOL/.Script/vTbgenerator.py ${editor.document.fileName}`);
-		vscode.window.showInformationMessage('Generate testbench successfully!');
-    });
-	context.subscriptions.push(testbench);
-
-	FPGA.register(context);
+	let current_path = `${__dirname}`;
+	FPGA.register(context,current_path);
 	
 	vscode.window.registerTreeDataProvider('TOOL.fpga_options', new FPGA_option.Provider());
 

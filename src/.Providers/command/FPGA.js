@@ -4,8 +4,43 @@ var vscode = require("vscode");
 
 let StartFPGA;
 
-function register(context) {
+function register(context,current_path) {
 	//My FPGA Command
+	let instance = vscode.commands.registerCommand('FPGA.instance', () => {
+        let editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            return;
+        }
+        let ter1 = vscode.window.createTerminal({ name: 'instance' });
+        ter1.show(true);
+        ter1.sendText(`python ${current_path}/.TOOL/.Script/vInstance_Gen.py ${editor.document.fileName}`);
+        vscode.window.showInformationMessage('Generate instance successfully!');
+    });
+    context.subscriptions.push(instance);
+    let testbench = vscode.commands.registerCommand('FPGA.testbench', () => {
+        let editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            return;
+		}
+		// var command = `python ${__dirname}/.TOOL/.Script/vTbgenerator.py ${editor.document.fileName}`;
+		// var process = child_process.exec(command);
+		// exec(command, function(error, stdout, stderr){
+		// 	if(error) {
+		// 		console.error('error: ' + error);
+		// 		return;
+		// 	}
+		// 	console.log('stdout: ' + stdout);
+		// 	console.log('stderr: ' + typeof stderr);
+		// });
+        let ter1 = vscode.window.createTerminal({ name: 'testbench' });
+        //ter1.show(true);
+        ter1.hide
+        ter1.dispose
+        ter1.sendText(`python ${current_path}/.TOOL/.Script/vTbgenerator.py ${editor.document.fileName}`);
+		vscode.window.showInformationMessage('Generate testbench successfully!');
+    });
+	context.subscriptions.push(testbench);
+
 	let StartFPGA_init = vscode.commands.registerCommand('FPGA.Init', () => {
 		StartFPGA = vscode.window.createTerminal({ name: 'StartFPGA' });
         let editor = vscode.window.activeTextEditor;
@@ -14,7 +49,7 @@ function register(context) {
 		}
 		// StartFPGA.hide
 		StartFPGA.show(true);
-		StartFPGA.sendText(`python ${__dirname}/.TOOL/.Script/start.py fpga`);
+		StartFPGA.sendText(`python ${current_path}/.TOOL/.Script/start.py fpga`);
 	});
 	context.subscriptions.push(StartFPGA_init);
     let Update = vscode.commands.registerCommand('FPGA.Update', () => {
@@ -43,7 +78,7 @@ function register(context) {
     });
 	context.subscriptions.push(GUI);
 	let Overwrite_tb = vscode.commands.registerCommand('FPGA.Overwrite testbench', () => {
-		const path = `${__dirname}/.TOOL/.Data/testbench.v`;
+		const path = `${current_path}/.TOOL/.Data/testbench.v`;
 		const options = {
 			preview: false,
 			viewColumn: vscode.ViewColumn.Active
@@ -60,7 +95,7 @@ function register(context) {
 		  // the user selected some item. You could use `selection.name` too
 		  switch (selection) {
 			case "m3_xIP_default.bd": 
-				const m3_xIP_default_path = `${__dirname}/.TOOL/Xilinx/IP/Example_bd/m3_xIP_default.bd`;
+				const m3_xIP_default_path = `${current_path}/.TOOL/Xilinx/IP/Example_bd/m3_xIP_default.bd`;
 				const m3_xIP_default_options = {
 					preview: false,
 					viewColumn: vscode.ViewColumn.Active
@@ -68,7 +103,7 @@ function register(context) {
 				vscode.window.showTextDocument(vscode.Uri.file(m3_xIP_default_path), m3_xIP_default_options);
 			break;
 			case "MicroBlaze_default.bd": 
-				const MicroBlaze_default_path = `${__dirname}/.TOOL/Xilinx/IP/Example_bd/MicroBlaze_default.bd`;
+				const MicroBlaze_default_path = `${current_path}/.TOOL/Xilinx/IP/Example_bd/MicroBlaze_default.bd`;
 				const MicroBlaze_default_options = {
 					preview: false,
 					viewColumn: vscode.ViewColumn.Active
@@ -76,7 +111,7 @@ function register(context) {
 				vscode.window.showTextDocument(vscode.Uri.file(MicroBlaze_default_path), MicroBlaze_default_options);
 			break;
 			case "zynq_default.bd": 
-				const zynq_default_path = `${__dirname}/.TOOL/Xilinx/IP/Example_bd/zynq_default.bd`;
+				const zynq_default_path = `${current_path}/.TOOL/Xilinx/IP/Example_bd/zynq_default.bd`;
 				const zynq_default_options = {
 					preview: false,
 					viewColumn: vscode.ViewColumn.Active
