@@ -272,61 +272,36 @@
 				"command": "FPGA.testbench",
 				"title": "Testbench",
 				"category": "FPGA"
-				
 			},
 			{
 				"command": "FPGA.Init",
 				"title": "Init",
-				"category": "FPGA",
-				"icon": {
-					"dark": "./images/svg/cmd.svg",
-					"light": "./images/svg/cmd.svg"
-				}
+				"category": "FPGA"
 			},
 			{
 				"command": "FPGA.Update",
 				"title": "Update designed file",
-				"category": "FPGA",
-				"icon": {
-					"dark": "./images/svg/cmd.svg",
-					"light": "./images/svg/cmd.svg"
-				}
+				"category": "FPGA"
 			},
 			{
 				"command": "FPGA.Sim",
 				"title": "Run the Simulation",
-				"category": "FPGA",
-				"icon": {
-					"dark": "./images/svg/cmd.svg",
-					"light": "./images/svg/cmd.svg"
-				}
+				"category": "FPGA"
 			},
 			{
 				"command": "FPGA.Build",
 				"title": "Build the current fpga project",
-				"category": "FPGA",
-				"icon": {
-					"dark": "./images/svg/cmd.svg",
-					"light": "./images/svg/cmd.svg"
-				}
+				"category": "FPGA"
 			},
 			{
 				"command": "FPGA.Progarm",
 				"title": "Download the bit file into the device",
-				"category": "FPGA",
-				"icon": {
-					"dark": "./images/svg/cmd.svg",
-					"light": "./images/svg/cmd.svg"
-				}
+				"category": "FPGA"
 			},
 			{
 				"command": "FPGA.GUI",
 				"title": "Open the GUI",
-				"category": "FPGA",
-				"icon": {
-					"dark": "./images/svg/cmd.svg",
-					"light": "./images/svg/cmd.svg"
-				}
+				"category": "FPGA"
 			},
 			{
 				"command": "FPGA.Overwrite testbench",
@@ -341,20 +316,17 @@
 			{
 				"command": "SDK.Init",
 				"title": "Init",
-				"category": "SDK",
-				"icon": {
-					"dark": "./images/svg/cmd.svg",
-					"light": "./images/svg/cmd.svg"
-				}
+				"category": "SDK"
 			},
 			{
-				"command": "SDK.Init",
-				"title": "StartSDK",
-				"category": "SDK",
-				"icon": {
-					"dark": "./images/svg/cmd.svg",
-					"light": "./images/svg/cmd.svg"
-				}
+				"command": "SDK.Build",
+				"title": "Build",
+				"category": "SDK"
+			},
+			{
+				"command": "SDK.Download",
+				"title": "Download",
+				"category": "SDK"
 			}
 		],
 		"keybindings": [

@@ -23,12 +23,9 @@ var Provider = /** @class */ (function () {
     Provider.prototype.getChildren = function (element) {
         if (!element) {
             return [
-                new Item('Init',   'FPGA_Init',   'FPGA.Init',   'Init'),
-                new Item('Update', 'FPGA_Update', 'FPGA.Update', 'Update designed file'),
-                new Item('Sim',    'FPGA_Sim',    'FPGA.Sim',    'Run the Simulation'),
-				new Item('Build',  'FPGA_Build',  'FPGA.Build',  'Build the current fpga project'),
-                new Item('Progarm','FPGA_Progarm','FPGA.Progarm','Download the bit file into the device'),
-                new Item('GUI',    'FPGA_GUI',    'FPGA.GUI',    'Open the GUI')
+                new Item('Init',    'SDK_Init',   'SDK.Init',    'Init'),
+                new Item('Build',   'SDK_Update', 'SDK.Build',   'Build current project'),
+                new Item('Download','SDK_Sim',    'SDK.Download','Download')
             ];
         }
         return undefined;
@@ -45,7 +42,8 @@ var Item = /** @class */ (function (_super) {
             title: label,
             command: command
         };
-        _this.tooltip = tooltip;
+		_this.tooltip  = tooltip;
+		_this.iconPath = `${__dirname}/../../../images/svg/cmd.svg`
         return _this;
     }
     return Item;

@@ -37,6 +37,7 @@ const VhdlSuggest = require('./.Providers/vhdl/VhdlSuggest');
 const FPGA        = require("./.Providers/command/FPGA");
 const SDK         = require("./.Providers/command/SDK");
 const FPGA_option = require("./.Providers/treedata/fpga_option");
+const SDK_option  = require("./.Providers/treedata/sdk_option");
 
 function activate(context) {
     // Configure lint manager
@@ -115,6 +116,7 @@ function activate(context) {
 	SDK.register(context,current_path);
 	
 	vscode.window.registerTreeDataProvider('TOOL.fpga_options', new FPGA_option.Provider());
+	vscode.window.registerTreeDataProvider('TOOL.sdk_options', new SDK_option.Provider());
 
 }
 exports.activate = activate;
