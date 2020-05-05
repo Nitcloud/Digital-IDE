@@ -36,7 +36,9 @@
 		"onCommand:FPGA.GUI",
 		"onCommand:FPGA.Overwrite testbench",
 		"onCommand:FPGA.Overwrite bd_file",
-		"onCommand:SDK.StartSDK"
+		"onCommand:SDK.Init",
+		"onCommand:SDK.Build",
+		"onCommand:SDK.Download"
 	],
 	"main": "./src/extension",
 	"contributes": {
@@ -263,59 +265,96 @@
 		"commands": [
 			{
 				"command": "FPGA.instance",
-				"title": "Instance the current module",
-				"category": "FPGA.instance"
+				"title": "Instance",
+				"category": "FPGA"
 			},
 			{
 				"command": "FPGA.testbench",
-				"title": "Instance the current module into Testbench file",
-				"category": "FPGA.testbench"
+				"title": "Testbench",
+				"category": "FPGA"
 				
 			},
 			{
 				"command": "FPGA.Init",
 				"title": "Init",
-				"category": "FPGA.Init"
+				"category": "FPGA",
+				"icon": {
+					"dark": "./images/svg/cmd.svg",
+					"light": "./images/svg/cmd.svg"
+				}
 			},
 			{
 				"command": "FPGA.Update",
 				"title": "Update designed file",
-				"category": "FPGA.Update"
+				"category": "FPGA",
+				"icon": {
+					"dark": "./images/svg/cmd.svg",
+					"light": "./images/svg/cmd.svg"
+				}
 			},
 			{
 				"command": "FPGA.Sim",
 				"title": "Run the Simulation",
-				"category": "FPGA.Sim"
+				"category": "FPGA",
+				"icon": {
+					"dark": "./images/svg/cmd.svg",
+					"light": "./images/svg/cmd.svg"
+				}
 			},
 			{
 				"command": "FPGA.Build",
 				"title": "Build the current fpga project",
-				"category": "FPGA.Build"
+				"category": "FPGA",
+				"icon": {
+					"dark": "./images/svg/cmd.svg",
+					"light": "./images/svg/cmd.svg"
+				}
 			},
 			{
 				"command": "FPGA.Progarm",
 				"title": "Download the bit file into the device",
-				"category": "FPGA.Progarm"
+				"category": "FPGA",
+				"icon": {
+					"dark": "./images/svg/cmd.svg",
+					"light": "./images/svg/cmd.svg"
+				}
 			},
 			{
 				"command": "FPGA.GUI",
 				"title": "Open the GUI",
-				"category": "FPGA.GUI"
-			},
-			{
-				"command": "SDK.StartSDK",
-				"title": "StartSDK",
-				"category": "SDK.StartSDK"
+				"category": "FPGA",
+				"icon": {
+					"dark": "./images/svg/cmd.svg",
+					"light": "./images/svg/cmd.svg"
+				}
 			},
 			{
 				"command": "FPGA.Overwrite testbench",
 				"title": "Overwrite the template of testbench",
-				"category": "FPGA.Overwrite testbench"
+				"category": "FPGA"
 			},
 			{
 				"command": "FPGA.Overwrite bd_file",
 				"title": "Overwrite the bd_file",
-				"category": "FPGA.Overwrite bd_file"
+				"category": "FPGA"
+			},
+			{
+				"command": "SDK.Init",
+				"title": "Init",
+				"category": "SDK",
+				"icon": {
+					"dark": "./images/svg/cmd.svg",
+					"light": "./images/svg/cmd.svg"
+				}
+			},
+			{
+				"command": "SDK.Init",
+				"title": "StartSDK",
+				"category": "SDK",
+				"icon": {
+					"dark": "./images/svg/cmd.svg",
+					"light": "./images/svg/cmd.svg"
+				}
 			}
 		],
 		"keybindings": [
@@ -326,7 +365,7 @@
 				"when": "editorTextFocus"
 			},
 			{
-				"command": "SDK.StartSDK",
+				"command": "SDK.Init",
 				"key": "Alt+x",
 				"mac": "Alt+x",
 				"when": "editorTextFocus"
@@ -336,18 +375,13 @@
 			"editor/context": [
 				{
 					"when": "editorFocus",
-					"command": "SDK.StartSDK",
-					"group": "navigation@5"
-				},
-				{
-					"when": "editorFocus",
 					"command": "FPGA.testbench",
-					"group": "navigation@6"
+					"group": "navigation@2"
 				},
 				{
 					"when": "editorFocus",
 					"command": "FPGA.instance",
-					"group": "navigation@7"
+					"group": "navigation@3"
 				}
 			]
 		}

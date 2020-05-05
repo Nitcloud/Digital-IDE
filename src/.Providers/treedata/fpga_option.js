@@ -45,7 +45,8 @@ var Item = /** @class */ (function (_super) {
             title: label,
             command: command
         };
-        _this.tooltip = tooltip;
+		_this.tooltip = tooltip;
+		_this.iconPath = `${__dirname}/../../../images/svg/cmd.svg`
         return _this;
     }
     return Item;
