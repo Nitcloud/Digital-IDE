@@ -28,7 +28,8 @@ var Provider = /** @class */ (function () {
                 new Item('Sim',    'FPGA_Sim',    'FPGA.Sim',    'Run the Simulation'),
 				new Item('Build',  'FPGA_Build',  'FPGA.Build',  'Build the current fpga project'),
                 new Item('Program','FPGA_Program','FPGA.Program','Download the bit file into the device'),
-                new Item('GUI',    'FPGA_GUI',    'FPGA.GUI',    'Open the GUI')
+				new Item('GUI',    'FPGA_GUI',    'FPGA.GUI',    'Open the GUI'),
+				new Item('exit',   'FPGA_Exit',   'FPGA.exit',   'Exit the current project')
             ];
         }
         return undefined;

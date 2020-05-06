@@ -1,8 +1,11 @@
 "use strict";
 exports.__esModule = true;
-var vscode = require("vscode");
+
+var vscode       = require("vscode");
+var terminal_ope = require("../command/terminal");
 
 let StartFPGA;
+let StartFPGA_flag = false;
 
 function register(context,current_path) {
 	//My FPGA Command
@@ -42,14 +45,14 @@ function register(context,current_path) {
 	context.subscriptions.push(testbench);
 
 	let Init = vscode.commands.registerCommand('FPGA.Init', () => {
-		StartFPGA = vscode.window.createTerminal({ name: 'StartFPGA' });
-        let editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            return;
+		if (!terminal_ope.ensureTerminalExists("StartFPGA")) {
+			if (!StartFPGA_flag) {			
+				StartFPGA = vscode.window.createTerminal({ name: 'StartFPGA' });
+				StartFPGA.show(true);
+				StartFPGA.sendText(`python ${current_path}/.TOOL/.Script/start.py fpga`);
+				StartFPGA_flag = true;
+			}
 		}
-		// StartFPGA.hide
-		StartFPGA.show(true);
-		StartFPGA.sendText(`python ${current_path}/.TOOL/.Script/start.py fpga`);
 	});
 	context.subscriptions.push(Init);
     let Update = vscode.commands.registerCommand('FPGA.Update', () => {
@@ -75,6 +78,14 @@ function register(context,current_path) {
 	let GUI = vscode.commands.registerCommand('FPGA.GUI', () => {
 		StartFPGA.show(true);
 		StartFPGA.sendText(`gui`);
+    });
+	context.subscriptions.push(GUI);
+	let GUI = vscode.commands.registerCommand('FPGA.exit', () => {
+		if (StartFPGA_flag) {			
+			StartFPGA_flag = false;
+			StartFPGA.show(true);
+			StartFPGA.sendText(`exit`);
+		}
     });
 	context.subscriptions.push(GUI);
 	let Overwrite_tb = vscode.commands.registerCommand('FPGA.Overwrite testbench', () => {

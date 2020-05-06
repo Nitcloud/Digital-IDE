@@ -26,6 +26,8 @@
 		"onLanguage:vhdl",
 		"onLanguage:verilog",
 		"onLanguage:systemverilog",
+		"onCommand:TOOL.Gen_BOOT",
+		"onCommand:TOOL.clean",
 		"onCommand:FPGA.instance",
 		"onCommand:FPGA.testbench",
 		"onCommand:FPGA.Init",
@@ -34,6 +36,7 @@
 		"onCommand:FPGA.Build",
 		"onCommand:FPGA.Program",
 		"onCommand:FPGA.GUI",
+		"onCommand:FPGA.exit",
 		"onCommand:FPGA.Overwrite testbench",
 		"onCommand:FPGA.Overwrite bd_file",
 		"onCommand:SDK.Init",
@@ -273,6 +276,11 @@
 				"category": "TOOL"
 			},
 			{
+				"command": "TOOL.clean",
+				"title": "clean",
+				"category": "TOOL"
+			},
+			{
 				"command": "FPGA.instance",
 				"title": "Instance",
 				"category": "FPGA"
@@ -313,6 +321,11 @@
 				"category": "FPGA"
 			},
 			{
+				"command": "FPGA.exit",
+				"title": "Exit the current project",
+				"category": "FPGA"
+			},
+			{
 				"command": "FPGA.Overwrite testbench",
 				"title": "Overwrite the template of testbench",
 				"category": "FPGA"
@@ -344,23 +357,17 @@
 				"key": "Alt+z",
 				"mac": "Alt+z",
 				"when": "editorTextFocus"
-			},
-			{
-				"command": "SDK.Init",
-				"key": "Alt+x",
-				"mac": "Alt+x",
-				"when": "editorTextFocus"
 			}
 		],
 		"menus": {
 			"editor/context": [
 				{
-					"when": "editorFocus",
+					"when": "editorLangId == verilog || editorLangId == systemverilog",
 					"command": "FPGA.testbench",
 					"group": "navigation@2"
 				},
 				{
-					"when": "editorFocus",
+					"when": "editorLangId == verilog || editorLangId == systemverilog",
 					"command": "FPGA.instance",
 					"group": "navigation@3"
 				}
