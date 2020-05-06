@@ -32,7 +32,7 @@
 		"onCommand:FPGA.Update",
 		"onCommand:FPGA.Sim",
 		"onCommand:FPGA.Build",
-		"onCommand:FPGA.Progarm",
+		"onCommand:FPGA.Program",
 		"onCommand:FPGA.GUI",
 		"onCommand:FPGA.Overwrite testbench",
 		"onCommand:FPGA.Overwrite bd_file",
@@ -156,6 +156,10 @@
 		"views": {
 			"TOOL": [
 				{
+					"id": "TOOL.Tool",
+					"name": "Tool"
+				},
+				{
 					"id": "TOOL.fpga_options",
 					"name": "FPGA Options"
 				},
@@ -264,6 +268,11 @@
 		],
 		"commands": [
 			{
+				"command": "TOOL.Gen_BOOT",
+				"title": "Gen_BOOT",
+				"category": "TOOL"
+			},
+			{
 				"command": "FPGA.instance",
 				"title": "Instance",
 				"category": "FPGA"
@@ -294,7 +303,7 @@
 				"category": "FPGA"
 			},
 			{
-				"command": "FPGA.Progarm",
+				"command": "FPGA.Program",
 				"title": "Download the bit file into the device",
 				"category": "FPGA"
 			},

@@ -27,7 +27,7 @@ var Provider = /** @class */ (function () {
                 new Item('Update', 'FPGA_Update', 'FPGA.Update', 'Update designed file'),
                 new Item('Sim',    'FPGA_Sim',    'FPGA.Sim',    'Run the Simulation'),
 				new Item('Build',  'FPGA_Build',  'FPGA.Build',  'Build the current fpga project'),
-                new Item('Progarm','FPGA_Progarm','FPGA.Progarm','Download the bit file into the device'),
+                new Item('Program','FPGA_Program','FPGA.Program','Download the bit file into the device'),
                 new Item('GUI',    'FPGA_GUI',    'FPGA.GUI',    'Open the GUI')
             ];
         }

@@ -83,7 +83,6 @@ if {$boot_state == "none"} {
 
 			if {$found == 1} {
 				write_bitstream ./[current_project].bit -force -quiet
-				exec bootgen -arch zynq -image $xilinx_path/BOOT/output.bif -o ./BOOT.bin -w on
 			}
 		}
 	}

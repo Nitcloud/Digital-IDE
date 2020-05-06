@@ -24,9 +24,9 @@ proc build {} {
 	source $build -notrace
 }
 
-proc progarm {} {
-	global progarm
-	source $progarm -notrace
+proc program {} {
+	global program
+	source $program -notrace
 }
 
 proc debug {} {

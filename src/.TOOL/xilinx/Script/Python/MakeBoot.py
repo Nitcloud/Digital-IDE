@@ -68,5 +68,9 @@ def make_boot(type,prj_name):
 	f.write("}")
 	f.close()
 
+	cmd = "bootgen -arch zynq -image $xilinx_path/BOOT/output.bif -o ./BOOT.bin -w on"
+	os.system(cmd)
+
+
 if __name__ == "__main__":
     make_boot(sys.argv[1],sys.argv[2])

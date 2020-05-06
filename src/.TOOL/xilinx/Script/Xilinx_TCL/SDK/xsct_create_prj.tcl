@@ -12,9 +12,9 @@ set app HelloWorld
 
 # find the hdf file 
 if { [glob -nocomplain $hw_path/*.hdf] == "" } {
-	puts "there is no hdf file at here" 
+	puts "there is no hdf file at here"  	
 	exit 1
-} else {
+} else {	
 	set hw_file [glob -nocomplain $hw_path/*.hdf]
 }
 

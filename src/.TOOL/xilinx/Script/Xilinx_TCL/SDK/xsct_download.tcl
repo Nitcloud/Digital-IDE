@@ -1,5 +1,6 @@
 set hw_path  ./user/Software/data
 
+set hw_name  SDK_Platform
 set prj_name test
 
 set cpu cortexA9
@@ -30,7 +31,6 @@ rst -system
 # PS7 initialization
 namespace eval xsdb \
 { 
-	global hw_name
 	source ./user/Software/src/$hw_name/ps7_init.tcl
 	ps7_init
 }
