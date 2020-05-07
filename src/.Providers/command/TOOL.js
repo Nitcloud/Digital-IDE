@@ -2,37 +2,19 @@
 exports.__esModule = true;
 var vscode = require("vscode");
 
-let StartSDK;
+function genboot(params) {
+	
+}
 
 function register(context,current_path) {
 	//My SDK Command
-	let SDK_Init = vscode.commands.registerCommand('SDK.Init', () => {
-        let editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            return;
-        }
-        StartSDK = vscode.window.createTerminal({ name: 'StartSDK' });
-        StartSDK.show(true);
-        StartSDK.sendText(`python ${current_path}/.TOOL/.Script/start.py sdk`);
+	let Gen_BOOT = vscode.commands.registerCommand('TOOL.Gen_BOOT', () => {
+
 	});
-	context.subscriptions.push(SDK_Init);
-	let SDK_Build = vscode.commands.registerCommand('SDK.Build', () => {
-        let editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            return;
-        }
-        StartSDK.show(true);
-        StartSDK.sendText(`xsct ${current_path}/.TOOL/Xilinx/Script/Xilinx_TCL/SDK/xsct_Build.tcl`);
+	context.subscriptions.push(Gen_BOOT);
+	let clean = vscode.commands.registerCommand('TOOL.clean', () => {
+
 	});
-	context.subscriptions.push(SDK_Build);
-	let SDK_Download = vscode.commands.registerCommand('SDK.Download', () => {
-        let editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            return;
-        }
-        StartSDK.show(true);
-        StartSDK.sendText(`xsct ${current_path}/.TOOL/Xilinx/Script/Xilinx_TCL/SDK/xsct_Download.tcl`);
-	});
-	context.subscriptions.push(SDK_Download);
+	context.subscriptions.push(clean);
 }
 exports.register = register;

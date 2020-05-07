@@ -23,8 +23,16 @@ var Provider = /** @class */ (function () {
     Provider.prototype.getChildren = function (element) {
         if (!element) {
             return [
-                new Item('BOOT', 'TOOL_BOOT', 'TOOL.BOOT', 'Init'),
-                new Item('Clean','TOOL_Clean','TOOL.Clean','Build current project')
+                new Item(
+							'BOOT', 
+							'TOOL.BOOT', 
+							'Gen_BOOT',
+							`${__dirname}/../../../images/svg/BOOT.svg`),
+                new Item(
+							'Clean',
+							'TOOL.clean',
+							'Clean current project',
+							`${__dirname}/../../../images/svg/clean.svg`)
             ];
         }
         return undefined;
@@ -34,15 +42,15 @@ var Provider = /** @class */ (function () {
 exports.Provider = Provider;
 var Item = /** @class */ (function (_super) {
     __extends(Item, _super);
-    function Item(label, contextValue, command, tooltip) {
+    function Item(label, command, tooltip, iconPath) {
         var _this = _super.call(this, label) || this;
-        _this.contextValue = contextValue;
+        _this.contextValue = "TOOL";
         _this.command = {
             title: label,
             command: command
         };
 		_this.tooltip  = tooltip;
-		_this.iconPath = `${__dirname}/../../../images/svg/cmd.svg`
+		_this.iconPath = iconPath;
         return _this;
     }
     return Item;

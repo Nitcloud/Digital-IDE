@@ -159,7 +159,7 @@
 		"views": {
 			"TOOL": [
 				{
-					"id": "TOOL.Tool",
+					"id": "TOOL.Tool_options",
 					"name": "Tool"
 				},
 				{

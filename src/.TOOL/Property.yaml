@@ -1,0 +1,22 @@
+common:
+  includes:
+  - CORE
+  - PERIPHERAL
+  - PERIPHERAL\inc
+  - SYSTEM
+  - USER
+  sources:
+    PERIPHERAL:
+    - PERIPHERAL\src
+    STARTUP:
+    - STARTUP
+    SYSTEM:
+    - SYSTEM
+    USER:
+    - USER
+  target:
+  - cortex-m0
+tool_specific:
+  make_gcc_arm:
+    linker_file:
+    - ARMCMx.ld

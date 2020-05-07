@@ -34,8 +34,11 @@ const WorkspaceSymbolProvider_1 = require("./.Providers/providers/WorkspaceSymbo
 const vhdlMode    = require('./.Providers/vhdl/vhdlMode');
 const VhdlSuggest = require('./.Providers/vhdl/VhdlSuggest');
 
+const TOOL        = require("./.Providers/command/TOOL");
 const FPGA        = require("./.Providers/command/FPGA");
 const SDK         = require("./.Providers/command/SDK");
+
+const TOOL_option = require("./.Providers/treedata/Tool_option");
 const FPGA_option = require("./.Providers/treedata/fpga_option");
 const SDK_option  = require("./.Providers/treedata/sdk_option");
 
@@ -112,12 +115,13 @@ function activate(context) {
 	
 	//My Command
 	let current_path = `${__dirname}`;
+	TOOL.register(context,current_path);
 	FPGA.register(context,current_path);
 	SDK.register(context,current_path);
 	
+	vscode.window.registerTreeDataProvider('TOOL.Tool_options', new TOOL_option.Provider());
 	vscode.window.registerTreeDataProvider('TOOL.fpga_options', new FPGA_option.Provider());
-	vscode.window.registerTreeDataProvider('TOOL.sdk_options', new SDK_option.Provider());
-
+	vscode.window.registerTreeDataProvider('TOOL.sdk_options' , new SDK_option.Provider());
 }
 exports.activate = activate;
 
