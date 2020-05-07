@@ -9,17 +9,20 @@ set cpu cortexA9
 set os  standalone
 set app HelloWorld
 
+setws $ws_path
 
 # find the hdf file 
 if { [glob -nocomplain $hw_path/*.hdf] == "" } {
-	puts "there is no hdf file at here"  	
+	puts "there is no hdf file at here" 
 	exit 1
-} else {	
+} else {
 	set hw_file [glob -nocomplain $hw_path/*.hdf]
 }
 
 if { [getprojects -type hw] == "" } {
 	createhw -name $hw_name -hwspec $hw_file
+} else {
+	openhw $ws_path/[getprojects -type hw]/system.hdf 
 }
 
 #get project param

@@ -140,8 +140,25 @@ def formatPara(ParaList) :
                     + '( '+ i[1].ljust(l2 )+' )' for i in p])+ ')\n'
     return paraDec,paraDef
 
+def getmodeinfo(path):
+    lines = []
+    line_cnt = 0
 
-def writeTestBench(input_file):
+    mode_line = 0
+
+    makefile_path = os.path.join(path,"Makefile").replace("\\", "/")
+    fp = open(makefile_path, 'r')
+    for line in fp:
+        lines.append(line)
+        line_cnt = line_cnt + 1
+        if line == "Soc\n":
+            mode_line = line_cnt
+    fp.close()
+
+    mode = lines[mode_line].replace('\n', '')
+    return mode
+
+def writeTestBench(input_file,current_path):
     """ write testbench to file """
     with open(input_file, 'rb') as f:
         f_info =  chardet.detect(f.read())
@@ -187,41 +204,41 @@ def writeTestBench(input_file):
     instance_data += name + " " + paraDef + " " + name + "_u (\n" + portList + "\n);\n"
     
     # write in file
-    fpga_include = linecache.getline("./Makefile",7)
-    if fpga_include.replace('\n', '') == "none" :
-        fp = open("./user/sim/testbench.v", 'r')
+    mode = getmodeinfo(current_path)
+    if mode == "none" :
+        fp = open(os.path.join(current_path,"user/sim/testbench.v").replace("\\", "/"), 'r')
         lines = []
         line_cnt = 0
         instance_line = 0
         for line in fp:
             line_cnt = line_cnt + 1
             lines.append(line)
-            if line == "//Instance\n":
+            if line.startswith("//Instance") :
                 instance_line = line_cnt - 2
         fp.close()
         
         lines.insert(instance_line, instance_data)
         s = ''.join(lines)
-        fp = open("./user/sim/testbench.v", 'w')
+        fp = open(os.path.join(current_path,"user/sim/testbench.v").replace("\\", "/"), 'w')
         fp.write(s)
         fp.close()
     else:
         lines = []
         line_cnt = 0
         instance_line = 0
-        fp = open("./user/Hardware/sim/testbench.v", 'a')
+        fp = open(os.path.join(current_path,"user/Hardware/sim/testbench.v").replace("\\", "/"), 'r')
         for line in fp:
             line_cnt = line_cnt + 1
             lines.append(line)
-            if line == "//Instance\n":
+            if line.startswith("//Instance"):
                 instance_line = line_cnt - 2
         fp.close()
         
         lines.insert(instance_line, instance_data)
         s = ''.join(lines)
-        fp = open("./user/Hardware/sim/testbench.v", 'a')
+        fp = open(os.path.join(current_path,"user/Hardware/sim/testbench.v").replace("\\", "/"), 'w')
         fp.write(s)
         fp.close()
 
 if __name__ == '__main__':
-    writeTestBench(sys.argv[1])
+    writeTestBench(sys.argv[2],sys.argv[1])

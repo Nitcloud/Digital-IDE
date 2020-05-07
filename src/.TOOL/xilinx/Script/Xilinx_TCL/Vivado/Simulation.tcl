@@ -6,6 +6,8 @@ set_param general.maxThreads 8
 # set ::env(PYTHONPATH) "C:/Program Files/Python38/python38.zip:C:/Program Files/Python38/DLLs:C:/Program Files/Python38/lib:C:/Program Files/Python38:C:/Program Files/Python38/lib/site-packages"
 # set ::env(PYTHONHOME) "C:/Program Files/Python38"
 
+set xilinx_path [file dirname [file dirname [file dirname [file dirname $current_Location]]]]
+
 if {[current_sim] != ""} \
 {
 	relaunch_sim -quiet

@@ -13,50 +13,37 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
-var vscode = require("vscode");
+var vscode_i = require("vscode");
 var Provider = /** @class */ (function () {
     function Provider() {
-		this.data = [
-			new Item('Init',   'FPGA.Init',   'Init'),
-			new Item('Update', 'FPGA.Update', 'Update designed file'),
-			new Item('Sim',    'FPGA.Sim',    'Run the Simulation'),
-			new Item('Build',  
-					 'FPGA.Build',  
-					 'Build the current fpga project',
-						 [
-							new Item('Snyth','FPGA.Snyth','Snyth the current fpga project'), 
-							new Item('Impl' ,'FPGA.Impl' ,'Impl  the current fpga project')]
-					),
-			new Item('Program','FPGA.Program','Download the bit file into the device'),
-			new Item('GUI',    'FPGA.GUI',    'Open the GUI'),
-			new Item('exit',   'FPGA.exit',   'Exit the current project')
-        ];
-	}
+    }
     Provider.prototype.getTreeItem = function (element) {
         return element;
     };
     Provider.prototype.getChildren = function (element) {
-        if (element === undefined) {
-            return this.data;
+        if (!element) {
+            return [
+                new Item('BOOT', 'TOOL_BOOT', 'TOOL.BOOT', 'Init'),
+                new Item('Clean','TOOL_Clean','TOOL.Clean','Build current project')
+            ];
         }
-        return element.children;
+        return undefined;
     };
     return Provider;
 }());
 exports.Provider = Provider;
 var Item = /** @class */ (function (_super) {
     __extends(Item, _super);
-    function Item(label, command, tooltip, children) {
-        var _this = _super.call(this, label, children === undefined ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Collapsed) || this;
-		_this.contextValue = "FPGA";
-		_this.children = children;
+    function Item(label, contextValue, command, tooltip) {
+        var _this = _super.call(this, label) || this;
+        _this.contextValue = contextValue;
         _this.command = {
             title: label,
             command: command
         };
-		_this.tooltip = tooltip;
+		_this.tooltip  = tooltip;
 		_this.iconPath = `${__dirname}/../../../images/svg/cmd.svg`
         return _this;
     }
     return Item;
-}(vscode.TreeItem));
+}(vscode_i.TreeItem));

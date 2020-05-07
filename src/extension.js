@@ -45,29 +45,30 @@ function activate(context) {
     lintManager = new LintManager_1["default"](logger);
 	vscode.commands.registerCommand("verilog.lint", lintManager.RunLintTool);
 	
-	// Configure Provider manager
-    const selector = [{ scheme: 'file', language: 'systemverilog' }, { scheme: 'file', language: 'verilog' }];
-    //Output Channel
-    var outputChannel = vscode.window.createOutputChannel("SystemVerilog");
 	// Status Bar
-	
     const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
     statusBar.text = 'SystemVerilog: Active';
     statusBar.show();
-    statusBar.command = 'systemverilog.build_index';
+	statusBar.command = 'systemverilog.build_index';
+	context.subscriptions.push(statusBar);
+	//Output Channel
+	var outputChannel = vscode.window.createOutputChannel("SystemVerilog");
     // Back-end classes
-    const parser = new parser_1.SystemVerilogParser();
-    const indexer = new indexer_1.SystemVerilogIndexer(statusBar, parser, outputChannel);
+    const parser  = new parser_1.SystemVerilogParser();
+	const indexer = new indexer_1.SystemVerilogIndexer(statusBar, parser, outputChannel);
+
+	// Configure Provider manager
+    const selector = [{ scheme: 'file', language: 'systemverilog' }, { scheme: 'file', language: 'verilog' }];
     // Providers
     const docProvider   = new DocumentSymbolProvider_1.SystemVerilogDocumentSymbolProvider(parser);
     const symProvider   = new WorkspaceSymbolProvider_1.SystemVerilogWorkspaceSymbolProvider(indexer);
     const defProvider   = new DefintionProvider_1.SystemVerilogDefinitionProvider(symProvider);
     const hoverProvider = new HoverProvider_1.SystemVerilogHoverProvider();
-    context.subscriptions.push(statusBar);
     context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(selector, docProvider));
     context.subscriptions.push(vscode.languages.registerDefinitionProvider(selector, defProvider));
     context.subscriptions.push(vscode.languages.registerHoverProvider(selector, hoverProvider));
-    context.subscriptions.push(vscode.languages.registerWorkspaceSymbolProvider(symProvider));
+	context.subscriptions.push(vscode.languages.registerWorkspaceSymbolProvider(symProvider));
+	
     // Background processes
     context.subscriptions.push(vscode.workspace.onDidSaveTextDocument((doc) => { indexer.onChange(doc); }));
     context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor((editor) => { indexer.onChange(editor.document); }));
@@ -108,7 +109,6 @@ function activate(context) {
             ]
         }
     });
-    if (vscode.window.activeTextEditor) {}
 	
 	//My Command
 	let current_path = `${__dirname}`;
