@@ -38,7 +38,7 @@ class getFolders {
     }
 
 	writeFile(path,data) {
-        return fs.writeFileSync(path, data, 'utf8');
+        fs.writeFileSync(path, data, 'utf8');
 	}
 	
     ensureExists(path) {

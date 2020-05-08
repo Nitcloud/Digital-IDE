@@ -9,7 +9,6 @@ function register(context,current_path) {
 	//My SDK Command
 	let SDK_Init = vscode.commands.registerCommand('SDK.Init', () => {
 		if (terminal_ope.ensureTerminalExists("StartSDK")) {
-			vscode.window.showInformationMessage("StartSDK Exists");
 			StartSDK.show(true);		
 			StartSDK.sendText(`xsct ${current_path}/.TOOL/Xilinx/Script/Xilinx_TCL/SDK/xsct_create_prj.tcl`);
 		}

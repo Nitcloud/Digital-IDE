@@ -17,19 +17,20 @@ var vscode = require("vscode");
 var Provider = /** @class */ (function () {
     function Provider() {
 		this.data = [
-			new Item('Init',   'FPGA.Init',   'Init'),
-			new Item('Update', 'FPGA.Update', 'Update designed file'),
-			new Item('Sim',    'FPGA.Sim',    'Run the Simulation'),
+			new Item('Init',   'FPGA.Init',   'cmd', 'Init'),
+			new Item('Update', 'FPGA.Update', 'cmd', 'Update designed file'),
+			new Item('Sim',    'FPGA.Sim',    'cmd', 'Run the Simulation'),
 			new Item('Build',  
-					 'FPGA.Build',  
+					 'FPGA.Build',
+					 'cmd',  
 					 'Build the current fpga project',
 						 [
-							new Item('Snyth','FPGA.Snyth','Snyth the current fpga project'), 
-							new Item('Impl' ,'FPGA.Impl' ,'Impl  the current fpga project')]
+							new Item('Snyth','FPGA.Snyth','branch','Snyth the current fpga project'), 
+							new Item('Impl' ,'FPGA.Impl' ,'branch','Impl  the current fpga project')]
 					),
-			new Item('Program','FPGA.Program','Download the bit file into the device'),
-			new Item('GUI',    'FPGA.GUI',    'Open the GUI'),
-			new Item('exit',   'FPGA.exit',   'Exit the current project')
+			new Item('Program','FPGA.Program','cmd', 'Download the bit file into the device'),
+			new Item('GUI',    'FPGA.GUI',    'cmd', 'Open the GUI'),
+			new Item('exit',   'FPGA.exit',   'cmd', 'Exit the current project')
         ];
 	}
     Provider.prototype.getTreeItem = function (element) {
@@ -46,7 +47,7 @@ var Provider = /** @class */ (function () {
 exports.Provider = Provider;
 var Item = /** @class */ (function (_super) {
     __extends(Item, _super);
-    function Item(label, command, tooltip, children) {
+    function Item(label, command, iconPath, tooltip, children) {
         var _this = _super.call(this, label, children === undefined ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Collapsed) || this;
 		_this.contextValue = "FPGA";
 		_this.children = children;
@@ -55,7 +56,7 @@ var Item = /** @class */ (function (_super) {
             command: command
         };
 		_this.tooltip = tooltip;
-		_this.iconPath = `${__dirname}/../../../images/svg/cmd.svg`
+		_this.iconPath = `${__dirname}/../../../images/svg/` + iconPath + ".svg"
         return _this;
     }
     return Item;
