@@ -1,7 +1,7 @@
 //arch = zynq; split = false; format = BIN
 the_ROM_image:
 {
-	[bootloader]./user/BOOT/fsbl.elf
-	./LED_test.bit
-	./user/BOOT/ps_test.elf
+	[bootloader]d:/project/FPGA/My_FPGA/TCL_project/Test/LED_test/user/BOOT/fsbl.elf
+	d:/project/FPGA/My_FPGA/TCL_project/Test/LED_test/LED_test.bit
+	d:/project/FPGA/My_FPGA/TCL_project/Test/LED_test/user/BOOT/ps_test.elf
 }

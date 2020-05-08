@@ -10,8 +10,9 @@ let StartFPGA_flag = false;
 
 let Instance;
 
-function register(context,current_path) {
+function register(context,root_path) {
 	//My FPGA Command
+	let tool_path = `${root_path}/.TOOL`.replace(/\\/g,"\/");
 	let vInstance_Gen = vscode.commands.registerCommand('FPGA.instance', () => {
         let editor = vscode.window.activeTextEditor;
         if (!editor) {
@@ -19,13 +20,13 @@ function register(context,current_path) {
 		}
 		if (terminal_ope.ensureTerminalExists("Instance")) {
 			StartSDK.show(true);	
-			Instance.sendText(`python ${current_path}/.TOOL/.Script/vInstance_Gen.py ${editor.document.fileName}`);
+			Instance.sendText(`python ${tool_path}/.Script/vInstance_Gen.py ${editor.document.fileName}`);
 			vscode.window.showInformationMessage('Generate instance successfully!');
 		}
 		else {
 			Instance = vscode.window.createTerminal({ name: 'Instance' });
 			Instance.show(true);
-			Instance.sendText(`python ${current_path}/.TOOL/.Script/vInstance_Gen.py ${editor.document.fileName}`);
+			Instance.sendText(`python ${tool_path}/.Script/vInstance_Gen.py ${editor.document.fileName}`);
 			vscode.window.showInformationMessage('Generate instance successfully!');
 		}
     });
@@ -35,7 +36,7 @@ function register(context,current_path) {
         if (!editor) {
             return;
 		}
-		let command = `python ${current_path}/.TOOL/.Script/vTbgenerator.py ${getFolder.getCurrentWorkspaceFolder()} ${editor.document.fileName}`;
+		let command = `python ${tool_path}/.Script/vTbgenerator.py ${getFolder.getCurrentWorkspaceFolder()} ${editor.document.fileName}`;
 		terminal_ope.runCmd(command)
 		// vscode.window.showInformationMessage('Generate Testbench successfully!');
     });
@@ -46,7 +47,7 @@ function register(context,current_path) {
 			if (!StartFPGA_flag) {			
 				StartFPGA = vscode.window.createTerminal({ name: 'StartFPGA' });
 				StartFPGA.show(true);
-				StartFPGA.sendText(`python ${current_path}/.TOOL/.Script/start.py fpga`);
+				StartFPGA.sendText(`python ${tool_path}/.Script/start.py fpga`);
 				StartFPGA_flag = true;
 			}
 		}
@@ -86,7 +87,7 @@ function register(context,current_path) {
     });
 	context.subscriptions.push(Exit);
 	let Overwrite_tb = vscode.commands.registerCommand('FPGA.Overwrite testbench', () => {
-		const path = `${current_path}/.TOOL/.Data/testbench.v`;
+		const path = `${tool_path}/.Data/testbench.v`;
 		const options = {
 			preview: false,
 			viewColumn: vscode.ViewColumn.Active
@@ -95,39 +96,18 @@ function register(context,current_path) {
     });
 	context.subscriptions.push(Overwrite_tb);
 	let Overwrite_bd = vscode.commands.registerCommand('FPGA.Overwrite bd_file', () => {
-		vscode.window.showQuickPick(['m3_xIP_default.bd','MicroBlaze_default.bd','zynq_default.bd']).then(selection => {
-		  // the user canceled the selection
-		  if (!selection) {
-			return;
-		  }
-		  // the user selected some item. You could use `selection.name` too
-		  switch (selection) {
-			case "m3_xIP_default.bd": 
-				const m3_xIP_default_path = `${current_path}/.TOOL/Xilinx/IP/Example_bd/m3_xIP_default.bd`;
-				const m3_xIP_default_options = {
-					preview: false,
-					viewColumn: vscode.ViewColumn.Active
-				};
-				vscode.window.showTextDocument(vscode.Uri.file(m3_xIP_default_path), m3_xIP_default_options);
-			break;
-			case "MicroBlaze_default.bd": 
-				const MicroBlaze_default_path = `${current_path}/.TOOL/Xilinx/IP/Example_bd/MicroBlaze_default.bd`;
-				const MicroBlaze_default_options = {
-					preview: false,
-					viewColumn: vscode.ViewColumn.Active
-				};
-				vscode.window.showTextDocument(vscode.Uri.file(MicroBlaze_default_path), MicroBlaze_default_options);
-			break;
-			case "zynq_default.bd": 
-				const zynq_default_path = `${current_path}/.TOOL/Xilinx/IP/Example_bd/zynq_default.bd`;
-				const zynq_default_options = {
-					preview: false,
-					viewColumn: vscode.ViewColumn.Active
-				};
-				vscode.window.showTextDocument(vscode.Uri.file(zynq_default_path), zynq_default_options);
-			break;
-			default: break;
-		  }
+		vscode.window.showQuickPick(getFolder.pick_file(`${tool_path}/Xilinx/IP/Example_bd`,".bd")).then(selection => {
+		  	// the user canceled the selection
+			if (!selection) {
+				return;
+			}
+			// the user selected some item. You could use `selection.name` too
+			const bd_path = `${tool_path}/Xilinx/IP/Example_bd/` + selection;
+			const options = {
+				preview: false,
+				viewColumn: vscode.ViewColumn.Active
+			};
+			vscode.window.showTextDocument(vscode.Uri.file(bd_path), options);
 		});
     });
     context.subscriptions.push(Overwrite_bd);

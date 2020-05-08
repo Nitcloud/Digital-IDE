@@ -1,4 +1,5 @@
 const vscode = require('vscode');
+const Path   = require("path");
 const fs     = require("fs");
 
 class getFolders {
@@ -21,19 +22,12 @@ class getFolders {
         return folder;
     }
 
-    convertOblique(str, flag) {
-        if (flag == '/') {
-            for (const i in str) {
-                if (str[i] == '\\') str[i] = '/';
-            }
-        }
-        else if (flag == '\\') {
-            for (const i in str) {
-                if (str[i] == '/') str[i] = '\\';
-            }
-        }
-        return str;
-    }
+	pick_file(file_path,extname) {
+		let file_list = fs.readdirSync(file_path).filter(function (file) {
+			return Path.extname(file).toLowerCase() === extname;
+		});
+		return file_list;
+	}
 
     readFolder(path) {
         return fs.readdirSync(path);
@@ -43,12 +37,23 @@ class getFolders {
         return fs.readFileSync(path, 'utf8');
     }
 
-    fileExists(path) {
-        fs.existsSync(path);
+	writeFile(path,data) {
+        return fs.writeFileSync(path, data, 'utf8');
+	}
+	
+    ensureExists(path) {
+        return fs.existsSync(path);
     }
 
     deleteFile(path) {
-        fs.unlinkSync(path);
+		if(fs.existsSync(path)) {
+			if (fs.statSync(path).isDirectory) {
+				fs.rmdirSync(path);
+			}
+			if (fs.statSync(path).isFile) {
+				fs.unlinkSync(path);
+			}
+		}
     }
 }
 exports = module.exports = new getFolders;

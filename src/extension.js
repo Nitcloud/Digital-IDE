@@ -114,10 +114,10 @@ function activate(context) {
     });
 	
 	//My Command
-	let current_path = `${__dirname}`;
-	TOOL.register(context,current_path);
-	FPGA.register(context,current_path);
-	SDK.register(context,current_path);
+	let root_path = `${__dirname}`;
+	TOOL.register(context,root_path);
+	FPGA.register(context,root_path);
+	SDK.register(context,root_path);
 	
 	vscode.window.registerTreeDataProvider('TOOL.Tool_options', new TOOL_option.Provider());
 	vscode.window.registerTreeDataProvider('TOOL.fpga_options', new FPGA_option.Provider());

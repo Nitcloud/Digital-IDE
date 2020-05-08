@@ -25,14 +25,14 @@ var Provider = /** @class */ (function () {
             return [
                 new Item(
 							'BOOT', 
-							'TOOL.BOOT', 
+							'TOOL.Gen_BOOT', 
 							'Gen_BOOT',
-							`${__dirname}/../../../images/svg/BOOT.svg`),
+							'BOOT'),
                 new Item(
 							'Clean',
 							'TOOL.clean',
 							'Clean current project',
-							`${__dirname}/../../../images/svg/clean.svg`)
+							'clean')
             ];
         }
         return undefined;
@@ -50,7 +50,7 @@ var Item = /** @class */ (function (_super) {
             command: command
         };
 		_this.tooltip  = tooltip;
-		_this.iconPath = iconPath;
+		_this.iconPath = `${__dirname}/../../../images/svg/` + iconPath + ".svg";
         return _this;
     }
     return Item;
