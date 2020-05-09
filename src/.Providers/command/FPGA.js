@@ -39,17 +39,26 @@ function findDevice(root_path,workspace_path) {
 }
 
 function addDevice(root_path) {
+	let Device_param   = getFolder.pullJsonInfo(`${root_path}/.TOOL/Device.json`);
+	let Property_param = getFolder.pullJsonInfo(`${root_path}/.TOOL/Property.json`);
 	vscode.window.showInputBox({
 		password:false, 
 		ignoreFocusOut:true,
 		placeHolder:'Please input the name of device', }).then(function(Device) {
-		console.log("用户输入："+Device);
-		let Device_param   = getFolder.pullJsonInfo(`${root_path}/.TOOL/Device.json`);
-		let Property_param = getFolder.pullJsonInfo(`${root_path}/.TOOL/Property.json`);
-		Device_param.Xilinx.push(Device);
-		Property_param.properties.Device.enum.push(Device);
-		getFolder.pushJsonInfo(`${root_path}/.TOOL/Device.json`,Device_param);
-		getFolder.pushJsonInfo(`${root_path}/.TOOL/Property.json`,Property_param);
+
+		if (Device_param.Xilinx.find(function(value) {
+			if(value === Device) {
+				return false;
+			}
+		})) {		
+			Device_param.Xilinx.push(Device);
+			Property_param.properties.Device.enum.push(Device);
+			getFolder.pushJsonInfo(`${root_path}/.TOOL/Device.json`,Device_param);
+			getFolder.pushJsonInfo(`${root_path}/.TOOL/Property.json`,Property_param);
+		}
+		else {
+			vscode.window.showWarningMessage("The device already exists")
+		}
 	});
 }
 
