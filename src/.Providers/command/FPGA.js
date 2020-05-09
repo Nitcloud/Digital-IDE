@@ -56,6 +56,7 @@ function addDevice(root_path) {
 function deleteDevice(root_path) {
 	let Device_param   = getFolder.pullJsonInfo(`${root_path}/.TOOL/Device.json`);
 	let Property_param = getFolder.pullJsonInfo(`${root_path}/.TOOL/Property.json`);
+	let Device_list    = Device_param.Xilinx
 	vscode.window.showQuickPick(Device_list).then(selection => {
 		// the user canceled the selection
 		if (!selection) {
