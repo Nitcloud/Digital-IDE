@@ -31,6 +31,7 @@
 		"onCommand:FPGA.instance",
 		"onCommand:FPGA.testbench",
 		"onCommand:FPGA.Init",
+		"onCommand:FPGA.top",
 		"onCommand:FPGA.Update",
 		"onCommand:FPGA.Sim",
 		"onCommand:FPGA.Build",
@@ -229,6 +230,12 @@
 				"configuration": "./config/systemverilog.configuration.json"
 			}
 		],
+		"jsonValidation": [
+			{
+				"fileMatch": "**/*.json",
+				"url": "./src/.TOOL/Property.json"
+			}
+		],
 		"grammars": [
 			{
 				"language": "tcl",
@@ -293,6 +300,11 @@
 			{
 				"command": "FPGA.Init",
 				"title": "Init",
+				"category": "FPGA"
+			},
+			{
+				"command": "FPGA.top",
+				"title": "Set as TOP",
 				"category": "FPGA"
 			},
 			{
@@ -361,6 +373,11 @@
 		],
 		"menus": {
 			"editor/context": [
+				{
+					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+					"command": "FPGA.top",
+					"group": "navigation@1"
+				},
 				{
 					"when": "editorLangId == verilog || editorLangId == systemverilog",
 					"command": "FPGA.testbench",

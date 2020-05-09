@@ -114,7 +114,7 @@ function activate(context) {
     });
 	
 	//My Command
-	let root_path = `${__dirname}`;
+	let root_path = `${__dirname}`.replace(/\\/g,"\/");
 	TOOL.register(context,root_path);
 	FPGA.register(context,root_path);
 	SDK.register(context,root_path);

@@ -15,7 +15,7 @@ function pick_elf_file(boot_path) {
 
 function xbootgenerate(workspace_path,root_path) {
 	let BOOT_folder = `${workspace_path}user/BOOT`;
-	let output_path = `${root_path}/.TOOL/Xilinx/BOOT`.replace(/\\/g,"\/");
+	let output_path = `${root_path}/.TOOL/Xilinx/BOOT`;
 
 	let elf_path  = '';
 	let bit_path  = '';
@@ -142,7 +142,9 @@ function register(context,root_path) {
 	});
 	context.subscriptions.push(Gen_BOOT);
 	let clean = vscode.commands.registerCommand('TOOL.clean', () => {
-		file.deleteFile(`${workspace_path}prj`);
+		let prj_info = file.getPrjInfo(`${root_path}/.TOOL/Property.json`);
+		let soc = prj_info.Prj_mode.soc;
+		vscode.window.showInformationMessage(soc);
 	});
 	context.subscriptions.push(clean);
 }

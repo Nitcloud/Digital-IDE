@@ -1,22 +1,12 @@
-common:
-  includes:
-  - CORE
-  - PERIPHERAL
-  - PERIPHERAL\inc
-  - SYSTEM
-  - USER
-  sources:
-    PERIPHERAL:
-    - PERIPHERAL\src
-    STARTUP:
-    - STARTUP
-    SYSTEM:
-    - SYSTEM
-    USER:
-    - USER
-  target:
-  - cortex-m0
-tool_specific:
-  make_gcc_arm:
-    linker_file:
-    - ARMCMx.ld
+FPGA_VERSION:
+  - xilinx
+PRJ_NAME:
+  - FPGA: template
+  - SOC:  test
+Prj_mode:
+  - soc: none
+  - os:  standalone
+  - app: hellow world
+enableShowlog: false
+Device:
+  - 

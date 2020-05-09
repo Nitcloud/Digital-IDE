@@ -1,0 +1,71 @@
+{
+	"title": "Property",
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"description": "A property file for project of FPGA",
+	"type": "object",
+	"properties": {				
+		"FPGA_VERSION":{
+			"type":"string",
+			"description":"Supported vendors for FPGA",
+			"enum":[
+				"xilinx"
+			]
+		},
+		"PRJ_NAME": {
+			"type":"object",
+			"default":{"FPGA":"template"},
+			"properties": {
+				"FPGA":{					
+					"type":"string",
+					"description":"project name of FPGA",
+					"default":"template"
+				},
+				"SOC":{					
+					"type":"string",
+					"description":"project name of SOC",
+					"default":"test"
+				}
+			}		
+		},
+		"SOC_MODE": {
+			"type":"object",
+			"default":{"soc":"none"},
+			"properties": {
+				"soc":{
+					"type":"string",
+					"description":"Supported CPU for SOC",
+					"enum":[
+						"none",
+						"cortexM3",
+						"cortexA9",
+						"MicroBlaze"
+					]
+				},
+				"os":{					
+					"type":"string",
+					"default":"standalone",
+					"description":"the os for SOC application"
+				},
+				"app":{					
+					"type":"string",
+					"default":"hellow world",
+					"description":"the app for SOC application"
+				}
+			}			
+		},
+		"enableShowlog":{					
+			"type":"boolean",
+			"description":"Whether to display logs during compilation",
+			"default": false,
+			"enum": [
+				true,
+				false
+			]
+		},
+		"Device":{					
+			"type":"string",
+			"description":"The device type"
+		}
+	},	
+	"required": ["FPGA_VERSION", "SOC_MODE", "Device"]
+}

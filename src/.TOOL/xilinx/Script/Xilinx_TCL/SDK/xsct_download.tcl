@@ -1,4 +1,5 @@
 set hw_path  ./user/Software/data
+set ws_path  ./user/Software/src
 
 set hw_name  SDK_Platform
 set prj_name test
@@ -6,6 +7,9 @@ set prj_name test
 set cpu cortexA9
 set os  standalone
 set app HelloWorld
+
+setws  $ws_path
+openhw $ws_path/[getprojects -type hw]/system.hdf 
 
 connect
 puts [targets]

@@ -44,16 +44,12 @@ class getFolders {
     ensureExists(path) {
         return fs.existsSync(path);
     }
-
-    deleteFile(path) {
-		if(fs.existsSync(path)) {
-			if (fs.statSync(path).isDirectory) {
-				fs.rmdirSync(path);
-			}
-			if (fs.statSync(path).isFile) {
-				fs.unlinkSync(path);
-			}
-		}
-    }
 }
 exports = module.exports = new getFolders;
+
+function getPrjInfo(property_path) {
+	let data = fs.readFileSync(property_path, 'utf8');
+	let prjinfo = JSON.parse(data);
+	return prjinfo;
+}
+exports.getPrjInfo = getPrjInfo;
