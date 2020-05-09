@@ -64,7 +64,12 @@
 		},
 		"Device":{					
 			"type":"string",
-			"description":"The device type"
+			"description":"The device type",
+			"enum": [
+				"xc7z020clg400-2",
+				"xc7a35tftg256-1",
+				"xc7a35tcsg324-1"
+			]
 		}
 	},	
 	"required": ["FPGA_VERSION", "SOC_MODE", "Device"]

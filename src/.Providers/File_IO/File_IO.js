@@ -1,6 +1,6 @@
-const vscode = require('vscode');
-const Path   = require("path");
 const fs     = require("fs");
+const fspath = require("path");
+const vscode = require("vscode");
 
 class getFolders {
     getCurrentWorkspaceFolder() {
@@ -11,45 +11,50 @@ class getFolders {
         folder = folder.substr(4, folder.length);
         folder = Drive + ":" + folder;
         return folder;
-    }
-
-    getAllWorkspaceFolders() {
-        var folderObj = vscode.workspace.workspaceFolders;
-        var folder = [""];
-		for(let i in folderObj) {
-			folder += folderObj[i].uri.toString();
-		}
-        return folder;
-    }
+    };
 
 	pick_file(file_path,extname) {
 		let file_list = fs.readdirSync(file_path).filter(function (file) {
 			return Path.extname(file).toLowerCase() === extname;
 		});
 		return file_list;
-	}
+	};
 
     readFolder(path) {
         return fs.readdirSync(path);
     };
-
-    readFile(path) {
-        return fs.readFileSync(path, 'utf8');
-    }
-
-	writeFile(path,data) {
-        fs.writeFileSync(path, data, 'utf8');
-	}
 	
     ensureExists(path) {
         return fs.existsSync(path);
-    }
+	};
+	
+	readFile(path) {
+        return fs.readFileSync(path, 'utf8');
+    };
+
+	writeFile(path,data) {
+		if (!fs.existsSync(fspath.dirname(path))) {
+			fs.mkdirSync(fspath.dirname(path))
+		}
+        fs.writeFileSync(path, data, 'utf8');
+	};
 }
 exports = module.exports = new getFolders;
 
-function getPrjInfo(property_path) {
-	let data = fs.readFileSync(property_path, 'utf8');
+function pullJsonInfo(JSON_path) {
+	var data    = fs.readFileSync(JSON_path, 'utf8');
+	// let prjinfo = eavl("("+data+")");
 	let prjinfo = JSON.parse(data);
 	return prjinfo;
 }
-exports.getPrjInfo = getPrjInfo;
+exports.pullJsonInfo = pullJsonInfo;
+
+function pushJsonInfo(JSON_path,JSON_data){
+	var str = JSON.stringify(JSON_data,null,'\t');
+	if (!fs.existsSync(fspath.dirname(JSON_path))) {
+		fs.mkdirSync(fspath.dirname(JSON_path))
+	}
+	fs.writeFileSync(JSON_path, str, 'utf8');
+}
+exports.pushJsonInfo = pushJsonInfo;
+

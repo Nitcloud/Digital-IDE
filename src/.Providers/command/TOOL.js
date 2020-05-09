@@ -142,9 +142,11 @@ function register(context,root_path) {
 	});
 	context.subscriptions.push(Gen_BOOT);
 	let clean = vscode.commands.registerCommand('TOOL.clean', () => {
-		let prj_info = file.getPrjInfo(`${root_path}/.TOOL/Property.json`);
-		let soc = prj_info.Prj_mode.soc;
-		vscode.window.showInformationMessage(soc);
+		let prj_info = file.getJsonInfo(`${workspace_path}/.vscode/Property.json`);
+		let enableShowlog = prj_info.enableShowlog;
+		if (enableShowlog == false) {			
+			vscode.window.showInformationMessage(soc);
+		}
 	});
 	context.subscriptions.push(clean);
 }
