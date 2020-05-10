@@ -1,18 +1,12 @@
 #updata file
 
-set_param general.maxThreads 6
-
-# unset ::env(PYTHONPATH)
-# unset ::env(PYTHONHOME)
-
-# set ::env(PYTHONPATH) "C:/Program Files/Python38/python38.zip:C:/Program Files/Python38/DLLs:C:/Program Files/Python38/lib:C:/Program Files/Python38:C:/Program Files/Python38/lib/site-packages"
-# set ::env(PYTHONHOME) "C:/Program Files/Python38"
+set_param general.maxThreads 8
 
 set current_Location [file normalize [info script]]
 set xilinx_path      [file dirname [file dirname [file dirname [file dirname $current_Location]]]]
 
-set cpu         none
-set bd_example  default
+set soc     none
+set bd_file default
 
 proc update_ip {IP_path} {
 	foreach IP_file [glob -nocomplain $IP_path] {
@@ -92,30 +86,18 @@ proc MicroBlaze_IP_add { current_Location } {
 	}
 }
 
-set fp [open "./Makefile" r]
-while { [gets $fp config_data] >= 0 } \
-{
-	if {[string equal -length 3 $config_data Soc] == 1} \
-    {
-		gets $fp config_data
-		remove_files -quiet [get_files]
+remove_files -quiet [get_files]
 
-		if {[string equal -length 4 $config_data none] == 1} {
-			none_add
-		} else {
-			scan $config_data "%s -hw %s" cpu bd_example
-			if {$bd_example != "none"} {				
-				switch $cpu \
-				{
-					cortexM3   {cortexM3_IP_add   $xilinx_path}
-					cortexA9   {cortexA9_IP_add   $xilinx_path}
-					MicroBlaze {MicroBlaze_IP_add $xilinx_path}
-				}
-			}
-			soc_add
+if {[string equal -length 4 $soc none] == 1} {
+	none_add
+} else {
+	if {$bd_file != "none"} {				
+		switch $cpu \
+		{
+			cortexM3   {cortexM3_IP_add   $xilinx_path}
+			cortexA9   {cortexA9_IP_add   $xilinx_path}
+			MicroBlaze {MicroBlaze_IP_add $xilinx_path}
 		}
-		break
 	}
+	soc_add
 }
-
-close $fp

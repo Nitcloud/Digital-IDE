@@ -1,5 +1,8 @@
-set hw_path  ./user/Software/data
-set ws_path  ./user/Software/src
+set hw_path   ./user/Software/data
+set ws_path   ./user/Software/src
+
+set current_Location [file normalize [info script]]
+set root_path [file dirname [file dirname [file dirname [file dirname [file dirname $current_Location]]]]]
 
 set hw_name  SDK_Platform
 set bsp_name BSP_package
@@ -26,20 +29,21 @@ if { [getprojects -type hw] == "" } {
 }
 
 #get project param
-set fp [open "./Makefile" r]
+set fp [open $root_path/CONFIG r]
 while { [gets $fp data] >= 0 } \
 {
-	if { [string equal -length 3 $data Soc] == 1 } {
-		if { [gets $fp data] >= 0 } {
-        	scan $data "%s -prj_name %s -os %s -app %s" cpu prj_name os app
-			if { $cpu == "cortexA9" } {
-				set cpu "ps7_cortexa9_0"
-			}
-			if { $app == "HelloWorld" } {
-				set app "Hello World"
-			}
-    	}
-    }
+	if { [string equal -length 12 $data "PRJ_NAME.SOC"] == 1 } {
+			gets $fp prj_name
+	}
+	if { [string equal -length 12 $data "SOC_MODE.soc"] == 1 } {
+			gets $fp cpu
+	}
+	if { [string equal -length 12 $data "SOC_MODE.app"] == 1 } {
+			gets $fp app
+	}
+	if { [string equal -length 11 $data "SOC_MODE.os"] == 1 } {
+			gets $fp os
+	}
 }
 close $fp
 

@@ -1,0 +1,18 @@
+FPGA_VERSION
+xilinx
+PRJ_NAME.FPGA
+template
+PRJ_NAME.SOC
+test
+SOC_MODE.soc
+none
+SOC_MODE.bd_file
+none
+SOC_MODE.os
+standalone
+SOC_MODE.app
+hellow world
+enableShowlog
+false
+Device
+none

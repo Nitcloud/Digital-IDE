@@ -1,13 +1,36 @@
 set_param general.maxThreads 6
 
 set current_Location [file normalize [info script]]
-set prj_name         template
+set root_path [file dirname [file dirname [file dirname [file dirname [file dirname $current_Location]]]]]
 
 set update  "[file dirname $current_Location]/Update.tcl"
 set sim     "[file dirname $current_Location]/Simulation.tcl"
 set build   "[file dirname $current_Location]/Build.tcl"
 set program "[file dirname $current_Location]/Program.tcl"
 set debug   "[file dirname $current_Location]/Debug.tcl"
+
+# get the project info
+set soc       none
+set bd_file   none
+set Device    none
+set prj_name  template
+set fp [open $root_path/CONFIG r]
+while { [gets $fp data] >= 0 } \
+{
+	if { [string equal -length 13 $data "PRJ_NAME.FPGA"] == 1 } {
+			gets $fp prj_name
+	}
+	if { [string equal -length 6 $data "Device"] == 1 } {
+			gets $fp Device
+	}
+	if { [string equal -length 12 $data "SOC_MODE.soc"] == 1 } {
+			gets $fp soc
+	}
+	if { [string equal -length 16 $data "SOC_MODE.bd_file"] == 1 } {
+			gets $fp bd_file
+	}
+}
+close $fp
 
 proc update {} {
 	global update
@@ -68,20 +91,11 @@ proc ope {} {
 	}
 }
 
-set fp [open "./Makefile" r]
-while { [gets $fp data] >= 0 } \
-{
-	if { [string first project $data] != -1 } {
-		gets $fp data
-		scan $data "xilinx -prj_name %s" prj_name
-	}
-}
-close $fp
-
+# create or open the project
 set prj_folder ./prj/xilinx
 set prj_path [glob -nocomplain $prj_folder/*.xpr]
 if { $prj_path == "" } {
-	create_project $prj_name ./prj/xilinx -part [choose_device] -force -quiet
+	create_project $prj_name ./prj/xilinx -part $Device -force -quiet
 	set_property SOURCE_SET sources_1   [get_filesets sim_1]
 	set_property top_lib xil_defaultlib [get_filesets sim_1]
 	update_compile_order -fileset sim_1 -quiet

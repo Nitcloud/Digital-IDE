@@ -64,6 +64,11 @@
 					"default": "hellow world",
 					"description": "the app for SOC application"
 				}
+			},
+			"dependencies": {
+				"bd_file":["soc"],
+				"os":["soc"],
+				"app":["soc"]
 			}
 		},
 		"enableShowlog": {
