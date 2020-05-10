@@ -2,45 +2,104 @@ const fs     = require("fs");
 const fspath = require("path");
 const vscode = require("vscode");
 
-class getFolders {
-    getCurrentWorkspaceFolder() {
-        var folder = vscode.workspace.workspaceFolders[0].uri.toString();
-        folder = folder.substr(8, folder.length);
-        folder += "/";
-        var Drive = folder[0];
-        folder = folder.substr(4, folder.length);
-        folder = Drive + ":" + folder;
-        return folder;
-    };
+// file or folder operation
+// folder operation
+function getCurrentWorkspaceFolder() {
+	var folder = vscode.workspace.workspaceFolders[0].uri.toString();
+	folder = folder.substr(8, folder.length);
+	folder += "/";
+	var Drive = folder[0];
+	folder = folder.substr(4, folder.length);
+	folder = Drive + ":" + folder;
+	return folder;
+};
+exports.getCurrentWorkspaceFolder = getCurrentWorkspaceFolder;
 
-	pick_file(file_path,extname) {
-		let file_list = fs.readdirSync(file_path).filter(function (file) {
-			return Path.extname(file).toLowerCase() === extname;
+function ensureExists(path) {
+	return fs.existsSync(path);
+};
+exports.ensureExists = ensureExists;
+
+function readFolder(path) {
+	return fs.readdirSync(path);
+};
+exports.readFolder = readFolder;
+
+function deleteDir(path){
+	var files = [];
+	if( fs.existsSync(path) ) {  
+		files = fs.readdirSync(path);   
+		files.forEach(function(file,index){
+			var curPath = fspath.join(path,file);
+				
+			if(fs.statSync(curPath).isDirectory()) { 
+				deleteDir(curPath);
+			} else {    
+				fs.unlinkSync(curPath);    
+			}
+				
 		});
-		return file_list;
-	};
-
-    readFolder(path) {
-        return fs.readdirSync(path);
-    };
-	
-    ensureExists(path) {
-        return fs.existsSync(path);
-	};
-	
-	readFile(path) {
-        return fs.readFileSync(path, 'utf8');
-    };
-
-	writeFile(path,data) {
-		if (!fs.existsSync(fspath.dirname(path))) {
-			fs.mkdirSync(fspath.dirname(path))
-		}
-        fs.writeFileSync(path, data, 'utf8');
-	};
+		fs.rmdirSync(path); //清除文件夹
+	}
 }
-exports = module.exports = new getFolders;
+exports.deleteDir = deleteDir;
 
+function mkdir(path) {
+	if (!fs.existsSync(path)) {
+		if (fs.existsSync(fspath.dirname(path))) {
+			fs.mkdirSync(path);
+		}
+		else{
+			mkdir(fspath.dirname(path));
+		}
+	}
+}
+exports.mkdir = mkdir;
+
+function movedir(oldpath,newpath) {
+	if (fs.existsSync(oldpath)) {
+		folder  = fspath.basename(oldpath);
+		newpath = newpath + '/' + folder;
+		if (fs.existsSync(newpath)) {
+			deleteDir(newpath);
+		}
+		fs.renameSync(oldpath,newpath);
+	}
+}
+exports.movedir = movedir;
+
+
+// file operation
+function readFile(path) {
+	return fs.readFileSync(path, 'utf8');
+};
+exports.readFile = readFile;
+
+function writeFile(path,data) {
+	if (!fs.existsSync(fspath.dirname(path))) {
+		mkdir(fspath.dirname(path));
+	}
+	fs.writeFileSync(path, data, 'utf8');
+};
+exports.writeFile = writeFile;
+
+function deleteFile(path) {
+	if (fs.existsSync(path)) {
+		fs.unlinkSync(path);
+	}
+};
+exports.deleteFile = deleteFile;
+
+function pick_file(file_path,extname) {
+	let file_list = fs.readdirSync(file_path).filter(function (file) {
+		return Path.extname(file).toLowerCase() === extname;
+	});
+	return file_list;
+};
+exports.pick_file = pick_file;
+
+
+//JSON file operation
 function pullJsonInfo(JSON_path) {
 	var data    = fs.readFileSync(JSON_path, 'utf8');
 	// let prjinfo = eavl("("+data+")");
@@ -52,9 +111,44 @@ exports.pullJsonInfo = pullJsonInfo;
 function pushJsonInfo(JSON_path,JSON_data){
 	var str = JSON.stringify(JSON_data,null,'\t');
 	if (!fs.existsSync(fspath.dirname(JSON_path))) {
-		fs.mkdirSync(fspath.dirname(JSON_path))
+		fs.mkdirSync(fspath.dirname(JSON_path));
 	}
 	fs.writeFileSync(JSON_path, str, 'utf8');
 }
 exports.pushJsonInfo = pushJsonInfo;
 
+
+//FPGA file operation
+function gentbFile(path,root_path) {
+	if (!fs.existsSync(path)) {
+		let tb_template = fs.readFileSync(`${root_path}/.TOOL/.Data/testbench.v`, 'utf8');
+		fs.writeFileSync(path, tb_template, 'utf8');
+	}
+};
+exports.gentbFile = gentbFile;
+
+function updateFolder(root_path,workspace_path) {
+	let fpga_info = pullJsonInfo(`${workspace_path}.vscode/Property.json`);
+	if (fpga_info.SOC_MODE.soc == "none") {
+		deleteDir(`${workspace_path}user/Software`);
+		movedir(`${workspace_path}user/Hardware/src` ,`${workspace_path}user`);
+		movedir(`${workspace_path}user/Hardware/sim` ,`${workspace_path}user`);
+		movedir(`${workspace_path}user/Hardware/data`,`${workspace_path}user`);
+		movedir(`${workspace_path}user/Hardware/IP`  ,`${workspace_path}user`);
+		movedir(`${workspace_path}user/Hardware/bd`  ,`${workspace_path}user`);
+		deleteDir(`${workspace_path}user/Hardware`);
+		gentbFile(`${workspace_path}user/sim/testbench.v`,root_path);
+	}
+	else {
+		mkdir(`${workspace_path}user/Software/data`);
+		mkdir(`${workspace_path}user/Software/src`);
+		mkdir(`${workspace_path}user/Hardware`);
+		movedir(`${workspace_path}user/src` ,`${workspace_path}user/Hardware`);
+		movedir(`${workspace_path}user/data`,`${workspace_path}user/Hardware`);
+		movedir(`${workspace_path}user/sim` ,`${workspace_path}user/Hardware`);
+		movedir(`${workspace_path}user/IP`  ,`${workspace_path}user/Hardware`);
+		movedir(`${workspace_path}user/bd`  ,`${workspace_path}user/Hardware`);
+		gentbFile(`${workspace_path}user/Hardware/sim/testbench.v`,root_path);
+	}
+};
+exports.updateFolder = updateFolder;

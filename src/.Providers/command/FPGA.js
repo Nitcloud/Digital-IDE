@@ -55,6 +55,7 @@ function addDevice(root_path) {
 			Property_param.properties.Device.enum.push(Device);
 			getFolder.pushJsonInfo(`${root_path}/.TOOL/Device.json`,Device_param);
 			getFolder.pushJsonInfo(`${root_path}/.TOOL/Property.json`,Property_param);
+			vscode.window.showInformationMessage(`Add the ${Device} successfully!!!`)
 		}
 		else {
 			vscode.window.showWarningMessage("The device already exists")
@@ -133,9 +134,11 @@ function register(context,root_path) {
 			getFolder.pushJsonInfo(`${workspace_path}.vscode/Property.json`,fpgaparam);
 		}
 		findDevice(root_path,workspace_path);
+		file.updateFolder(root_path,workspace_path);
 	});
 	context.subscriptions.push(Init);
     let Update = vscode.commands.registerCommand('FPGA.Update', () => {
+		file.updateFolder(root_path,workspace_path);
 		StartFPGA.show(true);
 		StartFPGA.sendText(`update`);
     });
@@ -202,6 +205,49 @@ function register(context,root_path) {
 			vscode.window.showTextDocument(vscode.Uri.file(bd_path), options);
 		});
     });
-    context.subscriptions.push(Overwrite_bd);
+	context.subscriptions.push(Overwrite_bd);
+	let Add_bd = vscode.commands.registerCommand('FPGA.Add bd_file', () => {
+		let Property_param = getFolder.pullJsonInfo(`${root_path}/.TOOL/Property.json`);
+		let bd_folder = `${tool_path}/Xilinx/IP/Example_bd/`;
+		vscode.window.showInputBox({
+			password:false, 
+			ignoreFocusOut:true,
+			placeHolder:'Please input the name of bd_file', }).then(function(bd_file) {
+			let bd_list = Property_param.properties.SOC_MODE.properties.bd_file.enum;
+			if (bd_list.find(function(value) {
+				if(value === bd_file) {
+					return false;
+				}
+			})) {		
+				bd_list.push(bd_file);
+				getFolder.pushJsonInfo(`${root_path}/.TOOL/Property.json`,Property_param);
+				const bd_path = bd_folder + bd_file + '.bd';
+				getFolder.writeFile(bd_path,"\n\n");
+				vscode.window.showInformationMessage(`generate the ${bd_file} successfully!!!`);
+				const options = {
+					preview: false,
+					viewColumn: vscode.ViewColumn.Active
+				};
+				vscode.window.showTextDocument(vscode.Uri.file(bd_path), options);
+			}
+			else {
+				vscode.window.showWarningMessage("The device already exists")
+			}
+		});
+    });
+	context.subscriptions.push(Add_bd);
+	let Delete_bd = vscode.commands.registerCommand('FPGA.Delete bd_file', () => {
+		vscode.window.showQuickPick(getFolder.pick_file(`${tool_path}/Xilinx/IP/Example_bd`,".bd")).then(selection => {
+		  	// the user canceled the selection
+			if (!selection) {
+				return;
+			}
+			// the user selected some item. You could use `selection.name` too
+			const bd_path = `${tool_path}/Xilinx/IP/Example_bd/` + selection;
+			getFolder.deleteFile(bd_path);
+			vscode.window.showInformationMessage(`delete the ${selection} successfully!!!`);
+		});
+    });
+    context.subscriptions.push(Delete_bd);
 }
 exports.register = register;

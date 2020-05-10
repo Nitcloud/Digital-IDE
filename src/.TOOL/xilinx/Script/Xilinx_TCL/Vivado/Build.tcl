@@ -1,15 +1,9 @@
-set_param general.maxThreads 6
-
-# unset ::env(PYTHONPATH)
-# unset ::env(PYTHONHOME)
-
-# set ::env(PYTHONPATH) "C:/Program Files/Python38/python38.zip:C:/Program Files/Python38/DLLs:C:/Program Files/Python38/lib:C:/Program Files/Python38:C:/Program Files/Python38/lib/site-packages"
-# set ::env(PYTHONHOME) "C:/Program Files/Python38"
+set_param general.maxThreads 8
 
 variable current_Location [file normalize [info script]]
 variable xilinx_path [file dirname [file dirname [file dirname [file dirname $current_Location]]]]
 
-set boot_state [exec python $xilinx_path/Script/Python/MakeBoot.py first [current_project]]
+
 
 if {$boot_state == "none"} {
 	puts "ERROR: The ./user/BOOT folder exists, but there are no elf files in it"

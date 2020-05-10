@@ -78,7 +78,17 @@ while { [gets $fp data] >= 0 } \
 }
 close $fp
 
-open_project ./prj/Xilinx/$prj_name.xpr -quiet
+set prj_folder ./prj/xilinx
+set prj_path [glob -nocomplain $prj_folder/*.xpr]
+if { $prj_path == "" } {
+	create_project $prj_name ./prj/xilinx -part [choose_device] -force -quiet
+	set_property SOURCE_SET sources_1   [get_filesets sim_1]
+	set_property top_lib xil_defaultlib [get_filesets sim_1]
+	update_compile_order -fileset sim_1 -quiet
+} else \
+{
+	open_project $prj_path -quiet
+}
 
 update
 

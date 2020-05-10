@@ -2,6 +2,7 @@
 exports.__esModule = true;
 
 var vscode   = require("vscode");
+var exec     = require('child_process').exec;
 var file     = require("../File_IO/File_IO")
 var terminal = require("../command/terminal");
 
@@ -130,8 +131,17 @@ function xbootgenerate(workspace_path,root_path) {
 }
 
 function xclean(workspace_path) {
-	file.deleteFile(`${workspace_path}.xil`);
-	file.pick_file(workspace_path,".jou");
+	file.deleteDir(`${workspace_path}prj`);
+	file.deleteDir(`${workspace_path}.Xil`);
+	file.pick_file(workspace_path,".jou").forEach(element => {
+		file.deleteFile(`${workspace_path}${element}`)
+	});
+	file.pick_file(workspace_path,".log").forEach(element => {
+		file.deleteFile(`${workspace_path}${element}`)
+	});
+	file.pick_file(workspace_path,".str").forEach(element => {
+		file.deleteFile(`${workspace_path}${element}`)
+	});
 }
 
 function register(context,root_path) {
@@ -142,11 +152,7 @@ function register(context,root_path) {
 	});
 	context.subscriptions.push(Gen_BOOT);
 	let clean = vscode.commands.registerCommand('TOOL.clean', () => {
-		let prj_info = file.getJsonInfo(`${workspace_path}/.vscode/Property.json`);
-		let enableShowlog = prj_info.enableShowlog;
-		if (enableShowlog == false) {			
-			vscode.window.showInformationMessage(soc);
-		}
+		xclean(workspace_path);
 	});
 	context.subscriptions.push(clean);
 }

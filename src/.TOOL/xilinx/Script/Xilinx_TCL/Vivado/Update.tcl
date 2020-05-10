@@ -92,8 +92,6 @@ proc MicroBlaze_IP_add { current_Location } {
 	}
 }
 
-exec python [file dirname $xilinx_path]/.Script/fileupdate.py -quiet
-
 set fp [open "./Makefile" r]
 while { [gets $fp config_data] >= 0 } \
 {

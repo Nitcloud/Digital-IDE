@@ -11,9 +11,6 @@ function runCmd(cmdline) {
 		if (error !== null) {
 			vscode.window.showErrorMessage(error);
 		}
-		else{
-			vscode.window.showInformationMessage("successfully!!!");
-		}
 	});
 }
 exports.runCmd = runCmd;

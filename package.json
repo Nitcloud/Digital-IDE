@@ -42,6 +42,8 @@
 		"onCommand:FPGA.delDevice",
 		"onCommand:FPGA.Overwrite testbench",
 		"onCommand:FPGA.Overwrite bd_file",
+		"onCommand:FPGA.Add bd_file",
+		"onCommand:FPGA.Delete bd_file",
 		"onCommand:SDK.Init",
 		"onCommand:SDK.Build",
 		"onCommand:SDK.Download"
@@ -357,6 +359,16 @@
 			{
 				"command": "FPGA.Overwrite bd_file",
 				"title": "Overwrite the bd_file",
+				"category": "FPGA"
+			},
+			{
+				"command": "FPGA.Add bd_file",
+				"title": "Add a bd_file",
+				"category": "FPGA"
+			},
+			{
+				"command": "FPGA.Delete bd_file",
+				"title": "Delete the bd_file",
 				"category": "FPGA"
 			},
 			{
