@@ -50,6 +50,9 @@ function addDevice(root_path) {
 			if(value === Device) {
 				return false;
 			}
+			else{
+				return true;
+			}
 		})) {		
 			Device_param.Xilinx.push(Device);
 			Property_param.properties.Device.enum.push(Device);
@@ -240,12 +243,20 @@ function register(context,root_path) {
     });
 	context.subscriptions.push(Add_bd);
 	let Delete_bd = vscode.commands.registerCommand('FPGA.Delete bd_file', () => {
+		let Property_param = getFolder.pullJsonInfo(`${root_path}/.TOOL/Property.json`);
 		vscode.window.showQuickPick(getFolder.pick_file(`${tool_path}/Xilinx/IP/Example_bd`,".bd")).then(selection => {
 		  	// the user canceled the selection
 			if (!selection) {
 				return;
 			}
 			// the user selected some item. You could use `selection.name` too
+			let bd_list = Property_param.properties.SOC_MODE.properties.bd_file.enum;
+			for(var index = 0; index < bd_list.length;index++){
+				if(selection == (bd_list[index] + '.bd')){
+					bd_list.splice(index,1);
+				}
+			}
+			getFolder.pushJsonInfo(`${root_path}/.TOOL/Property.json`,Property_param);
 			const bd_path = `${tool_path}/Xilinx/IP/Example_bd/` + selection;
 			getFolder.deleteFile(bd_path);
 			vscode.window.showInformationMessage(`delete the ${selection} successfully!!!`);

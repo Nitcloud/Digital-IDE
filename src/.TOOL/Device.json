@@ -3,5 +3,11 @@
 		"xc7z020clg400-2",
 		"xc7a35tftg256-1",
 		"xc7a35tcsg324-1"
-	]
+	],
+	"Intel":{
+		"Family":"",
+		"Device":[
+			"EP4CE6F17C8"
+		]
+	}
 }
