@@ -308,7 +308,7 @@
 			},
 			{
 				"command": "FPGA.top",
-				"title": "Set as TOP",
+				"title": "Set as top",
 				"category": "FPGA"
 			},
 			{
