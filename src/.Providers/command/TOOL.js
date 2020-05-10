@@ -2,7 +2,6 @@
 exports.__esModule = true;
 
 var vscode   = require("vscode");
-var exec     = require('child_process').exec;
 var file     = require("../File_IO/File_IO")
 var terminal = require("../command/terminal");
 
@@ -131,15 +130,18 @@ function xbootgenerate(workspace_path,root_path) {
 }
 
 function xclean(workspace_path) {
-	file.deleteDir(`${workspace_path}prj`);
 	file.deleteDir(`${workspace_path}.Xil`);
-	file.pick_file(workspace_path,".jou").forEach(element => {
+	file.deleteDir(`${workspace_path}prj`);
+	let file_list = file.pick_file(workspace_path,".jou");
+	file_list.forEach(element => {
 		file.deleteFile(`${workspace_path}${element}`)
 	});
-	file.pick_file(workspace_path,".log").forEach(element => {
+	file_list = file.pick_file(workspace_path,".log");
+	file_list.forEach(element => {
 		file.deleteFile(`${workspace_path}${element}`)
 	});
-	file.pick_file(workspace_path,".str").forEach(element => {
+	file_list = file.pick_file(workspace_path,".str");
+	file_list.forEach(element => {
 		file.deleteFile(`${workspace_path}${element}`)
 	});
 }

@@ -91,10 +91,14 @@ function deleteFile(path) {
 exports.deleteFile = deleteFile;
 
 function pick_file(file_path,extname) {
-	let file_list = fs.readdirSync(file_path).filter(function (file) {
-		return Path.extname(file).toLowerCase() === extname;
+	let file_list = fs.readdirSync(file_path);
+	let output_list = [];
+	file_list.filter(function (file) {
+		if(fspath.extname(file).toLowerCase() === extname){
+			output_list.push(file)
+		}
 	});
-	return file_list;
+	return output_list;
 };
 exports.pick_file = pick_file;
 

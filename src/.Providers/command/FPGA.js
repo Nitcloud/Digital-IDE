@@ -134,11 +134,11 @@ function register(context,root_path) {
 			getFolder.pushJsonInfo(`${workspace_path}.vscode/Property.json`,fpgaparam);
 		}
 		findDevice(root_path,workspace_path);
-		file.updateFolder(root_path,workspace_path);
+		getFolder.updateFolder(root_path,workspace_path);
 	});
 	context.subscriptions.push(Init);
     let Update = vscode.commands.registerCommand('FPGA.Update', () => {
-		file.updateFolder(root_path,workspace_path);
+		getFolder.updateFolder(root_path,workspace_path);
 		StartFPGA.show(true);
 		StartFPGA.sendText(`update`);
     });
@@ -218,6 +218,9 @@ function register(context,root_path) {
 				if(value === bd_file) {
 					return false;
 				}
+				else{
+					return true;
+				}
 			})) {		
 				bd_list.push(bd_file);
 				getFolder.pushJsonInfo(`${root_path}/.TOOL/Property.json`,Property_param);
@@ -231,7 +234,7 @@ function register(context,root_path) {
 				vscode.window.showTextDocument(vscode.Uri.file(bd_path), options);
 			}
 			else {
-				vscode.window.showWarningMessage("The device already exists")
+				vscode.window.showWarningMessage(`The ${bd_file} already exists`)
 			}
 		});
     });
