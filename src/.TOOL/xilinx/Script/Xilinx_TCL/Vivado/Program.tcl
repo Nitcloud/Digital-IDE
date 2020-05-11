@@ -1,4 +1,12 @@
-set Device $data
+set Device    none
+set fp [open $root_path/CONFIG r]
+while { [gets $fp data] >= 0 } \
+{
+	if { [string equal -length 6 $data "Device"] == 1 } {
+			gets $fp Device
+	}
+}
+close $fp
 
 open_hw -quiet
 connect_hw_server -quiet

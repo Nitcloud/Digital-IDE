@@ -10,7 +10,11 @@ let StartFPGA_flag = false;
 
 let Instance;
 
-let fpgaparam = {
+let Property_path = "";
+let soc_mode      = "none";
+let fpga_version  = "xilinx";
+
+let prjInitparam = {
 	"FPGA_VERSION": "xilinx",
 	"PRJ_NAME": {
 		"FPGA": "template"
@@ -19,11 +23,60 @@ let fpgaparam = {
 		"soc": "none"
 	},
 	"enableShowlog": false,
-	"Device": ""
+	"Device": "xc7z020clg400-2"
 }
 
-function findDevice(root_path,workspace_path) {
-	let FPGA_param   = getFolder.pullJsonInfo(`${workspace_path}.vscode/Property.json`);
+
+function getprjInfo(root_path,workspace_path) {
+	let CONFIG_contex = "FPGA_VERSION\n";
+	Property_path = `${workspace_path}.vscode/Property.json`;
+	if (!getFolder.ensureExists(Property_path)) {
+		if (!getFolder.ensureExists(`${workspace_path}Property.json`)) {
+			vscode.window.showInformationMessage("There is no Property.json here, where you want to generate?",'.vscode','root')
+			.then(function(select){
+				if (select == ".vscode") {
+					getFolder.pushJsonInfo(`${workspace_path}.vscode/Property.json`,prjInitparam);
+				} else if (select == "root") {
+					getFolder.pushJsonInfo(`${workspace_path}Property.json`,prjInitparam);
+					Property_path = `${workspace_path}Property.json`;
+				}
+			});
+		}
+		else{
+			Property_path = `${workspace_path}Property.json`;
+		}
+	}
+	let prj_param = getFolder.pullJsonInfo(Property_path);
+
+	CONFIG_contex += prj_param.FPGA_VERSION + '\n';
+	CONFIG_contex += "PRJ_NAME.FPGA\n";
+	CONFIG_contex += prj_param.PRJ_NAME.FPGA + '\n';
+	CONFIG_contex += "PRJ_NAME.SOC\n";
+	CONFIG_contex += prj_param.PRJ_NAME.SOC + '\n';
+	CONFIG_contex += "SOC_MODE.soc\n";
+	CONFIG_contex += prj_param.SOC_MODE.soc + '\n';
+	CONFIG_contex += "SOC_MODE.bd_file\n";
+	CONFIG_contex += prj_param.SOC_MODE.bd_file + '\n';
+	CONFIG_contex += "SOC_MODE.os\n";
+	CONFIG_contex += prj_param.SOC_MODE.os + '\n';
+	CONFIG_contex += "SOC_MODE.app\n";
+	CONFIG_contex += prj_param.SOC_MODE.app + '\n';
+	CONFIG_contex += "enableShowlog\n";
+	CONFIG_contex += prj_param.enableShowlog + '\n';
+
+	CONFIG_contex += "Device\n";
+	findDevice(root_path);
+	prj_param = getFolder.pullJsonInfo(Property_path);
+	CONFIG_contex += prj_param.Device + '\n\n';
+
+	getFolder.writeFile(`${root_path}/.TOOL/CONFIG`,CONFIG_contex);
+
+	soc_mode     = prj_param.SOC_MODE.soc;
+	fpga_version = prj_param.FPGA_VERSION;
+}
+
+function findDevice(root_path) {
+	let FPGA_param = getFolder.pullJsonInfo(Property_path);
 	if (FPGA_param.Device == "") {
 		let Device_param = getFolder.pullJsonInfo(`${root_path}/.TOOL/Device.json`);
 		let Device_list  = Device_param.Xilinx;	
@@ -33,20 +86,20 @@ function findDevice(root_path,workspace_path) {
 				return;
 			}
 			FPGA_param.Device = selection;
-			getFolder.pushJsonInfo(`${workspace_path}.vscode/Property.json`,FPGA_param);
+			getFolder.pushJsonInfo(Property_path,FPGA_param);
 		});
 	}
 }
 
 function addDevice(root_path) {
-	let Device_param   = getFolder.pullJsonInfo(`${root_path}/.TOOL/Device.json`);
-	let Property_param = getFolder.pullJsonInfo(`${root_path}/.TOOL/Property.json`);
+	let Property_param   = getFolder.pullJsonInfo(`${root_path}/.TOOL/Property.json`);
+	let xilinxDevicelist = Property_param.properties.Device.enum;
 	vscode.window.showInputBox({
 		password:false, 
 		ignoreFocusOut:true,
 		placeHolder:'Please input the name of device', }).then(function(Device) {
 
-		if (Device_param.Xilinx.find(function(value) {
+		if (xilinxDevicelist.find(function(value) {
 			if(value === Device) {
 				return false;
 			}
@@ -54,9 +107,7 @@ function addDevice(root_path) {
 				return true;
 			}
 		})) {		
-			Device_param.Xilinx.push(Device);
-			Property_param.properties.Device.enum.push(Device);
-			getFolder.pushJsonInfo(`${root_path}/.TOOL/Device.json`,Device_param);
+			xilinxDevicelist.push(Device);
 			getFolder.pushJsonInfo(`${root_path}/.TOOL/Property.json`,Property_param);
 			vscode.window.showInformationMessage(`Add the ${Device} successfully!!!`)
 		}
@@ -67,27 +118,19 @@ function addDevice(root_path) {
 }
 
 function deleteDevice(root_path) {
-	let Device_param   = getFolder.pullJsonInfo(`${root_path}/.TOOL/Device.json`);
-	let Property_param = getFolder.pullJsonInfo(`${root_path}/.TOOL/Property.json`);
-	let Device_list    = Device_param.Xilinx
-	vscode.window.showQuickPick(Device_list).then(selection => {
-		// the user canceled the selection
+	let Property_param   = getFolder.pullJsonInfo(`${root_path}/.TOOL/Property.json`);
+	let xilinxDevicelist = Property_param.properties.Device.enum;
+	vscode.window.showQuickPick(xilinxDevicelist).then(selection => {
 		if (!selection) {
 			return;
 		}
-		var index = 0;
-		for(index = 0; index < Device_param.Xilinx.length;index++){
-            if(selection == Device_param.Xilinx[index]){
-                Device_param.Xilinx.splice(index,1);
+		for(var index = 0; index < xilinxDevicelist.length; index++){
+            if(selection == xilinxDevicelist[index]){
+				xilinxDevicelist.splice(index,1);
             }
 		}
-		for(index = 0; index < Property_param.properties.Device.enum.length;index++){
-            if(selection == Property_param.properties.Device.enum[index]){
-				Property_param.properties.Device.enum.splice(index,1);
-            }
-		}
-		getFolder.pushJsonInfo(`${root_path}/.TOOL/Device.json`,Device_param);
 		getFolder.pushJsonInfo(`${root_path}/.TOOL/Property.json`,Property_param);
+		vscode.window.showInformationMessage(`Delete the ${Device} successfully!!!`)
 	});
 }
 
@@ -125,45 +168,77 @@ function register(context,root_path) {
 	context.subscriptions.push(testbench);
 
 	let Init = vscode.commands.registerCommand('FPGA.Init', () => {
-		// if (!terminal_ope.ensureTerminalExists("StartFPGA")) {
-		// 	if (!StartFPGA_flag) {			
-		// 		StartFPGA = vscode.window.createTerminal({ name: 'StartFPGA' });
-		// 		StartFPGA.show(true);
-		// 		StartFPGA.sendText(`python ${tool_path}/.Script/start.py fpga`);
-		// 		StartFPGA_flag = true;
-		// 	}
-		// }
-		if (!getFolder.ensureExists(`${workspace_path}.vscode/Property.json`)) {
-			getFolder.pushJsonInfo(`${workspace_path}.vscode/Property.json`,fpgaparam);
+		getprjInfo(root_path,workspace_path);
+		getFolder.updateFolder(root_path, workspace_path, soc_mode);
+		if (!terminal_ope.ensureTerminalExists("StartFPGA")) {
+			if (!StartFPGA_flag) {			
+				StartFPGA = vscode.window.createTerminal({ name: 'StartFPGA' });
+				StartFPGA.show(true);
+				if (fpga_version == "xilinx") {					
+					StartFPGA.sendText(`vivado -mode tcl -s ${tool_path}/Xilinx/Script/Xilinx_TCL/Vivado/Run.tcl -notrace`);
+				}
+				StartFPGA_flag = true;
+			}
 		}
-		findDevice(root_path,workspace_path);
-		getFolder.updateFolder(root_path,workspace_path);
 	});
 	context.subscriptions.push(Init);
     let Update = vscode.commands.registerCommand('FPGA.Update', () => {
-		getFolder.updateFolder(root_path,workspace_path);
-		StartFPGA.show(true);
-		StartFPGA.sendText(`update`);
+		if (StartFPGA_flag == true) {			
+			getFolder.updateFolder(root_path,workspace_path);
+			StartFPGA.show(true);
+			StartFPGA.sendText(`update`);
+		}
     });
 	context.subscriptions.push(Update);
+	let TOP = vscode.commands.registerCommand('FPGA.top', () => {
+		if (StartFPGA_flag == true) {			
+			if (fpga_version == "xilinx") {				
+				StartFPGA.show(true);
+				StartFPGA.sendText(`update`);
+			}
+		}
+    });
+	context.subscriptions.push(TOP);
     let Sim = vscode.commands.registerCommand('FPGA.Sim', () => {
-		StartFPGA.show(true);
-		StartFPGA.sendText(`sim`);
+		if (StartFPGA_flag == true){
+			StartFPGA.show(true);
+			StartFPGA.sendText(`sim`);
+		}
     });
 	context.subscriptions.push(Sim);
     let Build = vscode.commands.registerCommand('FPGA.Build', () => {
-		StartFPGA.show(true);
-		StartFPGA.sendText(`build`);
+		if (StartFPGA_flag == true){
+			StartFPGA.show(true);
+			StartFPGA.sendText(`build`);
+		}
     });
 	context.subscriptions.push(Build);
+	let Snyth = vscode.commands.registerCommand('FPGA.Snyth', () => {
+		if (StartFPGA_flag == true){
+			StartFPGA.show(true);
+			StartFPGA.sendText(`snyth`);
+		}
+    });
+	context.subscriptions.push(Snyth);
+	let Impl = vscode.commands.registerCommand('FPGA.Impl', () => {
+		if (StartFPGA_flag == true){
+			StartFPGA.show(true);
+			StartFPGA.sendText(`impl`);
+		}
+    });
+	context.subscriptions.push(Impl);
 	let Program = vscode.commands.registerCommand('FPGA.Program', () => {
-		StartFPGA.show(true);
-		StartFPGA.sendText(`program`);
+		if (StartFPGA_flag == true){
+			StartFPGA.show(true);
+			StartFPGA.sendText(`program`);
+		}
     });
 	context.subscriptions.push(Program);
 	let GUI = vscode.commands.registerCommand('FPGA.GUI', () => {
-		StartFPGA.show(true);
-		StartFPGA.sendText(`gui`);
+		if (StartFPGA_flag == true){
+			StartFPGA.show(true);
+			StartFPGA.sendText(`gui`);
+		}
     });
 	context.subscriptions.push(GUI);
 	let Exit = vscode.commands.registerCommand('FPGA.exit', () => {
@@ -171,6 +246,7 @@ function register(context,root_path) {
 			StartFPGA_flag = false;
 			StartFPGA.show(true);
 			StartFPGA.sendText(`exit`);
+			getFolder.move_xbd_xIP(workspace_path,Property_path);
 		}
     });
 	context.subscriptions.push(Exit);

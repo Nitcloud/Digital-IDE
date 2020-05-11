@@ -102,6 +102,21 @@ function pick_file(file_path,extname) {
 };
 exports.pick_file = pick_file;
 
+function pick_Allfile(file_path,extname) {
+	let file_list = fs.readdirSync(file_path);
+	let output_list = [];
+	file_list.forEach(element => {
+		if (fs.statSync(`${file_path}/${element}`).isDirectory()) {
+			pick_Allfile(`${file_path}/${element}`,extname);
+		} else {		
+			if(fspath.extname(element).toLowerCase() === extname){
+				output_list.push(element)
+			}
+		}
+	});
+	return output_list;
+};
+exports.pick_Allfile = pick_Allfile;
 
 //JSON file operation
 function pullJsonInfo(JSON_path) {
@@ -131,9 +146,11 @@ function gentbFile(path,root_path) {
 };
 exports.gentbFile = gentbFile;
 
-function updateFolder(root_path,workspace_path) {
-	let fpga_info = pullJsonInfo(`${workspace_path}.vscode/Property.json`);
-	if (fpga_info.SOC_MODE.soc == "none") {
+function updateFolder(root_path,workspace_path,soc_mode) {
+	mkdir(`${workspace_path}prj/xilinx`);
+	mkdir(`${workspace_path}prj/intel`);
+	mkdir(`${workspace_path}prj/simulation`);
+	if (soc_mode == "none") {
 		deleteDir(`${workspace_path}user/Software`);
 		movedir(`${workspace_path}user/Hardware/src` ,`${workspace_path}user`);
 		movedir(`${workspace_path}user/Hardware/sim` ,`${workspace_path}user`);
@@ -156,3 +173,26 @@ function updateFolder(root_path,workspace_path) {
 	}
 };
 exports.updateFolder = updateFolder;
+
+function move_xbd_xIP(workspace_path, property_path) {
+	let prj_info = pullJsonInfo(property_path);
+	let target_path = "";
+	let source_IP_path = `${workspace_path}prj/xilinx/${prj_info.PRJ_NAME.FPGA}.srcs/sources_1/ip`;
+	let source_bd_path = `${workspace_path}prj/xilinx/${prj_info.PRJ_NAME.FPGA}.srcs/sources_1/bd`;
+	if (prj_info.SOC_MODE.soc == "none") {
+		target_path = `${workspace_path}user`;
+	}else{
+		target_path = `${workspace_path}user/Hardware`;
+	}
+	if (fs.existsSync(source_IP_path)) {
+		fs.readdirSync(source_IP_path).forEach(element => {
+			movedir(`${source_IP_path}/${element}`,`${target_path}/IP`)
+		});
+	}
+	if (fs.existsSync(source_bd_path)) {
+		fs.readdirSync(source_bd_path).forEach(element => {
+			movedir(`${source_bd_path}/${element}`,`${target_path}/bd`)
+		});
+	}
+}
+exports.move_xbd_xIP = move_xbd_xIP;

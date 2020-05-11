@@ -3,16 +3,17 @@ xilinx
 PRJ_NAME.FPGA
 template
 PRJ_NAME.SOC
-test
+undefined
 SOC_MODE.soc
 none
 SOC_MODE.bd_file
-none
+undefined
 SOC_MODE.os
-standalone
+undefined
 SOC_MODE.app
 hellow world
 enableShowlog
 false
 Device
-none
+xc7z020clg400-2
+

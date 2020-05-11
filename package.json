@@ -34,6 +34,8 @@
 		"onCommand:FPGA.top",
 		"onCommand:FPGA.Update",
 		"onCommand:FPGA.Sim",
+		"onCommand:FPGA.Snyth",
+		"onCommand:FPGA.Impl",
 		"onCommand:FPGA.Build",
 		"onCommand:FPGA.Program",
 		"onCommand:FPGA.GUI",
@@ -324,6 +326,16 @@
 			{
 				"command": "FPGA.Build",
 				"title": "Build the current fpga project",
+				"category": "FPGA"
+			},
+			{
+				"command": "FPGA.Snyth",
+				"title": "Snyth the current fpga project",
+				"category": "FPGA"
+			},
+			{
+				"command": "FPGA.Impl",
+				"title": "Impl the current fpga project",
 				"category": "FPGA"
 			},
 			{

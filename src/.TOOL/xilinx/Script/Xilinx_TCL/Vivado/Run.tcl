@@ -10,8 +10,6 @@ set program "[file dirname $current_Location]/Program.tcl"
 set debug   "[file dirname $current_Location]/Debug.tcl"
 
 # get the project info
-set soc       none
-set bd_file   none
 set Device    none
 set prj_name  template
 set fp [open $root_path/CONFIG r]
@@ -19,15 +17,12 @@ while { [gets $fp data] >= 0 } \
 {
 	if { [string equal -length 13 $data "PRJ_NAME.FPGA"] == 1 } {
 			gets $fp prj_name
+			if {$prj_name == "undefined"} {
+				set prj_name template
+			}
 	}
 	if { [string equal -length 6 $data "Device"] == 1 } {
 			gets $fp Device
-	}
-	if { [string equal -length 12 $data "SOC_MODE.soc"] == 1 } {
-			gets $fp soc
-	}
-	if { [string equal -length 16 $data "SOC_MODE.bd_file"] == 1 } {
-			gets $fp bd_file
 	}
 }
 close $fp
@@ -44,7 +39,17 @@ proc sim {} {
 
 proc build {} {
 	global build
-	source $build -notrace
+	source -notrace $build build
+}
+
+proc snyth {} {
+	global build
+	source -notrace $build snyth
+}
+
+proc impl {} {
+	global build
+	source -notrace $build impl
 }
 
 proc program {} {
