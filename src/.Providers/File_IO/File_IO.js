@@ -57,13 +57,15 @@ function mkdir(path) {
 exports.mkdir = mkdir;
 
 function movedir(oldpath,newpath) {
+	folder  = fspath.basename(oldpath);
+	newpath = newpath + '/' + folder;
 	if (fs.existsSync(oldpath)) {
-		folder  = fspath.basename(oldpath);
-		newpath = newpath + '/' + folder;
 		if (fs.existsSync(newpath)) {
 			deleteDir(newpath);
 		}
 		fs.renameSync(oldpath,newpath);
+	}else{
+		mkdir(newpath);	
 	}
 }
 exports.movedir = movedir;
@@ -146,11 +148,12 @@ function gentbFile(path,root_path) {
 };
 exports.gentbFile = gentbFile;
 
-function updateFolder(root_path,workspace_path,soc_mode) {
+function updateFolder(root_path,workspace_path,property_path) {
+	let prj_info = pullJsonInfo(property_path);
 	mkdir(`${workspace_path}prj/xilinx`);
 	mkdir(`${workspace_path}prj/intel`);
 	mkdir(`${workspace_path}prj/simulation`);
-	if (soc_mode == "none") {
+	if (prj_info.SOC_MODE.soc == "none") {
 		deleteDir(`${workspace_path}user/Software`);
 		movedir(`${workspace_path}user/Hardware/src` ,`${workspace_path}user`);
 		movedir(`${workspace_path}user/Hardware/sim` ,`${workspace_path}user`);

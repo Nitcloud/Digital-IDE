@@ -16,13 +16,13 @@ set fp [open $root_path/CONFIG r]
 while { [gets $fp data] >= 0 } \
 {
 	if { [string equal -length 13 $data "PRJ_NAME.FPGA"] == 1 } {
-			gets $fp prj_name
-			if {$prj_name == "undefined"} {
-				set prj_name template
-			}
+		gets $fp prj_name
+		if {$prj_name == "undefined"} {
+			set prj_name template
+		}
 	}
 	if { [string equal -length 6 $data "Device"] == 1 } {
-			gets $fp Device
+		gets $fp Device
 	}
 }
 close $fp
@@ -108,6 +108,8 @@ if { $prj_path == "" } {
 {
 	open_project $prj_path -quiet
 }
+
+puts breakpiont
 
 update
 

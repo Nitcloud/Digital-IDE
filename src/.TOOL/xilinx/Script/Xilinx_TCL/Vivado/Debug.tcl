@@ -21,11 +21,11 @@ foreach { hw_target } [get_hw_targets] \
     open_hw_target -quiet
     foreach { hw_device } [get_hw_devices] \
 	{
-    if { [string equal -length 6 [get_property PART $hw_device] $Device] == 1 } {
-        puts "------Successfully Found Hardware Target with a ${Device} device------ "
-        current_hw_device $hw_device
-        set found 1
-    }
+		if { [string equal -length 6 [get_property PART $hw_device] $Device] == 1 } {
+			puts "------Successfully Found Hardware Target with a ${Device} device------ "
+			current_hw_device $hw_device
+			set found 1
+		}
     }
     if {$found == 1} {break}
     close_hw_target

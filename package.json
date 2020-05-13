@@ -26,6 +26,7 @@
 		"onLanguage:vhdl",
 		"onLanguage:verilog",
 		"onLanguage:systemverilog",
+		"onCommand:TOOL.Gen_Property",
 		"onCommand:TOOL.Gen_BOOT",
 		"onCommand:TOOL.clean",
 		"onCommand:FPGA.instance",
@@ -110,23 +111,17 @@
 					"default": false,
 					"description": "If enabled, Icarus Verilog will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
 				},
-				"HDL.linting.modelsim.runAtFileLocation": {
-					"scope": "window",
-					"type": "boolean",
-					"default": false,
-					"description": "If enabled, Modelsim will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
-				},
 				"HDL.linting.modelsim.arguments": {
 					"scope": "window",
 					"type": "string",
 					"default": "",
 					"description": "Add Modelsim arguments here. They will be added to Modelsim while linting."
 				},
-				"HDL.linting.modelsim.work": {
+				"HDL.linting.modelsim.runAtFileLocation": {
 					"scope": "window",
-					"type": "string",
-					"default": "",
-					"description": "Add Modelsim work library here."
+					"type": "boolean",
+					"default": false,
+					"description": "If enabled, Modelsim will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
 				},
 				"HDL.linting.verilator.arguments": {
 					"scope": "window",
@@ -139,6 +134,12 @@
 					"type": "boolean",
 					"default": false,
 					"description": "If enabled, Verilator will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
+				},
+				"HDL.linting.modelsim.work": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "Add Modelsim work library here."
 				},
 				"HDL.ctags.path": {
 					"scope": "window",
@@ -238,7 +239,7 @@
 		],
 		"jsonValidation": [
 			{
-				"fileMatch": "**/*.json",
+				"fileMatch": "**/Property.json",
 				"url": "./src/.TOOL/Property.json"
 			}
 		],
@@ -283,6 +284,11 @@
 			}
 		],
 		"commands": [
+			{
+				"command": "TOOL.Gen_Property",
+				"title": "generate Property file",
+				"category": "TOOL"
+			},
 			{
 				"command": "TOOL.Gen_BOOT",
 				"title": "Gen_BOOT",

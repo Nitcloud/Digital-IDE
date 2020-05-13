@@ -108,7 +108,7 @@ function moduleIsParameterized(symbol, container) {
 /**
  * Module instantiator class which queries a given module, fetches the relative container, and parses an instance.
 */
-class SystemVerilogModuleInstantiator {
+class ModuleInstantiator {
     constructor() { }
     ;
     /**
@@ -184,7 +184,7 @@ class SystemVerilogModuleInstantiator {
         });
     }
 }
-exports.SystemVerilogModuleInstantiator = SystemVerilogModuleInstantiator;
+exports.ModuleInstantiator = ModuleInstantiator;
 /**
     Uses the given symbol, and given container to format the module's instance.
 

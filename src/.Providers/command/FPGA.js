@@ -2,6 +2,7 @@
 exports.__esModule = true;
 
 var vscode       = require("vscode");
+var fspath       = require("path");
 var terminal_ope = require("../command/terminal");
 var getFolder    = require("../File_IO/File_IO");
 
@@ -10,8 +11,6 @@ let StartFPGA_flag = false;
 
 let Instance;
 
-let Property_path = "";
-let soc_mode      = "none";
 let fpga_version  = "xilinx";
 
 let prjInitparam = {
@@ -26,28 +25,24 @@ let prjInitparam = {
 	"Device": "xc7z020clg400-2"
 }
 
-
-function getprjInfo(root_path,workspace_path) {
-	let CONFIG_contex = "FPGA_VERSION\n";
-	Property_path = `${workspace_path}.vscode/Property.json`;
+function getPropertypath(workspace_path) {
+	let Property_path = `${workspace_path}.vscode/Property.json`;
 	if (!getFolder.ensureExists(Property_path)) {
 		if (!getFolder.ensureExists(`${workspace_path}Property.json`)) {
-			vscode.window.showInformationMessage("There is no Property.json here, where you want to generate?",'.vscode','root')
-			.then(function(select){
-				if (select == ".vscode") {
-					getFolder.pushJsonInfo(`${workspace_path}.vscode/Property.json`,prjInitparam);
-				} else if (select == "root") {
-					getFolder.pushJsonInfo(`${workspace_path}Property.json`,prjInitparam);
-					Property_path = `${workspace_path}Property.json`;
-				}
-			});
+			getFolder.pushJsonInfo(`${workspace_path}.vscode/Property.json`,prjInitparam);
 		}
 		else{
 			Property_path = `${workspace_path}Property.json`;
 		}
 	}
-	let prj_param = getFolder.pullJsonInfo(Property_path);
+	return Property_path;
+}
 
+function updatePrjInfo(root_path, Property_path) {
+
+	let prj_param = getFolder.pullJsonInfo(Property_path);
+	
+	let CONFIG_contex = "FPGA_VERSION\n";
 	CONFIG_contex += prj_param.FPGA_VERSION + '\n';
 	CONFIG_contex += "PRJ_NAME.FPGA\n";
 	CONFIG_contex += prj_param.PRJ_NAME.FPGA + '\n';
@@ -65,17 +60,14 @@ function getprjInfo(root_path,workspace_path) {
 	CONFIG_contex += prj_param.enableShowlog + '\n';
 
 	CONFIG_contex += "Device\n";
-	findDevice(root_path);
+	findDevice(root_path,Property_path);
 	prj_param = getFolder.pullJsonInfo(Property_path);
 	CONFIG_contex += prj_param.Device + '\n\n';
 
 	getFolder.writeFile(`${root_path}/.TOOL/CONFIG`,CONFIG_contex);
-
-	soc_mode     = prj_param.SOC_MODE.soc;
-	fpga_version = prj_param.FPGA_VERSION;
 }
 
-function findDevice(root_path) {
+function findDevice(root_path,Property_path) {
 	let FPGA_param = getFolder.pullJsonInfo(Property_path);
 	if (FPGA_param.Device == "") {
 		let Device_param = getFolder.pullJsonInfo(`${root_path}/.TOOL/Device.json`);
@@ -138,6 +130,17 @@ function register(context,root_path) {
 	//My FPGA Command
 	let workspace_path = getFolder.getCurrentWorkspaceFolder();
 	let tool_path = `${root_path}/.TOOL`;
+
+	let jsonWatcher = vscode.workspace.createFileSystemWatcher("**/*.json", false, false, false);
+    context.subscriptions.push(jsonWatcher.onDidChange((uri) => {
+		// vscode.window.showInformationMessage("changed");
+		if (fspath.basename(uri.fsPath) == "Property.json") {		
+			getFolder.updateFolder(root_path,workspace_path,uri.fsPath);
+			updatePrjInfo(root_path,uri.fsPath);
+		}
+	}));
+	context.subscriptions.push(jsonWatcher);
+
 	let vInstance_Gen = vscode.commands.registerCommand('FPGA.instance', () => {
         let editor = vscode.window.activeTextEditor;
         if (!editor) {
@@ -162,29 +165,29 @@ function register(context,root_path) {
             return;
 		}
 		let command = `python ${tool_path}/.Script/vTbgenerator.py ${workspace_path} ${editor.document.fileName}`;
-		terminal_ope.runCmd(command)
-		// vscode.window.showInformationMessage('Generate Testbench successfully!');
+		terminal_ope.runCmd(command);
+		vscode.window.showInformationMessage('Generate Testbench successfully!');
     });
 	context.subscriptions.push(testbench);
 
 	let Init = vscode.commands.registerCommand('FPGA.Init', () => {
-		getprjInfo(root_path,workspace_path);
-		getFolder.updateFolder(root_path, workspace_path, soc_mode);
+		updatePrjInfo(root_path,getPropertypath(workspace_path));
+		getFolder.updateFolder(root_path, workspace_path, getPropertypath(workspace_path));
 		if (!terminal_ope.ensureTerminalExists("StartFPGA")) {
-			if (!StartFPGA_flag) {			
-				StartFPGA = vscode.window.createTerminal({ name: 'StartFPGA' });
-				StartFPGA.show(true);
-				if (fpga_version == "xilinx") {					
-					StartFPGA.sendText(`vivado -mode tcl -s ${tool_path}/Xilinx/Script/Xilinx_TCL/Vivado/Run.tcl -notrace`);
-				}
-				StartFPGA_flag = true;
+			StartFPGA = vscode.window.createTerminal({ name: 'StartFPGA' });
+		}
+		if (!StartFPGA_flag) {			
+			StartFPGA.show(true);
+			if (fpga_version == "xilinx") {					
+				StartFPGA.sendText(`vivado -mode tcl -s ${tool_path}/Xilinx/Script/Xilinx_TCL/Vivado/Run.tcl -notrace`);
 			}
+			StartFPGA_flag = true;
 		}
 	});
 	context.subscriptions.push(Init);
     let Update = vscode.commands.registerCommand('FPGA.Update', () => {
 		if (StartFPGA_flag == true) {			
-			getFolder.updateFolder(root_path,workspace_path);
+			getFolder.updateFolder(root_path,workspace_path,getPropertypath(workspace_path));
 			StartFPGA.show(true);
 			StartFPGA.sendText(`update`);
 		}
@@ -192,9 +195,13 @@ function register(context,root_path) {
 	context.subscriptions.push(Update);
 	let TOP = vscode.commands.registerCommand('FPGA.top', () => {
 		if (StartFPGA_flag == true) {			
-			if (fpga_version == "xilinx") {				
+			if (fpga_version == "xilinx") {	
+				let editor = vscode.window.activeTextEditor;
+				if (!editor) {
+					return;
+				}
 				StartFPGA.show(true);
-				StartFPGA.sendText(`update`);
+				StartFPGA.sendText(`set_property top ${editor.document.fileName} [current_fileset]`);
 			}
 		}
     });
@@ -236,8 +243,8 @@ function register(context,root_path) {
 	context.subscriptions.push(Program);
 	let GUI = vscode.commands.registerCommand('FPGA.GUI', () => {
 		if (StartFPGA_flag == true){
-			StartFPGA.show(true);
 			StartFPGA.sendText(`gui`);
+			StartFPGA.hide();
 		}
     });
 	context.subscriptions.push(GUI);

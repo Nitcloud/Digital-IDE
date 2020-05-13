@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const vscode_1 = require("vscode");
+const vscode = require("vscode");
 class SystemVerilogDefinitionProvider {
     constructor(workspaceSymProvider) {
         // Strings used in regex'es
@@ -49,7 +49,7 @@ class SystemVerilogDefinitionProvider {
                     }
                 }).then(uri => {
                     if (uri) {
-                        vscode_1.commands.executeCommand("vscode.executeDocumentSymbolProvider", uri, word).then((symbols) => {
+                        vscode.commands.executeCommand("vscode.executeDocumentSymbolProvider", uri, word).then((symbols) => {
                             let results = [];
                             getDocumentSymbols(results, symbols, word, uri, match_package[1]);
                             resolve(results);
@@ -60,7 +60,7 @@ class SystemVerilogDefinitionProvider {
             }
             else {
                 // Lookup all symbols in the current document
-                yield vscode_1.commands.executeCommand("vscode.executeDocumentSymbolProvider", document.uri, word)
+                yield vscode.commands.executeCommand("vscode.executeDocumentSymbolProvider", document.uri, word)
                     .then((symbols) => {
                     let results = [];
                     getDocumentSymbols(results, symbols, word, document.uri);
@@ -105,7 +105,7 @@ function getDocumentSymbols(results, entries, word, uri, containerName) {
     }
 }
 function moduleFromPort(document, range) {
-    let text = document.getText(new vscode_1.Range(new vscode_1.Position(0, 0), range.end));
+    let text = document.getText(new vscode.Range(new vscode.Position(0, 0), range.end));
     let depthParathesis = 0;
     let i = 0;
     for (i = text.length; i > 0; i--) {
@@ -125,11 +125,11 @@ function moduleFromPort(document, range) {
 }
 exports.moduleFromPort = moduleFromPort;
 function findPortLocation(symbol, port) {
-    return vscode_1.workspace.openTextDocument(symbol.location.uri).then(doc => {
+    return vscode.workspace.openTextDocument(symbol.location.uri).then(doc => {
         for (let i = symbol.location.range.start.line; i < doc.lineCount; i++) {
             let line = doc.lineAt(i).text;
             if (line.match("\\bword\\b".replace('word', port))) {
-                return new vscode_1.Location(symbol.location.uri, new vscode_1.Position(i, line.indexOf(port)));
+                return new vscode.Location(symbol.location.uri, new vscode.Position(i, line.indexOf(port)));
             }
         }
     });

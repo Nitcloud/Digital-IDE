@@ -44,7 +44,7 @@ const SDK_option  = require("./.Providers/treedata/sdk_option");
 
 function activate(context) {
     // Configure lint manager
-    exports.ctagsManager.configure();
+    // exports.ctagsManager.configure();
     lintManager = new LintManager_1["default"](logger);
 	vscode.commands.registerCommand("verilog.lint", lintManager.RunLintTool);
 	

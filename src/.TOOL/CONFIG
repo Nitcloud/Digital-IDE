@@ -5,13 +5,13 @@ template
 PRJ_NAME.SOC
 undefined
 SOC_MODE.soc
-none
+cortexA9
 SOC_MODE.bd_file
 undefined
 SOC_MODE.os
 undefined
 SOC_MODE.app
-hellow world
+undefined
 enableShowlog
 false
 Device

@@ -1,6 +1,6 @@
 'use strict';
 const vscode = require('vscode');
-const vhdlScopeGuesser_1 = require('./vhdlScopeGuesser');
+const vhdlScopeGuesser = require('./vhdlScopeGuesser');
 let kwLibrary = createCompletionKeyword('library');
 let kwUse = createCompletionKeyword('use');
 let kwPackage = createCompletionKeyword('package');
@@ -129,11 +129,11 @@ class VhdlCompletionItemProvider {
             }
             let suggestions = [];
             let textBeforeCursor = lineText.substring(0, position.character - 1);
-            let scope = vhdlScopeGuesser_1.guessScope(document, position.line);
+            let scope = vhdlScopeGuesser.guessScope(document, position.line);
             //console.log(scope.syntax);
             //console.log(textBeforeCursor);
             switch (scope.kind) {
-                case vhdlScopeGuesser_1.VhdlScopeKind.Vhdl: {
+                case vhdlScopeGuesser.VhdlScopeKind.Vhdl: {
                     suggestions.push(kwArchitecture);
                     suggestions.push(kwBegin);
                     suggestions.push(kwConfiguration);
@@ -145,7 +145,7 @@ class VhdlCompletionItemProvider {
                     suggestions.push(kwLibrary);
                     break;
                 }
-                case vhdlScopeGuesser_1.VhdlScopeKind.Entity: {
+                case vhdlScopeGuesser.VhdlScopeKind.Entity: {
                     if (textBeforeCursor.match(/^\s*\w*$/)) {
                         suggestions.push(...entityOptions);
                         suggestions.push(...portTypeOptions);
@@ -157,7 +157,7 @@ class VhdlCompletionItemProvider {
                     }
                     break;
                 }
-                case vhdlScopeGuesser_1.VhdlScopeKind.Architecture: {
+                case vhdlScopeGuesser.VhdlScopeKind.Architecture: {
                     if (textBeforeCursor.match(/^\s*\w*$/)) {
                         suggestions.push(...archTypeOptions);
                         suggestions.push(kwBegin);
@@ -176,7 +176,7 @@ class VhdlCompletionItemProvider {
                     }
                     break;
                 }
-                case vhdlScopeGuesser_1.VhdlScopeKind.Configuration: {
+                case vhdlScopeGuesser.VhdlScopeKind.Configuration: {
                     suggestions.push(kwFor);
                     break;
                 }

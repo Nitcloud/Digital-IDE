@@ -5,6 +5,19 @@ var vscode   = require("vscode");
 var file     = require("../File_IO/File_IO")
 var terminal = require("../command/terminal");
 
+let prjInitparam = {
+	"FPGA_VERSION": "xilinx",
+	"PRJ_NAME": {
+		"FPGA": "template"
+	},
+	"SOC_MODE": {
+		"soc": "none"
+	},
+	"enableShowlog": false,
+	"Device": "xc7z020clg400-2"
+}
+
+
 function pick_elf_file(boot_path) {
 	let elf_list = file.pick_file(boot_path,".elf");
 		elf_list = elf_list.filter(function (elf_file) {
@@ -146,6 +159,22 @@ function xclean(workspace_path) {
 	});
 }
 
+function generatePropertypath(workspace_path) {
+	let Property_path = `${workspace_path}.vscode/Property.json`;
+	if (!file.ensureExists(Property_path)) {
+		if (!file.ensureExists(`${workspace_path}Property.json`)) {
+			vscode.window.showInformationMessage("There is no Property.json here, where you want to generate?",'.vscode','root')
+			.then(function(select){
+				if (select == ".vscode") {
+					file.pushJsonInfo(`${workspace_path}.vscode/Property.json`,prjInitparam);
+				} else if (select == "root") {
+					file.pushJsonInfo(`${workspace_path}Property.json`,prjInitparam);
+				}
+			});
+		}
+	}
+}
+
 function register(context,root_path) {
 	//My SDK Command
 	let workspace_path = file.getCurrentWorkspaceFolder();
@@ -157,5 +186,9 @@ function register(context,root_path) {
 		xclean(workspace_path);
 	});
 	context.subscriptions.push(clean);
+	let property = vscode.commands.registerCommand('TOOL.Gen_Property', () => {
+		generatePropertypath(workspace_path);
+	});
+	context.subscriptions.push(property);
 }
 exports.register = register;
