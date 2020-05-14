@@ -5,6 +5,8 @@ set root_path [file dirname [file dirname [file dirname [file dirname [file dirn
 
 set update  "[file dirname $current_Location]/Update.tcl"
 set sim     "[file dirname $current_Location]/Simulation.tcl"
+set snyth   "[file dirname $current_Location]/Snyth.tcl"
+set impl    "[file dirname $current_Location]/Impl.tcl"
 set build   "[file dirname $current_Location]/Build.tcl"
 set program "[file dirname $current_Location]/Program.tcl"
 set debug   "[file dirname $current_Location]/Debug.tcl"
@@ -39,17 +41,17 @@ proc sim {} {
 
 proc build {} {
 	global build
-	source -notrace $build build
+	source $build -notrace 
 }
 
 proc snyth {} {
-	global build
-	source -notrace $build snyth
+	global snyth
+	source $snyth -notrace
 }
 
 proc impl {} {
-	global build
-	source -notrace $build impl
+	global impl
+	source $impl -notrace
 }
 
 proc program {} {

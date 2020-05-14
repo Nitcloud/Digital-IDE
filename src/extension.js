@@ -27,7 +27,6 @@ const parser_1 					= require("./.Providers/parser");
 const indexer_1 				= require("./.Providers/indexer");
 const HoverProvider_1 			= require("./.Providers/providers/HoverProvider");
 const DefintionProvider_1 		= require("./.Providers/providers/DefintionProvider");
-const ModuleInstantiator_1 		= require("./.Providers/providers/ModuleInstantiator");
 const DocumentSymbolProvider_1 	= require("./.Providers/providers/DocumentSymbolProvider");
 const WorkspaceSymbolProvider_1 = require("./.Providers/providers/WorkspaceSymbolProvider");
 

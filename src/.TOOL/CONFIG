@@ -5,7 +5,7 @@ template
 PRJ_NAME.SOC
 undefined
 SOC_MODE.soc
-cortexA9
+none
 SOC_MODE.bd_file
 undefined
 SOC_MODE.os

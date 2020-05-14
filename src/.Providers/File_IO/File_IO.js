@@ -155,23 +155,22 @@ function updateFolder(root_path,workspace_path,property_path) {
 	mkdir(`${workspace_path}prj/simulation`);
 	if (prj_info.SOC_MODE.soc == "none") {
 		deleteDir(`${workspace_path}user/Software`);
+		movedir(`${workspace_path}user/Hardware/IP`  ,`${workspace_path}user`);
+		movedir(`${workspace_path}user/Hardware/bd`  ,`${workspace_path}user`);
 		movedir(`${workspace_path}user/Hardware/src` ,`${workspace_path}user`);
 		movedir(`${workspace_path}user/Hardware/sim` ,`${workspace_path}user`);
 		movedir(`${workspace_path}user/Hardware/data`,`${workspace_path}user`);
-		movedir(`${workspace_path}user/Hardware/IP`  ,`${workspace_path}user`);
-		movedir(`${workspace_path}user/Hardware/bd`  ,`${workspace_path}user`);
 		deleteDir(`${workspace_path}user/Hardware`);
 		gentbFile(`${workspace_path}user/sim/testbench.v`,root_path);
-	}
-	else {
+	} else {
 		mkdir(`${workspace_path}user/Software/data`);
 		mkdir(`${workspace_path}user/Software/src`);
 		mkdir(`${workspace_path}user/Hardware`);
+		movedir(`${workspace_path}user/IP`  ,`${workspace_path}user/Hardware`);
+		movedir(`${workspace_path}user/bd`  ,`${workspace_path}user/Hardware`);
 		movedir(`${workspace_path}user/src` ,`${workspace_path}user/Hardware`);
 		movedir(`${workspace_path}user/data`,`${workspace_path}user/Hardware`);
 		movedir(`${workspace_path}user/sim` ,`${workspace_path}user/Hardware`);
-		movedir(`${workspace_path}user/IP`  ,`${workspace_path}user/Hardware`);
-		movedir(`${workspace_path}user/bd`  ,`${workspace_path}user/Hardware`);
 		gentbFile(`${workspace_path}user/Hardware/sim/testbench.v`,root_path);
 	}
 };

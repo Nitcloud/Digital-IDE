@@ -29,69 +29,29 @@ while { [gets $fp data] >= 0 } \
 }
 close $fp
 
-# synnth function
-proc synth {} {
-	global xilinx_path
-	global enableShowlog
-
-	reset_run   synth_1 -quiet
-	launch_run  synth_1 -quiet
-	wait_on_run synth_1 -quiet
-
-	if {$enableShowlog == true} {
-		exec python $xilinx_path/Script/Python/showlog.py [current_project]
-	}
-	set snyth_state [exec python $xilinx_path/Script/Python/Log.py synth [current_project]]
-	return snyth_state
-}
-
-# impl function
-proc impl {} {
-	global xilinx_path
-	global enableShowlog
-
-	reset_run impl_1 -quiet
-	launch_run impl_1 -quiet
-	wait_on_run impl_1 -quiet
-
-	if {$enableShowlog == true} {
-		exec python $xilinx_path/Script/Python/showlog.py [current_project]
-	}
-	set impl_state [exec python $xilinx_path/Script/Python/Log.py impl [current_project]]
-	return impl_state
-}
+set snyth   "[file dirname $current_Location]/Snyth.tcl"
+set impl    "[file dirname $current_Location]/Impl.tcl"
 
 # build function
-proc build {} {
-	global soc
-	global Device
-	if {[synth] == "none"} \
+if {[source $snyth -notrace] == "none"} \
+{
+	if { [source $impl -notrace] == "none"} \
 	{
-		if { [impl] == "none"} \
-		{
-			open_run impl_1 -quiet
-			report_timing_summary -quiet
-		}
-	}
-	if { [string equal -length 4 $Device xc7z] == 1 } {
-		set_property STEPS.WRITE_BITSTREAM.ARGS.BIN_FILE true [get_runs impl_1]
-	} 
-	#Gen bit/hdf file
-	if {$soc != "none"} {
-		write_hwdef -force -file ./user/Software/data/[current_project].hdf
-		write_bitstream ./[current_project].bit -force -quiet -bin_file
-	}
-	else \
-	{
-		write_bitstream ./[current_project].bit -force -quiet
+		open_run impl_1 -quiet
+		report_timing_summary -quiet
 	}
 }
+if { [string equal -length 4 $Device xc7z] == 1 } {
+	set_property STEPS.WRITE_BITSTREAM.ARGS.BIN_FILE true [get_runs impl_1]
+} 
+#Gen bit/hdf file
+if {$soc != "none"} {
+	write_hwdef -force -file ./user/Software/data/[current_project].hdf
+	write_bitstream ./[current_project].bit -force -quiet -bin_file
+}
+else \
+{
+	write_bitstream ./[current_project].bit -force -quiet
+}
 
-puts $argv
 
-# switch $argv {
-# 	case "synth" { synth }
-# 	case "impl"  { impl  }
-# 	case "build" { build }
-# 	default {}
-# }

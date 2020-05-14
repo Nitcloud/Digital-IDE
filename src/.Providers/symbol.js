@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const vscode_1 = require("vscode");
-class SystemVerilogSymbol extends vscode_1.SymbolInformation {
+const vscode = require("vscode");
+class SystemVerilogSymbol extends vscode.SymbolInformation {
     /**
      * Creates a new symbol information object.
      *
@@ -20,32 +20,32 @@ exports.SystemVerilogSymbol = SystemVerilogSymbol;
 // Use show_SymbolKinds to see the latest symbols
 function getSymbolKind(name) {
     if (name === undefined || name === '') { // Ports may be declared without type
-        return vscode_1.SymbolKind.Variable;
+        return vscode.SymbolKind.Variable;
     }
     else if (name.indexOf('[') != -1) {
-        return vscode_1.SymbolKind.Array;
+        return vscode.SymbolKind.Array;
     }
     switch (name) {
         case 'parameter':
-        case 'localparam': return vscode_1.SymbolKind.Constant;
+        case 'localparam': return vscode.SymbolKind.Constant;
         case 'package':
         case 'program':
-        case 'import': return vscode_1.SymbolKind.Package;
+        case 'import': return vscode.SymbolKind.Package;
         case 'begin': // Labels
-        case 'string': return vscode_1.SymbolKind.String;
-        case 'class': return vscode_1.SymbolKind.Class;
-        case 'task': return vscode_1.SymbolKind.Method;
-        case 'function': return vscode_1.SymbolKind.Function;
-        case 'interface': return vscode_1.SymbolKind.Interface;
+        case 'string': return vscode.SymbolKind.String;
+        case 'class': return vscode.SymbolKind.Class;
+        case 'task': return vscode.SymbolKind.Method;
+        case 'function': return vscode.SymbolKind.Function;
+        case 'interface': return vscode.SymbolKind.Interface;
         case 'assert':
-        case 'event': return vscode_1.SymbolKind.Event;
-        case 'struct': return vscode_1.SymbolKind.Struct;
-        case 'typedef': return vscode_1.SymbolKind.TypeParameter;
-        case 'genvar': return vscode_1.SymbolKind.Operator;
-        case 'enum': return vscode_1.SymbolKind.Enum;
-        case 'modport': return vscode_1.SymbolKind.Null;
+        case 'event': return vscode.SymbolKind.Event;
+        case 'struct': return vscode.SymbolKind.Struct;
+        case 'typedef': return vscode.SymbolKind.TypeParameter;
+        case 'genvar': return vscode.SymbolKind.Operator;
+        case 'enum': return vscode.SymbolKind.Enum;
+        case 'modport': return vscode.SymbolKind.Null;
         case 'define':
-        case 'property': return vscode_1.SymbolKind.Property;
+        case 'property': return vscode.SymbolKind.Property;
         case 'wire':
         case 'reg':
         case 'bit':
@@ -54,9 +54,9 @@ function getSymbolKind(name) {
         case 'integer':
         case 'char':
         case 'time':
-        case 'float': return vscode_1.SymbolKind.Variable;
+        case 'float': return vscode.SymbolKind.Variable;
         case 'module':
-        default: return vscode_1.SymbolKind.Field;
+        default: return vscode.SymbolKind.Field;
     }
     /* Unused/Free SymbolKind icons
         return SymbolKind.Number;
