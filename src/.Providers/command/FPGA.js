@@ -59,29 +59,12 @@ function updatePrjInfo(root_path, Property_path) {
 	CONFIG_contex += prj_param.SOC_MODE.app + '\n';
 	CONFIG_contex += "enableShowlog\n";
 	CONFIG_contex += prj_param.enableShowlog + '\n';
-
 	CONFIG_contex += "Device\n";
-	findDevice(root_path,Property_path);
+
 	prj_param = file.pullJsonInfo(Property_path);
 	CONFIG_contex += prj_param.Device + '\n\n';
 
 	file.writeFile(`${root_path}/.TOOL/CONFIG`,CONFIG_contex);
-}
-
-function findDevice(root_path,Property_path) {
-	let FPGA_param = file.pullJsonInfo(Property_path);
-	if (FPGA_param.Device == "") {
-		let Device_param = file.pullJsonInfo(`${root_path}/.TOOL/Device.json`);
-		let Device_list  = Device_param.Xilinx;	
-		vscode.window.showQuickPick(Device_list).then(selection => {
-			// the user canceled the selection
-			if (!selection) {
-				return;
-			}
-			FPGA_param.Device = selection;
-			file.pushJsonInfo(Property_path,FPGA_param);
-		});
-	}
 }
 
 function addDevice(root_path) {

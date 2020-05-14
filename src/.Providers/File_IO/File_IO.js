@@ -45,14 +45,14 @@ function deleteDir(path){
 exports.deleteDir = deleteDir;
 
 function mkdir(path) {
-	if (!fs.existsSync(path)) {
-		if (fs.existsSync(fspath.dirname(path))) {
+    if (fs.existsSync(path)) {
+      return true;
+    } else {
+		if (mkdir(fspath.dirname(path))) {
 			fs.mkdirSync(path);
+			return true;
 		}
-		else{
-			mkdir(fspath.dirname(path));
-		}
-	}
+    }
 }
 exports.mkdir = mkdir;
 

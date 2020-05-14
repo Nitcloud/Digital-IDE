@@ -99,23 +99,22 @@ function xbootgenerate(workspace_path,root_path) {
 		if (elf_list.length == 1) {
 			elf_path = "\t" + output_path + "/" + elf_list[0] + "\n";
 			bit_list = file.pick_file(workspace_path,".bit");
-				if (bit_list.length == 1) {
-					bit_path = "\t" + workspace_path + bit_list[0] + "\n";
-				}
-				else{
-					vscode.window.showQuickPick(bit_list).then(selection => {
-						if (!selection) {
-							return;
-						}
-						bit_path = "\t" + workspace_path + selection + "\n";
-					});
-				}
-				output_context += fsbl_path + bit_path + elf_path + "}";
-				file.writeFile(`${output_path}/output.bif`,output_context);
-				let cmd = `bootgen -arch zynq -image ${output_path}/output.bif -o ${workspace_path}BOOT.bin -w on`;
-				terminal.runCmd(cmd);	
-		}
-		else {
+			if (bit_list.length == 1) {
+				bit_path = "\t" + workspace_path + bit_list[0] + "\n";
+			}
+			else{
+				vscode.window.showQuickPick(bit_list).then(selection => {
+					if (!selection) {
+						return;
+					}
+					bit_path = "\t" + workspace_path + selection + "\n";
+				});
+			}
+			output_context += fsbl_path + bit_path + elf_path + "}";
+			file.writeFile(`${output_path}/output.bif`,output_context);
+			let cmd = `bootgen -arch zynq -image ${output_path}/output.bif -o ${workspace_path}BOOT.bin -w on`;
+			terminal.runCmd(cmd);	
+		} else {
 			vscode.window.showQuickPick(elf_list).then(selection => {
 				if (!selection) {
 					return;
