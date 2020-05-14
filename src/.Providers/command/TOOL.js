@@ -54,6 +54,10 @@ function xbootgenerate(workspace_path,root_path) {
 			bit_list = file.pick_file(workspace_path,".bit");
 				if (bit_list.length == 1) {
 					bit_path = "\t" + workspace_path + bit_list[0] + "\n";
+					output_context += fsbl_path + bit_path + elf_path + "}";
+					file.writeFile(`${output_path}/output.bif`,output_context);
+					let cmd = `bootgen -arch zynq -image ${output_path}/output.bif -o ${workspace_path}BOOT.bin -w on`;
+					terminal.runCmd(cmd);	
 				}
 				else{
 					vscode.window.showQuickPick(bit_list).then(selection => {
@@ -61,12 +65,12 @@ function xbootgenerate(workspace_path,root_path) {
 							return;
 						}
 						bit_path = "\t" + workspace_path + selection + "\n";
+						output_context += fsbl_path + bit_path + elf_path + "}";
+						file.writeFile(`${output_path}/output.bif`,output_context);
+						let cmd = `bootgen -arch zynq -image ${output_path}/output.bif -o ${workspace_path}BOOT.bin -w on`;
+						terminal.runCmd(cmd);	
 					});
 				}
-				output_context += fsbl_path + bit_path + elf_path + "}";
-				file.writeFile(`${output_path}/output.bif`,output_context);
-				let cmd = `bootgen -arch zynq -image ${output_path}/output.bif -o ${workspace_path}BOOT.bin -w on`;
-				terminal.runCmd(cmd);	
 		}
 		else {
 			vscode.window.showQuickPick(elf_list).then(selection => {
@@ -77,6 +81,10 @@ function xbootgenerate(workspace_path,root_path) {
 				bit_list = file.pick_file(workspace_path,".bit");
 				if (bit_list.length == 1) {
 					bit_path = "\t" + workspace_path + bit_list[0] + "\n";
+					output_context += fsbl_path + bit_path + elf_path + "}";
+					file.writeFile(`${output_path}/output.bif`,output_context);
+					let cmd = `bootgen -arch zynq -image ${output_path}/output.bif -o ${workspace_path}BOOT.bin -w on`;
+					terminal.runCmd(cmd);	
 				}
 				else{
 					vscode.window.showQuickPick(bit_list).then(selection => {
@@ -84,12 +92,12 @@ function xbootgenerate(workspace_path,root_path) {
 							return;
 						}
 						bit_path = "\t" + workspace_path + selection + "\n";
+						output_context += fsbl_path + bit_path + elf_path + "}";
+						file.writeFile(`${output_path}/output.bif`,output_context);
+						let cmd = `bootgen -arch zynq -image ${output_path}/output.bif -o ${workspace_path}BOOT.bin -w on`;
+						terminal.runCmd(cmd);		
 					});
 				}
-				output_context += fsbl_path + bit_path + elf_path + "}";
-				file.writeFile(`${output_path}/output.bif`,output_context);
-				let cmd = `bootgen -arch zynq -image ${output_path}/output.bif -o ${workspace_path}BOOT.bin -w on`;
-				terminal.runCmd(cmd);		
 			});
 		}
 	}
@@ -101,6 +109,10 @@ function xbootgenerate(workspace_path,root_path) {
 			bit_list = file.pick_file(workspace_path,".bit");
 			if (bit_list.length == 1) {
 				bit_path = "\t" + workspace_path + bit_list[0] + "\n";
+				output_context += fsbl_path + bit_path + elf_path + "}";
+				file.writeFile(`${output_path}/output.bif`,output_context);
+				let cmd = `bootgen -arch zynq -image ${output_path}/output.bif -o ${workspace_path}BOOT.bin -w on`;
+				terminal.runCmd(cmd);	
 			}
 			else{
 				vscode.window.showQuickPick(bit_list).then(selection => {
@@ -108,12 +120,12 @@ function xbootgenerate(workspace_path,root_path) {
 						return;
 					}
 					bit_path = "\t" + workspace_path + selection + "\n";
+					output_context += fsbl_path + bit_path + elf_path + "}";
+					file.writeFile(`${output_path}/output.bif`,output_context);
+					let cmd = `bootgen -arch zynq -image ${output_path}/output.bif -o ${workspace_path}BOOT.bin -w on`;
+					terminal.runCmd(cmd);	
 				});
 			}
-			output_context += fsbl_path + bit_path + elf_path + "}";
-			file.writeFile(`${output_path}/output.bif`,output_context);
-			let cmd = `bootgen -arch zynq -image ${output_path}/output.bif -o ${workspace_path}BOOT.bin -w on`;
-			terminal.runCmd(cmd);	
 		} else {
 			vscode.window.showQuickPick(elf_list).then(selection => {
 				if (!selection) {
@@ -123,6 +135,10 @@ function xbootgenerate(workspace_path,root_path) {
 				bit_list = file.pick_file(workspace_path,".bit");
 				if (bit_list.length == 1) {
 					bit_path = "\t" + workspace_path + bit_list[0] + "\n";
+					output_context += fsbl_path + bit_path + elf_path + "}";
+					file.writeFile(`${output_path}/output.bif`,output_context);
+					let cmd = `bootgen -arch zynq -image ${output_path}/output.bif -o ${workspace_path}BOOT.bin -w on`;
+					terminal.runCmd(cmd);	
 				}
 				else{
 					vscode.window.showQuickPick(bit_list).then(selection => {
@@ -130,12 +146,12 @@ function xbootgenerate(workspace_path,root_path) {
 							return;
 						}
 						bit_path = "\t" + workspace_path + selection + "\n";
+						output_context += fsbl_path + bit_path + elf_path + "}";
+						file.writeFile(`${output_path}/output.bif`,output_context);
+						let cmd = `bootgen -arch zynq -image ${output_path}/output.bif -o ${workspace_path}BOOT.bin -w on`;
+						terminal.runCmd(cmd);		
 					});
 				}
-				output_context += fsbl_path + bit_path + elf_path + "}";
-				file.writeFile(`${output_path}/output.bif`,output_context);
-				let cmd = `bootgen -arch zynq -image ${output_path}/output.bif -o ${workspace_path}BOOT.bin -w on`;
-				terminal.runCmd(cmd);		
 			});
 		}
 	}
@@ -170,7 +186,12 @@ function generatePropertypath(workspace_path) {
 					file.pushJsonInfo(`${workspace_path}Property.json`,prjInitparam);
 				}
 			});
+		}else {
+			vscode.window.showWarningMessage("Property file already exists");
 		}
+	}
+	else {
+		vscode.window.showWarningMessage("Property file already exists");
 	}
 }
 

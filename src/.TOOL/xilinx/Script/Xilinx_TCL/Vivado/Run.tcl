@@ -5,7 +5,7 @@ set root_path [file dirname [file dirname [file dirname [file dirname [file dirn
 
 set update  "[file dirname $current_Location]/Update.tcl"
 set sim     "[file dirname $current_Location]/Simulation.tcl"
-set snyth   "[file dirname $current_Location]/Snyth.tcl"
+set synth   "[file dirname $current_Location]/synth.tcl"
 set impl    "[file dirname $current_Location]/Impl.tcl"
 set build   "[file dirname $current_Location]/Build.tcl"
 set program "[file dirname $current_Location]/Program.tcl"
@@ -44,9 +44,9 @@ proc build {} {
 	source $build -notrace 
 }
 
-proc snyth {} {
-	global snyth
-	source $snyth -notrace
+proc synth {} {
+	global synth
+	source $synth -notrace
 }
 
 proc impl {} {
@@ -82,14 +82,14 @@ proc ope {} {
 		gets stdin your_choice;
 		switch $your_choice \
 		{
-			1  {update }
-			2  {sim    }
-			3  {build  }
-			4  {program}
-			5  {debug  }
-			6  {break  }
-			e  {break  }
-			ee {exit 1 }
+			1  {update   }
+			2  {sim;break}
+			3  {build    }
+			4  {program  }
+			5  {debug    }
+			6  {break    }
+			e  {break    }
+			ee {exit 1   }
 			default {puts "please input right choice"}
 		}
 	}

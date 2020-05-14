@@ -28,12 +28,12 @@ while { [gets $fp data] >= 0 } \
 }
 close $fp
 
-reset_run   impl_1 -quiet
-launch_run  impl_1 -quiet
-wait_on_run impl_1 -quiet
+reset_run   impl_1 
+launch_run  impl_1 
+wait_on_run impl_1 
 
 if {$enableShowlog == true} {
 	exec python $xilinx_path/Script/Python/showlog.py [current_project]
 }
 set  impl_state [exec python $xilinx_path/Script/Python/Log.py impl [current_project]]
-puts impl_state
+puts $impl_state

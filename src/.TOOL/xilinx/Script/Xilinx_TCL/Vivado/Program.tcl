@@ -1,3 +1,7 @@
+
+set current_Location [file normalize [info script]]
+set root_path [file dirname [file dirname [file dirname [file dirname [file dirname $current_Location]]]]]
+
 set Device    none
 set fp [open $root_path/CONFIG r]
 while { [gets $fp data] >= 0 } \
