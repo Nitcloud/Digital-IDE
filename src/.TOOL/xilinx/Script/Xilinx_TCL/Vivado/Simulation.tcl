@@ -34,3 +34,4 @@ if {$sim_state == "none"} {
 	}
 	run 1us
 }
+start_gui -quiet

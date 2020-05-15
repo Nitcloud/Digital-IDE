@@ -29,16 +29,18 @@ while { [gets $fp data] >= 0 } \
 }
 close $fp
 
-set snyth   "[file dirname $current_Location]/Snyth.tcl"
+set synth   "[file dirname $current_Location]/synth.tcl"
 set impl    "[file dirname $current_Location]/Impl.tcl"
 
 # build function
-if {[source $snyth -notrace] == "none"} \
-{
+if {[source $synth -notrace] == "none"} \
+{	
+	puts "synth has done"
 	if { [source $impl -notrace] == "none"} \
 	{
-		open_run impl_1 -quiet
-		report_timing_summary -quiet
+		puts "impl has done"
+		open_run impl_1
+		report_timing_summary
 	}
 }
 if { [string equal -length 4 $Device xc7z] == 1 } {
@@ -48,9 +50,7 @@ if { [string equal -length 4 $Device xc7z] == 1 } {
 if {$soc != "none"} {
 	write_hwdef -force -file ./user/Software/data/[current_project].hdf
 	write_bitstream ./[current_project].bit -force -quiet -bin_file
-}
-else \
-{
+} else {
 	write_bitstream ./[current_project].bit -force -quiet
 }
 

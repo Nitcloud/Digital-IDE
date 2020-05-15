@@ -125,6 +125,14 @@ function register(context,root_path) {
 	}));
 	context.subscriptions.push(jsonWatcher);
 
+	vscode.window.onDidCloseTerminal(function (terminal) {
+		if (terminal.name == "StartFPGA") {
+			StartFPGA_flag = false;
+			file.xclean(workspace_path,"none");
+			vscode.window.showInformationMessage("onDidCloseTerminal, name: " + terminal.name);
+		}
+    });
+
 	let vInstance_Gen = vscode.commands.registerCommand('FPGA.instance', () => {
         let editor = vscode.window.activeTextEditor;
         if (!editor) {
@@ -162,7 +170,7 @@ function register(context,root_path) {
 		if (!StartFPGA_flag) {			
 			StartFPGA.show(true);
 			if (fpga_version == "xilinx") {					
-				StartFPGA.sendText(`vivado -mode tcl -s ${tool_path}/Xilinx/Script/Xilinx_TCL/Vivado/Run.tcl -notrace`);
+				StartFPGA.sendText(`vivado -mode tcl -s ${tool_path}/Xilinx/Script/Xilinx_TCL/Vivado/Run.tcl -notrace -nolog -nojournal`);
 			}
 			StartFPGA_flag = true;
 		}
@@ -217,13 +225,13 @@ function register(context,root_path) {
 		}
     });
 	context.subscriptions.push(Build);
-	let Snyth = vscode.commands.registerCommand('FPGA.Snyth', () => {
+	let Synth = vscode.commands.registerCommand('FPGA.Synth', () => {
 		if (StartFPGA_flag == true){
 			StartFPGA.show(true);
-			StartFPGA.sendText(`snyth`);
+			StartFPGA.sendText(`synth`);
 		}
     });
-	context.subscriptions.push(Snyth);
+	context.subscriptions.push(Synth);
 	let Impl = vscode.commands.registerCommand('FPGA.Impl', () => {
 		if (StartFPGA_flag == true){
 			StartFPGA.show(true);
@@ -251,7 +259,8 @@ function register(context,root_path) {
 			StartFPGA_flag = false;
 			StartFPGA.show(true);
 			StartFPGA.sendText(`exit`);
-			file.move_xbd_xIP(workspace_path,Property_path);
+			file.xclean(workspace_path,"none");
+			file.move_xbd_xIP(workspace_path,getPropertypath(workspace_path));
 		}
     });
 	context.subscriptions.push(Exit);

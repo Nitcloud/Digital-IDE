@@ -111,8 +111,6 @@ if { $prj_path == "" } {
 	open_project $prj_path -quiet
 }
 
-puts breakpiont
-
 update
 
 # ope

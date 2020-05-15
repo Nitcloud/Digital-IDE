@@ -52,7 +52,10 @@ function xbootgenerate(workspace_path,root_path) {
 		if (elf_list.length == 1) {
 			elf_path = "\t" + BOOT_folder + "/" + elf_list[0] + "\n";
 			bit_list = file.pick_file(workspace_path,".bit");
-				if (bit_list.length == 1) {
+				if (bit_list.length <= 1) {
+					if (bit_list.length == 0) {
+						vscode.window.showWarningMessage("The bit file was not found\nThe elf file was generated as a bin file");
+					}
 					bit_path = "\t" + workspace_path + bit_list[0] + "\n";
 					output_context += fsbl_path + bit_path + elf_path + "}";
 					file.writeFile(`${output_path}/output.bif`,output_context);
@@ -79,7 +82,10 @@ function xbootgenerate(workspace_path,root_path) {
 				}
 				elf_path = "\t" + BOOT_folder + "/" + selection + "\n";
 				bit_list = file.pick_file(workspace_path,".bit");
-				if (bit_list.length == 1) {
+				if (bit_list.length <= 1) {
+					if (bit_list.length == 0) {
+						vscode.window.showWarningMessage("The bit file was not found\nThe elf file was generated as a bin file");
+					}
 					bit_path = "\t" + workspace_path + bit_list[0] + "\n";
 					output_context += fsbl_path + bit_path + elf_path + "}";
 					file.writeFile(`${output_path}/output.bif`,output_context);
@@ -107,14 +113,15 @@ function xbootgenerate(workspace_path,root_path) {
 		if (elf_list.length == 1) {
 			elf_path = "\t" + output_path + "/" + elf_list[0] + "\n";
 			bit_list = file.pick_file(workspace_path,".bit");
-			if (bit_list.length == 1) {
+			if (bit_list.length == 0) {
+				vscode.window.showErrorMessage("The bit file was not found\nCannot only BOOT the pl part");
+			} else if (bit_list.length == 1) {
 				bit_path = "\t" + workspace_path + bit_list[0] + "\n";
 				output_context += fsbl_path + bit_path + elf_path + "}";
 				file.writeFile(`${output_path}/output.bif`,output_context);
 				let cmd = `bootgen -arch zynq -image ${output_path}/output.bif -o ${workspace_path}BOOT.bin -w on`;
 				terminal.runCmd(cmd);	
-			}
-			else{
+			} else if (bit_list.length > 1) {
 				vscode.window.showQuickPick(bit_list).then(selection => {
 					if (!selection) {
 						return;
@@ -133,7 +140,10 @@ function xbootgenerate(workspace_path,root_path) {
 				}
 				elf_path = "\t" + output_path + "/" + selection + "\n";
 				bit_list = file.pick_file(workspace_path,".bit");
-				if (bit_list.length == 1) {
+				if (bit_list.length <= 1) {
+					if (bit_list.length == 0) {
+						vscode.window.showWarningMessage("The bit file was not found\nThe elf file was generated as a bin file");
+					}
 					bit_path = "\t" + workspace_path + bit_list[0] + "\n";
 					output_context += fsbl_path + bit_path + elf_path + "}";
 					file.writeFile(`${output_path}/output.bif`,output_context);
@@ -155,23 +165,6 @@ function xbootgenerate(workspace_path,root_path) {
 			});
 		}
 	}
-}
-
-function xclean(workspace_path) {
-	file.deleteDir(`${workspace_path}.Xil`);
-	file.deleteDir(`${workspace_path}prj`);
-	let file_list = file.pick_file(workspace_path,".jou");
-	file_list.forEach(element => {
-		file.deleteFile(`${workspace_path}${element}`)
-	});
-	file_list = file.pick_file(workspace_path,".log");
-	file_list.forEach(element => {
-		file.deleteFile(`${workspace_path}${element}`)
-	});
-	file_list = file.pick_file(workspace_path,".str");
-	file_list.forEach(element => {
-		file.deleteFile(`${workspace_path}${element}`)
-	});
 }
 
 function generatePropertypath(workspace_path) {
@@ -203,7 +196,7 @@ function register(context,root_path) {
 	});
 	context.subscriptions.push(Gen_BOOT);
 	let clean = vscode.commands.registerCommand('TOOL.clean', () => {
-		xclean(workspace_path);
+		file.xclean(workspace_path,"all");
 	});
 	context.subscriptions.push(clean);
 	let property = vscode.commands.registerCommand('TOOL.Gen_Property', () => {

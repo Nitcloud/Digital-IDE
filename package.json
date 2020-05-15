@@ -22,6 +22,7 @@
 	],
 	"icon": "images/FPGAs.png",
 	"activationEvents": [
+		"onLanguage:json",
 		"onLanguage:tcl",
 		"onLanguage:vhdl",
 		"onLanguage:verilog",
@@ -35,7 +36,7 @@
 		"onCommand:FPGA.top",
 		"onCommand:FPGA.Update",
 		"onCommand:FPGA.Sim",
-		"onCommand:FPGA.Snyth",
+		"onCommand:FPGA.Synth",
 		"onCommand:FPGA.Impl",
 		"onCommand:FPGA.Build",
 		"onCommand:FPGA.Program",
@@ -335,8 +336,8 @@
 				"category": "FPGA"
 			},
 			{
-				"command": "FPGA.Snyth",
-				"title": "Snyth the current fpga project",
+				"command": "FPGA.Synth",
+				"title": "Synth the current fpga project",
 				"category": "FPGA"
 			},
 			{

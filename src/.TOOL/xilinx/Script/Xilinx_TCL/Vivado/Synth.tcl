@@ -35,5 +35,5 @@ wait_on_run synth_1 -quiet
 if {$enableShowlog == true} {
 	exec python $xilinx_path/Script/Python/showlog.py [current_project]
 }
-set  snyth_state [exec python $xilinx_path/Script/Python/Log.py synth [current_project]]
-puts snyth_state
+set    synth_state [exec python $xilinx_path/Script/Python/Log.py synth [current_project]]
+return $synth_state

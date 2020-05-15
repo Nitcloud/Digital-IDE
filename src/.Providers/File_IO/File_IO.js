@@ -198,3 +198,23 @@ function move_xbd_xIP(workspace_path, property_path) {
 	}
 }
 exports.move_xbd_xIP = move_xbd_xIP;
+
+function xclean(workspace_path,mode) {
+	if (mode == "all") {
+		deleteDir(`${workspace_path}prj`);
+	}
+	deleteDir(`${workspace_path}.Xil`);
+	let file_list = pick_file(workspace_path,".jou");
+	file_list.forEach(element => {
+		deleteFile(`${workspace_path}${element}`)
+	});
+	file_list = pick_file(workspace_path,".log");
+	file_list.forEach(element => {
+		deleteFile(`${workspace_path}${element}`)
+	});
+	file_list = pick_file(workspace_path,".str");
+	file_list.forEach(element => {
+		deleteFile(`${workspace_path}${element}`)
+	});
+}
+exports.xclean = xclean;
