@@ -9,8 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const vscode_1 = require("vscode");
-const client_1 = require("./utils/client");
+const vscode = require("vscode");
+const client = require("./utils/client");
 class SystemVerilogIndexer {
     constructor(statusbar, parser, channel) {
         this.building = false;
@@ -24,7 +24,7 @@ class SystemVerilogIndexer {
         this.parser = parser;
         this.outputChannel = channel;
         this.symbols = new Map();
-        const settings = vscode_1.workspace.getConfiguration();
+        const settings = vscode.workspace.getConfiguration();
         if (settings.get('HDL.disableIndexing')) {
             this.statusbar.text = "HDL: Indexing disabled on boot";
         }
@@ -48,20 +48,20 @@ class SystemVerilogIndexer {
             this.building = true;
             this.symbolsCount = 0;
             this.statusbar.text = "HDL: Indexing..";
-            const settings = vscode_1.workspace.getConfiguration();
+            const settings = vscode.workspace.getConfiguration();
+            this.forceFastIndexing  = settings.get('HDL.forceFastIndexing');
             this.parallelProcessing = settings.get('HDL.parallelProcessing');
-            this.forceFastIndexing = settings.get('HDL.forceFastIndexing');
             let exclude = settings.get('HDL.excludeIndexing');
             if (exclude == "insert globPattern here") {
                 exclude = undefined;
             }
-            return yield vscode_1.window.withProgress({
-                location: vscode_1.ProgressLocation.Notification,
+            return yield vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
                 title: "HDL Indexing...",
                 cancellable: true
             }, (_progress, token) => __awaiter(this, void 0, void 0, function* () {
                 this.symbols = new Map();
-                let uris = yield Promise.resolve(vscode_1.workspace.findFiles(this.globPattern, exclude, undefined, token));
+                let uris = yield Promise.resolve(vscode.workspace.findFiles(this.globPattern, exclude, undefined, token));
                 console.time('build_index');
                 for (var filenr = 0; filenr < uris.length; filenr += this.parallelProcessing) {
                     let subset = uris.slice(filenr, filenr + this.parallelProcessing);
@@ -94,7 +94,7 @@ class SystemVerilogIndexer {
     processFile(uri, total_files = 0) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
-                resolve(vscode_1.workspace.openTextDocument(uri).then(doc => {
+                resolve(vscode.workspace.openTextDocument(uri).then(doc => {
                     if (total_files >= 1000 * this.parallelProcessing || this.forceFastIndexing) {
                         return this.parser.get_all_recursive(doc, "fast", 0);
                     }
@@ -140,7 +140,7 @@ class SystemVerilogIndexer {
     onChange(document) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield new Promise(() => {
-                if (!client_1.isSystemVerilogDocument(document) && !client_1.isVerilogDocument(document)) {
+                if (!client.isSystemVerilogDocument(document) && !client.isVerilogDocument(document)) {
                     return;
                 }
                 else {
@@ -159,7 +159,7 @@ class SystemVerilogIndexer {
     onCreate(uri) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield new Promise(() => {
-                return vscode_1.workspace.openTextDocument(uri).then((document) => {
+                return vscode.workspace.openTextDocument(uri).then((document) => {
                     return this.onChange(document);
                 });
             });
@@ -175,7 +175,7 @@ class SystemVerilogIndexer {
     onDelete(uri) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield new Promise(() => {
-                return vscode_1.workspace.openTextDocument(uri).then((document) => {
+                return vscode.workspace.openTextDocument(uri).then((document) => {
                     return this.onChange(document);
                 });
             });
@@ -194,11 +194,11 @@ class SystemVerilogIndexer {
                 resolve(new Array());
                 return;
             }
-            if (!client_1.isSystemVerilogDocument(document) && !client_1.isVerilogDocument(document)) {
+            if (!client.isSystemVerilogDocument(document) && !client.isVerilogDocument(document)) {
                 resolve(new Array());
                 return;
             }
-            resolve(vscode_1.workspace.openTextDocument(document.uri).then(doc => {
+            resolve(vscode.workspace.openTextDocument(document.uri).then(doc => {
                 return this.parser.get_all_recursive(doc, "declaration", 1);
             }));
         })).then((output) => {

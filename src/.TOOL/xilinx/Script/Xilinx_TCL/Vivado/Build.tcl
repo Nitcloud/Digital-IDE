@@ -12,37 +12,41 @@ set fp [open $root_path/CONFIG r]
 while { [gets $fp data] >= 0 } \
 {
 	if { [string equal -length 6 $data "Device"] == 1 } {
-			gets $fp Device
+		gets $fp Device
 	}
 	if { [string equal -length 12 $data "SOC_MODE.soc"] == 1 } {
-			gets $fp soc
-			if {$soc == "undefined"} {
-				set soc none
-			}
+		gets $fp soc
+		if {$soc == "undefined"} {
+			set soc none
+		}
 	}
 	if { [string equal -length 13 $data "enableShowlog"] == 1 } {
-			gets $fp enableShowlog
-			if {$enableShowlog == "undefined"} {
-				set enableShowlog false
-			}
+		gets $fp enableShowlog
+		if {$enableShowlog == "undefined"} {
+			set enableShowlog false
+		}
 	}
 }
 close $fp
 
-set synth   "[file dirname $current_Location]/synth.tcl"
-set impl    "[file dirname $current_Location]/Impl.tcl"
+set synth "[file dirname $current_Location]/synth.tcl"
+set impl  "[file dirname $current_Location]/Impl.tcl"
 
 # build function
-if {[source $synth -notrace] == "none"} \
-{	
+if {[source $synth -notrace] == "none"} {	
 	puts "synth has done"
-	if { [source $impl -notrace] == "none"} \
-	{
+	if { [source $impl -notrace] == "none"} {
 		puts "impl has done"
-		open_run impl_1
-		report_timing_summary
+		if {$enableShowlog == "false"} {			
+			open_run impl_1		  -quiet	
+			report_timing_summary -quiet
+		} else {
+			open_run impl_1		  
+			report_timing_summary 
+		}
 	}
 }
+
 if { [string equal -length 4 $Device xc7z] == 1 } {
 	set_property STEPS.WRITE_BITSTREAM.ARGS.BIN_FILE true [get_runs impl_1]
 } 

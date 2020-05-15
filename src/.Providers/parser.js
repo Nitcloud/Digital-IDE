@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const vscode_1 = require("vscode");
-const symbol_1 = require("./symbol");
+const vscode = require("vscode");
+const symbol = require("./symbol");
 class SystemVerilogParser {
     constructor() {
         this.illegalMatches = /(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic|generate|assign|initial|assert|disable)/;
@@ -159,7 +159,7 @@ class SystemVerilogParser {
                 else if (sub_blocks.some((b) => { return (match.index >= b.index && match.index < b.index + b[0].length); })) {
                     continue;
                 }
-                let symbolInfo = new symbol_1.SystemVerilogSymbol(match.groups.name, match.groups.type, parent, new vscode_1.Location(document.uri, new vscode_1.Range(document.positionAt(match.index + offset), document.positionAt(match.index + match[0].length + offset))));
+                let symbolInfo = new symbol.SystemVerilogSymbol(match.groups.name, match.groups.type, parent, new vscode.Location(document.uri, new vscode.Range(document.positionAt(match.index + offset), document.positionAt(match.index + match[0].length + offset))));
                 symbols.push(symbolInfo);
                 if (match.groups.ports && precision == 'full') {
                     this.get_ports(document, match.groups.ports, offset + match.index + match[0].indexOf(match.groups.ports), match.groups.name).then(out => symbols.push.apply(symbols, out));
@@ -188,7 +188,7 @@ class SystemVerilogParser {
                 if (match_ports == null) {
                     break;
                 }
-                let symbolInfo = new symbol_1.SystemVerilogSymbol(match_ports.groups.name, match_ports.groups.type, parent, new vscode_1.Location(document.uri, new vscode_1.Range(document.positionAt(match_ports.index + offset), document.positionAt(match_ports.index + match_ports[0].length + offset))));
+                let symbolInfo = new symbol.SystemVerilogSymbol(match_ports.groups.name, match_ports.groups.type, parent, new vscode.Location(document.uri, new vscode.Range(document.positionAt(match_ports.index + offset), document.positionAt(match_ports.index + match_ports[0].length + offset))));
                 symbols.push(symbolInfo);
             }
             resolve(symbols);
