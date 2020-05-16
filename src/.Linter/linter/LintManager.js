@@ -36,36 +36,36 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-var vscode_1 = require("vscode");
-var IcarusLinter_1 = require("./IcarusLinter");
-var VerilatorLinter_1 = require("./VerilatorLinter");
-var XvlogLinter_1 = require("./XvlogLinter");
-var ModelsimLinter_1 = require("./ModelsimLinter");
+var vscode          = require("vscode");
+var XvlogLinter     = require("./XvlogLinter");
+var IcarusLinter    = require("./IcarusLinter");
+var ModelsimLinter  = require("./ModelsimLinter");
+var VerilatorLinter = require("./VerilatorLinter");
 var LintManager = /** @class */ (function () {
     function LintManager(logger) {
         this.logger = logger;
-        vscode_1.workspace.onDidOpenTextDocument(this.lint, this, this.subscriptions);
-        vscode_1.workspace.onDidSaveTextDocument(this.lint, this, this.subscriptions);
-        vscode_1.workspace.onDidCloseTextDocument(this.removeFileDiagnostics, this, this.subscriptions);
-        vscode_1.workspace.onDidChangeConfiguration(this.configLinter, this, this.subscriptions);
+        vscode.workspace.onDidOpenTextDocument(this.lint, this, this.subscriptions);
+        vscode.workspace.onDidSaveTextDocument(this.lint, this, this.subscriptions);
+        vscode.workspace.onDidCloseTextDocument(this.removeFileDiagnostics, this, this.subscriptions);
+        vscode.workspace.onDidChangeConfiguration(this.configLinter, this, this.subscriptions);
         this.configLinter();
     }
     LintManager.prototype.configLinter = function () {
         var linter_name;
-        linter_name = vscode_1.workspace.getConfiguration("HDL.linting").get("linter");
+        linter_name = vscode.workspace.getConfiguration("HDL.linting").get("linter");
         if (this.linter == null || this.linter.name != linter_name) {
             switch (linter_name) {
                 case "iverilog":
-                    this.linter = new IcarusLinter_1["default"](this.logger);
+                    this.linter = new IcarusLinter["default"](this.logger);
                     break;
                 case "xvlog":
-                    this.linter = new XvlogLinter_1["default"](this.logger);
+                    this.linter = new XvlogLinter["default"](this.logger);
                     break;
                 case "modelsim":
-                    this.linter = new ModelsimLinter_1["default"](this.logger);
+                    this.linter = new ModelsimLinter["default"](this.logger);
                     break;
                 case "verilator":
-                    this.linter = new VerilatorLinter_1["default"](this.logger);
+                    this.linter = new VerilatorLinter["default"](this.logger);
                     break;
                 default:
                     console.log("Invalid linter name.");
@@ -89,16 +89,16 @@ var LintManager = /** @class */ (function () {
     };
     LintManager.prototype.RunLintTool = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var lang, linterStr, tempLinter_1;
+            var lang, linterStr, tempLinter;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        lang = vscode_1.window.activeTextEditor.document.languageId;
-                        if (!(vscode_1.window.activeTextEditor === undefined || (lang !== "verilog" && lang !== "systemverilog"))) return [3 /*break*/, 1];
-                        vscode_1.window.showErrorMessage("Verilog HDL: No document opened");
+                        lang = vscode.window.activeTextEditor.document.languageId;
+                        if (!(vscode.window.activeTextEditor === undefined || (lang !== "verilog" && lang !== "systemverilog"))) return [3 /*break*/, 1];
+                        vscode.window.showErrorMessage("Verilog HDL: No document opened");
                         return [3 /*break*/, 4];
-                    case 1: return [4 /*yield*/, vscode_1.window.showQuickPick([
+                    case 1: return [4 /*yield*/, vscode.window.showQuickPick([
                             { label: "iverilog",
                                 description: "Icarus Verilog"
                             },
@@ -120,27 +120,27 @@ var LintManager = /** @class */ (function () {
                             return [2 /*return*/];
                         switch (linterStr.label) {
                             case "iverilog":
-                                tempLinter_1 = new IcarusLinter_1["default"](this.logger);
+                                tempLinter = new IcarusLinter["default"](this.logger);
                                 break;
                             case "xvlog":
-                                tempLinter_1 = new XvlogLinter_1["default"](this.logger);
+                                tempLinter = new XvlogLinter["default"](this.logger);
                                 break;
                             case "modelsim":
-                                tempLinter_1 = new ModelsimLinter_1["default"](this.logger);
+                                tempLinter = new ModelsimLinter["default"](this.logger);
                                 break;
                             case "verilator":
-                                tempLinter_1 = new VerilatorLinter_1["default"](this.logger);
+                                tempLinter = new VerilatorLinter["default"](this.logger);
                                 break;
                             default:
                                 return [2 /*return*/];
                         }
-                        return [4 /*yield*/, vscode_1.window.withProgress({
-                                location: vscode_1.ProgressLocation.Notification,
+                        return [4 /*yield*/, vscode.window.withProgress({
+                                location: vscode.ProgressLocation.Notification,
                                 title: "Verilog HDL: Running lint tool..."
                             }, function (progress, token) { return __awaiter(_this, void 0, void 0, function () {
                                 return __generator(this, function (_a) {
-                                    tempLinter_1.removeFileDiagnostics(vscode_1.window.activeTextEditor.document);
-                                    tempLinter_1.startLint(vscode_1.window.activeTextEditor.document);
+                                    tempLinter.removeFileDiagnostics(vscode.window.activeTextEditor.document);
+                                    tempLinter.startLint(vscode.window.activeTextEditor.document);
                                     return [2 /*return*/];
                                 });
                             }); })];

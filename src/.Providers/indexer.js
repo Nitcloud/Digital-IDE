@@ -33,8 +33,7 @@ class SystemVerilogIndexer {
                 this.updateMostRecentSymbols(undefined);
             });
         }
-    }
-    ;
+    };
     /**
         Scans the `workspace` for SystemVerilog and Verilog files,
         Looks up all the `symbols` that it exist on the queried files,

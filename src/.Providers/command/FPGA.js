@@ -3,69 +3,15 @@ exports.__esModule = true;
 
 var vscode       = require("vscode");
 var fspath       = require("path");
-var file         = require("../File_IO/File_IO");
-var module       = require("../File_IO/moduleExplorer");
+var file         = require("../file_IO/file_IO");
+var module       = require("../file_IO/moduleExplorer");
+var xilinxFileIO = require("../file_IO/xilinxFileExplorer");
 var terminal_ope = require("../command/terminal");
 
 let StartFPGA;
 let StartFPGA_flag = false;
 
 let Instance;
-
-let fpga_version  = "xilinx";
-
-let prjInitparam = {
-	"FPGA_VERSION": "xilinx",
-	"PRJ_NAME": {
-		"FPGA": "template"
-	},
-	"SOC_MODE": {
-		"soc": "none"
-	},
-	"enableShowlog": false,
-	"Device": "xc7z020clg400-2"
-}
-
-function getPropertypath(workspace_path) {
-	let Property_path = `${workspace_path}.vscode/Property.json`;
-	if (!file.ensureExists(Property_path)) {
-		if (!file.ensureExists(`${workspace_path}Property.json`)) {
-			file.pushJsonInfo(`${workspace_path}.vscode/Property.json`,prjInitparam);
-		}
-		else{
-			Property_path = `${workspace_path}Property.json`;
-		}
-	}
-	return Property_path;
-}
-
-function updatePrjInfo(root_path, Property_path) {
-
-	let prj_param = file.pullJsonInfo(Property_path);
-	
-	let CONFIG_contex = "FPGA_VERSION\n";
-	CONFIG_contex += prj_param.FPGA_VERSION + '\n';
-	CONFIG_contex += "PRJ_NAME.FPGA\n";
-	CONFIG_contex += prj_param.PRJ_NAME.FPGA + '\n';
-	CONFIG_contex += "PRJ_NAME.SOC\n";
-	CONFIG_contex += prj_param.PRJ_NAME.SOC + '\n';
-	CONFIG_contex += "SOC_MODE.soc\n";
-	CONFIG_contex += prj_param.SOC_MODE.soc + '\n';
-	CONFIG_contex += "SOC_MODE.bd_file\n";
-	CONFIG_contex += prj_param.SOC_MODE.bd_file + '\n';
-	CONFIG_contex += "SOC_MODE.os\n";
-	CONFIG_contex += prj_param.SOC_MODE.os + '\n';
-	CONFIG_contex += "SOC_MODE.app\n";
-	CONFIG_contex += prj_param.SOC_MODE.app + '\n';
-	CONFIG_contex += "enableShowlog\n";
-	CONFIG_contex += prj_param.enableShowlog + '\n';
-	CONFIG_contex += "Device\n";
-
-	prj_param = file.pullJsonInfo(Property_path);
-	CONFIG_contex += prj_param.Device + '\n\n';
-
-	file.writeFile(`${root_path}/.TOOL/CONFIG`,CONFIG_contex);
-}
 
 function addDevice(root_path) {
 	let Property_param   = file.pullJsonInfo(`${root_path}/.TOOL/Property.json`);
@@ -120,7 +66,7 @@ function register(context,root_path) {
 		// vscode.window.showInformationMessage("changed");
 		if (fspath.basename(uri.fsPath) == "Property.json") {		
 			file.updateFolder(root_path,workspace_path,uri.fsPath);
-			updatePrjInfo(root_path,uri.fsPath);
+			file.updatePrjInfo(root_path,uri.fsPath);
 		}
 	}));
 	context.subscriptions.push(jsonWatcher);
@@ -128,8 +74,8 @@ function register(context,root_path) {
 	vscode.window.onDidCloseTerminal(function (terminal) {
 		if (terminal.name == "StartFPGA") {
 			StartFPGA_flag = false;
-			file.xclean(workspace_path,"none");
-			file.move_xbd_xIP(workspace_path,getPropertypath(workspace_path));
+			xilinxFileIO.xclean(workspace_path,"none");
+			xilinxFileIO.move_xbd_xIP(workspace_path,file.getPropertypath(workspace_path));
 			vscode.window.showInformationMessage("onDidCloseTerminal, name: " + terminal.name);
 		}
     });
@@ -163,14 +109,14 @@ function register(context,root_path) {
 	context.subscriptions.push(testbench);
 
 	let Init = vscode.commands.registerCommand('FPGA.Init', () => {
-		updatePrjInfo(root_path,getPropertypath(workspace_path));
-		file.updateFolder(root_path, workspace_path, getPropertypath(workspace_path));
+		file.updatePrjInfo(root_path,file.getPropertypath(workspace_path));
+		file.updateFolder(root_path, workspace_path, file.getPropertypath(workspace_path));
 		if (!terminal_ope.ensureTerminalExists("StartFPGA")) {
 			StartFPGA = vscode.window.createTerminal({ name: 'StartFPGA' });
 		}
 		if (!StartFPGA_flag) {			
 			StartFPGA.show(true);
-			if (fpga_version == "xilinx") {					
+			if (file.getFpgaVersion(file.getPropertypath(workspace_path)) == "xilinx") {					
 				StartFPGA.sendText(`vivado -mode tcl -s ${tool_path}/Xilinx/Script/Xilinx_TCL/Vivado/Run.tcl -notrace -nolog -nojournal`);
 			}
 			StartFPGA_flag = true;
@@ -179,7 +125,7 @@ function register(context,root_path) {
 	context.subscriptions.push(Init);
     let Update = vscode.commands.registerCommand('FPGA.Update', () => {
 		if (StartFPGA_flag == true) {			
-			file.updateFolder(root_path,workspace_path,getPropertypath(workspace_path));
+			file.updateFolder(root_path,workspace_path,file.getPropertypath(workspace_path));
 			StartFPGA.show(true);
 			StartFPGA.sendText(`update`);
 		}
@@ -187,7 +133,7 @@ function register(context,root_path) {
 	context.subscriptions.push(Update);
 	let TOP = vscode.commands.registerCommand('FPGA.top', () => {
 		if (StartFPGA_flag == true) {			
-			if (fpga_version == "xilinx") {	
+			if (file.getFpgaVersion(file.getPropertypath(workspace_path)) == "xilinx") {	
 				let editor = vscode.window.activeTextEditor;
 				if (!editor) {
 					return;
@@ -266,8 +212,8 @@ function register(context,root_path) {
 		StartFPGA_flag = false;
 		StartFPGA.show(true);
 		StartFPGA.sendText(`exit`);
-		file.xclean(workspace_path,"none");
-		file.move_xbd_xIP(workspace_path,getPropertypath(workspace_path));
+		xilinxFileIO.xclean(workspace_path,"none");
+		xilinxFileIO.move_xbd_xIP(workspace_path,file.getPropertypath(workspace_path));
     });
 	context.subscriptions.push(Exit);
 

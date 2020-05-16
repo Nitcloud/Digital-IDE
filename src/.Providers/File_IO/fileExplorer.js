@@ -14,8 +14,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs     = require("fs");
 const path   = require("path");
 const vscode = require("vscode");
-const mkdirp = require("mkdirp");
-const rimraf = require("rimraf");
+const mkdirp = require("./node_modules/mkdirp");
+const rimraf = require("./node_modules/rimraf");
 //#region Utilities
 var _;
 (function (_) {

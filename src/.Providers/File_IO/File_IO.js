@@ -2,6 +2,18 @@ const fs     = require("fs");
 const fspath = require("path");
 const vscode = require("vscode");
 
+let prjInitparam = {
+	"FPGA_VERSION": "xilinx",
+	"PRJ_NAME": {
+		"FPGA": "template"
+	},
+	"SOC_MODE": {
+		"soc": "none"
+	},
+	"enableShowlog": false,
+	"Device": "xc7z020clg400-2"
+}
+
 // file or folder operation
 // folder operation
 function getCurrentWorkspaceFolder() {
@@ -140,6 +152,28 @@ exports.pushJsonInfo = pushJsonInfo;
 
 
 //FPGA file operation
+function generatePropertypath(workspace_path) {
+	let Property_path = `${workspace_path}.vscode/Property.json`;
+	if (!file.ensureExists(Property_path)) {
+		if (!file.ensureExists(`${workspace_path}Property.json`)) {
+			vscode.window.showInformationMessage("There is no Property.json here, where you want to generate?",'.vscode','root')
+			.then(function(select){
+				if (select == ".vscode") {
+					file.pushJsonInfo(`${workspace_path}.vscode/Property.json`,prjInitparam);
+				} else if (select == "root") {
+					file.pushJsonInfo(`${workspace_path}Property.json`,prjInitparam);
+				}
+			});
+		}else {
+			vscode.window.showWarningMessage("Property file already exists");
+		}
+	}
+	else {
+		vscode.window.showWarningMessage("Property file already exists");
+	}
+}
+exports.generatePropertypath = generatePropertypath;
+
 function gentbFile(path,root_path) {
 	if (!fs.existsSync(path)) {
 		let tb_template = fs.readFileSync(`${root_path}/.TOOL/.Data/testbench.v`, 'utf8');
@@ -176,45 +210,61 @@ function updateFolder(root_path,workspace_path,property_path) {
 };
 exports.updateFolder = updateFolder;
 
-function move_xbd_xIP(workspace_path, property_path) {
-	let prj_info = pullJsonInfo(property_path);
-	let target_path = "";
-	let source_IP_path = `${workspace_path}prj/xilinx/${prj_info.PRJ_NAME.FPGA}.srcs/sources_1/ip`;
-	let source_bd_path = `${workspace_path}prj/xilinx/${prj_info.PRJ_NAME.FPGA}.srcs/sources_1/bd`;
-	if (prj_info.SOC_MODE.soc == "none") {
-		target_path = `${workspace_path}user`;
-	}else{
-		target_path = `${workspace_path}user/Hardware`;
-	}
-	if (fs.existsSync(source_IP_path)) {
-		fs.readdirSync(source_IP_path).forEach(element => {
-			movedir(`${source_IP_path}/${element}`,`${target_path}/IP`)
-		});
-	}
-	if (fs.existsSync(source_bd_path)) {
-		fs.readdirSync(source_bd_path).forEach(element => {
-			movedir(`${source_bd_path}/${element}`,`${target_path}/bd`)
-		});
-	}
-}
-exports.move_xbd_xIP = move_xbd_xIP;
+function updatePrjInfo(root_path, Property_path) {
 
-function xclean(workspace_path,mode) {
-	if (mode == "all") {
-		deleteDir(`${workspace_path}prj`);
-	}
-	deleteDir(`${workspace_path}.Xil`);
-	let file_list = pick_file(workspace_path,".jou");
-	file_list.forEach(element => {
-		deleteFile(`${workspace_path}${element}`)
-	});
-	file_list = pick_file(workspace_path,".log");
-	file_list.forEach(element => {
-		deleteFile(`${workspace_path}${element}`)
-	});
-	file_list = pick_file(workspace_path,".str");
-	file_list.forEach(element => {
-		deleteFile(`${workspace_path}${element}`)
-	});
+	let prj_param = pullJsonInfo(Property_path);
+	
+	let CONFIG_contex = "FPGA_VERSION\n";
+	CONFIG_contex += prj_param.FPGA_VERSION + '\n';
+	CONFIG_contex += "PRJ_NAME.FPGA\n";
+	CONFIG_contex += prj_param.PRJ_NAME.FPGA + '\n';
+	CONFIG_contex += "PRJ_NAME.SOC\n";
+	CONFIG_contex += prj_param.PRJ_NAME.SOC + '\n';
+	CONFIG_contex += "SOC_MODE.soc\n";
+	CONFIG_contex += prj_param.SOC_MODE.soc + '\n';
+	CONFIG_contex += "SOC_MODE.bd_file\n";
+	CONFIG_contex += prj_param.SOC_MODE.bd_file + '\n';
+	CONFIG_contex += "SOC_MODE.os\n";
+	CONFIG_contex += prj_param.SOC_MODE.os + '\n';
+	CONFIG_contex += "SOC_MODE.app\n";
+	CONFIG_contex += prj_param.SOC_MODE.app + '\n';
+	CONFIG_contex += "enableShowlog\n";
+	CONFIG_contex += prj_param.enableShowlog + '\n';
+	CONFIG_contex += "Device\n";
+
+	prj_param = pullJsonInfo(Property_path);
+	CONFIG_contex += prj_param.Device + '\n\n';
+
+	writeFile(`${root_path}/.TOOL/CONFIG`,CONFIG_contex);
 }
-exports.xclean = xclean;
+exports.updatePrjInfo = updatePrjInfo;
+
+function getPropertypath(workspace_path) {
+	let Property_path = `${workspace_path}.vscode/Property.json`;
+	if (!ensureExists(Property_path)) {
+		if (!ensureExists(`${workspace_path}Property.json`)) {
+			pushJsonInfo(`${workspace_path}.vscode/Property.json`,prjInitparam);
+		}
+		else{
+			Property_path = `${workspace_path}Property.json`;
+		}
+	}
+	return Property_path;
+}
+exports.getPropertypath = getPropertypath;
+
+function getFpgaVersion(Property_path) {
+	let prj_param = pullJsonInfo(Property_path);
+	return prj_param.FPGA_VERSION;
+}
+exports.getFpgaVersion = getFpgaVersion;
+
+function getSocMode(Property_path) {
+	let prj_param = pullJsonInfo(Property_path);
+	if(prj_param.SOC_MODE.soc == "none"){
+		return false;
+	} else {
+		return true;
+	}
+}
+exports.getSocMode = getSocMode;

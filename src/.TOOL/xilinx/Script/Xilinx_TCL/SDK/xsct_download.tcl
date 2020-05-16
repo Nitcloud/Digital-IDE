@@ -7,7 +7,13 @@ set prj_name test
 set cpu cortexA9
 
 setws  $ws_path
-openhw $ws_path/[getprojects -type hw]/system.hdf 
+
+if { [glob -nocomplain $ws_path/SDK_Platform/*.hdf] == "" } {
+	puts "there is no hdf file at here" 
+	exit 1
+} else {
+	openhw $ws_path/[getprojects -type hw]/system.hdf 
+}
 
 #get project param
 set fp [open $root_path/CONFIG r]

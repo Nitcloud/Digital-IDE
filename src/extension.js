@@ -48,8 +48,7 @@ function activate(context) {
 	// Status Bar
     const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
     statusBar.text = 'SystemVerilog: Active';
-    statusBar.show();
-	statusBar.command = 'systemverilog.build_index';
+    statusBar.hide();
 	context.subscriptions.push(statusBar);
 	//Output Channel
 	var outputChannel = vscode.window.createOutputChannel("SystemVerilog");
@@ -70,13 +69,13 @@ function activate(context) {
 	context.subscriptions.push(vscode.languages.registerWorkspaceSymbolProvider(symProvider));
 	
     // Background processes
-    context.subscriptions.push(vscode.workspace.onDidSaveTextDocument((doc) => { indexer.onChange(doc); }));
-    context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor((editor) => { indexer.onChange(editor.document); }));
-    let watcher = vscode.workspace.createFileSystemWatcher(indexer.globPattern, false, false, false);
-    context.subscriptions.push(watcher.onDidCreate((uri) => { indexer.onCreate(uri); }));
-    context.subscriptions.push(watcher.onDidDelete((uri) => { indexer.onDelete(uri); }));
-    context.subscriptions.push(watcher.onDidChange((uri) => { indexer.onDelete(uri); }));
-    context.subscriptions.push(watcher);
+    // context.subscriptions.push(vscode.workspace.onDidSaveTextDocument((doc) => { indexer.onChange(doc); }));
+    // context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor((editor) => { indexer.onChange(editor.document); }));
+    // let watcher = vscode.workspace.createFileSystemWatcher(indexer.globPattern, false, false, false);
+    // context.subscriptions.push(watcher.onDidCreate((uri) => { indexer.onCreate(uri); }));
+    // context.subscriptions.push(watcher.onDidDelete((uri) => { indexer.onDelete(uri); }));
+    // context.subscriptions.push(watcher.onDidChange((uri) => { indexer.onDelete(uri); }));
+    // context.subscriptions.push(watcher);
 
 	//VHDL Language sever
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider(vhdlMode.VHDL_MODE, new VhdlSuggest.VhdlCompletionItemProvider(), '.', '\"'));
