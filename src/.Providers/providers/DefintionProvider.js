@@ -17,8 +17,7 @@ class SystemVerilogDefinitionProvider {
         this.regex_port = '\\.word\\s*\\(';
         this.regex_package = '\\b(\\w+)\\s*::\\s*(word)';
         this.workspaceSymProvider = workspaceSymProvider;
-    }
-    ;
+    };
     provideDefinition(document, position, token) {
         return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
             let range = document.getWordRangeAtPosition(position);

@@ -178,8 +178,7 @@ class SystemVerilogParser {
             }
         }
         return symbols;
-    }
-    ;
+    };
     get_ports(document, text, offset, parent) {
         return new Promise((resolve) => {
             let symbols = [];

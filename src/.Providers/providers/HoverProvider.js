@@ -11,7 +11,13 @@ class SystemVerilogHoverProvider {
             resolve(vscode.commands.executeCommand("vscode.executeDefinitionProvider", document.uri, position, token)
                 .then((loc) => {
                 return vscode.workspace.openTextDocument(loc[0].uri).then(doc => {
-                    return doc.lineAt(loc[0].range.start.line).text;
+					let content = doc.lineAt(loc[0].range.start.line).text;
+					if(String.prototype.trim) {
+						content = content.trim();
+					} else {
+						content = content.replace(/^\s+(.*?)\s+$/g, "$1");
+					}
+					return content.replace(/\/\//g, "\n//");
                 });
             }).then((str) => {
                 return new vscode.Hover([{

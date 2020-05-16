@@ -5,8 +5,7 @@ class SystemVerilogWorkspaceSymbolProvider {
     constructor(indexer) {
         this.NUM_FILES = 250;
         this.indexer = indexer;
-    }
-    ;
+    };
     /**
         Queries a symbol from `this.symbols`, performs an exact match if `exactMatch` is set to true,
         and a partial match if it's not passed or set to false.

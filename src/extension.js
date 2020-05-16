@@ -12,8 +12,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 
 var vscode = require("vscode");
-var exec   = require('child_process').exec;
-var path   = require("path");
 //the var of the lint
 var ctags_1  = require("./.Linter/ctags");
 var Logger_1 = require("./.Linter/Logger");
