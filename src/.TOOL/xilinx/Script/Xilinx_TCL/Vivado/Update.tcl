@@ -135,18 +135,20 @@ if {[string equal -length 4 $soc none] == 1} {
 			MicroBlaze {MicroBlaze_IP_add $xilinx_path}
 		}
 	} else {
-		set ensureExsit 0
-		foreach bd_folder_list [glob -nocomplain ./user/Hardware/bd/*] {
-			if { $bd_folder_list == $bd_file } {
-				puts ensureExsit 1
+		if {$bd_file != "none"} {			
+			set ensureExsit 0
+			foreach bd_folder_list [glob -nocomplain ./user/Hardware/bd/*] {
+				if { $bd_folder_list == $bd_file } {
+					puts ensureExsit 1
+				}
 			}
-		}
-		if { $ensureExsit == 0 } {	
-			file mkdir ./user/Hardware/bd/$bd_file
-			file copy  -force $current_Location/IP/Example_bd/$bd_file.bd ./user/Hardware/bd/$bd_file
-			add_file   ./user/Hardware/bd/$bd_file/$bd_file.bd -force -quiet
-			generate_target all [get_files ./user/Hardware/bd/$bd_file/$bd_file.bd] -quiet
-			make_wrapper -files [get_files ./user/Hardware/bd/$bd_file/$bd_file.bd] -top -quiet
+			if { $ensureExsit == 0 } {	
+				file mkdir ./user/Hardware/bd/$bd_file
+				file copy  -force $current_Location/IP/Example_bd/$bd_file.bd ./user/Hardware/bd/$bd_file
+				add_file   ./user/Hardware/bd/$bd_file/$bd_file.bd -force -quiet
+				generate_target all [get_files ./user/Hardware/bd/$bd_file/$bd_file.bd] -quiet
+				make_wrapper -files [get_files ./user/Hardware/bd/$bd_file/$bd_file.bd] -top -quiet
+			}
 		}
 	}
 	soc_add

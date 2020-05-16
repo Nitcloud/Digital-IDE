@@ -49,6 +49,7 @@
 					"type": "string",
 					"description": "The bd_file for FPGA Designed",
 					"enum": [
+						"none",
 						"zynq_default",
 						"m3_xIP_default",
 						"MicroBlaze_default"

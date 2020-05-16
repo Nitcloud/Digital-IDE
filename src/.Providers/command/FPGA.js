@@ -129,6 +129,7 @@ function register(context,root_path) {
 		if (terminal.name == "StartFPGA") {
 			StartFPGA_flag = false;
 			file.xclean(workspace_path,"none");
+			file.move_xbd_xIP(workspace_path,getPropertypath(workspace_path));
 			vscode.window.showInformationMessage("onDidCloseTerminal, name: " + terminal.name);
 		}
     });
@@ -239,6 +240,13 @@ function register(context,root_path) {
 		}
     });
 	context.subscriptions.push(Impl);
+	let Gen_Bit = vscode.commands.registerCommand('FPGA.Gen_Bit', () => {
+		if (StartFPGA_flag == true){
+			StartFPGA.show(true);
+			StartFPGA.sendText(`bits`);
+		}
+    });
+	context.subscriptions.push(Gen_Bit);
 	let Program = vscode.commands.registerCommand('FPGA.Program', () => {
 		if (StartFPGA_flag == true){
 			StartFPGA.show(true);
@@ -255,13 +263,11 @@ function register(context,root_path) {
     });
 	context.subscriptions.push(GUI);
 	let Exit = vscode.commands.registerCommand('FPGA.exit', () => {
-		if (StartFPGA_flag) {			
-			StartFPGA_flag = false;
-			StartFPGA.show(true);
-			StartFPGA.sendText(`exit`);
-			file.xclean(workspace_path,"none");
-			file.move_xbd_xIP(workspace_path,getPropertypath(workspace_path));
-		}
+		StartFPGA_flag = false;
+		StartFPGA.show(true);
+		StartFPGA.sendText(`exit`);
+		file.xclean(workspace_path,"none");
+		file.move_xbd_xIP(workspace_path,getPropertypath(workspace_path));
     });
 	context.subscriptions.push(Exit);
 

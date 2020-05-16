@@ -38,6 +38,7 @@
 		"onCommand:FPGA.Sim",
 		"onCommand:FPGA.Synth",
 		"onCommand:FPGA.Impl",
+		"onCommand:FPGA.Gen_Bit",
 		"onCommand:FPGA.Build",
 		"onCommand:FPGA.Program",
 		"onCommand:FPGA.GUI",
@@ -343,6 +344,11 @@
 			{
 				"command": "FPGA.Impl",
 				"title": "Impl the current fpga project",
+				"category": "FPGA"
+			},
+			{
+				"command": "FPGA.Gen_Bit",
+				"title": "Generate the bit file",
 				"category": "FPGA"
 			},
 			{

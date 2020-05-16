@@ -25,8 +25,10 @@ var Provider = /** @class */ (function () {
 					 'cmd',  
 					 'Build the current fpga project',
 						 [
-							new Item('Synth','FPGA.Synth','branch','Synth the current fpga project'), 
-							new Item('Impl' ,'FPGA.Impl' ,'branch','Impl  the current fpga project')]
+							new Item('Synth'  ,'FPGA.Synth'   ,'branch','Synth the current fpga project'), 
+							new Item('Impl'   ,'FPGA.Impl'    ,'branch','Impl  the current fpga project'),
+							new Item('Gen_Bit','FPGA.Gen_Bit' ,'branch','generate the bit file')
+						]
 					),
 			new Item('Program','FPGA.Program','cmd', 'Download the bit file into the device'),
 			new Item('GUI',    'FPGA.GUI',    'cmd', 'Open the GUI'),

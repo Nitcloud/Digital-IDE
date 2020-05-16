@@ -4,8 +4,8 @@ set current_Location [file normalize [info script]]
 set xilinx_path [file dirname [file dirname [file dirname [file dirname $current_Location]]]]
 set root_path   [file dirname $xilinx_path]
 # get the project info
-set soc           none
 set Device        none
+set soc           none
 set enableShowlog false
 
 set fp [open $root_path/CONFIG r]
@@ -47,14 +47,15 @@ if {[source $synth -notrace] == "none"} {
 	}
 }
 
+#Gen bit/hdf file
 if { [string equal -length 4 $Device xc7z] == 1 } {
 	set_property STEPS.WRITE_BITSTREAM.ARGS.BIN_FILE true [get_runs impl_1]
 } 
-#Gen bit/hdf file
 if {$soc != "none"} {
 	write_hwdef -force -file ./user/Software/data/[current_project].hdf
 	write_bitstream ./[current_project].bit -force -quiet -bin_file
-} else {
+} else \
+{
 	write_bitstream ./[current_project].bit -force -quiet
 }
 
