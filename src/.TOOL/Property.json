@@ -41,8 +41,11 @@
 					"enum": [
 						"none",
 						"cortexM3",
-						"cortexA9",
-						"MicroBlaze"
+						"ps7_cortexa9_0",
+						"ps7_cortexa9_1",
+						"psu_cortexr5",
+						"psu_cortexa53",
+						"microblaze"
 					]
 				},
 				"bd_file": {
@@ -58,12 +61,52 @@
 				"os": {
 					"type": "string",
 					"default": "standalone",
-					"description": "the os for SOC application"
+					"description": "the os for SOC application",
+					"enum": [
+						"linux",
+						"xilkernel",
+						"standalone",
+						"freertos10_xilinx"
+					]
 				},
 				"app": {
 					"type": "string",
-					"default": "hellow world",
-					"description": "the app for SOC application"
+					"default": "Hello World",
+					"description": "the app for SOC application",
+					"enum": [
+						"Hello World",
+						"Empty Application",
+						"Zynq FSBL",
+						"Zynq MP FSBL",
+						"SREC SPI Bootloader",
+						"SREC Bootloader",
+						"Zynq DRAM tests",
+						"Zynq MP DRAM tests",
+						"ZynqMP PMU Firmware",
+						"RSA Authentication App",
+						"Libmetal AMP Demo",
+						"lwIP Echo Server",
+						"lwIP TCP Perf Client",
+						"lwIP TCP Perf Server",
+						"lwIP UDP Perf Client",
+						"lwIP UDP Perf Server",
+						"Memory Tests",
+						"OpenAMP echo-test",
+						"OpenAMP matrix multiplication Demo",
+						"OpenAMP RPC Demo",
+						"Peripheral Tests",
+						"DDR self refresh",
+						"Dhrystone",
+						"Xilkernel POSIX Threads Demo",
+						"FreeRTOS Hello World",
+						"FreeRTOS lwIP Echo Server",
+						"FreeRTOS lwIP TCP Perf Client",
+						"FreeRTOS lwIP TCP Perf Server",
+						"FreeRTOS lwIP UDP Perf Client",
+						"FreeRTOS lwIP UDP Perf Server",
+						"Linux Empty Application",
+						"Linux Hello World"
+					]
 				}
 			},
 			"dependencies": {

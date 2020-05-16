@@ -20,10 +20,16 @@ set fp [open $root_path/CONFIG r]
 while { [gets $fp data] >= 0 } \
 {
 	if { [string equal -length 12 $data "PRJ_NAME.SOC"] == 1 } {
-			gets $fp prj_name
+		gets $fp prj_name
+		if {$prj_name == "undefined"} {
+			set prj_name test
+		}
 	}
 	if { [string equal -length 12 $data "SOC_MODE.soc"] == 1 } {
-			gets $fp cpu
+		gets $fp cpu
+		if {$cpu == "undefined"} {
+			set cpu ps7_cortexa9_0
+		}
 	}
 }
 close $fp

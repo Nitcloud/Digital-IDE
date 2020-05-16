@@ -130,9 +130,10 @@ if {[string equal -length 4 $soc none] == 1} {
 	if {$bd_file == "default"} {				
 		switch $soc \
 		{
-			cortexM3   {cortexM3_IP_add   $xilinx_path}
-			cortexA9   {cortexA9_IP_add   $xilinx_path}
-			MicroBlaze {MicroBlaze_IP_add $xilinx_path}
+			cortexM3       {cortexM3_IP_add   $xilinx_path}
+			MicroBlaze     {MicroBlaze_IP_add $xilinx_path}
+			ps7_cortexa9_0 {cortexA9_IP_add   $xilinx_path}
+			ps7_cortexa9_1 {cortexA9_IP_add   $xilinx_path}
 		}
 	} else {
 		if {$bd_file != "none"} {			
