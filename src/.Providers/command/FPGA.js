@@ -76,7 +76,7 @@ function register(context,root_path) {
 			StartFPGA_flag = false;
 			xilinxFileIO.xclean(workspace_path,"none");
 			xilinxFileIO.move_xbd_xIP(workspace_path,file.getPropertypath(workspace_path));
-			vscode.window.showInformationMessage("onDidCloseTerminal, name: " + terminal.name);
+			vscode.window.showInformationMessage("Terminal Closed, name: " + terminal.name);
 		}
     });
 

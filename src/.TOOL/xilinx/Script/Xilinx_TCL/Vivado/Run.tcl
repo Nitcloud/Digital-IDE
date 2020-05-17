@@ -130,7 +130,7 @@ proc ope {} {
 			default {puts "please input right choice"}
 		}
 	}
-	if {$your_choice == 6 || $your_choice == 2} {
+	if {$your_choice == 6} {
     	start_gui -quiet
 	}
 }

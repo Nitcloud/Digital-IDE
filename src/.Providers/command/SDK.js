@@ -1,9 +1,9 @@
 "use strict";
 exports.__esModule = true;
 const vscode       = require("vscode");
-const file       = require("../file_IO/file_IO");
+const file         = require("../file_IO/file_IO");
 const terminal_ope = require("../command/terminal");
-
+const xilinxFileIO = require("../file_IO/xilinxFileExplorer");
 let StartSDK;
 
 function register(context,root_path) {
@@ -20,6 +20,7 @@ function register(context,root_path) {
 				StartSDK.show(true);
 				StartSDK.sendText(`xsct ${root_path}/.TOOL/Xilinx/Script/Xilinx_TCL/SDK/xsct_create_prj.tcl`);
 			}
+			xilinxFileIO.xclean(workspace_path,"none");
 		} else {
 			vscode.window.showWarningMessage("Please confirm the mode of soc");
 		}
@@ -36,6 +37,7 @@ function register(context,root_path) {
 				StartSDK.show(true);
 				StartSDK.sendText(`xsct ${root_path}/.TOOL/Xilinx/Script/Xilinx_TCL/SDK/xsct_Build.tcl`);
 			}
+			xilinxFileIO.xclean(workspace_path,"none");
 		} else {
 			vscode.window.showWarningMessage("Please confirm the mode of soc");
 		}	
@@ -52,6 +54,7 @@ function register(context,root_path) {
 				StartSDK.show(true);
 				StartSDK.sendText(`xsct ${root_path}/.TOOL/Xilinx/Script/Xilinx_TCL/SDK/xsct_Download.tcl`);
 			}
+			xilinxFileIO.xclean(workspace_path,"none");
 		} else {
 			vscode.window.showWarningMessage("Please confirm the mode of soc");
 		}

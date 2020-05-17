@@ -1,6 +1,9 @@
 set hw_path  ./user/Software/data
 set ws_path  ./user/Software/src
 
+set current_Location [file normalize [info script]]
+set root_path [file dirname [file dirname [file dirname [file dirname [file dirname $current_Location]]]]]
+
 set hw_name  SDK_Platform
 set prj_name test
 
@@ -34,11 +37,12 @@ while { [gets $fp data] >= 0 } \
 }
 close $fp
 
-connect
-puts [targets]
-puts "which one you want to connect"
-gets stdin index;
-targets $index
+connect 
+
+if { [string equal -length 12 $cpu "ps7_cortexa9"] == 1 } {
+	set index [sting range $cpu 13]
+	targets -set -filter {name =~ "ARM*#$index"}
+}
 
 #System Reset
 rst -system
