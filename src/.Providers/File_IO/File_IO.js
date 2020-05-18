@@ -154,14 +154,14 @@ exports.pushJsonInfo = pushJsonInfo;
 //FPGA file operation
 function generatePropertypath(workspace_path) {
 	let Property_path = `${workspace_path}.vscode/Property.json`;
-	if (!file.ensureExists(Property_path)) {
-		if (!file.ensureExists(`${workspace_path}Property.json`)) {
+	if (!ensureExists(Property_path)) {
+		if (!ensureExists(`${workspace_path}Property.json`)) {
 			vscode.window.showInformationMessage("There is no Property.json here, where you want to generate?",'.vscode','root')
 			.then(function(select){
 				if (select == ".vscode") {
-					file.pushJsonInfo(`${workspace_path}.vscode/Property.json`,prjInitparam);
+					pushJsonInfo(`${workspace_path}.vscode/Property.json`,prjInitparam);
 				} else if (select == "root") {
-					file.pushJsonInfo(`${workspace_path}Property.json`,prjInitparam);
+					pushJsonInfo(`${workspace_path}Property.json`,prjInitparam);
 				}
 			});
 		}else {

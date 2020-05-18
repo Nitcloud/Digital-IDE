@@ -32,7 +32,12 @@ var Provider = /** @class */ (function () {
 							'Clean',
 							'TOOL.clean',
 							'Clean current project',
-							'clean')
+							'clean'),
+				new Item(
+							'SerialPort',
+							'TOOL.SerialPort',
+							'Serial monitor',
+							'SerialPort')
             ];
         }
         return undefined;

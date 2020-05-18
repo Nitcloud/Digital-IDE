@@ -21,5 +21,9 @@ function register(context,root_path) {
 		file.generatePropertypath(workspace_path);
 	});
 	context.subscriptions.push(property);
+	let SerialPort = vscode.commands.registerCommand('TOOL.SerialPort', () => {
+		file.generatePropertypath(workspace_path);
+	});
+	context.subscriptions.push(SerialPort);
 }
 exports.register = register;

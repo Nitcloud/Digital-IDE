@@ -30,6 +30,7 @@
 		"onCommand:TOOL.Gen_Property",
 		"onCommand:TOOL.Gen_BOOT",
 		"onCommand:TOOL.clean",
+		"onCommand:TOOL.SerialPort",
 		"onCommand:FPGA.instance",
 		"onCommand:FPGA.testbench",
 		"onCommand:FPGA.Init",
@@ -299,6 +300,11 @@
 			{
 				"command": "TOOL.clean",
 				"title": "clean",
+				"category": "TOOL"
+			},
+			{
+				"command": "TOOL.SerialPort",
+				"title": "Serial monitor",
 				"category": "TOOL"
 			},
 			{
