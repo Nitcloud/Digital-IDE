@@ -131,7 +131,7 @@ if {[string equal -length 4 $soc none] == 1} {
 		switch $soc \
 		{
 			cortexM3       {cortexM3_IP_add   $xilinx_path}
-			MicroBlaze     {MicroBlaze_IP_add $xilinx_path}
+			microblaze     {MicroBlaze_IP_add $xilinx_path}
 			ps7_cortexa9_0 {cortexA9_IP_add   $xilinx_path}
 			ps7_cortexa9_1 {cortexA9_IP_add   $xilinx_path}
 		}

@@ -34,11 +34,11 @@ function xclean(workspace_path,mode) {
 	file_list.forEach(element => {
 		file.deleteFile(`${workspace_path}${element}`)
 	});
-	file_list = pick_file(workspace_path,".log");
+	file_list = file.pick_file(workspace_path,".log");
 	file_list.forEach(element => {
 		file.deleteFile(`${workspace_path}${element}`)
 	});
-	file_list = pick_file(workspace_path,".str");
+	file_list = file.pick_file(workspace_path,".str");
 	file_list.forEach(element => {
 		file.deleteFile(`${workspace_path}${element}`)
 	});
