@@ -145,7 +145,7 @@ if {[string equal -length 4 $soc none] == 1} {
 			}
 			if { $ensureExsit == 0 } {	
 				file mkdir ./user/Hardware/bd/$bd_file
-				file copy  -force $current_Location/IP/Example_bd/$bd_file.bd ./user/Hardware/bd/$bd_file
+				file copy  -force $xilinx_path/IP/Example_bd/$bd_file.bd ./user/Hardware/bd/$bd_file
 				add_file   ./user/Hardware/bd/$bd_file/$bd_file.bd -force -quiet
 				generate_target all [get_files ./user/Hardware/bd/$bd_file/$bd_file.bd] -quiet
 				make_wrapper -files [get_files ./user/Hardware/bd/$bd_file/$bd_file.bd] -top -quiet
