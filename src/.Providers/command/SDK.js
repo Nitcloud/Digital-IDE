@@ -2,7 +2,7 @@
 exports.__esModule = true;
 const vscode       = require("vscode");
 const file         = require("../file_IO/file_IO");
-const terminal_ope = require("../command/terminal");
+const terminal_ope = require("../utils/terminal");
 const xilinxFileIO = require("../file_IO/xilinxFileExplorer");
 let StartSDK;
 

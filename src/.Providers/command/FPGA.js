@@ -6,7 +6,7 @@ var fspath       = require("path");
 var file         = require("../file_IO/file_IO");
 var module       = require("../file_IO/moduleExplorer");
 var xilinxFileIO = require("../file_IO/xilinxFileExplorer");
-var terminal_ope = require("../command/terminal");
+var terminal_ope = require("../utils/terminal");
 
 let StartFPGA;
 let StartFPGA_flag = false;

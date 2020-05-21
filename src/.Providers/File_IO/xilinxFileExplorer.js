@@ -1,6 +1,6 @@
 const fs       = require("fs");
 const file     = require("../file_IO/file_IO");
-const terminal = require("../command/terminal");
+const terminal = require("../utils/terminal");
 
 function move_xbd_xIP(workspace_path, property_path) {
 	let prj_info = file.pullJsonInfo(property_path);

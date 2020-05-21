@@ -1,9 +1,25 @@
 "use strict";
 exports.__esModule = true;
 
+const exec         = require('child_process').exec;
 const vscode       = require("vscode");
+
 const file         = require("../file_IO/file_IO");
 const xilinxFileIO = require("../file_IO/xilinxFileExplorer");
+
+function readSerialPortNum(command) {
+	exec(command,function (error, stdout, stderr) {
+		let mode = stdout.replace(/\s*/g,'');
+		if (mode == "none") {
+			vscode.window.showWarningMessage("Not found any serial port !");
+		}
+		if (error !== null) {
+			console.log('stderr: ' + stderr);
+			vscode.window.showErrorMessage(error);
+		}
+	});
+}
+
 
 function register(context,root_path) {
 	//My SDK Command
@@ -22,7 +38,8 @@ function register(context,root_path) {
 	});
 	context.subscriptions.push(property);
 	let SerialPort = vscode.commands.registerCommand('TOOL.SerialPort', () => {
-		file.generatePropertypath(workspace_path);
+		let command = `python ${root_path}/.TOOL/.Script/Serial_Port.py getCurrentPort`;
+		readSerialPortNum(command);
 	});
 	context.subscriptions.push(SerialPort);
 }
