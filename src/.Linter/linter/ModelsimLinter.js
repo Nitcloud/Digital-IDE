@@ -13,15 +13,15 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
-var vscode_1 = require("vscode");
-var child = require("child_process");
-var BaseLinter_1 = require("./BaseLinter");
-var isWindows = process.platform === "win32";
+var vscode = require("vscode");
+var child  = require("child_process");
+var BaseLinter = require("./BaseLinter");
+var isWindows  = process.platform === "win32";
 var ModelsimLinter = /** @class */ (function (_super) {
     __extends(ModelsimLinter, _super);
     function ModelsimLinter(logger) {
         var _this = _super.call(this, "modelsim", logger) || this;
-        vscode_1.workspace.onDidChangeConfiguration(function () {
+        vscode.workspace.onDidChangeConfiguration(function () {
             _this.getConfig();
         });
         _this.getConfig();
@@ -29,9 +29,9 @@ var ModelsimLinter = /** @class */ (function (_super) {
     }
     ModelsimLinter.prototype.getConfig = function () {
         //get custom arguments
-        this.modelsimArgs = vscode_1.workspace.getConfiguration().get('HDL.linting.modelsim.arguments');
-        this.modelsimWork = vscode_1.workspace.getConfiguration().get('HDL.linting.modelsim.work');
-        this.runAtFileLocation = vscode_1.workspace.getConfiguration().get('HDL.linting.modelsim.runAtFileLocation');
+        this.modelsimArgs = vscode.workspace.getConfiguration().get('HDL.linting.modelsim.arguments');
+        this.modelsimWork = vscode.workspace.getConfiguration().get('HDL.linting.modelsim.work');
+        this.runAtFileLocation = vscode.workspace.getConfiguration().get('HDL.linting.modelsim.runAtFileLocation');
     };
     ModelsimLinter.prototype.lint = function (doc) {
         var _this = this;
@@ -39,7 +39,7 @@ var ModelsimLinter = /** @class */ (function (_super) {
         var docUri = doc.uri.fsPath; //path of current doc
         var lastIndex = (isWindows == true) ? docUri.lastIndexOf("\\") : docUri.lastIndexOf("/");
         var docFolder = docUri.substr(0, lastIndex); //folder of current doc
-        var runLocation = (this.runAtFileLocation == true) ? docFolder : vscode_1.workspace.rootPath; //choose correct location to run
+        var runLocation = (this.runAtFileLocation == true) ? docFolder : vscode.workspace.rootPath; //choose correct location to run
         // no change needed for systemverilog
         var command = 'vlog -nologo -work ' + this.modelsimWork + ' \"' + doc.fileName + '\" ' + this.modelsimArgs; //command to execute
         var process = child.exec(command, { cwd: runLocation }, function (error, stdout, stderr) {
@@ -58,20 +58,20 @@ var ModelsimLinter = /** @class */ (function (_super) {
                             return;
                         switch (m[2]) {
                             case "Error":
-                                sev = vscode_1.DiagnosticSeverity.Error;
+                                sev = vscode.DiagnosticSeverity.Error;
                                 break;
                             case "Warning":
-                                sev = vscode_1.DiagnosticSeverity.Warning;
+                                sev = vscode.DiagnosticSeverity.Warning;
                                 break;
                             default:
-                                sev = vscode_1.DiagnosticSeverity.Information;
+                                sev = vscode.DiagnosticSeverity.Information;
                                 break;
                         }
                         var lineNum = parseInt(m[8]) - 1;
                         var msg = m[10];
                         diagnostics.push({
                             severity: sev,
-                            range: new vscode_1.Range(lineNum, 0, lineNum, Number.MAX_VALUE),
+                            range: new vscode.Range(lineNum, 0, lineNum, Number.MAX_VALUE),
                             message: msg,
                             code: 'modelsim',
                             source: 'modelsim'
@@ -80,7 +80,7 @@ var ModelsimLinter = /** @class */ (function (_super) {
                     catch (e) {
                         diagnostics.push({
                             severity: sev,
-                            range: new vscode_1.Range(0, 0, 0, Number.MAX_VALUE),
+                            range: new vscode.Range(0, 0, 0, Number.MAX_VALUE),
                             message: line,
                             code: 'modelsim',
                             source: 'modelsim'
@@ -93,5 +93,5 @@ var ModelsimLinter = /** @class */ (function (_super) {
         });
     };
     return ModelsimLinter;
-}(BaseLinter_1["default"]));
+}(BaseLinter["default"]));
 exports["default"] = ModelsimLinter;

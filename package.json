@@ -155,6 +155,12 @@
 					"type": "boolean",
 					"default": false,
 					"description": "Enable logging for this extension"
+				},
+				"TOOL.serialport.porteries": {
+					"scope": "window",
+					"type": "string",
+					"default": "115200-8-1-N",
+					"description": "Parameter setting of serial port. These are, in turn, baud rates, data bits, stop bits, and parity bits"
 				}
 			}
 		},		

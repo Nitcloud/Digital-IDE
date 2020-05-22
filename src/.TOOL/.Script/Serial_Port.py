@@ -5,8 +5,6 @@ import serial.tools.list_ports
 import time
 import threading
 
-serialPort = "COM3" #serialPortName
-
 class SerialPort:
     message='' 
     def __init__(self,port,buand):
@@ -41,15 +39,17 @@ def getCurrentPort():
         
     elif len(port_list) == 1:
         serialPort = list(port_list[0])[0]
-        print ("one")
+        content = "one-" + serialPort
+        print (content)
 
-    else:
+    elif len(port_list) > 1:
+        content = "multiple"
         for port_serial in port_list:
-            print ("%s" % (port_serial[0])) 
-
-    return len(port_list)
+            content += "-"
+            content += port_serial[0]
+        print(content)
  
-def runthread(portName,baudRate,parity,stopbits,bytesize):
+def runthread(portName,baudRate,bytesize,stopbits,parity):
 	mSerial = SerialPort(portName,baudRate)
 	mSerial.porpertyConfig(parity,stopbits,bytesize)
 	mSerial.port_open()
@@ -65,9 +65,7 @@ def main(mode):
 	if mode == "getCurrentPort":
 		getCurrentPort()
 	if mode == "runthread":
-		runthread(sys.argv[2],sys.argv[3],sys.argv[4],sys.argv[5],sys.argv[6])
+		runthread(sys.argv[2],int(sys.argv[3]),int(sys.argv[4]),int(sys.argv[5]),sys.argv[6])
 
 if __name__=='__main__':
-    # runthread(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4],sys.argv[5])
-	# runthread("COM6",115200,"N",1,8)
 	main(sys.argv[1])
