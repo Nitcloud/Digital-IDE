@@ -156,11 +156,53 @@
 					"default": false,
 					"description": "Enable logging for this extension"
 				},
-				"TOOL.serialport.porteries": {
-					"scope": "window",
-					"type": "string",
-					"default": "115200-8-1-N",
-					"description": "Parameter setting of serial port. These are, in turn, baud rates, data bits, stop bits, and parity bits"
+				"TOOL.SerialPortMonitor.BaudRate": {
+					"type": "integer",
+					"scope": "resource",
+					"markdownDescription": "SerialPort Baud Rate",
+					"default": "115200"
+				},
+				"TOOL.SerialPortMonitor.DataBits": {
+					"type": "integer",
+					"scope": "resource",
+					"markdownDescription": "SerialPort Data Bits width",
+					"default": "8"
+				},
+				"TOOL.SerialPortMonitor.Parity": {
+					"type": "integer",
+					"scope": "resource",
+					"markdownDescription": "SerialPort Parity bit",
+					"default": "0",
+					"enum": [
+						0,
+						1,
+						2,
+						3,
+						4
+					],
+					"enumDescriptions": [
+						"None",
+						"Odd",
+						"Even",
+						"Mark",
+						"Space"
+					]
+				},
+				"TOOL.SerialPortMonitor.StopBits": {
+					"type": "integer",
+					"scope": "resource",
+					"markdownDescription": "SerialPort Stop Bits",
+					"default": "1",
+					"enum": [
+						1,
+						2,
+						3
+					],
+					"enumDescriptions": [
+						"One",
+						"Two",
+						"OnePointFive"
+					]
 				}
 			}
 		},		

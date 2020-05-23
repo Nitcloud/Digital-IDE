@@ -23,13 +23,13 @@ class SerialPort:
         self.port.STOPBITS  = stopbits
         self.port.BYTESIZES = bytesize
     def send_data(self):
-        data = input("%s >" % (self.port.name)) 
+        data = input("[%s] >" % (self.port.name)) 
         n = self.port.write((data+'\n').encode())
         return n
     def read_data(self):
         while True:
             self.message = self.port.readline()
-            print("%s > %s" % (self.port.name,self.message))
+            print("%s" % self.message)
 
 def getCurrentPort(): 
     port_list = list(serial.tools.list_ports.comports())

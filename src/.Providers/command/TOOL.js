@@ -6,22 +6,42 @@ const vscode       = require("vscode");
 
 const file         = require("../file_IO/file_IO");
 const xilinxFileIO = require("../file_IO/xilinxFileExplorer");
+const terminal_ope = require("../utils/terminal");
+
+function serialPortTerminal(serialPortName,command) {
+	if (terminal_ope.ensureTerminalExists(`${serialPortName}`)) {
+		vscode.window.showWarningMessage('This serial port number is in use!');
+	}
+	else {
+		Instance = vscode.window.createTerminal({ name: `${serialPortName}` });
+		Instance.show(true);
+		Instance.sendText(command);
+	}
+}
 
 function runSerialPort(command,root_path) {
 	exec(command,function (error, stdout, stderr) {
 		let content = stdout.replace(/\s*/g,'');
 		let SerialPortList = content.split("-");
+		let porteries = vscode.workspace.getConfiguration().get('TOOL.serialport.porteries');
 		if (SerialPortList[0] == "none") {
 			vscode.window.showWarningMessage("Not found any serial port !");
 		}
 		if (SerialPortList[0] == "one") {
-			let porteries = vscode.workspace.getConfiguration().get('TOOL.serialport.porteries');
 			porteries = SerialPortList[1] + " " + porteries.replace(/-/g," ");
 			let command = `python ${root_path}/.TOOL/.Script/Serial_Port.py runthread ${porteries}`;
-			exec(command);
+			serialPortTerminal(SerialPortList[1],command);
 		}
 		if (SerialPortList[0] == "multiple") {
-			vscode.window.showWarningMessage("Not found any serial port !");
+			SerialPortList.splice(0,1);
+			vscode.window.showQuickPick(SerialPortList).then(selection => {
+				if (!selection) {
+					return;
+				}
+				porteries = selection + " " + porteries.replace(/-/g," ");
+				let command = `python ${root_path}/.TOOL/.Script/Serial_Port.py runthread ${porteries}`;
+				serialPortTerminal(selection,command);
+			});
 		}
 		if (error !== null) {
 			console.log('stderr: ' + stderr);
