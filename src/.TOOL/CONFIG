@@ -1,13 +1,13 @@
 FPGA_VERSION
 xilinx
 PRJ_NAME.FPGA
-Singal_Source
+Instrument
 PRJ_NAME.SOC
-Singal_Source
+Instrument
 SOC_MODE.soc
-microblaze
+ps7_cortexa9_0
 SOC_MODE.bd_file
-undefined
+none
 SOC_MODE.os
 standalone
 SOC_MODE.app
@@ -15,5 +15,5 @@ Hello World
 enableShowlog
 false
 Device
-xc7a35tftg256-1
+xc7z020clg400-2
 

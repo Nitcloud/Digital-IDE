@@ -160,7 +160,20 @@
 					"type": "integer",
 					"scope": "resource",
 					"markdownDescription": "SerialPort Baud Rate",
-					"default": "115200"
+					"default": "115200",
+					"enum": [
+						"1382400",
+						"921600",
+						"460800",
+						"256000",
+						"230400",
+						"128000",
+						"115200",
+						"9600",
+						"4800",
+						"2400",
+						"1200"
+					]
 				},
 				"TOOL.SerialPortMonitor.DataBits": {
 					"type": "integer",
@@ -169,16 +182,16 @@
 					"default": "8"
 				},
 				"TOOL.SerialPortMonitor.Parity": {
-					"type": "integer",
+					"type": "string",
 					"scope": "resource",
 					"markdownDescription": "SerialPort Parity bit",
 					"default": "0",
 					"enum": [
-						0,
-						1,
-						2,
-						3,
-						4
+						"N",
+						"O",
+						"E",
+						"M",
+						"S"
 					],
 					"enumDescriptions": [
 						"None",

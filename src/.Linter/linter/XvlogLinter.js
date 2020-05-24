@@ -13,10 +13,10 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
-var vscode_1 = require("vscode");
-var child_process_1 = require("child_process");
-var BaseLinter_1 = require("./BaseLinter");
-var Logger_1 = require("../Logger");
+var vscode = require("vscode");
+var Logger = require("../Logger");
+var BaseLinter    = require("./BaseLinter");
+var child_process = require("child_process");
 var XvlogLinter = /** @class */ (function (_super) {
     __extends(XvlogLinter, _super);
     function XvlogLinter(logger) {
@@ -24,11 +24,15 @@ var XvlogLinter = /** @class */ (function (_super) {
     }
     XvlogLinter.prototype.lint = function (doc) {
         var _this = this;
-        this.logger.log('xvlog lint requested');
-        var svArgs = (doc.languageId == "systemverilog") ? "-sv" : ""; //Systemverilog args
-        var command = "xvlog " + svArgs + " -nolog " + doc.fileName;
-        this.logger.log(command, Logger_1.Log_Severity.Command);
-        var process = child_process_1.exec(command, function (error, stdout, stderr) {
+		this.logger.log('xvlog lint requested');
+		if (doc.languageId == "vhdl") {
+			var command = "xvhdl " + " -nolog " + doc.fileName;
+		} else {			
+			var svArgs = (doc.languageId == "systemverilog") ? "-sv" : ""; //Systemverilog args
+			var command = "xvlog " + svArgs + " -nolog " + doc.fileName;
+		}
+        this.logger.log(command, Logger.Log_Severity.Command);
+        var process = child_process.exec(command, function (error, stdout, stderr) {
             var diagnostics = [];
             var lines = stdout.split(/\r?\n/g);
             lines.forEach(function (line) {
@@ -44,10 +48,10 @@ var XvlogLinter = /** @class */ (function (_super) {
                 // if (filename != doc.fileName) // Check that filename matches
                 //     return;
                 var diagnostic = {
-                    severity: vscode_1.DiagnosticSeverity.Error,
+                    severity: vscode.DiagnosticSeverity.Error,
                     code: tokens[1],
                     message: "[" + tokens[1] + "] " + tokens[2],
-                    range: new vscode_1.Range(lineno, 0, lineno, Number.MAX_VALUE),
+                    range: new vscode.Range(lineno, 0, lineno, Number.MAX_VALUE),
                     source: "xvlog"
                 };
                 diagnostics.push(diagnostic);
@@ -57,5 +61,5 @@ var XvlogLinter = /** @class */ (function (_super) {
         });
     };
     return XvlogLinter;
-}(BaseLinter_1["default"]));
+}(BaseLinter["default"]));
 exports["default"] = XvlogLinter;
