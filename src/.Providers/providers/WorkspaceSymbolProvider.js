@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const symbol_1 = require("../symbol");
+const symbol = require("../symbol");
 class SystemVerilogWorkspaceSymbolProvider {
     constructor(indexer) {
         this.NUM_FILES = 250;
@@ -54,7 +54,7 @@ class SystemVerilogWorkspaceSymbolProvider {
             let symbolInfo = undefined;
             this.indexer.symbols.forEach(list => {
                 list.forEach(symbol => {
-                    if (symbol.name == query && symbol.kind == symbol_1.getSymbolKind("module")) {
+                    if (symbol.name == query && symbol.kind == symbol.getSymbolKind("module")) {
                         symbolInfo = symbol;
                         return false;
                     }

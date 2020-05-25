@@ -23,12 +23,16 @@ function runSerialPort(command,root_path) {
 	exec(command,function (error, stdout, stderr) {
 		let content = stdout.replace(/\s*/g,'');
 		let SerialPortList = content.split("-");
-		let porteries = vscode.workspace.getConfiguration().get('TOOL.serialport.porteries');
+		let Parity    = vscode.workspace.getConfiguration().get('TOOL.serialport.Parity');
+		let BaudRate  = vscode.workspace.getConfiguration().get('TOOL.serialport.BaudRate');
+		let DataBits  = vscode.workspace.getConfiguration().get('TOOL.serialport.DataBits');
+		let StopBits  = vscode.workspace.getConfiguration().get('TOOL.serialport.StopBits');
+		let porteries = `${BaudRate} ${DataBits} ${StopBits} ${Parity}`;
 		if (SerialPortList[0] == "none") {
 			vscode.window.showWarningMessage("Not found any serial port !");
 		}
 		if (SerialPortList[0] == "one") {
-			porteries = SerialPortList[1] + " " + porteries.replace(/-/g," ");
+			porteries = SerialPortList[1] + " " + porteries;
 			let command = `python ${root_path}/.TOOL/.Script/Serial_Port.py runthread ${porteries}`;
 			serialPortTerminal(SerialPortList[1],command);
 		}
@@ -38,7 +42,7 @@ function runSerialPort(command,root_path) {
 				if (!selection) {
 					return;
 				}
-				porteries = selection + " " + porteries.replace(/-/g," ");
+				porteries = selection + " " + porteries;
 				let command = `python ${root_path}/.TOOL/.Script/Serial_Port.py runthread ${porteries}`;
 				serialPortTerminal(selection,command);
 			});

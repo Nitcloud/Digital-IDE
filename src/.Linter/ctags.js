@@ -1,27 +1,27 @@
 "use strict";
 exports.__esModule = true;
-var vscode_1 = require("vscode");
+var vscode = require("vscode");
 var child = require("child_process");
-var Logger_1 = require("./Logger");
+var Logger = require("./Logger");
 // Internal representation of a symbol
 var Symbol = /** @class */ (function () {
     function Symbol(name, type, pattern, startLine, parentScope, parentType, endLine, isValid) {
         this.name = name;
         this.type = type;
         this.pattern = pattern;
-        this.startPosition = new vscode_1.Position(startLine, 0);
+        this.startPosition = new vscode.Position(startLine, 0);
         this.parentScope = parentScope;
         this.parentType = parentType;
         this.isValid = isValid;
-        this.endPosition = new vscode_1.Position(endLine, Number.MAX_VALUE);
+        this.endPosition = new vscode.Position(endLine, Number.MAX_VALUE);
     }
     Symbol.prototype.setEndPosition = function (endLine) {
-        this.endPosition = new vscode_1.Position(endLine, Number.MAX_VALUE);
+        this.endPosition = new vscode.Position(endLine, Number.MAX_VALUE);
         this.isValid = true;
     };
     Symbol.prototype.getDocumentSymbol = function () {
-        var range = new vscode_1.Range(this.startPosition, this.endPosition);
-        return new vscode_1.DocumentSymbol(this.name, this.type, Symbol.getSymbolKind(this.type), range, range);
+        var range = new vscode.Range(this.startPosition, this.endPosition);
+        return new vscode.DocumentSymbol(this.name, this.type, Symbol.getSymbolKind(this.type), range, range);
     };
     Symbol.isContainer = function (type) {
         switch (type) {
@@ -54,29 +54,29 @@ var Symbol = /** @class */ (function () {
     // taken from https://github.com/universal-ctags/ctags/blob/master/parsers/verilog.c
     Symbol.getSymbolKind = function (name) {
         switch (name) {
-            case 'constant': return vscode_1.SymbolKind.Constant;
-            case 'event': return vscode_1.SymbolKind.Event;
-            case 'function': return vscode_1.SymbolKind.Function;
-            case 'module': return vscode_1.SymbolKind.Module;
-            case 'net': return vscode_1.SymbolKind.Variable;
+            case 'constant': return vscode.SymbolKind.Constant;
+            case 'event': return vscode.SymbolKind.Event;
+            case 'function': return vscode.SymbolKind.Function;
+            case 'module': return vscode.SymbolKind.Module;
+            case 'net': return vscode.SymbolKind.Variable;
             // Boolean uses a double headed arrow as symbol (kinda looks like a port)
-            case 'port': return vscode_1.SymbolKind.Boolean;
-            case 'register': return vscode_1.SymbolKind.Variable;
-            case 'task': return vscode_1.SymbolKind.Function;
-            case 'block': return vscode_1.SymbolKind.Module;
-            case 'assert': return vscode_1.SymbolKind.Variable; // No idea what to use
-            case 'class': return vscode_1.SymbolKind.Class;
-            case 'covergroup': return vscode_1.SymbolKind.Class; // No idea what to use
-            case 'enum': return vscode_1.SymbolKind.Enum;
-            case 'interface': return vscode_1.SymbolKind.Interface;
-            case 'modport': return vscode_1.SymbolKind.Boolean; // same as ports
-            case 'package': return vscode_1.SymbolKind.Package;
-            case 'program': return vscode_1.SymbolKind.Module;
-            case 'prototype': return vscode_1.SymbolKind.Function;
-            case 'property': return vscode_1.SymbolKind.Property;
-            case 'struct': return vscode_1.SymbolKind.Struct;
-            case 'typedef': return vscode_1.SymbolKind.TypeParameter;
-            default: return vscode_1.SymbolKind.Variable;
+            case 'port': return vscode.SymbolKind.Boolean;
+            case 'register': return vscode.SymbolKind.Variable;
+            case 'task': return vscode.SymbolKind.Function;
+            case 'block': return vscode.SymbolKind.Module;
+            case 'assert': return vscode.SymbolKind.Variable; // No idea what to use
+            case 'class': return vscode.SymbolKind.Class;
+            case 'covergroup': return vscode.SymbolKind.Class; // No idea what to use
+            case 'enum': return vscode.SymbolKind.Enum;
+            case 'interface': return vscode.SymbolKind.Interface;
+            case 'modport': return vscode.SymbolKind.Boolean; // same as ports
+            case 'package': return vscode.SymbolKind.Package;
+            case 'program': return vscode.SymbolKind.Module;
+            case 'prototype': return vscode.SymbolKind.Function;
+            case 'property': return vscode.SymbolKind.Property;
+            case 'struct': return vscode.SymbolKind.Struct;
+            case 'typedef': return vscode.SymbolKind.TypeParameter;
+            default: return vscode.SymbolKind.Variable;
         }
     };
     return Symbol;
@@ -102,10 +102,10 @@ var Ctags = /** @class */ (function () {
     };
     Ctags.prototype.execCtags = function (filepath) {
         console.log("executing ctags");
-        var ctags = vscode_1.workspace.getConfiguration().get('HDL.ctags.path');
+        var ctags = vscode.workspace.getConfiguration().get('HDL.ctags.path');
         var command = ctags + ' -f - --fields=+K --sort=no --excmd=n "' + filepath + '"';
         console.log(command);
-        this.logger.log(command, Logger_1.Log_Severity.Command);
+        this.logger.log(command, Logger.Log_Severity.Command);
         return new Promise(function (resolve, reject) {
             child.exec(command, function (error, stdout, stderr) {
                 resolve(stdout);
@@ -114,11 +114,11 @@ var Ctags = /** @class */ (function () {
     };
     Ctags.prototype.parseTagLine = function (line) {
         try {
-            var name_1, type = void 0, pattern = void 0, lineNoStr = void 0, parentScope = void 0, parentType = void 0;
+            var name, type = void 0, pattern = void 0, lineNoStr = void 0, parentScope = void 0, parentType = void 0;
             var scope = void 0;
             var lineNo = void 0;
             var parts = line.split('\t');
-            name_1 = parts[0];
+            name = parts[0];
             // pattern = parts[2];
             type = parts[3];
             if (parts.length == 5) {
@@ -132,12 +132,12 @@ var Ctags = /** @class */ (function () {
             }
             lineNoStr = parts[2];
             lineNo = Number(lineNoStr.slice(0, -2)) - 1;
-            return new Symbol(name_1, type, pattern, lineNo, parentScope, parentType, lineNo, false);
+            return new Symbol(name, type, pattern, lineNo, parentScope, parentType, lineNo, false);
         }
         catch (e) {
             console.log(e);
-            this.logger.log('Ctags Line Parser: ' + e, Logger_1.Log_Severity.Error);
-            this.logger.log('Line: ' + line, Logger_1.Log_Severity.Error);
+            this.logger.log('Ctags Line Parser: ' + e, Logger.Log_Severity.Error);
+            this.logger.log('Line: ' + line, Logger.Log_Severity.Error);
         }
     };
     Ctags.prototype.buildSymbolsList = function (tags) {
@@ -155,16 +155,16 @@ var Ctags = /** @class */ (function () {
                     _this.symbols.push(_this.parseTagLine(line));
             });
             // end tags are not supported yet in ctags. So, using regex
-            var match_1;
-            var endPosition_1;
+            var match;
+            var endPosition;
             var text = this.doc.getText();
             var eRegex = /^(?![\r\n])\s*end(\w*)*[\s:]?/gm;
-            while (match_1 = eRegex.exec(text)) {
-                if (match_1 && typeof match_1[1] !== 'undefined') {
-                    endPosition_1 = this.doc.positionAt(match_1.index + match_1[0].length - 1);
+            while (match = eRegex.exec(text)) {
+                if (match && typeof match[1] !== 'undefined') {
+                    endPosition = this.doc.positionAt(match.index + match[0].length - 1);
                     // get the starting symbols of the same type
                     // doesn't check for begin...end blocks
-                    var s = this.symbols.filter(function (i) { return i.type === match_1[1] && i.startPosition.isBefore(endPosition_1) && !i.isValid; });
+                    var s = this.symbols.filter(function (i) { return i.type === match[1] && i.startPosition.isBefore(endPosition) && !i.isValid; });
                     if (s.length > 0) {
                         // get the symbol nearest to the end tag
                         var max = s[0];
@@ -174,7 +174,7 @@ var Ctags = /** @class */ (function () {
                         for (var _i = 0, _a = this.symbols; _i < _a.length; _i++) {
                             var i = _a[_i];
                             if (i.name === max.name && i.startPosition.isEqual(max.startPosition) && i.type === max.type) {
-                                i.setEndPosition(endPosition_1.line);
+                                i.setEndPosition(endPosition.line);
                                 break;
                             }
                         }
@@ -208,14 +208,14 @@ var CtagsManager = /** @class */ (function () {
     }
     CtagsManager.prototype.configure = function () {
         console.log("ctags manager configure");
-        vscode_1.workspace.onDidSaveTextDocument(this.onSave);
-        vscode_1.window.onDidChangeActiveTextEditor(this.onDidChangeActiveTextEditor);
+        vscode.workspace.onDidSaveTextDocument(this.onSave);
+        vscode.window.onDidChangeActiveTextEditor(this.onDidChangeActiveTextEditor);
     };
     CtagsManager.prototype.onSave = function (doc) {
         console.log("on save");
         CtagsManager.ctags.clearSymbols();
         // Should automatically refresh the Document symbols show, but doesn't seem to be working
-        vscode_1.commands.executeCommand('vscode.executeDocumentSymbolProvider', doc.uri);
+        vscode.commands.executeCommand('vscode.executeDocumentSymbolProvider', doc.uri);
     };
     CtagsManager.prototype.onDidChangeActiveTextEditor = function (editor) {
         if (!this.isOutputPanel(editor.document.uri)) {

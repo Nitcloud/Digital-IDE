@@ -13,24 +13,24 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
-var vscode_1 = require("vscode");
+var vscode = require("vscode");
 var child = require("child_process");
-var BaseLinter_1 = require("./BaseLinter");
-var Logger_1 = require("../Logger");
+var BaseLinter = require("./BaseLinter");
+var Logger = require("../Logger");
 var isWindows = process.platform === "win32";
 var IcarusLinter = /** @class */ (function (_super) {
     __extends(IcarusLinter, _super);
     function IcarusLinter(logger) {
         var _this = _super.call(this, "iverilog", logger) || this;
-        vscode_1.workspace.onDidChangeConfiguration(function () {
+        vscode.workspace.onDidChangeConfiguration(function () {
             _this.getConfig();
         });
         _this.getConfig();
         return _this;
     }
     IcarusLinter.prototype.getConfig = function () {
-        this.iverilogArgs = vscode_1.workspace.getConfiguration().get('HDL.linting.iverilog.arguments');
-        this.runAtFileLocation = vscode_1.workspace.getConfiguration().get('HDL.linting.iverilog.runAtFileLocation');
+        this.iverilogArgs = vscode.workspace.getConfiguration().get('HDL.linting.iverilog.arguments');
+        this.runAtFileLocation = vscode.workspace.getConfiguration().get('HDL.linting.iverilog.runAtFileLocation');
     };
     IcarusLinter.prototype.lint = function (doc) {
         var _this = this;
@@ -38,10 +38,10 @@ var IcarusLinter = /** @class */ (function (_super) {
         var docUri = doc.uri.fsPath; //path of current doc
         var lastIndex = (isWindows == true) ? docUri.lastIndexOf("\\") : docUri.lastIndexOf("/");
         var docFolder = docUri.substr(0, lastIndex); //folder of current doc
-        var runLocation = (this.runAtFileLocation == true) ? docFolder : vscode_1.workspace.rootPath; //choose correct location to run
+        var runLocation = (this.runAtFileLocation == true) ? docFolder : vscode.workspace.rootPath; //choose correct location to run
         var svArgs = (doc.languageId == "systemverilog") ? "-g2012" : ""; //SystemVerilog args
         var command = 'iverilog ' + svArgs + ' -t null ' + this.iverilogArgs + ' \"' + doc.fileName + '\"'; //command to execute
-        this.logger.log(command, Logger_1.Log_Severity.Command);
+        this.logger.log(command, Logger.Log_Severity.Command);
         var foo = child.exec(command, { cwd: runLocation }, function (error, stdout, stderr) {
             var diagnostics = [];
             var lines = stderr.split(/\r?\n/g);
@@ -54,8 +54,8 @@ var IcarusLinter = /** @class */ (function (_super) {
                     var lineNum = parseInt(terms[1].trim()) - 1;
                     if (terms.length == 3)
                         diagnostics.push({
-                            severity: vscode_1.DiagnosticSeverity.Error,
-                            range: new vscode_1.Range(lineNum, 0, lineNum, Number.MAX_VALUE),
+                            severity: vscode.DiagnosticSeverity.Error,
+                            range: new vscode.Range(lineNum, 0, lineNum, Number.MAX_VALUE),
                             message: terms[2].trim(),
                             code: 'iverilog',
                             source: 'iverilog'
@@ -63,14 +63,14 @@ var IcarusLinter = /** @class */ (function (_super) {
                     else if (terms.length >= 4) {
                         var sev = void 0;
                         if (terms[2].trim() == 'error')
-                            sev = vscode_1.DiagnosticSeverity.Error;
+                            sev = vscode.DiagnosticSeverity.Error;
                         else if (terms[2].trim() == 'warning')
-                            sev = vscode_1.DiagnosticSeverity.Warning;
+                            sev = vscode.DiagnosticSeverity.Warning;
                         else
-                            sev = vscode_1.DiagnosticSeverity.Information;
+                            sev = vscode.DiagnosticSeverity.Information;
                         diagnostics.push({
                             severity: sev,
-                            range: new vscode_1.Range(lineNum, 0, lineNum, Number.MAX_VALUE),
+                            range: new vscode.Range(lineNum, 0, lineNum, Number.MAX_VALUE),
                             message: terms[3].trim(),
                             code: 'iverilog',
                             source: 'iverilog'
@@ -83,5 +83,5 @@ var IcarusLinter = /** @class */ (function (_super) {
         });
     };
     return IcarusLinter;
-}(BaseLinter_1["default"]));
+}(BaseLinter["default"]));
 exports["default"] = IcarusLinter;

@@ -13,12 +13,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 
 var vscode = require("vscode");
 //the var of the lint
-var ctags_1  = require("./.Linter/ctags");
-var Logger_1 = require("./.Linter/Logger");
-var logger   = new Logger_1.Logger();
 var LintManager_1 = require("./.Linter/linter/LintManager");
-var lintManager;
-exports.ctagsManager = new ctags_1.CtagsManager(logger);
+
+// var ctags_1  = require("./.Linter/ctags");
+// var Logger_1 = require("./.Linter/Logger");
+// var logger   = new Logger_1.Logger();
+// exports.ctagsManager = new ctags_1.CtagsManager(logger);
 
 //the var of the providers
 const parser_1 					= require("./.Providers/parser");
@@ -42,7 +42,7 @@ const SDK_option  = require("./.Providers/treedata/sdk_option");
 function activate(context) {
     // Configure lint manager
     // exports.ctagsManager.configure();
-    lintManager = new LintManager_1["default"](logger);
+    var lintManager = new LintManager_1["default"](logger);
 	vscode.commands.registerCommand("verilog.lint", lintManager.RunLintTool);
 	
 	// Status Bar
@@ -111,13 +111,13 @@ function activate(context) {
 	
 	//My Command
 	let root_path = `${__dirname}`.replace(/\\/g,"\/");
+	SDK.register(context,root_path);
 	TOOL.register(context,root_path);
 	FPGA.register(context,root_path);
-	SDK.register(context,root_path);
 	
-	vscode.window.registerTreeDataProvider('TOOL.Tool_options', new TOOL_option.Provider());
-	vscode.window.registerTreeDataProvider('TOOL.fpga_options', new FPGA_option.Provider());
 	vscode.window.registerTreeDataProvider('TOOL.sdk_options' , new SDK_option.Provider());
+	vscode.window.registerTreeDataProvider('TOOL.fpga_options', new FPGA_option.Provider());
+	vscode.window.registerTreeDataProvider('TOOL.Tool_options', new TOOL_option.Provider());
 }
 exports.activate = activate;
 

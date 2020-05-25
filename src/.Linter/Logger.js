@@ -1,7 +1,7 @@
 "use strict";
 exports.__esModule = true;
-var vscode_1 = require("vscode");
-var logChannel = vscode_1.window.createOutputChannel("Verilog");
+var vscode = require("vscode");
+var logChannel = vscode.window.createOutputChannel("Verilog");
 var Log_Severity;
 (function (Log_Severity) {
     Log_Severity[Log_Severity["Info"] = 0] = "Info";
@@ -13,13 +13,13 @@ var Logger = /** @class */ (function () {
     function Logger() {
         var _this = this;
         // Register for any changes to logging
-        vscode_1.workspace.onDidChangeConfiguration(function () {
+        vscode.workspace.onDidChangeConfiguration(function () {
             _this.CheckIfEnabled();
         });
         this.CheckIfEnabled();
     }
     Logger.prototype.CheckIfEnabled = function () {
-        this.isEnabled = vscode_1.workspace.getConfiguration().get('HDL.logging.enabled');
+        this.isEnabled = vscode.workspace.getConfiguration().get('HDL.logging.enabled');
     };
     Logger.prototype.log = function (msg, severity) {
         if (severity === void 0) { severity = Log_Severity.Info; }

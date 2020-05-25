@@ -79,9 +79,15 @@ var LintManager = /** @class */ (function () {
     };
     LintManager.prototype.lint = function (doc) {
         // Check for language id
-        var lang = doc.languageId;
-        if (this.linter != null && (lang === "verilog" || lang === "systemverilog"))
-            this.linter.startLint(doc);
+		var lang = doc.languageId;
+        var linter_name = vscode.workspace.getConfiguration("HDL.linting").get("linter");
+		if (linter_name == "xvlog") {
+			if (this.linter != null && (lang === "verilog" || lang === "systemverilog" || lang === "vhdl"))
+            	this.linter.startLint(doc);
+		} else {
+			if (this.linter != null && (lang === "verilog" || lang === "systemverilog"))
+				this.linter.startLint(doc);
+		}
     };
     LintManager.prototype.removeFileDiagnostics = function (doc) {
         if (this.linter != null)
@@ -95,7 +101,7 @@ var LintManager = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         lang = vscode.window.activeTextEditor.document.languageId;
-                        if (!(vscode.window.activeTextEditor === undefined || (lang !== "verilog" && lang !== "systemverilog"))) return [3 /*break*/, 1];
+                        if (!(vscode.window.activeTextEditor === undefined || (lang !== "verilog" && lang !== "systemverilog" && lang !== "vhdl"))) return [3 /*break*/, 1];
                         vscode.window.showErrorMessage("Verilog HDL: No document opened");
                         return [3 /*break*/, 4];
                     case 1: return [4 /*yield*/, vscode.window.showQuickPick([

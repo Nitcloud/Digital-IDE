@@ -1,7 +1,7 @@
 "use strict";
 /* Defines tools that require `vscode-languageserver` module */
 Object.defineProperty(exports, "__esModule", { value: true });
-const vscode_languageserver_1 = require("vscode-languageserver");
+const vscode_languageserver = require("vscode-languageserver");
 /**
     Check if a given `document` is a SystemVerilog file.
 
@@ -49,7 +49,7 @@ function getLineRange(line, offendingSymbol, startPosition) {
     else {
         endPosition = startPosition + offendingSymbol.length;
     }
-    return vscode_languageserver_1.Range.create(vscode_languageserver_1.Position.create(line, startPosition), vscode_languageserver_1.Position.create(line, (endPosition)));
+    return vscode_languageserver.Range.create(vscode_languageserver.Position.create(line, startPosition), vscode_languageserver.Position.create(line, (endPosition)));
 }
 exports.getLineRange = getLineRange;
 //# sourceMappingURL=server.js.map

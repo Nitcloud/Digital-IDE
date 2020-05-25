@@ -1,9 +1,9 @@
 "use strict";
 exports.__esModule = true;
-var vscode_1 = require("vscode");
+var vscode = require("vscode");
 var BaseLinter = /** @class */ (function () {
     function BaseLinter(name, logger) {
-        this.diagnostic_collection = vscode_1.languages.createDiagnosticCollection();
+        this.diagnostic_collection = vscode.languages.createDiagnosticCollection();
         this.name = name;
         this.logger = logger;
     }
