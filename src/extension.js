@@ -13,12 +13,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 
 var vscode = require("vscode");
 //the var of the lint
+var ctags_1  = require("./.Linter/ctags");
+var Logger_1 = require("./.Linter/Logger");
 var LintManager_1 = require("./.Linter/linter/LintManager");
 
-// var ctags_1  = require("./.Linter/ctags");
-// var Logger_1 = require("./.Linter/Logger");
-// var logger   = new Logger_1.Logger();
-// exports.ctagsManager = new ctags_1.CtagsManager(logger);
+var logger   = new Logger_1.Logger();
+exports.ctagsManager = new ctags_1.CtagsManager(logger);
 
 //the var of the providers
 const parser_1 					= require("./.Providers/parser");

@@ -176,16 +176,22 @@
 					]
 				},
 				"TOOL.SerialPortMonitor.DataBits": {
-					"type": "integer",
+					"type": "string",
 					"scope": "resource",
 					"markdownDescription": "SerialPort Data Bits width",
-					"default": "8"
+					"default": "8",
+					"enum": [
+						"5",
+						"6",
+						"7",
+						"8"
+					]
 				},
 				"TOOL.SerialPortMonitor.Parity": {
 					"type": "string",
 					"scope": "resource",
 					"markdownDescription": "SerialPort Parity bit",
-					"default": "0",
+					"default": "N",
 					"enum": [
 						"N",
 						"O",
@@ -202,14 +208,14 @@
 					]
 				},
 				"TOOL.SerialPortMonitor.StopBits": {
-					"type": "integer",
+					"type": "string",
 					"scope": "resource",
 					"markdownDescription": "SerialPort Stop Bits",
 					"default": "1",
 					"enum": [
-						1,
-						2,
-						3
+						"1",
+						"1.5",
+						"2"
 					],
 					"enumDescriptions": [
 						"One",

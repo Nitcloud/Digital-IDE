@@ -23,10 +23,10 @@ function runSerialPort(command,root_path) {
 	exec(command,function (error, stdout, stderr) {
 		let content = stdout.replace(/\s*/g,'');
 		let SerialPortList = content.split("-");
-		let Parity    = vscode.workspace.getConfiguration().get('TOOL.serialport.Parity');
-		let BaudRate  = vscode.workspace.getConfiguration().get('TOOL.serialport.BaudRate');
-		let DataBits  = vscode.workspace.getConfiguration().get('TOOL.serialport.DataBits');
-		let StopBits  = vscode.workspace.getConfiguration().get('TOOL.serialport.StopBits');
+		let Parity    = vscode.workspace.getConfiguration().get('TOOL.SerialPortMonitor.Parity');
+		let BaudRate  = vscode.workspace.getConfiguration().get('TOOL.SerialPortMonitor.BaudRate');
+		let DataBits  = vscode.workspace.getConfiguration().get('TOOL.SerialPortMonitor.DataBits');
+		let StopBits  = vscode.workspace.getConfiguration().get('TOOL.SerialPortMonitor.StopBits');
 		let porteries = `${BaudRate} ${DataBits} ${StopBits} ${Parity}`;
 		if (SerialPortList[0] == "none") {
 			vscode.window.showWarningMessage("Not found any serial port !");
