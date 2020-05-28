@@ -118,7 +118,7 @@ while { [gets $fp data] >= 0 } \
 	if { [string equal -length 16 $data "SOC_MODE.bd_file"] == 1 } {
 		gets $fp bd_file
 		if {$bd_file == "undefined"} {
-			set bd_file default
+			set bd_file none
 		}
 	}
 }

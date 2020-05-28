@@ -191,15 +191,8 @@
 					"type": "string",
 					"scope": "resource",
 					"markdownDescription": "SerialPort Parity bit",
-					"default": "N",
+					"default": "None",
 					"enum": [
-						"N",
-						"O",
-						"E",
-						"M",
-						"S"
-					],
-					"enumDescriptions": [
 						"None",
 						"Odd",
 						"Even",

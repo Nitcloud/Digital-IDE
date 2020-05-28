@@ -19,15 +19,15 @@ class SerialPort:
     def port_close(self):
         self.port.close()
     def porpertyConfig(self,parity,stopbits,bytesize):
-		if parity == "N":
+		if parity == "None":
 			self.port.parity = serial.PARITY_NONE
-		elif parity == "O":
+		elif parity == "Odd":
 			self.port.parity = serial.PARITY_ODD
-		elif parity == "E":
+		elif parity == "Even":
 			self.port.parity = serial.PARITY_EVEN
-		elif parity == "M":
+		elif parity == "Mark":
 			self.port.parity = serial.PARITY_MARK
-		elif parity == "S":
+		elif parity == "Space":
 			self.port.parity = serial.PARITY_SPACE
 		
 		if stopbits == "1":
