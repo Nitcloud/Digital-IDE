@@ -13,9 +13,9 @@ function serialPortTerminal(serialPortName,command) {
 		vscode.window.showWarningMessage('This serial port number is in use!');
 	}
 	else {
-		Instance = vscode.window.createTerminal({ name: `${serialPortName}` });
-		Instance.show(true);
-		Instance.sendText(command);
+		let serialPort = vscode.window.createTerminal({ name: `${serialPortName}` });
+		serialPort.show(true);
+		serialPort.sendText(command);
 	}
 }
 

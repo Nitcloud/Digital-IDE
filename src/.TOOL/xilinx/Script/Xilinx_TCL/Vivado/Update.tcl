@@ -58,9 +58,8 @@ proc cortexM3_IP_add { current_Location } {
 
 	set ensureExsit 0
 	foreach bd_folder_list [glob -nocomplain ./user/Hardware/bd/*] {
-		if { $bd_folder_list == "m3_xIP_default"} \
-		{
-            puts ensureExsit 1
+		if { [file tail $bd_folder_list] == "m3_xIP_default"} {
+            set ensureExsit 1
         }
 	}
 	if { $ensureExsit == 0 } {			
@@ -75,8 +74,8 @@ proc cortexM3_IP_add { current_Location } {
 proc cortexA9_IP_add { current_Location } {
 	set ensureExsit 0
 	foreach bd_folder_list [glob -nocomplain ./user/Hardware/bd/*] {
-		if {$bd_folder_list == "zynq_default"} {
-            puts ensureExsit 1
+		if { [file tail $bd_folder_list] == "zynq_default"} {
+            set ensureExsit 1
         }
 	}
 	if { $ensureExsit == 0 } {		
@@ -91,8 +90,8 @@ proc cortexA9_IP_add { current_Location } {
 proc MicroBlaze_IP_add { current_Location } {
 	set ensureExsit 0
 	foreach bd_folder_list [glob -nocomplain ./user/Hardware/bd/*] {
-		if { $bd_folder_list == "MicroBlaze_default" } {
-            puts ensureExsit 1
+		if { [file tail $bd_folder_list] == "MicroBlaze_default" } {
+            set ensureExsit 1
         }
 	}
 	if { $ensureExsit == 0 } {		
@@ -118,7 +117,7 @@ while { [gets $fp data] >= 0 } \
 	if { [string equal -length 16 $data "SOC_MODE.bd_file"] == 1 } {
 		gets $fp bd_file
 		if {$bd_file == "undefined"} {
-			set bd_file none
+			set bd_file default
 		}
 	}
 }
@@ -139,8 +138,8 @@ if {[string equal -length 4 $soc none] == 1} {
 		if {$bd_file != "none"} {			
 			set ensureExsit 0
 			foreach bd_folder_list [glob -nocomplain ./user/Hardware/bd/*] {
-				if { $bd_folder_list == $bd_file } {
-					puts ensureExsit 1
+				if { [file tail $bd_folder_list] == $bd_file } {
+					set ensureExsit 1
 				}
 			}
 			if { $ensureExsit == 0 } {	

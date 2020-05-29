@@ -19,32 +19,32 @@ class SerialPort:
     def port_close(self):
         self.port.close()
     def porpertyConfig(self,parity,stopbits,bytesize):
-		if parity == "None":
-			self.port.parity = serial.PARITY_NONE
-		elif parity == "Odd":
-			self.port.parity = serial.PARITY_ODD
-		elif parity == "Even":
-			self.port.parity = serial.PARITY_EVEN
-		elif parity == "Mark":
-			self.port.parity = serial.PARITY_MARK
-		elif parity == "Space":
-			self.port.parity = serial.PARITY_SPACE
-		
-		if stopbits == "1":
-			self.port.stopbits = serial.STOPBITS_ONE
-		elif stopbits == "1.5":
-			self.port.stopbits = serial.STOPBITS_ONE_POINT_FIVE
-		elif stopbits == "2":
-			self.port.stopbits = serial.STOPBITS_TWO
-		
-		if bytesize == "5":
-			self.port.bytesize = serial.FIVEBITS
-		elif bytesize == "6":
-			self.port.bytesize = serial.SIXBITS
-		elif bytesize == "7":
-			self.port.bytesize = serial.SEVENBITS
-		elif bytesize == "8":
-			self.port.bytesize = serial.EIGHTBITS
+        if parity == "None":
+            self.port.parity = serial.PARITY_NONE
+        elif parity == "Odd":
+            self.port.parity = serial.PARITY_ODD
+        elif parity == "Even":
+            self.port.parity = serial.PARITY_EVEN
+        elif parity == "Mark":
+            self.port.parity = serial.PARITY_MARK
+        elif parity == "Space":
+            self.port.parity = serial.PARITY_SPACE
+        
+        if stopbits == "1":
+            self.port.stopbits = serial.STOPBITS_ONE
+        elif stopbits == "1.5":
+            self.port.stopbits = serial.STOPBITS_ONE_POINT_FIVE
+        elif stopbits == "2":
+            self.port.stopbits = serial.STOPBITS_TWO
+        
+        if bytesize == "5":
+            self.port.bytesize = serial.FIVEBITS
+        elif bytesize == "6":
+            self.port.bytesize = serial.SIXBITS
+        elif bytesize == "7":
+            self.port.bytesize = serial.SEVENBITS
+        elif bytesize == "8":
+            self.port.bytesize = serial.EIGHTBITS
     def send_data(self):
         data = input("[%s] >" % (self.port.name)) 
         n = self.port.write((data+'\n').encode())
@@ -71,24 +71,24 @@ def getCurrentPort():
             content += "-"
             content += port_serial[0]
         print(content)
- 
+    
 def runthread(portName,baudRate,bytesize,stopbits,parity):
-	mSerial = SerialPort(portName,baudRate)
-	mSerial.porpertyConfig(parity,stopbits,bytesize)
-	mSerial.port_open()
+    mSerial = SerialPort(portName,baudRate)
+    mSerial.porpertyConfig(parity,stopbits,bytesize)
+    mSerial.port_open()
 
-	readDataThread = threading.Thread(target = mSerial.read_data) 
-	readDataThread.start()
+    readDataThread = threading.Thread(target = mSerial.read_data) 
+    readDataThread.start()
 
-	while True:
-		time.sleep(1)
-		mSerial.send_data()  
+    while True:
+        time.sleep(1)
+        mSerial.send_data()  
 
 def main(mode):
-	if mode == "getCurrentPort":
-		getCurrentPort()
-	if mode == "runthread":
-		runthread(sys.argv[2],int(sys.argv[3]),sys.argv[4],sys.argv[5],sys.argv[6])
+    if mode == "getCurrentPort":
+        getCurrentPort()
+    if mode == "runthread":
+        runthread(sys.argv[2],int(sys.argv[3]),sys.argv[4],sys.argv[5],sys.argv[6])
 
 if __name__=='__main__':
-	main(sys.argv[1])
+    main(sys.argv[1])
