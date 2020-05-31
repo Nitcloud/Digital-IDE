@@ -7,6 +7,9 @@ TARGET_ADDR = '' #表示为本地主机
 TARGET_PORT = 60000
 TARGET = (TARGET_ADDR,TARGET_PORT)
  
+
+
+
 #AF_INET表示为网络编程socket、SOCK_DGRAM选择UDP协议模式
 ss = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 ss.bind(TARGET) #绑定对应的IP地址及端口号
