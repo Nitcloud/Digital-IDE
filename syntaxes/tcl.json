@@ -4,11 +4,20 @@
   "fileTypes": [
     "tcl",
     "xdc",
-    "sdc"
+	"sdc",
+	"fdc"
   ],
   "uuid": "45aff42e-4fcd-4717-829b-4cdaf9d707aa",
   "variables": null,
   "patterns": [
+	{
+		"captures": {
+		  "1": {
+			"name": "keyword.control.tcl"
+		  }
+		},
+		"match": "(?<=^|[\\[{;])\\s*(if|while|for|catch|default|return|break|continue|switch|exit|foreach|try|throw)\\b"
+	},
     {
       "include": "#comment"
     },
@@ -274,7 +283,7 @@
           ]
         }
       ]
-    },
+	},
     "if": {
       "patterns": [
         {
@@ -386,7 +395,7 @@
         },
         {
           "include": "#for"
-        },
+		},
         {
           "include": "#if"
         },
