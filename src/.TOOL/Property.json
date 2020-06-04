@@ -41,11 +41,11 @@
 					"enum": [
 						"none",
 						"cortexM3",
+						"microblaze",
 						"ps7_cortexa9_0",
 						"ps7_cortexa9_1",
 						"psu_cortexr5",
-						"psu_cortexa53",
-						"microblaze"
+						"psu_cortexa53"
 					]
 				},
 				"bd_file": {
