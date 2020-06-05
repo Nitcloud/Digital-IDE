@@ -4,116 +4,145 @@
 	"description": "A property file for project of FPGA",
 	"type": "object",
 	"properties": {
-		"FPGA_VERSION": {
-			"type": "string",
-			"description": "Supported vendors for FPGA",
-			"enum": [
-				"xilinx"
-			]
-		},
-		"PRJ_NAME": {
+		"PRJ_VERSION": {
 			"type": "object",
 			"default": {
-				"FPGA": "template"
+				"FPGA": "xilinx",
+				"SOC" : false
 			},
 			"properties": {
 				"FPGA": {
 					"type": "string",
-					"description": "project name of FPGA",
-					"default": "template"
+					"description": "Supported vendors for FPGA",
+					"default": "xilinx",
+					"enum": [
+						"xilinx"
+					]
 				},
 				"SOC": {
-					"type": "string",
-					"description": "project name of SOC",
-					"default": "test"
+					"type": "boolean",
+					"description": "Enable SOC function",
+					"default": false,
+					"enum": [
+						true,
+						false
+					]
 				}
 			}
 		},
-		"SOC_MODE": {
+		"FPGA_MODE": {
 			"type": "object",
 			"default": {
-				"soc": "none"
+				"name": "template",
+				"bd_file": "none"
 			},
 			"properties": {
-				"soc": {
+				"name": {
 					"type": "string",
-					"description": "Supported CPU for SOC",
-					"enum": [
-						"none",
-						"cortexM3",
-						"microblaze",
-						"ps7_cortexa9_0",
-						"ps7_cortexa9_1",
-						"psu_cortexr5",
-						"psu_cortexa53"
-					]
+					"description": "project name of FPGA",
+					"default": "template"
 				},
 				"bd_file": {
 					"type": "string",
 					"description": "The bd_file for FPGA Designed",
+					"default" : "none",
 					"enum": [
 						"none",
 						"zynq_default",
 						"m3_xIP_default",
 						"MicroBlaze_default"
 					]
-				},
-				"os": {
-					"type": "string",
-					"default": "standalone",
-					"description": "the os for SOC application",
-					"enum": [
-						"linux",
-						"xilkernel",
-						"standalone",
-						"freertos10_xilinx"
-					]
-				},
-				"app": {
-					"type": "string",
-					"default": "Hello World",
-					"description": "the app for SOC application",
-					"enum": [
-						"Hello World",
-						"Empty Application",
-						"Zynq FSBL",
-						"Zynq MP FSBL",
-						"SREC SPI Bootloader",
-						"SREC Bootloader",
-						"Zynq DRAM tests",
-						"Zynq MP DRAM tests",
-						"ZynqMP PMU Firmware",
-						"RSA Authentication App",
-						"Libmetal AMP Demo",
-						"lwIP Echo Server",
-						"lwIP TCP Perf Client",
-						"lwIP TCP Perf Server",
-						"lwIP UDP Perf Client",
-						"lwIP UDP Perf Server",
-						"Memory Tests",
-						"OpenAMP echo-test",
-						"OpenAMP matrix multiplication Demo",
-						"OpenAMP RPC Demo",
-						"Peripheral Tests",
-						"DDR self refresh",
-						"Dhrystone",
-						"Xilkernel POSIX Threads Demo",
-						"FreeRTOS Hello World",
-						"FreeRTOS lwIP Echo Server",
-						"FreeRTOS lwIP TCP Perf Client",
-						"FreeRTOS lwIP TCP Perf Server",
-						"FreeRTOS lwIP UDP Perf Client",
-						"FreeRTOS lwIP UDP Perf Server",
-						"Linux Empty Application",
-						"Linux Hello World"
-					]
 				}
-			},
-			"dependencies": {
-				"bd_file":["soc"],
-				"os":["soc"],
-				"app":["soc"]
 			}
+		},
+		"SOC_MODE": {
+			"type": "object",
+			"default": [
+				{
+					"name": "test",
+					"soc": "ps7_cortexa9_0",
+					"os": "standalone",
+					"app": "Hello World"
+				}
+			],
+			"items": {
+                "type": "object",
+                "required": [
+                    "name",
+					"soc",
+					"os",
+					"app"
+                ],
+                "properties": {
+					"name": {
+						"type": "string",
+						"description": "project name of SOC",
+						"default": "test"
+					},
+					"soc": {
+						"type": "string",
+						"description": "Supported CPU for SOC",
+						"enum": [
+							"cortexM3",
+							"microblaze",
+							"ps7_cortexa9_0",
+							"ps7_cortexa9_1",
+							"psu_cortexr5",
+							"psu_cortexa53"
+						]
+					},
+					"os": {
+						"type": "string",
+						"default": "standalone",
+						"description": "the os for SOC application",
+						"enum": [
+							"linux",
+							"xilkernel",
+							"standalone",
+							"freertos10_xilinx"
+						]
+					},
+					"app": {
+						"type": "string",
+						"default": "Hello World",
+						"description": "the app for SOC application",
+						"enum": [
+							"Hello World",
+							"Empty Application",
+							"Zynq FSBL",
+							"Zynq MP FSBL",
+							"SREC SPI Bootloader",
+							"SREC Bootloader",
+							"Zynq DRAM tests",
+							"Zynq MP DRAM tests",
+							"ZynqMP PMU Firmware",
+							"RSA Authentication App",
+							"Libmetal AMP Demo",
+							"lwIP Echo Server",
+							"lwIP TCP Perf Client",
+							"lwIP TCP Perf Server",
+							"lwIP UDP Perf Client",
+							"lwIP UDP Perf Server",
+							"Memory Tests",
+							"OpenAMP echo-test",
+							"OpenAMP matrix multiplication Demo",
+							"OpenAMP RPC Demo",
+							"Peripheral Tests",
+							"DDR self refresh",
+							"Dhrystone",
+							"Xilkernel POSIX Threads Demo",
+							"FreeRTOS Hello World",
+							"FreeRTOS lwIP Echo Server",
+							"FreeRTOS lwIP TCP Perf Client",
+							"FreeRTOS lwIP TCP Perf Server",
+							"FreeRTOS lwIP UDP Perf Client",
+							"FreeRTOS lwIP UDP Perf Server",
+							"Linux Empty Application",
+							"Linux Hello World"
+						]
+					}
+				}
+            }
 		},
 		"enableShowlog": {
 			"type": "boolean",
