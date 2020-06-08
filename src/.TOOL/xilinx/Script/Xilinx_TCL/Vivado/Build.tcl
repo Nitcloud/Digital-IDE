@@ -48,15 +48,15 @@ if {[source $synth -notrace] == "none"} {
 }
 
 #Gen bit/hdf file
-if { [string equal -length 4 $Device xc7z] == 1 } {
+if { [string equal -length 4 $Device xc7z] == 0 } {
 	set_property STEPS.WRITE_BITSTREAM.ARGS.BIN_FILE true [get_runs impl_1]
 } 
 if {$soc != "none"} {
-	write_hwdef -force -file ./user/Software/data/[current_project].hdf
-	write_bitstream ./[current_project].bit -force -quiet -bin_file
+    write_hwdef -force -file ./user/Software/data/[current_project].hdf
+    write_bitstream ./[current_project].bit -force -quiet
 } else \
 {
-	write_bitstream ./[current_project].bit -force -quiet
+    write_bitstream ./[current_project].bit -force -quiet -bin_file
 }
 
 

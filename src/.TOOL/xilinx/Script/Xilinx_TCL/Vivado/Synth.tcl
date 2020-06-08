@@ -22,7 +22,7 @@ while { [gets $fp data] >= 0 } \
 }
 close $fp
 
-if {$enableShowlog == true} {
+if {$enableShowlog == "true"} {
 	reset_run   synth_1
 	launch_run  synth_1
 	wait_on_run synth_1

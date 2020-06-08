@@ -22,11 +22,7 @@ while { [gets $fp data] >= 0 } \
 }
 close $fp
 
-reset_run   impl_1 
-launch_run  impl_1 
-wait_on_run impl_1 
-
-if {$enableShowlog == true} {
+if {$enableShowlog == "true"} {
 	reset_run   impl_1 
 	launch_run  impl_1 
 	wait_on_run impl_1 

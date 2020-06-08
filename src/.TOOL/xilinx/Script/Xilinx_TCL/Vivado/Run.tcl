@@ -43,36 +43,37 @@ while { [gets $fp data] >= 0 } \
 }
 close $fp
 
-proc update {} {
+proc update  {} {
 	global update
 	source $update -notrace
 }
 
-proc sim {} {
+proc sim      {} {
 	global sim
 	source $sim -notrace
 }
 
-proc build {} {
+proc build    {} {
 	global build
 	source $build -notrace 
 }
 
-proc synth {} {
+proc synth    {} {
 	global synth
 	source $synth -notrace
 }
 
-proc impl {} {
+proc impl     {} {
 	global impl
 	source $impl -notrace
 }
 
-proc bits {} {
+proc bits     {} {
 	global enableShowlog
 	global Device
 	global soc
-	if {$enableShowlog == "false"} {			
+	if {$enableShowlog == "false"} \
+    {			
 		open_run impl_1		  -quiet	
 		report_timing_summary -quiet
 	} else {
@@ -80,7 +81,7 @@ proc bits {} {
 		report_timing_summary 
 	}
 	#Gen bit/hdf file
-	if { [string equal -length 4 $Device xc7z] == 1 } {
+	if { [string equal -length 4 $Device xc7z] == 0 } {
 		set_property STEPS.WRITE_BITSTREAM.ARGS.BIN_FILE true [get_runs impl_1]
 	} 
 	if {$soc != "none"} {
@@ -92,21 +93,52 @@ proc bits {} {
 	}
 }
 
-proc program {} {
+proc program  {} {
 	global program
 	source $program -notrace
 }
 
-proc debug {} {
+proc bootload {} {
+    set Device    [lindex [get_hw_devices xc7a35t_0] 0]
+    set HW_CFGMEM [ get_property PROGRAM.HW_CFGMEM $Device]
+
+    create_hw_cfgmem -hw_device $Device [lindex [get_cfgmem_parts {n25q64-3.3v-spi-x1_x2_x4}] 0]
+    set_property PROGRAM.BLANK_CHECK  0 $HW_CFGMEM
+    set_property PROGRAM.ERASE        1 $HW_CFGMEM
+    set_property PROGRAM.CFG_PROGRAM  1 $HW_CFGMEM
+    set_property PROGRAM.VERIFY       1 $HW_CFGMEM
+    set_property PROGRAM.CHECKSUM     0 $HW_CFGMEM
+    refresh_hw_device $Device
+
+    set_property PROGRAM.ADDRESS_RANGE  {use_file}              $HW_CFGMEM
+    set_property PROGRAM.FILES          ./[current_project].bin $HW_CFGMEM
+    set_property PROGRAM.PRM_FILE       {}                      $HW_CFGMEM
+    set_property PROGRAM.UNUSED_PIN_TERMINATION {pull-none}     $HW_CFGMEM
+
+    set_property PROGRAM.BLANK_CHECK  0 $HW_CFGMEM
+    set_property PROGRAM.ERASE        1 $HW_CFGMEM
+    set_property PROGRAM.CFG_PROGRAM  1 $HW_CFGMEM
+    set_property PROGRAM.VERIFY       1 $HW_CFGMEM
+    set_property PROGRAM.CHECKSUM     0 $HW_CFGMEM
+    
+    startgroup 
+    create_hw_bitstream -hw_device $Device [get_property PROGRAM.HW_CFGMEM_BITFILE $Device]
+    program_hw_devices $Device
+    refresh_hw_device  $Device
+    program_hw_cfgmem -hw_cfgmem $HW_CFGMEM
+    endgroup
+}
+
+proc debug    {} {
 	global debug
 	source $debug -notrace
 }
 
-proc gui {} {
+proc gui      {} {
 	start_gui -quiet
 }
 
-proc ope {} {	
+proc ope      {} {
 	while {1} \
 	{
 		puts "---------what do you want to do next---------"

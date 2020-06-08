@@ -194,3 +194,11 @@ function xbootgenerate(workspace_path,root_path) {
 	}
 }
 exports.xbootgenerate = xbootgenerate;
+
+function bootLoad(workspace_path,root_path) {
+	let BOOT_folder = `${workspace_path}user/BOOT`;
+	let output_path = `${root_path}/.TOOL/Xilinx/BOOT`;
+
+	
+}
+exports.bootLoad = bootLoad;
