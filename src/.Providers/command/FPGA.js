@@ -104,7 +104,7 @@ function register(context,root_path) {
 		}
 		let command = `python ${tool_path}/.Script/vTbgenerator.py ${workspace_path} ${editor.document.fileName}`;
 		terminal_ope.runCmd(command);
-		vscode.window.showInformationMessage('Generate Testbench successfully!');
+		vscode.window.showInformationMessage(command);
     });
 	context.subscriptions.push(testbench);
 

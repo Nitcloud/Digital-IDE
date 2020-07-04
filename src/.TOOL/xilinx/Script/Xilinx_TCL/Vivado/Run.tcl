@@ -17,8 +17,7 @@ set Device        none
 set prj_name      template
 set enableShowlog false
 set fp [open $root_path/CONFIG r]
-while { [gets $fp data] >= 0 } \
-{
+while { [gets $fp data] >= 0 } {
 	if { [string equal -length 13 $data "PRJ_NAME.FPGA"] == 1 } {
 		gets $fp prj_name
 		if {$prj_name == "undefined"} {
@@ -43,7 +42,7 @@ while { [gets $fp data] >= 0 } \
 }
 close $fp
 
-proc update  {} {
+proc update   {} {
 	global update
 	source $update -notrace
 }
@@ -72,8 +71,7 @@ proc bits     {} {
 	global enableShowlog
 	global Device
 	global soc
-	if {$enableShowlog == "false"} \
-    {			
+	if {$enableShowlog == "false"} {			
 		open_run impl_1		  -quiet	
 		report_timing_summary -quiet
 	} else {
@@ -87,8 +85,7 @@ proc bits     {} {
 	if {$soc != "none"} {
 		write_hwdef -force -file ./user/Software/data/[current_project].hdf
 		write_bitstream ./[current_project].bit -force -quiet
-	} else \
-	{
+	} else {
 		write_bitstream ./[current_project].bit -force -quiet -bin_file
 	}
 }
@@ -139,8 +136,7 @@ proc gui      {} {
 }
 
 proc ope      {} {
-	while {1} \
-	{
+	while {1} {
 		puts "---------what do you want to do next---------"
 		puts "*** Input e to break ***"
 		puts "1) Update_file"
@@ -150,8 +146,7 @@ proc ope      {} {
 		puts "5) Debug"
 		puts "6) GUI"
 		gets stdin your_choice;
-		switch $your_choice \
-		{
+		switch $your_choice {
 			1  {update   }
 			2  {sim;break}
 			3  {build    }
@@ -175,8 +170,7 @@ if { $prj_path == "" } {
 	set_property SOURCE_SET sources_1   [get_filesets sim_1]
 	set_property top_lib xil_defaultlib [get_filesets sim_1]
 	update_compile_order -fileset sim_1 -quiet
-} else \
-{
+} else {
 	open_project $prj_path -quiet
 }
 

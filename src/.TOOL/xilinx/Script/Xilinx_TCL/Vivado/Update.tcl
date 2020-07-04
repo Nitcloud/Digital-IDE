@@ -106,8 +106,7 @@ proc MicroBlaze_IP_add { current_Location } {
 remove_files -quiet [get_files]
 
 set fp [open $root_path/CONFIG r]
-while { [gets $fp data] >= 0 } \
-{
+while { [gets $fp data] >= 0 } {
 	if { [string equal -length 12 $data "SOC_MODE.soc"] == 1 } {
 		gets $fp soc
 		if {$soc == "undefined"} {
@@ -127,8 +126,7 @@ if {[string equal -length 4 $soc none] == 1} {
 	none_add
 } else {
 	if {$bd_file == "default"} {				
-		switch $soc \
-		{
+		switch $soc {
 			cortexM3       {cortexM3_IP_add   $xilinx_path}
 			microblaze     {MicroBlaze_IP_add $xilinx_path}
 			ps7_cortexa9_0 {cortexA9_IP_add   $xilinx_path}

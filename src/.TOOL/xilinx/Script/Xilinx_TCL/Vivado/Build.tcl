@@ -9,8 +9,7 @@ set soc           none
 set enableShowlog false
 
 set fp [open $root_path/CONFIG r]
-while { [gets $fp data] >= 0 } \
-{
+while { [gets $fp data] >= 0 } {
 	if { [string equal -length 6 $data "Device"] == 1 } {
 		gets $fp Device
 	}
@@ -54,8 +53,7 @@ if { [string equal -length 4 $Device xc7z] == 0 } {
 if {$soc != "none"} {
     write_hwdef -force -file ./user/Software/data/[current_project].hdf
     write_bitstream ./[current_project].bit -force -quiet
-} else \
-{
+} else {
     write_bitstream ./[current_project].bit -force -quiet -bin_file
 }
 

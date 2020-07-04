@@ -1,19 +1,19 @@
 FPGA_VERSION
 xilinx
 PRJ_NAME.FPGA
-Instrument
+template
 PRJ_NAME.SOC
-Instrument
+undefined
 SOC_MODE.soc
-ps7_cortexa9_0
-SOC_MODE.bd_file
 none
+SOC_MODE.bd_file
+undefined
 SOC_MODE.os
-standalone
+undefined
 SOC_MODE.app
-Hello World
+undefined
 enableShowlog
-false
+true
 Device
 xc7z020clg400-2
 

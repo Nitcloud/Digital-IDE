@@ -146,12 +146,12 @@ def getmodeinfo(path):
 
     mode_line = 0
 
-    makefile_path = os.path.join(path,"Makefile").replace("\\", "/")
-    fp = open(makefile_path, 'r')
+    configFile = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"CONFIG")
+    fp = open(configFile, 'r')
     for line in fp:
         lines.append(line)
         line_cnt = line_cnt + 1
-        if line == "Soc\n":
+        if line == "SOC_MODE.soc\n":
             mode_line = line_cnt
     fp.close()
 
