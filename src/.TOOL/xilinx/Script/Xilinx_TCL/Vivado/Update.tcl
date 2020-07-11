@@ -17,7 +17,6 @@ proc update_ip {IP_path} {
         }
 	}
 }
-
 proc update_bd {bd_path} {
 	foreach bd_file_list [glob -nocomplain $bd_path] {
 		foreach bd_file [glob -nocomplain $bd_file_list/*.bd] {
@@ -26,7 +25,14 @@ proc update_bd {bd_path} {
         }
 	}
 }
-
+proc update_file {file_path} {
+    get_property top [current_fileset]
+	set fp [open $file_path w]
+	foreach file [get_files] {
+        puts $fp $file
+	}
+    close $fp
+}
 proc none_add {} {
 	add_file  ./user/src -quiet
 	update_bd ./user/bd/*
@@ -39,7 +45,6 @@ proc none_add {} {
 	add_files -fileset sim_1 ./user/sim -force -quiet
 	set_property top testbench [get_filesets sim_1]
 }
-
 proc soc_add {} {
 	add_file  ./user/Hardware/src -quiet
 	update_bd ./user/Hardware/bd/*
@@ -52,7 +57,6 @@ proc soc_add {} {
 	add_files -fileset sim_1 ./user/Hardware/sim -force -quiet
 	set_property top testbench [get_filesets sim_1]
 }
-
 proc cortexM3_IP_add { current_Location } {
 	set_property ip_repo_paths $current_Location/IP [current_project]
 
@@ -70,7 +74,6 @@ proc cortexM3_IP_add { current_Location } {
 		make_wrapper -files [get_files ./user/Hardware/bd/m3_xIP_default/m3_xIP_default.bd] -top -quiet
 	}
 }
-
 proc cortexA9_IP_add { current_Location } {
 	set ensureExsit 0
 	foreach bd_folder_list [glob -nocomplain ./user/Hardware/bd/*] {
@@ -86,7 +89,6 @@ proc cortexA9_IP_add { current_Location } {
 		make_wrapper -files [get_files ./user/Hardware/bd/zynq_default/zynq_default.bd] -top -quiet
 	}
 }
-
 proc MicroBlaze_IP_add { current_Location } {
 	set ensureExsit 0
 	foreach bd_folder_list [glob -nocomplain ./user/Hardware/bd/*] {
@@ -133,7 +135,7 @@ if {[string equal -length 4 $soc none] == 1} {
 			ps7_cortexa9_1 {cortexA9_IP_add   $xilinx_path}
 		}
 	} else {
-		if {$bd_file != "none"} {			
+		if {$bd_file != "none"} {
 			set ensureExsit 0
 			foreach bd_folder_list [glob -nocomplain ./user/Hardware/bd/*] {
 				if { [file tail $bd_folder_list] == $bd_file } {
@@ -151,3 +153,5 @@ if {[string equal -length 4 $soc none] == 1} {
 	}
 	soc_add
 }
+
+update_file $root_path/FILES
