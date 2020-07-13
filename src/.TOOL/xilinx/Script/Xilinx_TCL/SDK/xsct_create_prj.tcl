@@ -30,8 +30,7 @@ if { [getprojects -type hw] == "" } {
 
 #get project param
 set fp [open $root_path/CONFIG r]
-while { [gets $fp data] >= 0 } \
-{
+while { [gets $fp data] >= 0 } {
 	if { [string equal -length 12 $data "PRJ_NAME.SOC"] == 1 } {
 		gets $fp prj_name
 		if {$prj_name == "undefined"} {

@@ -233,7 +233,11 @@ function updatePrjInfo(root_path, Property_path) {
 	CONFIG_contex += "Device\n";
 
 	prj_param = pullJsonInfo(Property_path);
-	CONFIG_contex += prj_param.Device + '\n\n';
+    CONFIG_contex += prj_param.Device + '\n';
+    
+    let xip_repo_path = vscode.workspace.getConfiguration().get('PRJ.xilinx.IP.path');
+    CONFIG_contex += "xip_repo_path\n";
+    CONFIG_contex += xip_repo_path + '\n';
 
 	writeFile(`${root_path}/.TOOL/CONFIG`,CONFIG_contex);
 }

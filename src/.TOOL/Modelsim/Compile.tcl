@@ -1,6 +1,6 @@
 puts {
   ModelSimSE general compile script version 1.1
-  Copyright (c) Doulos June 2004, SD
+  Copyright (c) Doulos June 2020, SD
 }
 
 # Simply change the project settings in this section
@@ -42,7 +42,9 @@ set time_now [clock seconds]
 if [catch {set last_compile_time}] {
   set last_compile_time 0
 }
-foreach {library file_list} $library_file_list {
+
+set lib_file_list {library file_list}
+foreach $lib_file_list $library_file_list {
   vlib $library
   vmap work $library
   foreach file $file_list {

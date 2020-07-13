@@ -155,6 +155,12 @@
 					"type": "boolean",
 					"default": false,
 					"description": "Enable logging for this extension"
+                },
+                "PRJ.xilinx.IP.path": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "set the xilinx ip_repo_path"
 				},
 				"TOOL.SerialPortMonitor.BaudRate": {
 					"type": "integer",

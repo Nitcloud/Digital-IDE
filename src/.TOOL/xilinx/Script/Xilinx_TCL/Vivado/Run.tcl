@@ -46,27 +46,22 @@ proc update   {} {
 	global update
 	source $update -notrace
 }
-
 proc sim      {} {
 	global sim
 	source $sim -notrace
 }
-
 proc build    {} {
 	global build
 	source $build -notrace 
 }
-
 proc synth    {} {
 	global synth
 	source $synth -notrace
 }
-
 proc impl     {} {
 	global impl
 	source $impl -notrace
 }
-
 proc bits     {} {
 	global enableShowlog
 	global Device
@@ -89,12 +84,10 @@ proc bits     {} {
 		write_bitstream ./[current_project].bit -force -quiet -bin_file
 	}
 }
-
 proc program  {} {
 	global program
 	source $program -notrace
 }
-
 proc bootload {} {
     set Device    [lindex [get_hw_devices xc7a35t_0] 0]
     set HW_CFGMEM [ get_property PROGRAM.HW_CFGMEM $Device]
@@ -130,11 +123,9 @@ proc debug    {} {
 	global debug
 	source $debug -notrace
 }
-
 proc gui      {} {
 	start_gui -quiet
 }
-
 proc ope      {} {
 	while {1} {
 		puts "---------what do you want to do next---------"

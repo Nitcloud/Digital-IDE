@@ -6,10 +6,11 @@ set current_Location [file normalize [info script]]
 set xilinx_path [file dirname [file dirname [file dirname [file dirname $current_Location]]]]
 set root_path   [file dirname $xilinx_path]
 
-set soc     none
-set bd_file default
+set soc           none
+set bd_file       default
+set xip_repo_path default
 
-proc update_ip {IP_path} {
+proc update_ip   {IP_path}   {
 	foreach IP_file [glob -nocomplain $IP_path] {
         foreach xci_file [glob -nocomplain $IP_file/*.xci] {
             #puts $xci_file
@@ -17,11 +18,12 @@ proc update_ip {IP_path} {
         }
 	}
 }
-proc update_bd {bd_path} {
+proc update_bd   {bd_path}   {
 	foreach bd_file_list [glob -nocomplain $bd_path] {
 		foreach bd_file [glob -nocomplain $bd_file_list/*.bd] {
             #puts $bd_file
 			add_file $bd_file -quiet
+            add_file $bd_file_list/hdl -quiet
         }
 	}
 }
@@ -58,8 +60,6 @@ proc soc_add {} {
 	set_property top testbench [get_filesets sim_1]
 }
 proc cortexM3_IP_add { current_Location } {
-	set_property ip_repo_paths $current_Location/IP [current_project]
-
 	set ensureExsit 0
 	foreach bd_folder_list [glob -nocomplain ./user/Hardware/bd/*] {
 		if { [file tail $bd_folder_list] == "m3_xIP_default"} {
@@ -104,9 +104,6 @@ proc MicroBlaze_IP_add { current_Location } {
 		make_wrapper -files [get_files ./user/Hardware/bd/MicroBlaze_default/MicroBlaze_default.bd] -top -quiet
 	}
 }
-
-remove_files -quiet [get_files]
-
 set fp [open $root_path/CONFIG r]
 while { [gets $fp data] >= 0 } {
 	if { [string equal -length 12 $data "SOC_MODE.soc"] == 1 } {
@@ -121,12 +118,45 @@ while { [gets $fp data] >= 0 } {
 			set bd_file default
 		}
 	}
+    if { [string equal -length 12 $data "xip_repo_path"] == 1 } {
+		gets $fp xip_repo_path
+	}
 }
 close $fp
 
+remove_files -quiet [get_files]
+
 if {[string equal -length 4 $soc none] == 1} {
+    # reset ip_repo_paths
+    if { [file isdirectory ./user/IP/lib] == 1 } {        
+        set ip_lib_paths {./user/IP/lib}
+        lappend ip_lib_paths $xilinx_path/IP
+    } else {
+        set ip_lib_paths {}
+        lappend ip_lib_paths $xilinx_path/IP
+    }
+    if {$xip_repo_path != ""} {
+        lappend ip_lib_paths $xip_repo_path
+    }
+    set_property ip_repo_paths $ip_lib_paths [current_project] -quiet
+    update_ip_catalog -quiet
+    # add file list
 	none_add
 } else {
+    # reset ip_repo_paths
+    if { [file isdirectory ./user/Hardware/IP/lib] == 1 } {        
+        set ip_lib_paths {./user/Hardware/IP/lib}
+        lappend ip_lib_paths $xilinx_path/IP
+    } else {
+        set ip_lib_paths {}
+        lappend ip_lib_paths $xilinx_path/IP
+    }
+    if {$xip_repo_path != ""} {
+        lappend ip_lib_paths $xip_repo_path
+    }
+    set_property ip_repo_paths $ip_lib_paths [current_project] -quiet
+    update_ip_catalog -quiet
+    # add BD Design
 	if {$bd_file == "default"} {				
 		switch $soc {
 			cortexM3       {cortexM3_IP_add   $xilinx_path}
@@ -151,6 +181,7 @@ if {[string equal -length 4 $soc none] == 1} {
 			}
 		}
 	}
+    # add file list
 	soc_add
 }
 
