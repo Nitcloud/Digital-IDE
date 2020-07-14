@@ -156,10 +156,16 @@
 					"default": false,
 					"description": "Enable logging for this extension"
                 },
-                "PRJ.xilinx.IP.path": {
+                "PRJ.xilinx.BD.repo.path": {
 					"scope": "window",
 					"type": "string",
 					"default": "",
+					"description": "set the xilinx bd_repo_path"
+				},
+                "PRJ.xilinx.IP.repo.path": {
+					"scope": "window",
+					"type": "string",
+					"default": "D:/project/FPGA/.Lib/xIP",
 					"description": "set the xilinx ip_repo_path"
 				},
 				"TOOL.SerialPortMonitor.BaudRate": {

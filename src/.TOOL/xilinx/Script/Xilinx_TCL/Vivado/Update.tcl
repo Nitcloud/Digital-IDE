@@ -61,11 +61,9 @@ proc soc_add {} {
 }
 proc cortexM3_IP_add { current_Location } {
 	set ensureExsit 0
-	foreach bd_folder_list [glob -nocomplain ./user/Hardware/bd/*] {
-		if { [file tail $bd_folder_list] == "m3_xIP_default"} {
-            set ensureExsit 1
-        }
-	}
+    if { [file exists ./user/Hardware/bd/m3_xIP_default/m3_xIP_default.bd] == 1} {
+        set ensureExsit 1
+    }
 	if { $ensureExsit == 0 } {			
 		file mkdir ./user/Hardware/bd/m3_xIP_default
 		file copy  -force $current_Location/IP/Example_bd/m3_xIP_default.bd ./user/Hardware/bd/m3_xIP_default
@@ -76,11 +74,9 @@ proc cortexM3_IP_add { current_Location } {
 }
 proc cortexA9_IP_add { current_Location } {
 	set ensureExsit 0
-	foreach bd_folder_list [glob -nocomplain ./user/Hardware/bd/*] {
-		if { [file tail $bd_folder_list] == "zynq_default"} {
-            set ensureExsit 1
-        }
-	}
+	if { [file exists ./user/Hardware/bd/zynq_default/zynq_default.bd] == 1} {
+        set ensureExsit 1
+    }
 	if { $ensureExsit == 0 } {		
 		file mkdir ./user/Hardware/bd/zynq_default
 		file copy  -force $current_Location/IP/Example_bd/zynq_default.bd ./user/Hardware/bd/zynq_default
@@ -91,11 +87,9 @@ proc cortexA9_IP_add { current_Location } {
 }
 proc MicroBlaze_IP_add { current_Location } {
 	set ensureExsit 0
-	foreach bd_folder_list [glob -nocomplain ./user/Hardware/bd/*] {
-		if { [file tail $bd_folder_list] == "MicroBlaze_default" } {
-            set ensureExsit 1
-        }
-	}
+	if { [file exists ./user/Hardware/bd/MicroBlaze_default/MicroBlaze_default.bd] == 1} {
+        set ensureExsit 1
+    }
 	if { $ensureExsit == 0 } {		
 		file mkdir ./user/Hardware/bd/MicroBlaze_default
 		file copy  -force $current_Location/IP/Example_bd/MicroBlaze_default.bd ./user/Hardware/bd/MicroBlaze_default
@@ -167,11 +161,9 @@ if {[string equal -length 4 $soc none] == 1} {
 	} else {
 		if {$bd_file != "none"} {
 			set ensureExsit 0
-			foreach bd_folder_list [glob -nocomplain ./user/Hardware/bd/*] {
-				if { [file tail $bd_folder_list] == $bd_file } {
-					set ensureExsit 1
-				}
-			}
+			if { [file exists ./user/Hardware/bd/$bd_file/$bd_file.bd] == 1} {
+                set ensureExsit 1
+            }
 			if { $ensureExsit == 0 } {	
 				file mkdir ./user/Hardware/bd/$bd_file
 				file copy  -force $xilinx_path/IP/Example_bd/$bd_file.bd ./user/Hardware/bd/$bd_file

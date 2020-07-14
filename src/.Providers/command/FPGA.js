@@ -205,7 +205,18 @@ function register(context,root_path) {
 			StartFPGA_flag = false;
 			StartFPGA.sendText(`gui`);
 			StartFPGA.hide();
-		}
+        } else {
+            file.updatePrjInfo(root_path,file.getPropertypath(workspace_path));
+            file.updateFolder(root_path, workspace_path, file.getPropertypath(workspace_path));
+            if (!terminal_ope.ensureTerminalExists("StartFPGA")) {
+                StartFPGA = vscode.window.createTerminal({ name: 'StartFPGA' });
+            }	
+            StartFPGA.show(true);
+            StartFPGA_flag = false;
+            if (file.getFpgaVersion(file.getPropertypath(workspace_path)) == "xilinx") {					
+                StartFPGA.sendText(`vivado -mode gui -s ${tool_path}/Xilinx/Script/Xilinx_TCL/Vivado/Run.tcl -notrace -nolog -nojournal`);
+            }
+        }
     });
 	context.subscriptions.push(GUI);
 	let Exit = vscode.commands.registerCommand('FPGA.exit', () => {
@@ -252,8 +263,11 @@ function register(context,root_path) {
     });
 	context.subscriptions.push(Overwrite_bd);
 	let Add_bd = vscode.commands.registerCommand('FPGA.Add bd_file', () => {
-		let Property_param = file.pullJsonInfo(`${root_path}/.TOOL/Property.json`);
-		let bd_folder = `${tool_path}/Xilinx/IP/Example_bd/`;
+        let Property_param = file.pullJsonInfo(`${root_path}/.TOOL/Property.json`);
+        let bd_folder = vscode.workspace.getConfiguration().get('PRJ.xilinx.BD.repo.path')
+        if ( bd_folder == "") {
+            bd_folder = `${tool_path}/Xilinx/IP/Example_bd/`;
+        }
 		vscode.window.showInputBox({
 			password:false, 
 			ignoreFocusOut:true,

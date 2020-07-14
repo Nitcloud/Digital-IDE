@@ -1,20 +1,20 @@
 FPGA_VERSION
 xilinx
 PRJ_NAME.FPGA
-template
+Optical_fiber_splicer
 PRJ_NAME.SOC
-undefined
+Optical_fiber_splicer
 SOC_MODE.soc
-none
+ps7_cortexa9_0
 SOC_MODE.bd_file
-undefined
+none
 SOC_MODE.os
-undefined
+standalone
 SOC_MODE.app
-undefined
+Hello World
 enableShowlog
 false
 Device
-xc7z020clg400-2
+xc7z010clg400-1
 xip_repo_path
 D:/project/FPGA/.Lib/xIP
