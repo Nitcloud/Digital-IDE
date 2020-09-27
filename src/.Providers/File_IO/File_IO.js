@@ -13,9 +13,11 @@ let prjInitparam = {
 	"enableShowlog": false,
 	"Device": "xc7z020clg400-2"
 }
+exports.prjInitparam = prjInitparam;
 
 // file or folder operation
 // folder operation
+// 获取当前工作区文件夹路径
 function getCurrentWorkspaceFolder() {
 	var folder = vscode.workspace.workspaceFolders[0].uri.toString();
 	folder = folder.substr(8, folder.length);
@@ -26,17 +28,17 @@ function getCurrentWorkspaceFolder() {
 	return folder;
 };
 exports.getCurrentWorkspaceFolder = getCurrentWorkspaceFolder;
-
+// 确认文件或者文件夹是否存在
 function ensureExists(path) {
 	return fs.existsSync(path);
 };
 exports.ensureExists = ensureExists;
-
+// 读取当前文件夹里的内容
 function readFolder(path) {
 	return fs.readdirSync(path);
 };
 exports.readFolder = readFolder;
-
+// 删除文件夹
 function deleteDir(path){
 	var files = [];
 	if( fs.existsSync(path) ) {  
@@ -55,7 +57,7 @@ function deleteDir(path){
 	}
 }
 exports.deleteDir = deleteDir;
-
+// 创建文件夹
 function mkdir(path) {
     if (fs.existsSync(path)) {
       return true;
@@ -67,7 +69,7 @@ function mkdir(path) {
     }
 }
 exports.mkdir = mkdir;
-
+// 剪贴文件夹
 function movedir(oldpath,newpath) {
 	folder  = fspath.basename(oldpath);
 	newpath = newpath + '/' + folder;
@@ -84,11 +86,12 @@ exports.movedir = movedir;
 
 
 // file operation
+// 读取文件（异步）
 function readFile(path) {
 	return fs.readFileSync(path, 'utf8');
 };
 exports.readFile = readFile;
-
+//  写文件（异步）
 function writeFile(path,data) {
 	if (!fs.existsSync(fspath.dirname(path))) {
 		mkdir(fspath.dirname(path));
@@ -96,14 +99,14 @@ function writeFile(path,data) {
 	fs.writeFileSync(path, data, 'utf8');
 };
 exports.writeFile = writeFile;
-
+// 删除文件（异步）
 function deleteFile(path) {
 	if (fs.existsSync(path)) {
 		fs.unlinkSync(path);
 	}
 };
 exports.deleteFile = deleteFile;
-
+// 查询带某一后缀的文件，返回文件路径
 function pick_file(file_path,extname) {
 	let file_list = fs.readdirSync(file_path);
 	let output_list = [];
@@ -115,16 +118,15 @@ function pick_file(file_path,extname) {
 	return output_list;
 };
 exports.pick_file = pick_file;
-
-function pick_Allfile(file_path,extname) {
+// 查询文件夹下所有带某一后缀的文件，返回文件路径
+function pick_Allfile(file_path,extname,output_list = []) {
 	let file_list = fs.readdirSync(file_path);
-	let output_list = [];
 	file_list.forEach(element => {
 		if (fs.statSync(`${file_path}/${element}`).isDirectory()) {
-			pick_Allfile(`${file_path}/${element}`,extname);
+			pick_Allfile(`${file_path}/${element}`,extname,output_list);
 		} else {		
 			if(fspath.extname(element).toLowerCase() === extname){
-				output_list.push(element)
+				output_list.push(`${file_path}/${element}`)
 			}
 		}
 	});
@@ -133,6 +135,7 @@ function pick_Allfile(file_path,extname) {
 exports.pick_Allfile = pick_Allfile;
 
 //JSON file operation
+// 读出json文件内容
 function pullJsonInfo(JSON_path) {
 	var data    = fs.readFileSync(JSON_path, 'utf8');
 	// let prjinfo = eavl("("+data+")");
@@ -140,7 +143,7 @@ function pullJsonInfo(JSON_path) {
 	return prjinfo;
 }
 exports.pullJsonInfo = pullJsonInfo;
-
+// 将数据写入文件内容
 function pushJsonInfo(JSON_path,JSON_data){
 	var str = JSON.stringify(JSON_data,null,'\t');
 	if (!fs.existsSync(fspath.dirname(JSON_path))) {
@@ -162,6 +165,8 @@ function generatePropertypath(workspace_path) {
 					pushJsonInfo(`${workspace_path}.vscode/Property.json`,prjInitparam);
 				} else if (select == "root") {
 					pushJsonInfo(`${workspace_path}Property.json`,prjInitparam);
+				}  else if (select == "no") {
+					Property_path = "";
 				}
 			});
 		}else {
@@ -211,35 +216,38 @@ function updateFolder(root_path,workspace_path,property_path) {
 exports.updateFolder = updateFolder;
 
 function updatePrjInfo(root_path, Property_path) {
-
-	let prj_param = pullJsonInfo(Property_path);
-	
-	let CONFIG_contex = "FPGA_VERSION\n";
-	CONFIG_contex += prj_param.FPGA_VERSION + '\n';
-	CONFIG_contex += "PRJ_NAME.FPGA\n";
-	CONFIG_contex += prj_param.PRJ_NAME.FPGA + '\n';
-	CONFIG_contex += "PRJ_NAME.SOC\n";
-	CONFIG_contex += prj_param.PRJ_NAME.SOC + '\n';
-	CONFIG_contex += "SOC_MODE.soc\n";
-	CONFIG_contex += prj_param.SOC_MODE.soc + '\n';
-	CONFIG_contex += "SOC_MODE.bd_file\n";
-	CONFIG_contex += prj_param.SOC_MODE.bd_file + '\n';
-	CONFIG_contex += "SOC_MODE.os\n";
-	CONFIG_contex += prj_param.SOC_MODE.os + '\n';
-	CONFIG_contex += "SOC_MODE.app\n";
-	CONFIG_contex += prj_param.SOC_MODE.app + '\n';
-	CONFIG_contex += "enableShowlog\n";
-	CONFIG_contex += prj_param.enableShowlog + '\n';
-	CONFIG_contex += "Device\n";
-
-	prj_param = pullJsonInfo(Property_path);
-    CONFIG_contex += prj_param.Device + '\n';
+    if (ensureExists(Property_path)) {
+        let prj_param = pullJsonInfo(Property_path);
+        
+        let CONFIG_contex = "FPGA_VERSION\n";
+        CONFIG_contex += prj_param.FPGA_VERSION + '\n';
+        CONFIG_contex += "PRJ_NAME.FPGA\n";
+        CONFIG_contex += prj_param.PRJ_NAME.FPGA + '\n';
+        CONFIG_contex += "PRJ_NAME.SOC\n";
+        CONFIG_contex += prj_param.PRJ_NAME.SOC + '\n';
+        CONFIG_contex += "SOC_MODE.soc\n";
+        CONFIG_contex += prj_param.SOC_MODE.soc + '\n';
+        CONFIG_contex += "SOC_MODE.bd_file\n";
+        CONFIG_contex += prj_param.SOC_MODE.bd_file + '\n';
+        CONFIG_contex += "SOC_MODE.os\n";
+        CONFIG_contex += prj_param.SOC_MODE.os + '\n';
+        CONFIG_contex += "SOC_MODE.app\n";
+        CONFIG_contex += prj_param.SOC_MODE.app + '\n';
+        CONFIG_contex += "enableShowlog\n";
+        CONFIG_contex += prj_param.enableShowlog + '\n';
+        CONFIG_contex += "Device\n";
     
-    let xip_repo_path = vscode.workspace.getConfiguration().get('PRJ.xilinx.IP.repo.path');
-    CONFIG_contex += "xip_repo_path\n";
-    CONFIG_contex += xip_repo_path + '\n';
-
-	writeFile(`${root_path}/.TOOL/CONFIG`,CONFIG_contex);
+        prj_param = pullJsonInfo(Property_path);
+        CONFIG_contex += prj_param.Device + '\n';
+        
+        let xip_repo_path = vscode.workspace.getConfiguration().get('PRJ.xilinx.IP.repo.path');
+        CONFIG_contex += "xip_repo_path\n";
+        CONFIG_contex += xip_repo_path + '\n';
+    
+        writeFile(`${root_path}/.TOOL/CONFIG`,CONFIG_contex);
+    } else {
+        vscode.window.showWarningMessage('There is no Property.json here!');
+    }
 }
 exports.updatePrjInfo = updatePrjInfo;
 
@@ -247,7 +255,7 @@ function getPropertypath(workspace_path) {
 	let Property_path = `${workspace_path}.vscode/Property.json`;
 	if (!ensureExists(Property_path)) {
 		if (!ensureExists(`${workspace_path}Property.json`)) {
-			pushJsonInfo(`${workspace_path}.vscode/Property.json`,prjInitparam);
+            Property_path = "";
 		}
 		else{
 			Property_path = `${workspace_path}Property.json`;

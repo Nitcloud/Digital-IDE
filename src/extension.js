@@ -9,24 +9,21 @@
  */
 'use strict';
 
-Object.defineProperty(exports, "__esModule", { value: true });
+// Object.defineProperty(exports, "__esModule", { value: true });
 
 var vscode = require("vscode");
 //the var of the lint
-var ctags_1  = require("./.Linter/ctags");
-var Logger_1 = require("./.Linter/Logger");
-var LintManager_1 = require("./.Linter/linter/LintManager");
-
-var logger   = new Logger_1.Logger();
-exports.ctagsManager = new ctags_1.CtagsManager(logger);
+var LintManager = require("./.Linter/linter/LintManager");
+var Logger = require("./.Linter/Logger");
+var logger = new Logger.Logger();
 
 //the var of the providers
-const parser_1 					= require("./.Providers/parser");
-const indexer_1 				= require("./.Providers/indexer");
-const HoverProvider_1 			= require("./.Providers/providers/HoverProvider");
-const DefintionProvider_1 		= require("./.Providers/providers/DefintionProvider");
-const DocumentSymbolProvider_1 	= require("./.Providers/providers/DocumentSymbolProvider");
-const WorkspaceSymbolProvider_1 = require("./.Providers/providers/WorkspaceSymbolProvider");
+const Parser                    = require("./.Providers/parser");
+const Indexer                   = require("./.Providers/indexer");
+const HoverProvider             = require("./.Providers/providers/HoverProvider");
+const DefintionProvider         = require("./.Providers/providers/DefintionProvider");
+const DocumentSymbolProvider    = require("./.Providers/providers/DocumentSymbolProvider");
+const WorkspaceSymbolProvider   = require("./.Providers/providers/WorkspaceSymbolProvider");
 
 const vhdlMode    = require('./.Providers/vhdl/vhdlMode');
 const VhdlSuggest = require('./.Providers/vhdl/VhdlSuggest');
@@ -38,36 +35,37 @@ const SDK         = require("./.Providers/command/SDK");
 const TOOL_option = require("./.Providers/treedata/Tool_option");
 const FPGA_option = require("./.Providers/treedata/fpga_option");
 const SDK_option  = require("./.Providers/treedata/sdk_option");
+const File_tree   = require("./.Providers/treedata/file_tree");
 
 function activate(context) {
     // Configure lint manager
     // exports.ctagsManager.configure();
-    var lintManager = new LintManager_1["default"](logger);
-	vscode.commands.registerCommand("verilog.lint", lintManager.RunLintTool);
-	
-	// Status Bar
+    var lintManager = new LintManager["default"](logger);
+    vscode.commands.registerCommand("verilog.lint", lintManager.RunLintTool);
+    
+    // Status Bar
     const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
     statusBar.text = 'SystemVerilog: Active';
     statusBar.hide();
-	context.subscriptions.push(statusBar);
-	//Output Channel
-	var outputChannel = vscode.window.createOutputChannel("SystemVerilog");
+    context.subscriptions.push(statusBar);
+    //Output Channel
+    var outputChannel = vscode.window.createOutputChannel("SystemVerilog");
     // Back-end classes
-    const parser  = new parser_1.SystemVerilogParser();
-	const indexer = new indexer_1.SystemVerilogIndexer(statusBar, parser, outputChannel);
+    const parser  = new Parser.SystemVerilogParser();
+    const indexer = new Indexer.SystemVerilogIndexer(statusBar, parser, outputChannel);
 
-	// Configure Provider manager
+    // Configure Provider manager
     const selector = [{ scheme: 'file', language: 'systemverilog' }, { scheme: 'file', language: 'verilog' }];
     // Providers
-    const docProvider   = new DocumentSymbolProvider_1.SystemVerilogDocumentSymbolProvider(parser);
-    const symProvider   = new WorkspaceSymbolProvider_1.SystemVerilogWorkspaceSymbolProvider(indexer);
-    const defProvider   = new DefintionProvider_1.SystemVerilogDefinitionProvider(symProvider);
-    const hoverProvider = new HoverProvider_1.SystemVerilogHoverProvider();
+    const docProvider   = new DocumentSymbolProvider.SystemVerilogDocumentSymbolProvider(parser);
+    const symProvider   = new WorkspaceSymbolProvider.SystemVerilogWorkspaceSymbolProvider(indexer);
+    const defProvider   = new DefintionProvider.SystemVerilogDefinitionProvider(symProvider);
+    const hoverProvider = new HoverProvider.SystemVerilogHoverProvider();
     context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(selector, docProvider));
     context.subscriptions.push(vscode.languages.registerDefinitionProvider(selector, defProvider));
     context.subscriptions.push(vscode.languages.registerHoverProvider(selector, hoverProvider));
-	context.subscriptions.push(vscode.languages.registerWorkspaceSymbolProvider(symProvider));
-	
+    context.subscriptions.push(vscode.languages.registerWorkspaceSymbolProvider(symProvider));
+    
     // Background processes
     // context.subscriptions.push(vscode.workspace.onDidSaveTextDocument((doc) => { indexer.onChange(doc); }));
     // context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor((editor) => { indexer.onChange(editor.document); }));
@@ -77,8 +75,8 @@ function activate(context) {
     // context.subscriptions.push(watcher.onDidChange((uri) => { indexer.onDelete(uri); }));
     // context.subscriptions.push(watcher);
 
-	//VHDL Language sever
-	context.subscriptions.push(vscode.languages.registerCompletionItemProvider(vhdlMode.VHDL_MODE, new VhdlSuggest.VhdlCompletionItemProvider(), '.', '\"'));
+    //VHDL Language sever
+    context.subscriptions.push(vscode.languages.registerCompletionItemProvider(vhdlMode.VHDL_MODE, new VhdlSuggest.VhdlCompletionItemProvider(), '.', '\"'));
     vscode.languages.setLanguageConfiguration(vhdlMode.VHDL_MODE.language, {
         indentationRules: {
             // ^(.*\*/)?\s*\}.*$
@@ -108,16 +106,17 @@ function activate(context) {
             ]
         }
     });
-	
-	//My Command
-	let root_path = `${__dirname}`.replace(/\\/g,"\/");
-	SDK.register(context,root_path);
-	TOOL.register(context,root_path);
-	FPGA.register(context,root_path);
-	
-	vscode.window.registerTreeDataProvider('TOOL.sdk_options' , new SDK_option.Provider());
-	vscode.window.registerTreeDataProvider('TOOL.fpga_options', new FPGA_option.Provider());
-	vscode.window.registerTreeDataProvider('TOOL.Tool_options', new TOOL_option.Provider());
+    
+    //My Command
+    let root_path = `${__dirname}`.replace(/\\/g,"\/");
+    SDK.register(context,root_path);
+    TOOL.register(context,root_path);
+    FPGA.register(context,root_path);
+    
+    vscode.window.registerTreeDataProvider('TOOL.file_tree' ,   new File_tree.Provider());
+    vscode.window.registerTreeDataProvider('TOOL.sdk_options' , new SDK_option.Provider());
+    vscode.window.registerTreeDataProvider('TOOL.fpga_options', new FPGA_option.Provider());
+    vscode.window.registerTreeDataProvider('TOOL.Tool_options', new TOOL_option.Provider());
 }
 exports.activate = activate;
 

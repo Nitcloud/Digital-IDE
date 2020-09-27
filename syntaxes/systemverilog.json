@@ -1,13 +1,9 @@
 {
   "fileTypes": [
     "sv",
-    "SV",
-    "v",
-    "V",
     "svh",
-    "SVH",
-    "vh",
-    "VH"
+    "v",
+    "vh"
   ],
   "hidden": true,
   "name": "SystemVerilog",

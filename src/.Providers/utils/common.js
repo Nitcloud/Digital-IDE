@@ -1,29 +1,24 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const uriJs = require("uri-js");
-/**
-    Get path from a given `uri`
 
-    @param uri the uri
-    @param rootPath the root path
-    @return the path
-*/
-function getPathFromUri(uri, rootPath) {
-    if (!uri || !rootPath) {
-        return "";
+
+
+function findMaxLength(arry) {
+    let Max_len = 0;
+    for (let i = 0; i < arry.length; i++) {
+        if (arry[i].length > Max_len)
+        Max_len = arry[i].length;
     }
-    uri = decodeURIComponent(uri); //convert hex chars to ASCII
-    let parsedUri = uriJs.parse(uri);
-    if (!parsedUri.path) {
-        return "";
-    }
-    rootPath = rootPath.replace(/\\/g, '/');
-    let regex = new RegExp("/?" + rootPath + "(.*)");
-    let matches;
-    if ((matches = regex.exec(parsedUri.path)) && matches.length > 1) {
-        return rootPath + matches[1];
-    }
-    return "";
+    return Max_len;
 }
-exports.getPathFromUri = getPathFromUri;
-//# sourceMappingURL=common.js.map
+exports.findMaxLength = findMaxLength;
+
+function removeDuplicates(arry) {
+    let r = [];
+    for(var i = 0, l = arry.length; i < l; i++) {
+        for(var j = i + 1; j < l; j++)
+        if (arry[i] === arry[j]) j = ++i;
+        r.push(arry[i]);
+    }
+    return r;
+}
+exports.removeDuplicates = removeDuplicates;

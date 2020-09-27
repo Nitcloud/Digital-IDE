@@ -4,7 +4,9 @@
 	"description": "Language support for TCL&HDL",
 	"publisher": "sterben",
 	"homepage": "https://github.com/Bestduan/fpga_support_plug",
-	"version": "0.1.12",
+    "version": "0.1.12",
+    "main": "./src/extension",
+    "icon": "images/FPGAs.png",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Bestduan/fpga_support_plug.git"
@@ -20,44 +22,12 @@
 		"Programming Languages",
 		"Snippets"
 	],
-	"icon": "images/FPGAs.png",
 	"activationEvents": [
-		"onLanguage:json",
-		"onLanguage:tcl",
-		"onLanguage:vhdl",
-		"onLanguage:verilog",
-		"onLanguage:systemverilog",
-		"onCommand:TOOL.Gen_Property",
-		"onCommand:TOOL.Gen_BOOT",
-		"onCommand:TOOL.clean",
-		"onCommand:TOOL.SerialPort",
-		"onCommand:FPGA.instance",
-		"onCommand:FPGA.testbench",
-		"onCommand:FPGA.Init",
-		"onCommand:FPGA.top",
-		"onCommand:FPGA.Update",
-		"onCommand:FPGA.Sim",
-		"onCommand:FPGA.Synth",
-		"onCommand:FPGA.Impl",
-		"onCommand:FPGA.Gen_Bit",
-		"onCommand:FPGA.Build",
-		"onCommand:FPGA.Program",
-		"onCommand:FPGA.GUI",
-		"onCommand:FPGA.exit",
-		"onCommand:FPGA.addDevice",
-		"onCommand:FPGA.delDevice",
-		"onCommand:FPGA.Overwrite testbench",
-		"onCommand:FPGA.Overwrite bd_file",
-		"onCommand:FPGA.Add bd_file",
-		"onCommand:FPGA.Delete bd_file",
-		"onCommand:SDK.Init",
-		"onCommand:SDK.Build",
-		"onCommand:SDK.Download"
+		"*"
 	],
-	"main": "./src/extension",
 	"contributes": {
 		"configuration": {
-			"title": "HDL configuration",
+			"title": "FPGAs",
 			"properties": {
 				"HDL.disableIndexing": {
 					"type": "boolean",
@@ -144,18 +114,30 @@
 					"default": "",
 					"description": "Add Modelsim work library here."
 				},
-				"HDL.ctags.path": {
-					"scope": "window",
-					"type": "string",
-					"default": "ctags",
-					"description": "A path to the installation of Universal Ctags"
-				},
 				"HDL.logging.enabled": {
 					"scope": "window",
 					"type": "boolean",
 					"default": false,
 					"description": "Enable logging for this extension"
                 },
+                "PRJ.iVerilog.install.path": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+                    "description": "set the iVerilog install path. \n e.g. : D:/APP/iverilog/bin"
+                },
+                "PRJ.gtkwave.install.path": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+                    "description": "set the gtkwave install path. \n e.g. : D:/APP/iverilog/gtkwave/bin"
+                },
+                "PRJ.xilinx.install.path": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "set the xilinx install path. \n e.g. : D:/APP/vivado_18_3"
+				},
                 "PRJ.xilinx.BD.repo.path": {
 					"scope": "window",
 					"type": "string",
@@ -241,8 +223,12 @@
 		},
 		"views": {
 			"TOOL": [
+                {
+                    "id": "TOOL.file_tree",
+					"name": "File"
+				},
 				{
-					"id": "TOOL.Tool_options",
+                    "id": "TOOL.Tool_options",
 					"name": "Tool"
 				},
 				{
@@ -388,6 +374,11 @@
 				"command": "FPGA.testbench",
 				"title": "Testbench",
 				"category": "FPGA"
+            },
+            {
+				"command": "FPGA.Simulate",
+				"title": "Simulate",
+				"category": "FPGA"
 			},
 			{
 				"command": "FPGA.Init",
@@ -504,18 +495,35 @@
 					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
 					"command": "FPGA.top",
 					"group": "navigation@1"
+                },
+                {
+					"when": "editorLangId == verilog || editorLangId == systemverilog",
+					"command": "FPGA.Simulate",
+					"group": "navigation@1"
 				},
 				{
 					"when": "editorLangId == verilog || editorLangId == systemverilog",
 					"command": "FPGA.testbench",
-					"group": "navigation@2"
+					"group": "navigation@1"
 				},
 				{
 					"when": "editorLangId == verilog || editorLangId == systemverilog",
 					"command": "FPGA.instance",
-					"group": "navigation@3"
+					"group": "navigation@1"
 				}
-			]
+            ],
+            "explorer/context": [
+                {
+                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+					"command": "FPGA.top",
+					"group": "navigation@1"
+                },
+                {
+                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+					"command": "FPGA.Simulate",
+					"group": "navigation@2"
+                }
+            ]
 		}
 	},
 	"devDependencies": {

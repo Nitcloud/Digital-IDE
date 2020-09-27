@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+// Object.defineProperty(exports, "__esModule", { value: true });
 const symbol = require("../symbol");
 class SystemVerilogWorkspaceSymbolProvider {
     constructor(indexer) {

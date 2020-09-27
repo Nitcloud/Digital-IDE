@@ -3,6 +3,7 @@
     "scopeName": "source.tcl",
     "fileTypes": [
       "tcl",
+      "fdc",
       "xdc",
       "sdc"
     ],

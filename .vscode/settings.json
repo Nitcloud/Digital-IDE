@@ -9,5 +9,8 @@
 	"files.associations": {
 		"Makefile": "makefile",
 		"EX.C": "cpp"
-	}
+    },
+    "files.watcherExclude": {
+        "**/target": true
+    }
 }
