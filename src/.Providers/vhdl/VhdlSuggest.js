@@ -1,18 +1,18 @@
 'use strict';
 const vscode = require('vscode');
 const vhdlScopeGuesser = require('./vhdlScopeGuesser');
-let kwLibrary = createCompletionKeyword('library');
-let kwUse = createCompletionKeyword('use');
-let kwPackage = createCompletionKeyword('package');
-let kwArchitecture = createCompletionKeyword('architecture');
-let kwEntity = createCompletionKeyword('entity');
+let kwLibrary       = createCompletionKeyword('library');
+let kwUse           = createCompletionKeyword('use');
+let kwPackage       = createCompletionKeyword('package');
+let kwArchitecture  = createCompletionKeyword('architecture');
+let kwEntity        = createCompletionKeyword('entity');
 let kwConfiguration = createCompletionKeyword('configuration');
-let kwIs = createCompletionKeyword('is');
-let kwBegin = createCompletionKeyword('begin');
-let kwEnd = createCompletionKeyword('end');
-let kwMap = createCompletionKeyword('map');
-let kwOf = createCompletionKeyword('of');
-let kwFor = createCompletionKeyword('for');
+let kwIs            = createCompletionKeyword('is');
+let kwBegin         = createCompletionKeyword('begin');
+let kwEnd           = createCompletionKeyword('end');
+let kwMap           = createCompletionKeyword('map');
+let kwOf            = createCompletionKeyword('of');
+let kwFor           = createCompletionKeyword('for');
 let operatorOptions = [
     createCompletionOption('abs'),
     createCompletionOption('and'),

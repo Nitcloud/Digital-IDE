@@ -76,4 +76,3 @@ class ScopeGuesser {
         }
     }
 }
-//# sourceMappingURL=vhdlScopeGuesser.js.map

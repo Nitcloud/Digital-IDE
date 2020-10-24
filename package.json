@@ -29,10 +29,10 @@
 		"configuration": {
 			"title": "FPGAs",
 			"properties": {
-				"HDL.disableIndexing": {
+				"HDL.Indexing": {
 					"type": "boolean",
 					"default": true,
-					"description": "Disable the automatic indexing when opening a folder or workspace"
+					"description": "Enable the automatic indexing when opening a folder or workspace"
 				},
 				"HDL.parallelProcessing": {
 					"type": "integer",
@@ -43,21 +43,6 @@
 					"type": "string",
 					"default": "insert globPattern here",
 					"description": "Exclude files from indexing by a globPattern"
-				},
-				"HDL.forceFastIndexing": {
-					"type": "boolean",
-					"default": true,
-					"description": "Force indexing to use fast regex parsing"
-				},
-				"HDL.documentSymbolsPrecision": {
-					"type": "string",
-					"enum": [
-						"full",
-						"declaration",
-						"fast"
-					],
-					"default": "full",
-					"description": "The level of detail the parser should look for when looking for symbols"
 				},
 				"HDL.linting.linter": {
 					"scope": "window",
@@ -71,6 +56,12 @@
 					],
 					"default": "xvlog",
 					"description": "Select the verilog linter. Possible values are 'iverilog', 'verilator', xvlog' or 'none'"
+                },
+                "HDL.linting.runAtFileLocation": {
+					"scope": "window",
+					"type": "string",
+					"default": "default",
+					"description": "If enabled, Icarus Verilog will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
 				},
 				"HDL.linting.iverilog.arguments": {
 					"scope": "window",
@@ -78,23 +69,11 @@
 					"default": "",
 					"description": "Add Icarus Verilog arguments here (like macros). They will be added to Icarus Verilog while linting (The command \"-t null\" will be added by the linter by default)"
 				},
-				"HDL.linting.iverilog.runAtFileLocation": {
-					"scope": "window",
-					"type": "boolean",
-					"default": false,
-					"description": "If enabled, Icarus Verilog will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
-				},
 				"HDL.linting.modelsim.arguments": {
 					"scope": "window",
 					"type": "string",
 					"default": "",
 					"description": "Add Modelsim arguments here. They will be added to Modelsim while linting."
-				},
-				"HDL.linting.modelsim.runAtFileLocation": {
-					"scope": "window",
-					"type": "boolean",
-					"default": false,
-					"description": "If enabled, Modelsim will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
 				},
 				"HDL.linting.verilator.arguments": {
 					"scope": "window",
@@ -102,24 +81,12 @@
 					"default": "",
 					"description": "Add Verilator arguments here (like macros). They will be added to Verilator while linting (The command \"--lint-only -I<document folder>\" will be added by the linter by default)"
 				},
-				"HDL.linting.verilator.runAtFileLocation": {
-					"scope": "window",
-					"type": "boolean",
-					"default": false,
-					"description": "If enabled, Verilator will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
-				},
 				"HDL.linting.modelsim.work": {
 					"scope": "window",
 					"type": "string",
 					"default": "",
 					"description": "Add Modelsim work library here."
 				},
-				"HDL.logging.enabled": {
-					"scope": "window",
-					"type": "boolean",
-					"default": false,
-					"description": "Enable logging for this extension"
-                },
                 "PRJ.iVerilog.install.path": {
 					"scope": "window",
 					"type": "string",
@@ -228,15 +195,15 @@
 					"name": "File"
 				},
 				{
-                    "id": "TOOL.Tool_options",
+                    "id": "TOOL.Tool_tree",
 					"name": "Tool"
 				},
 				{
-					"id": "TOOL.fpga_options",
+					"id": "TOOL.fpga_tree",
 					"name": "FPGA Options"
 				},
 				{
-					"id": "TOOL.sdk_options",
+					"id": "TOOL.sdk_tree",
 					"name": "SDK Options"
 				}
 			]
@@ -301,7 +268,7 @@
 		"jsonValidation": [
 			{
 				"fileMatch": "**/Property.json",
-				"url": "./src/.TOOL/Property.json"
+				"url": "./Property.json"
 			}
 		],
 		"grammars": [

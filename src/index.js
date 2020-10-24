@@ -8,16 +8,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
+
 const vscode = require("vscode");
-const client = require("./utils/client");
-class SystemVerilogIndexer {
+
+function isHDLDocument(document) {
+    if (!document) {
+        return false;
+    }
+    if (document.languageId === "systemverilog" || document.languageId === "verilog") {
+        return true;
+    }
+    return false;
+}
+
+class HDLIndexer {
     constructor(statusbar, parser, channel) {
         this.building = false;
         this.symbolsCount = 0;
         this.NUM_FILES = 250;
-        this.systemVerilogFileExtensions = ["sv", "v", "svh", "vh"];
-        this.globPattern = "**/*.{" + this.systemVerilogFileExtensions.join(",") + "}";
+        this.HDLFileExtensions = ["sv", "v", "svh", "vh"];
+        this.globPattern = "**/*.{" + this.HDLFileExtensions.join(",") + "}";
         this.exclude = undefined;
         this.forceFastIndexing = false;
         this.statusbar = statusbar;
@@ -25,7 +35,7 @@ class SystemVerilogIndexer {
         this.outputChannel = channel;
         this.symbols = new Map();
         const settings = vscode.workspace.getConfiguration();
-        if (settings.get('HDL.disableIndexing')) {
+        if (!settings.get('HDL.Indexing')) {
             this.statusbar.text = "HDL: Indexing disabled on boot";
         }
         else {
@@ -35,9 +45,53 @@ class SystemVerilogIndexer {
         }
     };
     /**
-        Scans the `workspace` for SystemVerilog and Verilog files,
+        Processes one file and updates this.symbols with an entry if symbols exist in the file.
+
+        @param uri uri to the document
+        @param total_files total number of files to determine parse-precision
+    */
+    processFile(uri, total_files = 0) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+                resolve(vscode.workspace.openTextDocument(uri).then(doc => {
+                    if (total_files >= 1000 * this.parallelProcessing || this.forceFastIndexing) {
+                        return this.parser.get_all_recursive(doc, "fast", 0);
+                    }
+                    else if (total_files >= 100 * this.parallelProcessing) {
+                        return this.parser.get_all_recursive(doc, "declaration", 0);
+                    }
+                    else {
+                        return this.parser.get_all_recursive(doc, "declaration", 1);
+                    }
+                }));
+            })).then((output) => {
+                if (output.length > 0) {
+                    if (this.symbols.has(uri.fsPath)) {
+                        this.symbolsCount += output.length - this.symbols.get(uri.fsPath).length;
+                    }
+                    else {
+                        this.symbolsCount += output.length;
+                    }
+                    this.symbols.set(uri.fsPath, output);
+                    if (total_files == 0) { // If total files is 0, it is being used onChange
+                        this.statusbar.text = 'HDL: ' + this.symbolsCount + ' indexed objects';
+                    }
+                }
+            }).catch((error) => {
+                this.outputChannel.appendLine("HDL: Indexing: Unable to process file: " + uri.toString());
+                this.outputChannel.appendLine(error);
+                if (this.symbols.has(uri.fsPath)) {
+                    this.symbolsCount -= this.symbols.get(uri.fsPath).length;
+                    this.symbols.delete(uri.fsPath);
+                }
+                return undefined;
+            });
+        });
+    }
+    /**
+        Scans the `workspace` for HDL,
         Looks up all the `symbols` that it exist on the queried files,
-        and saves the symbols as `SystemVerilogSymbol` objects to `this.symbols`.
+        and saves the symbols as `HDLSymbol` objects to `this.symbols`.
 
         @return status message when indexing is successful or failed with an error.
     */
@@ -85,50 +139,6 @@ class SystemVerilogIndexer {
         });
     }
     /**
-        Processes one file and updates this.symbols with an entry if symbols exist in the file.
-
-        @param uri uri to the document
-        @param total_files total number of files to determine parse-precision
-    */
-    processFile(uri, total_files = 0) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
-                resolve(vscode.workspace.openTextDocument(uri).then(doc => {
-                    if (total_files >= 1000 * this.parallelProcessing || this.forceFastIndexing) {
-                        return this.parser.get_all_recursive(doc, "fast", 0);
-                    }
-                    else if (total_files >= 100 * this.parallelProcessing) {
-                        return this.parser.get_all_recursive(doc, "declaration", 0);
-                    }
-                    else {
-                        return this.parser.get_all_recursive(doc, "declaration", 1);
-                    }
-                }));
-            })).then((output) => {
-                if (output.length > 0) {
-                    if (this.symbols.has(uri.fsPath)) {
-                        this.symbolsCount += output.length - this.symbols.get(uri.fsPath).length;
-                    }
-                    else {
-                        this.symbolsCount += output.length;
-                    }
-                    this.symbols.set(uri.fsPath, output);
-                    if (total_files == 0) { // If total files is 0, it is being used onChange
-                        this.statusbar.text = 'HDL: ' + this.symbolsCount + ' indexed objects';
-                    }
-                }
-            }).catch((error) => {
-                this.outputChannel.appendLine("HDL: Indexing: Unable to process file: " + uri.toString());
-                this.outputChannel.appendLine(error);
-                if (this.symbols.has(uri.fsPath)) {
-                    this.symbolsCount -= this.symbols.get(uri.fsPath).length;
-                    this.symbols.delete(uri.fsPath);
-                }
-                return undefined;
-            });
-        });
-    }
-    /**
         Removes the given `document`'s symbols from `this.symbols`,
         Gets the current symbols which exist on the document to add to `this.symbols`.
         Updates the status bar with the current symbols count in the workspace.
@@ -139,7 +149,7 @@ class SystemVerilogIndexer {
     onChange(document) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield new Promise(() => {
-                if (!client.isSystemVerilogDocument(document) && !client.isVerilogDocument(document)) {
+                if (!isHDLDocument(document)) {
                     return;
                 }
                 else {
@@ -193,7 +203,7 @@ class SystemVerilogIndexer {
                 resolve(new Array());
                 return;
             }
-            if (!client.isSystemVerilogDocument(document) && !client.isVerilogDocument(document)) {
+            if (!isHDLDocument(document)) {
                 resolve(new Array());
                 return;
             }
@@ -272,5 +282,4 @@ class SystemVerilogIndexer {
         }
     }
 }
-exports.SystemVerilogIndexer = SystemVerilogIndexer;
-//# sourceMappingURL=indexer.js.map
+exports.HDLIndexer = HDLIndexer;
