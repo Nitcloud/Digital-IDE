@@ -13,7 +13,7 @@ const vscode = require("vscode");
 const utils  = require("./utils");
 const serve  = require("./serve");
 const parse  = require("./parse");
-const index  = require("./index");
+const index  = require("./.Providers/index");
 
 function activate(context) {
 //     // lint
@@ -54,6 +54,8 @@ function activate(context) {
     context.subscriptions.push(watcher.onDidDelete((uri) => { indexer.onDelete(uri); }));
     context.subscriptions.push(watcher.onDidChange((uri) => { indexer.onDelete(uri); }));
     context.subscriptions.push(watcher);
+
+    // parser.get_instModulePath();
 
     // //VHDL Language sever
     // context.subscriptions.push(

@@ -57,11 +57,11 @@
 					"default": "xvlog",
 					"description": "Select the verilog linter. Possible values are 'iverilog', 'verilator', xvlog' or 'none'"
                 },
-                "HDL.linting.runAtFileLocation": {
+                "HDL.linting.runFilePath": {
 					"scope": "window",
 					"type": "string",
 					"default": "default",
-					"description": "If enabled, Icarus Verilog will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
+					"description": "simulate tool will be run at the file location for linting. Else it will be run at workspace folder."
 				},
 				"HDL.linting.iverilog.arguments": {
 					"scope": "window",
@@ -87,18 +87,6 @@
 					"default": "",
 					"description": "Add Modelsim work library here."
 				},
-                "PRJ.iVerilog.install.path": {
-					"scope": "window",
-					"type": "string",
-					"default": "",
-                    "description": "set the iVerilog install path. \n e.g. : D:/APP/iverilog/bin"
-                },
-                "PRJ.gtkwave.install.path": {
-					"scope": "window",
-					"type": "string",
-					"default": "",
-                    "description": "set the gtkwave install path. \n e.g. : D:/APP/iverilog/gtkwave/bin"
-                },
                 "PRJ.xilinx.install.path": {
 					"scope": "window",
 					"type": "string",
@@ -116,7 +104,19 @@
 					"type": "string",
 					"default": "D:/project/FPGA/.Lib/xIP",
 					"description": "set the xilinx ip_repo_path"
-				},
+                },
+                "TOOL.iVerilog.install.path": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+                    "description": "set the iVerilog install path. \n e.g. : D:/APP/iverilog/bin"
+                },
+                "TOOL.gtkwave.install.path": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+                    "description": "set the gtkwave install path. \n e.g. : D:/APP/iverilog/gtkwave/bin"
+                },
 				"TOOL.SerialPortMonitor.BaudRate": {
 					"type": "integer",
 					"scope": "resource",

@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 
 const vscode = require("vscode");
+const parse  = require("../parse");
 
 function isHDLDocument(document) {
     if (!document) {
@@ -55,13 +56,13 @@ class HDLIndexer {
             return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
                 resolve(vscode.workspace.openTextDocument(uri).then(doc => {
                     if (total_files >= 1000 * this.parallelProcessing || this.forceFastIndexing) {
-                        return this.parser.get_all_recursive(doc, "fast", 0);
+                        return this.parser.get_HDLfileparam(doc, null, 0, null);
                     }
                     else if (total_files >= 100 * this.parallelProcessing) {
-                        return this.parser.get_all_recursive(doc, "declaration", 0);
+                        return this.parser.get_HDLfileparam(doc, null, 0, null);
                     }
                     else {
-                        return this.parser.get_all_recursive(doc, "declaration", 1);
+                        return this.parser.get_HDLfileparam(doc, null, 0, null);
                     }
                 }));
             })).then((output) => {
@@ -147,8 +148,10 @@ class HDLIndexer {
         @return status message when indexing is successful or failed with an error.
     */
     onChange(document) {
+        this.parser.get_instModulePath();
         return __awaiter(this, void 0, void 0, function* () {
             return yield new Promise(() => {
+                console.log(parse.HDLparam);
                 if (!isHDLDocument(document)) {
                     return;
                 }

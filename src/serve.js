@@ -10,6 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 
 const utils  = require("./utils");
 const vscode = require("vscode");
+const child  = require("child_process");
+
+let gtkwaveInstallPath = vscode.workspace.getConfiguration().get('TOOL.gtkwave.install.path');
 
 let opeParam = {
     "os"            : "",
@@ -224,7 +227,7 @@ class DocumentSymbolProvider {
             TODO: Look through the symbols to check if it either is defined in the current file or in the workspace.
                   Use that information to figure out if an instanciated 'unknown' object is of a known type.
             */
-            resolve(this.parser.get_all_recursive(document, this.precision, this.depth));
+            resolve(this.parser.get_HDLfileparam(document, "symbol", 0, null));
             // resolve(show_SymbolKinds(document.uri));
         });
     }
@@ -397,35 +400,99 @@ class vhdlCompletionOption {
 exports.vhdlCompletionOption = vhdlCompletionOption;
 
 /* 仿真功能 */
-function simRegister(context,root_path) {
-    let workspace_path = utils.getCurrentWorkspaceFolder();
-    let tool_path = `${root_path}/.TOOL`;
-    
-    let simulate = vscode.commands.registerCommand('FPGA.Simulate', () => {
+class iverilogOperation {
+    constructor() {
+        vscode.workspace.onDidChangeConfiguration(function () {
+            this.getConfig();
+        });
+        this.file     = new utils.fileOperation();
+        this.array    = new utils.arrayOperation();
+        this.folder   = new utils.folderOperation();
+        this.property = new utils.refreshProperty();
+    }
+    getConfig() {
+        this.installPath  = vscode.workspace.getConfiguration().get('TOOL.iVerilog.install.path');
+        this.runFilePath  = vscode.workspace.getConfiguration().get('HDL.linting.runFilePath');
+        this.iverilogArgs = vscode.workspace.getConfiguration().get('HDL.linting.iverilog.arguments');
+    }
+    lint(doc) {
+        var lastIndex = doc.uri.fsPath.replace(/\\/g,"\/");
+        var docFolder = doc.uri.fsPath.substr(0, lastIndex); 
+        var runLocation = (this.runAtFileLocation == true) ? docFolder : vscode.workspace.rootPath; //choose correct location to run
+        var svArgs = (doc.languageId == "systemverilog") ? "-g2012" : ""; //SystemVerilog args
+        var command = 'iverilog ' + svArgs + ' -t null ' + this.iverilogArgs + ' \"' + doc.fileName + '\"'; //command to execute
+        // this.logger.log(command, Logger.Log_Severity.Command);
+        child.exec(command, { cwd: runLocation }, function (error, stdout, stderr) {
+            var diagnostics = [];
+            var lines = stderr.split(/\r?\n/g);
+            // Parse output lines
+            lines.forEach(function (line, i) {
+                if (line.startsWith(doc.fileName)) {
+                    line = line.replace(doc.fileName, '');
+                    var terms = line.split(':');
+                    var lineNum = parseInt(terms[1].trim()) - 1;
+                    if (terms.length == 3) {
+                        diagnostics.push({
+                            severity: vscode.DiagnosticSeverity.Error,
+                            range: new vscode.Range(lineNum, 0, lineNum, Number.MAX_VALUE),
+                            message: terms[2].trim(),
+                            code: 'iverilog',
+                            source: 'iverilog'
+                        });
+                    }
+                    else if (terms.length >= 4) {
+                        var sev = void 0;
+                        if (terms[2].trim() == 'error')
+                            sev = vscode.DiagnosticSeverity.Error;
+                        else if (terms[2].trim() == 'warning')
+                            sev = vscode.DiagnosticSeverity.Warning;
+                        else
+                            sev = vscode.DiagnosticSeverity.Information;
+                        diagnostics.push({
+                            severity: sev,
+                            range: new vscode.Range(lineNum, 0, lineNum, Number.MAX_VALUE),
+                            message: terms[3].trim(),
+                            code: 'iverilog',
+                            source: 'iverilog'
+                        });
+                    }
+                }
+            });
+            this.logger.log(diagnostics.length + ' errors/warnings returned');
+            this.diagnostic_collection.set(doc.uri, diagnostics);
+        });
+    }
+    simulate(workspace_path) {
         let editor = vscode.window.activeTextEditor;
         if (!editor) {
             return;
         }
-        utils.mkdir(`${workspace_path}prj/simulation/iVerilog`);
-
-        let vvpPath = "vvp";
-        let gtkwavePath = "gtkwave";
-        let iVerilogPath = "iverilog";
-        let gtkwaveInstallPath = vscode.workspace.getConfiguration().get('PRJ.gtkwave.install.path');
-        let iVerilogInstallPath = vscode.workspace.getConfiguration().get('PRJ.iVerilog.install.path');
-        if (iVerilogInstallPath != "") {
-            vvpPath = iVerilogInstallPath + "vvp.exe";
-            gtkwavePath = gtkwaveInstallPath + "gtkwave.exe";
-            iVerilogPath = iVerilogInstallPath + "iverilog.exe";
+        // 获取运行时的路径
+        if (this.runFilePath == "") {
+            this.runFilePath = `${workspace_path}prj/simulation/iVerilog`
+            this.folder.mkdir(this.runFilePath);
         }
 
-        let simLibRootPath = "";
+        // 获取运行工具的路径
+        let vvpPath      = "vvp";
+        let gtkwavePath  = "gtkwave";
+        let iVerilogPath = "iverilog";
+        if (this.installPath != "") {
+            vvpPath = iVerilogInstallPath + "vvp.exe";
+            iVerilogPath = iVerilogInstallPath + "iverilog.exe";
+        }
+        if (gtkwaveInstallPath != "") {
+            gtkwavePath = gtkwaveInstallPath + "gtkwave.exe";
+        }
+
+        // 获取对应厂商的仿真库路径
+        let LibPath = "";
         let GlblPath = "";
-        let LibPath  = "";
-        let propertyPath = utils.getPropertypath(workspace_path);
-        if (propertyPath != '') {            
-            if (utils.getFpgaVersion(propertyPath) == "xilinx") {					
-                simLibRootPath = vscode.workspace.getConfiguration().get('PRJ.xilinx.install.path');
+        let simLibRootPath = "";
+        let propertyPath = this.property.getPropertypath(workspace_path);
+        if (propertyPath != '') {
+            if (this.property.getFpgaVersion(propertyPath) == "xilinx") {					
+                simLibRootPath = vscode.workspace.getConfiguration().get('TOOL.xilinx.install.path');
                 if (simLibRootPath != "") {                
                     simLibRootPath = simLibRootPath + "/Vivado/2018.3/data/verilog/src";
                     GlblPath = simLibRootPath + "/glbl.v ";
@@ -435,15 +502,21 @@ function simRegister(context,root_path) {
                     LibPath = LibPath + "-y " + simLibRootPath + "/unifast ";
                     LibPath = LibPath + "-y " + simLibRootPath + "/retarget ";
                 } else {
-                    vscode.window.showInformationMessage("PRJ.xilinx.install.path is empty");
+                    vscode.window.showInformationMessage("TOOL.xilinx.install.path is empty");
                 }
             }
         }
 
-        let verilogModuleInfoList = utils.getAllModuleInfo(`${workspace_path}user`,".v");
+        // 获取当前文件的模块名和模块数
+        let moduleNameList = [];
+        HDLparam.forEach(element => {
+            if (element.modulePath == editor.document.fileName) {
+                moduleNameList.push(element.moduleName);
+            }
+        });
 
-        let content = utils.readFile(editor.document.fileName);
-        let moduleNameList = utils.getModuleName(content);
+        // 获取仿真数据输出文件的格式
+
         if (moduleNameList.length != 0) {
             if (moduleNameList.length >= 2) {
                 vscode.window.showInformationMessage("There are multiple modules, please select one of them");
@@ -453,18 +526,26 @@ function simRegister(context,root_path) {
                     }
                     let iverilogPath = workspace_path + "prj/simulation/iVerilog/" + selection;
                     let rtlFilePath = "";
-                    let instanceModuleNameList = utils.getInstanceModuleName(
-                        utils.getModuleContent(content,selection));
-                    if (instanceModuleNameList != null) {                        
-                        let moduleFilePathList = [];
-                        instanceModuleNameList.forEach(element => {
-                            let moduleFilePath = utils.searchModuleFilePath(
-                                element,verilogModuleInfoList);
-                            moduleFilePath.forEach(element => {
-                                moduleFilePathList.push(element);
+                    // 获取所选模块的例化模块名
+                    let instanceModuleNameList = [];
+                    HDLparam.forEach(element => {
+                        if (element.moduleName == selection) {
+                            element.instmodule.forEach(element => {
+                                instanceModuleNameList.push(element.instModule);
                             });
+                        }
+                    });
+                    if (instanceModuleNameList != null) {                        
+                        // 获取所有例化模块所在文件的路径
+                        let moduleFilePathList = [];
+                        instanceModuleNameList.forEach(instanceModuleName => {     
+                            HDLparam.forEach(element => {
+                                if (element.moduleName == instanceModuleName) {
+                                    moduleFilePathList.push(element.modulePath);
+                                }
+                            });           
                         });
-                        moduleFilePathList = common.removeDuplicates(moduleFilePathList);
+                        moduleFilePathList = this.array.removeDuplicates(moduleFilePathList);
                         moduleFilePathList.forEach(element => {
                             rtlFilePath = rtlFilePath + element + " ";
                         });
@@ -477,7 +558,7 @@ function simRegister(context,root_path) {
                             vscode.window.showErrorMessage(stderr);
                         } else {
                             vscode.window.showInformationMessage("iVerilog simulates successfully!!!");
-                            let waveImagePath = utils.getWaveImagePath(content);
+                            let waveImagePath = module.getWaveImagePath(content);
                             if (waveImagePath != '') {
                                 let waveImageExtname = waveImagePath.split('.');
                                 let Simulate = vscode.window.createTerminal({ name: 'Simulate' });
@@ -496,18 +577,26 @@ function simRegister(context,root_path) {
             else {
                 let iverilogPath = workspace_path + "prj/simulation/iVerilog/" + moduleNameList[0];
                 let rtlFilePath = "";
-                let instanceModuleNameList = utils.getInstanceModuleName(
-                    utils.getModuleContent(content,moduleNameList[0]));
-                if (instanceModuleNameList != '') {                        
-                    let moduleFilePathList = [];
-                    instanceModuleNameList.forEach(element => {
-                        let moduleFilePath = utils.searchModuleFilePath(
-                            element,verilogModuleInfoList);
-                        moduleFilePath.forEach(element => {
-                            moduleFilePathList.push(element);
+                // 获取所选模块的例化模块名
+                let instanceModuleNameList = [];
+                HDLparam.forEach(element => {
+                    if (element.moduleName == selection) {
+                        element.instmodule.forEach(element => {
+                            instanceModuleNameList.push(element.instModule);
                         });
+                    }
+                });
+                if (instanceModuleNameList != null) {                        
+                    // 获取所有例化模块所在文件的路径
+                    let moduleFilePathList = [];
+                    instanceModuleNameList.forEach(instanceModuleName => {     
+                        HDLparam.forEach(element => {
+                            if (element.moduleName == instanceModuleName) {
+                                moduleFilePathList.push(element.modulePath);
+                            }
+                        });           
                     });
-                    moduleFilePathList = common.removeDuplicates(moduleFilePathList);
+                    moduleFilePathList = this.array.removeDuplicates(moduleFilePathList);
                     moduleFilePathList.forEach(element => {
                         rtlFilePath = rtlFilePath + element + " ";
                     });
@@ -520,7 +609,7 @@ function simRegister(context,root_path) {
                         vscode.window.showErrorMessage(stderr);
                     } else {
                         vscode.window.showInformationMessage("iVerilog simulates successfully!!!");
-                        let waveImagePath = utils.getWaveImagePath(content);
+                        let waveImagePath = module.getWaveImagePath(content);
                         if (waveImagePath != '') {
                             let waveImageExtname = waveImagePath.split('.');
                             let Simulate = vscode.window.createTerminal({ name: 'Simulate' });
@@ -540,69 +629,9 @@ function simRegister(context,root_path) {
         else {
             vscode.window.showWarningMessage("There is no module in this file")
         }
-    });
-	context.subscriptions.push(simulate);
-	let vInstance_Gen = vscode.commands.registerCommand('FPGA.instance', () => {
-        let editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            return;
-		}
-		// if (terminal_ope.ensureTerminalExists("Instance")) {
-		// 	Instance.sendText(`python ${tool_path}/.Script/vInstance_Gen.py ${editor.document.fileName}`);
-		// 	vscode.window.showInformationMessage('Generate instance successfully!');
-		// }
-		// else {
-		// 	Instance = vscode.window.createTerminal({ name: 'Instance' });
-		// 	Instance.show(true);
-		// 	Instance.sendText(`python ${tool_path}/.Script/vInstance_Gen.py ${editor.document.fileName}`);
-		// 	vscode.window.showInformationMessage('Generate instance successfully!');
-        // }
-
-        let moduleName;
-        let moduleNameList  = [];
-        let verilogFileList = [];
-        verilogFileList = utils.pick_Allfile(`${workspace_path}user`,".v");
-        verilogFileList.forEach(element => {
-            let content;
-            let verilogFilePath = element;
-            content = utils.readFile(verilogFilePath);
-            moduleName = utils.getModuleName(content);
-            if (moduleName.length != 0) {
-                moduleName.forEach(element => {                    
-                    element = element + "    ." + verilogFilePath;
-                    element = element.replace(`${workspace_path}`,"");
-                    moduleNameList.push(element);
-                });
-            }
-        });
-        vscode.window.showQuickPick(moduleNameList).then(selection => {
-            if (!selection) {
-                return;
-            }
-            let modulePathList = selection.split("    .");
-            let modulePath = `${workspace_path}` + modulePathList[1];
-            let content = utils.readFile(modulePath);
-            content = utils.delComment(content);
-            utils.instanceVerilogModule(content,modulePathList[0])
-            //  editor.edit((editBuilder) => {
-            //      editBuilder.replace(editor.selection, v);
-            //  });
-        });
-    });
-    context.subscriptions.push(vInstance_Gen);
-    let testbench = vscode.commands.registerCommand('FPGA.testbench', () => {
-        let editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            return;
-		}
-		let command = `python ${tool_path}/.Script/vTbgenerator.py ${workspace_path} ${editor.document.fileName}`;
-		terminal_ope.runCmd(command);
-		vscode.window.showInformationMessage(command);
-    });
-	context.subscriptions.push(testbench);
+    }
 }
-exports.simRegister = simRegister;
-
+exports.iverilogOperation = iverilogOperation;
 /* 后端开发辅助功能 */
 
 /* 调试开发辅助功能 */

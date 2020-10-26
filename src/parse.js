@@ -1,21 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 
-const vscode = require("vscode");
 const utils  = require("./utils");
 
-let HDLparam     = {};
+let HDLparam = [];
 exports.HDLparam = HDLparam;
 
 class HDLParser {
     constructor() {
-        this.illegalMatches = /(?!return|begin|end|else|join|fork|for|if|virtual|static|automatic|generate|assign|initial|assert|disable)/;
         this.l_comment = new RegExp([
             /\/\/.*/
         ].map(x => (typeof x === 'string') ? x : x.source).join(''), 'mg');
         this.b_comment = new RegExp([
             /\/\*[\s\S]*?\*\//
         ].map(x => (typeof x === 'string') ? x : x.source).join(''), 'mg');
+
         this.r_decl_block = new RegExp([
             "(?<=^\\s*",
             /(?<type>module|program|interface|package|primitive|config|property)\s+/,
@@ -52,30 +51,34 @@ class HDLParser {
         this.r_instantiation = new RegExp([
             "(?<=^\\s*",
             /(?:(?<modifier>virtual|static|automatic|rand|randc|pure virtual)\s+)?/,
-            // Symbol type, ignore packed array
-            this.illegalMatches,
-            /\b(?<type>[:\w]+(?:\s*\[[^\]]*?\])*?)\s*/,
-            /(?<params>#\s*\([\w\W]*?\))?\s*/,
-            // Allow multiple declaration
+            /\b(?<type>[:\w]+)\s*/,
+            /(?<params>#\s*\(\s*\.[\w\W]*?\))?\s*/,
             /(\b\w+\s*,\s*)*?/,
             ")",
-            this.illegalMatches,
-            // Symbol name
             /\b(?<name>\w+)\s*/,
-            // Unpacked array | Ports
-            /(?:(\[[^\]]*?\]\s*)*?|(\([\w\W]*?\))?)\s*/,
-            /\s*(?<end>;|,|=)/
+            /(?:(\(\s*\.[\w\W]*?\)))\s*/,
+            /\s*(?<end>;)/
         ].map(x => (typeof x === 'string') ? x : x.source).join(''), 'mg');
         this.r_assert = new RegExp([
             /(?<=^\s*(?<name>\w+)\s*:\s*)/,
             /(?<type>assert\b)/
         ].map(x => (typeof x === 'string') ? x : x.source).join(''), 'mg');
+        this.r_Variable = new RegExp([
+            /(?<!(input\s|output\s|inout\s))/,
+            /(?<type>parameter|localparam|reg|wire|bit|int|char|float|integer)\s+/,
+            /(signed\s|unsigned\s)?\s*/,
+            /(?<width>\[.+?\]\s)?\s*/,
+            /(?<name>\w+)/,
+            /(?<depth>\[.+?\]\s)?\s*/,
+            /(=\s)?\s*(?<init>.+)?\s*/,
+            /(,|\)|;)?/
+        ].map(x => x.source).join(''), 'mgi');
         this.r_ports = new RegExp([
             /(?<type>input|output|inout)\s+/,
-            /(wire|reg\s+)?(signed|unsigned\s+)?/,
-            /((?<range>\[.+?\])\s+)?/,
+            /(wire\s|reg\s)?\s*(signed\s|unsigned\s)?\s*/,
+            /(?<width>\[.+?\]\s)?\s*/,
             /(?<name>\w+)/,
-            /(=([0-9]+'(b|d|x))?[0-9]+)?/,
+            /(=([0-9]+'(b|d|x))?[0-9]+)?\s*/,
             /(,|\)|;)?/
         ].map(x => x.source).join(''), 'mgi');
         this.r_label = new RegExp([
@@ -103,24 +106,6 @@ class HDLParser {
             /(?<body>([^\n]*\\\n)*([^\n]*))/,
             /(?<!\\)(?=\n)/
         ].map(x => x.source).join(''), 'mg');
-        this.parse = [
-            this.r_decl_block,
-            this.r_decl_class,
-            this.r_decl_method,
-            this.r_typedef,
-            this.r_define,
-            this.r_label,
-            this.r_instantiation,
-            this.r_assert,
-            this.r_ports
-        ];
-        this.declaration_parse = [
-            this.r_decl_block,
-            this.r_decl_class,
-            this.r_decl_method,
-            this.r_typedef,
-            this.r_define
-        ];
         this.comment = [
             this.l_comment,
             this.b_comment
@@ -137,86 +122,219 @@ class HDLParser {
         @return A list of `HDLSymbol` objects or a thenable that resolves to such. The lack of a result can be
         signaled by returning `undefined`, `null`, or an empty list.
     */
-    get_all_recursive(document, precision = "full", maxDepth = -1, text, offset = 0, parent, depth = 0) {
+    get_HDLfileparam(document, type, offset = 0, parent) {
         let symbols = [];
-        let sub_blocks = [];
-        let HDLfileparam = {
-            "moduleName" : "",
-            "modulePath" : ""
-        }
-        if (!text) {
-            text = document.getText();
-        }
-        let commentRange = this.getCommentRange(text,offset,parent);
-        let regexes = this.parse;
+        let text = document.getText();
+        let IllegalRange = this.getCommentRange(text,offset);
         // Find blocks
-        for (let i = 0; i < regexes.length; i++) {
-            while (1) {
-                let match = regexes[i].exec(text);
-                if (match == null) {
-                    break;
-                }
-                else if (match.index == 0 && parent != undefined) {
-                    continue;
-                }
-                else if (sub_blocks.some((b) => { 
-                    return (match.index >= b.index && match.index < b.index + b[0].length); 
-                })) {
-                    continue;
-                }
-                if (match.groups.type == "module") {
-                    HDLfileparam.moduleName = match.groups.name;
-                    HDLfileparam.modulePath = document.uri._fsPath.replace(/\\/g,"\/");
-                    HDLparam[`${match.groups.name}`] = HDLfileparam;
-                }
-                if (regexes[i] == this.r_decl_method) {
-                    let method = match;
-                }
-                if (regexes[i] == this.r_instantiation) {
-                    let instantiation = match;
-                }
-                if (!this.isComment(match,commentRange,offset)) {
-                    let symbolInfo = this.HDLSymbol.setSymbolInformation(
-                        match, parent, document, offset);
-                    symbols.push(symbolInfo);
-                    if (match.groups.body) {
-                        sub_blocks.push(match);
-                    }
-                }
+        while (1) {
+            let match = this.r_decl_block.exec(text);
+            if (match == null) {
+                break;
             }
-        }
-        // Recursively expand the sub-blocks
-        if (depth != maxDepth) {
-            for (const i in sub_blocks) {
-                const match = sub_blocks[i];
-                let sub = this.get_all_recursive(document, 
-                    precision, maxDepth, 
-                    match.groups.body, 
-                    match.index + offset + match[0].indexOf(match.groups.body), 
+            else if ( (match.index == 0 && parent != undefined) ||
+                    this.isIllegalRange(match,IllegalRange,offset) ) {
+                continue;
+            }
+            let symbolInfo = this.HDLSymbol.setSymbolInformation(
+                match, parent, document, offset);
+            symbols.push(symbolInfo);
+            IllegalRange = IllegalRange.concat(
+                this.get_method(
+                    match[0], 
+                    document, 
                     match.groups.name, 
-                    depth + 1);
-                symbols = symbols.concat(sub);
+                    IllegalRange, 
+                    symbols, 
+                    (match.index + offset)));
+            if (match.groups.type == "module") {
+                let HDLfileparam = {
+                    "moduleName" : "",
+                    "modulePath" : "",
+                    "instmodule" : [],
+                    "param"      : [],
+                    "port"       : {
+                        "inout"  : [],
+                        "input"  : [],
+                        "output" : []
+                    }  
+                }
+                if ( type == "symbol" ) {            
+                    HDLfileparam = null            
+                }
+                this.get_ports(match[0], match.groups.name, HDLfileparam, IllegalRange, (match.index + offset));
+                this.get_variable(
+                    match[0], 
+                    document, 
+                    match.groups.name, 
+                    HDLfileparam, 
+                    IllegalRange, 
+                    symbols, 
+                    (match.index + offset));
+                this.get_instantiation(
+                    match[0], 
+                    document, 
+                    match.groups.name, 
+                    HDLfileparam, 
+                    IllegalRange, 
+                    symbols, 
+                    (match.index + offset));
+                if (type!="symbol") {
+                    HDLfileparam.moduleName = match.groups.name;
+                    HDLfileparam.modulePath = document.uri._fsPath.replace(/\\/g,"\/");            
+                    HDLparam.push(HDLfileparam);    
+                }
             }
         }
         return symbols;
     };
-    get_ports(document, text, offset, parent) {
-        return new Promise((resolve) => {
-            let symbols = [];
+    get_ports(text, parent, HDLfileparam, IllegalRange, offset) {
+        while (1) {
+            let match = this.r_ports.exec(text);
+            if (match == null) {
+                break;
+            }
+            else if ((match.index == 0 && parent != undefined) || 
+                    this.isIllegalRange(match,IllegalRange,offset)) {
+                continue;
+            }
+            if ( HDLfileparam != null ) {                
+                let portProperty = {
+                    "portName"  : "",
+                    "portWidth" : ""
+                }
+                portProperty.portName = match.groups.name;
+                portProperty.portWidth = match.groups.width;
+                switch (match.groups.type) {
+                    case "inout":
+                        HDLfileparam.port.inout.push(portProperty);
+                        break;
+                    case "input":
+                        HDLfileparam.port.input.push(portProperty);
+                        break;
+                    case "output":
+                        HDLfileparam.port.output.push(portProperty);
+                        break;
+                    default: break;
+                }
+            }
+        }
+    }
+    get_variable(text, document, parent, HDLfileparam, IllegalRange, symbols, offset) {
+        if (!text) {
+            text = document.getText();
+        }
+        while (1) {
+            let match = this.r_Variable.exec(text);
+            if (match == null) {
+                break;
+            }
+            else if ((match.index == 0 && parent != undefined) || 
+                    this.isIllegalRange(match,IllegalRange,offset)) {
+                continue;
+            }
+            if ( match.groups.type == "parameter" && HDLfileparam != null ) {                
+                let parmProperty = {
+                    "paramName"  : "",
+                    "paramWidth" : "",
+                    "paramInit"  : ""
+                }
+                parmProperty.paramName  = match.groups.name;
+                parmProperty.paramWidth = match.groups.width;
+                parmProperty.paramInit  = match.groups.init;
+                HDLfileparam.param.push(parmProperty);
+            }
+            let symbolInfo = this.HDLSymbol.setSymbolInformation(
+                match, parent, document, offset);
+            symbols.push(symbolInfo);
+        }
+    }
+    get_method(text, document, parent, IllegalRange, symbols, offset) {
+        let methodRange = [];
+        if (!text) {
+            text = document.getText();
+        }
+        while (1) {
+            let match = this.r_decl_method.exec(text);
+            if (match == null) {
+                break;
+            }
+            else if ((match.index == 0 && parent == undefined) || 
+                    this.isIllegalRange(match,IllegalRange,offset)) {
+                continue;
+            }
+            let Range = {
+                "start"   : 0,
+                "end"     : 0
+            }
+            Range.start = match.index + offset;
+            Range.end   = match.index + match[0].length + offset;
+            methodRange.push(Range);
+            let symbolInfo = this.HDLSymbol.setSymbolInformation(
+                match, parent, document, offset);
+            symbols.push(symbolInfo);
+            let portOffset = match.index + offset;
+            let methodName = match.groups.name;
             while (1) {
-                let match_ports = this.r_ports.exec(text);
-                if (match_ports == null) {
+                match = this.r_ports.exec(match[0]);
+                if (match == null) {
                     break;
                 }
-                let symbolInfo = this.HDLSymbol.setSymbolInformation(
-                    match, parent, document, offset);
+                else if (this.isIllegalRange(match,IllegalRange,portOffset)) {
+                    continue;
+                }
+                symbolInfo = this.HDLSymbol.setSymbolInformation(
+                    match, methodName, document, portOffset);
                 symbols.push(symbolInfo);
             }
-            resolve(symbols);
+        }
+        return methodRange;
+    }
+    get_instantiation(text, document, parent, HDLfileparam, IllegalRange, symbols, offset) {
+        if (!text) {
+            text = document.getText();
+        }
+        while (1) {
+            let match = this.r_instantiation.exec(text);
+            if (match == null) {
+                break;
+            }
+            else if ((match.index == 0 && parent != undefined) || 
+                    this.isIllegalRange(match,IllegalRange,offset)) {
+                continue;
+            }
+            if ( HDLfileparam != null ) {                
+                let instProperty = {
+                    "instModule"  : "",
+                    "instModPath" : "",
+                    "instName"    : ""
+                }
+                instProperty.instModule = match.groups.type;
+                instProperty.instName   = match.groups.name;
+                HDLfileparam.instmodule.push(instProperty);
+            }
+            let symbolInfo = this.HDLSymbol.setSymbolInformation(
+                match, parent, document, offset);
+            symbols.push(symbolInfo);
+        }
+    }
+    get_instModulePath() {
+        HDLparam.forEach(unitMoudule => {
+            unitMoudule.instmodule.forEach(unitInstanceModule => {
+                HDLparam.forEach(element => {
+                    if (element.moduleName == unitInstanceModule.instModule) {
+                        unitInstanceModule.instModPath = element.modulePath;
+                    }
+                }); 
+            });
         });
     }
-    getCommentRange(text, offset, parent) {
-        let sub_blocks   = [];
+    getWaveImagePath(text) {
+        let waveImagePath = text.match(/\$dumpfile\s+\(\s*\"(.+){1}\"\s*\);/gi);
+        waveImagePath = RegExp.$1;
+        return waveImagePath;
+    }
+    getCommentRange(text, offset) {
         let commentRange = [];
         let regexes = this.comment;
         for (let i = 0; i < regexes.length; i++) {
@@ -224,14 +342,6 @@ class HDLParser {
                 let match = regexes[i].exec(text);
                 if (match == null) {
                     break;
-                }
-                else if (match.index == 0 && parent != undefined) {
-                    continue;
-                }
-                else if (sub_blocks.some((b) => { 
-                    return (match.index >= b.index && match.index < b.index + b[0].length); 
-                })) {
-                    continue;
                 }
                 let Range = {
                     "start"   : 0,
@@ -244,7 +354,7 @@ class HDLParser {
         }
         return commentRange;
     }
-    isComment(match, range, offset) {
+    isIllegalRange(match, range, offset) {
         let isComment;
         for (let index = 0; index < range.length; index++) {
             const element = range[index];
@@ -257,18 +367,6 @@ class HDLParser {
             }
         }
         return isComment;
-    }
-    translate_precision(precision) {
-        switch (precision) {
-            case "full":
-                return this.full_parse;
-            case "declaration":
-                return this.declaration_parse;
-            case "fast":
-                return this.fast_parse;
-            default:
-                throw "Illegal precision";
-        }
     }
 }
 exports.HDLParser = HDLParser;
