@@ -174,26 +174,70 @@ class HoverProvider {
 					} else {
 						content = content.replace(/^\s+(.*?)\s+$/g, "$1");
                     }
-                    let hoverContent = '';
-                    let i = 0;
-                    for (let index = 0; index < content.length; index++) {
-                        const element = content[index];
-                        if (element == ' ') {
-                            i++;
-                        }
-                        if ((element != ' ') || (i <= 4)) {
-                            hoverContent = hoverContent + element;
-                            if (i > 4) {
-                                i = 0;
-                            }
-                        }
-                    }
-					return hoverContent.replace(/\/\//g, "\n//");
+                    this.del_spacing(content, 4);
+                    content = content.replace(/\/\//g, "\n//") + "\n" + this.get_comment(doc, loc[0].range.start.line - 1);
+					return content;
                 });
             }).then((str) => {
                 return new vscode.Hover( { language: 'systemverilog', value: str } );
             }));
         });
+    }
+    get_comment(doc, line) {
+        let comment = "";
+        let commentList = [];
+        let content = doc.lineAt(line).text;
+        let isblank   = content.match(/\S+/g);
+        let l_comment = content.match(/\/\//g);
+        let b_comment = content.match(/\*\//g);
+        while (1) {
+            if ( l_comment == null && b_comment == null && isblank != null) {
+                break;
+            } else {
+                if ( isblank != null ) {                    
+                    if (l_comment != null) {
+                        commentList.push(content + "\n");
+                    } else {
+                        commentList.push(content + "\n");
+                        while (1) {
+                            line = line - 1;
+                            content = doc.lineAt(line).text;
+                            commentList.push(content + "\n");
+                            b_comment = content.match(/\/\*/g);
+                            if (b_comment != null || line == 0) {
+                                break;
+                            }
+                        }
+                    }
+                }
+                line = line - 1;
+                content = doc.lineAt(line).text;
+                isblank   = content.match(/\S+/g);
+                l_comment = content.match(/\/\//g);
+                b_comment = content.match(/\*\//g);
+            }
+        }
+        for (let index = (commentList.length - 1); index >= 0; index--) {
+            comment = comment + commentList[index];
+        }
+        return comment;
+    }
+    del_spacing(content, spacingNum) {
+        let newContent = '';
+        let i = 0;
+        for (let index = 0; index < content.length; index++) {
+            const element = content[index];
+            if (element == ' ') {
+                i++;
+            }
+            if ((element != ' ') || (i <= spacingNum)) {
+                newContent = newContent + element;
+                if (i > spacingNum) {
+                    i = 0;
+                }
+            }
+        }
+        content = newContent;
     }
 }
 exports.HoverProvider = HoverProvider;

@@ -403,24 +403,27 @@ class HDLSymbol {
             case 'enum':        return vscode.SymbolKind.Enum;
             case 'modport':     return vscode.SymbolKind.Null;
             case 'property':    return vscode.SymbolKind.Property;
+
             // port 
             case 'interface':   return vscode.SymbolKind.Interface;
-            case 'logic':       return vscode.SymbolKind.Interface;
-            case 'wire':        return vscode.SymbolKind.Interface;
-            case 'reg':         return vscode.SymbolKind.Interface;
-            case 'bit':         return vscode.SymbolKind.Interface;
+
             // synth param    
             case 'parameter':   return vscode.SymbolKind.Constant;
             case 'localparam':  return vscode.SymbolKind.Constant;
+            case 'integer':     return vscode.SymbolKind.Constant;
+            case 'char':        return vscode.SymbolKind.Constant;
+            case 'float':       return vscode.SymbolKind.Constant;
+            case 'int':         return vscode.SymbolKind.Constant;
+
             // unsynth param
             case 'string':      return vscode.SymbolKind.String;
             case 'struct':      return vscode.SymbolKind.Struct;
             case 'class':       return vscode.SymbolKind.Class;
-    
-            case 'integer':     return vscode.SymbolKind.Variable;
-            case 'char':        return vscode.SymbolKind.Variable;
-            case 'float':       return vscode.SymbolKind.Variable;
-            case 'int':         return vscode.SymbolKind.Variable;
+            
+            case 'logic':       return vscode.SymbolKind.Variable;
+            case 'wire':        return vscode.SymbolKind.Variable;
+            case 'reg':         return vscode.SymbolKind.Variable;
+            case 'bit':         return vscode.SymbolKind.Variable;
             default:            return vscode.SymbolKind.Field;
         }
         /* Unused/Free SymbolKind icons
