@@ -25,13 +25,13 @@ class FileSystemProvider {
     get onDidChangeFile() {
         return this._onDidChangeFile.event;
     }
-    getTopElement(type){
+    getTopElement(param){
         let TopElementList = [];
         let isTopElement = true;
-        for (let index = 0; index < parse.HDLparam.length; index++) {
-            const currentModule = parse.HDLparam[index];
-            for (let index = 0; index < parse.HDLparam.length; index++) {
-                const unitModule = parse.HDLparam[index];
+        for (let index = 0; index < param.length; index++) {
+            const currentModule = param[index];
+            for (let index = 0; index < param.length; index++) {
+                const unitModule = param[index];
                 for (let index = 0; index < unitModule.instmodule.length; index++) {
                     const unitInstModule = unitModule.instmodule[index];
                     if (unitInstModule.instModule == currentModule.moduleName) {
@@ -57,16 +57,11 @@ class FileSystemProvider {
                 isTopElement = true;
             }
         }
-        switch (type) {
-            case "src"       : return TopElementList;
-            case "Data"      : return [];
-            case "testbench" : return [];
-            default          : return [];
-        }
+        return TopElementList;
     }
-    getChildElement(element){
+    getChildElement(element, param){
         let childElementList = [];
-        parse.HDLparam.forEach(unitModule => {
+        param.forEach(unitModule => {
             if (unitModule.moduleName == element) {
                 unitModule.instmodule.forEach(unitInstModule => {
                     let childElement = {
@@ -83,6 +78,12 @@ class FileSystemProvider {
         });
         return childElementList;
     }
+    getSrcTopElement() {
+        return this.TopElementList;
+    }
+    getTbTopElement() {
+        return [];
+    }
     // 用于获取某个节点下属的节点数组，根节点记为 null；
     // 返回一个树节点的所有子节点的数据。
     /**
@@ -93,17 +94,17 @@ class FileSystemProvider {
         // 如果不是根节点
         if (element) {
             switch (element.type) {
-                case "src"       : return this.getTopElement("src");
-                case "Data"      : return this.getTopElement("Data");
-                // case "testbench" : return this.getTopElement("testbench");
-                default          : return this.getChildElement(element.type);
+                case "src"       : return this.getTopElement(parse.HDLparam)//getSrcTopElement();
+                // case "Data"      : return this.getDataTopElement();
+                // case "testbench" : return this.getTbTopElement();
+                default          : return this.getChildElement(element.type, parse.HDLparam);
             }
         }
 
         // 根节点
         return [
             { "type" : "src" },
-            { "type" : "Data" },
+            // { "type" : "Data" },
             // { "type" : "testbench" }
         ];
     }

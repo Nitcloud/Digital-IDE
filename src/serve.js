@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 
+const tree   = require("./tree");
 const utils  = require("./utils");
 const parse  = require("./parse");
 
@@ -22,6 +23,175 @@ let opeParam = {
     "workspacePath" : ""
 }
 exports.opeParam = opeParam;
+
+/* 启动预处理服务 */
+
+class preProcess {
+    constructor(statusbar, parser, channel) {
+        this.building = false;
+        this.symbolsCount = 0;
+        this.NUM_FILES = 250;
+        this.HDLFileExtensions = ["sv", "v", "svh", "vh"];
+        this.globPattern = "**/*.{" + this.HDLFileExtensions.join(",") + "}";
+        this.exclude = undefined;
+        this.forceFastIndexing = false;
+        this.statusbar = statusbar;
+        this.parser = parser;
+        this.outputChannel = channel;
+        this.symbols = new Map();
+        const settings = vscode.workspace.getConfiguration();
+        if (!settings.get('HDL.Indexing')) {
+            this.statusbar.text = "HDL: Indexing disabled on boot";
+        }
+        else {
+            this.build_index().then(() => {
+                this.updateMostRecentSymbols(undefined);
+            });
+        }
+    };
+    /**
+        Processes one file and updates this.symbols with an entry if symbols exist in the file.
+
+        @param uri uri to the document
+        @param total_files total number of files to determine parse-precision
+    */
+    processFile(uri, total_files = 0) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+                resolve(vscode.workspace.openTextDocument(uri).then(doc => {
+                    if (total_files >= 1000 * this.parallelProcessing || this.forceFastIndexing) {
+                        return this.parser.get_HDLfileparam(doc, null, 0, null);
+                    }
+                    else if (total_files >= 100 * this.parallelProcessing) {
+                        return this.parser.get_HDLfileparam(doc, null, 0, null);
+                    }
+                    else {
+                        return this.parser.get_HDLfileparam(doc, null, 0, null);
+                    }
+                }));
+            })).then((output) => {
+                if (output.length > 0) {
+                    if (this.symbols.has(uri.fsPath)) {
+                        this.symbolsCount += output.length - this.symbols.get(uri.fsPath).length;
+                    }
+                    else {
+                        this.symbolsCount += output.length;
+                    }
+                    this.symbols.set(uri.fsPath, output);
+                    if (total_files == 0) { // If total files is 0, it is being used onChange
+                        this.statusbar.text = 'HDL: ' + this.symbolsCount + ' indexed objects';
+                    }
+                }
+            }).catch((error) => {
+                // this.outputChannel.appendLine("HDL: Indexing: Unable to process file: " + uri.toString());
+                // this.outputChannel.appendLine(error);
+                if (this.symbols.has(uri.fsPath)) {
+                    this.symbolsCount -= this.symbols.get(uri.fsPath).length;
+                    this.symbols.delete(uri.fsPath);
+                }
+                return undefined;
+            });
+        });
+    }
+    /**
+        Scans the `workspace` for HDL,
+        Looks up all the `symbols` that it exist on the queried files,
+        and saves the symbols as `HDLSymbol` objects to `this.symbols`.
+
+        @return status message when indexing is successful or failed with an error.
+    */
+    build_index() {
+        return __awaiter(this, void 0, void 0, function* () {
+            var cancelled = false;
+            this.building = true;
+            this.symbolsCount = 0;
+            this.statusbar.text = "HDL: Indexing..";
+            const settings = vscode.workspace.getConfiguration();
+            this.forceFastIndexing  = settings.get('HDL.forceFastIndexing');
+            this.parallelProcessing = settings.get('HDL.parallelProcessing');
+            let exclude = settings.get('HDL.excludeIndexing');
+            if (exclude == "insert globPattern here") {
+                exclude = undefined;
+            }
+            return yield vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                title: "HDL Indexing...",
+                cancellable: true
+            }, (_progress, token) => __awaiter(this, void 0, void 0, function* () {
+                this.symbols = new Map();
+                let uris = yield Promise.resolve(vscode.workspace.findFiles(this.globPattern, exclude, undefined, token));
+
+                for (var filenr = 0; filenr < uris.length; filenr += this.parallelProcessing) {
+                    let subset = uris.slice(filenr, filenr + this.parallelProcessing);
+                    if (token.isCancellationRequested) {
+                        cancelled = true;
+                        break;
+                    }
+                    yield Promise.all(subset.map(uri => {
+                        return this.processFile(uri, uris.length);
+                    }));
+                }
+            })).then(() => {
+                this.building = false;
+                this.parser.get_instModulePath();
+                new tree.FileExplorer();
+                if (cancelled) {
+                    this.statusbar.text = "HDL: Indexing cancelled";
+                }
+                else {
+                    this.statusbar.text = 'HDL: ' + this.symbolsCount + ' indexed objects';
+                }
+            });
+        });
+    }
+    /**
+        Updates `mostRecentSymbols` with the most recently used symbols
+        When `mostRecentSymbols` is undefined, add the top `this.NUM_FILES` symbol from `this.symbols`
+        When `mostRecentSymbols` is defined, add the symbols in `recentSymbols` one by one to the top of the array
+
+        @param recentSymbols the recent symbols
+    */
+    updateMostRecentSymbols(recentSymbols) {
+        if (this.mostRecentSymbols) {
+            if (!recentSymbols) {
+                return;
+            }
+            while (recentSymbols.length > 0) {
+                let currentSymbol = recentSymbols.pop();
+                //if symbol already exists, remove it
+                for (let i = 0; i < this.mostRecentSymbols.length; i++) {
+                    let symbol = this.mostRecentSymbols[i];
+                    if (symbol == currentSymbol) {
+                        this.mostRecentSymbols.splice(i, 1);
+                        break;
+                    }
+                }
+                //if the array has reached maximum capacity, remove the last element
+                if (this.mostRecentSymbols.length >= this.NUM_FILES) {
+                    this.mostRecentSymbols.pop();
+                }
+                //add the symbol to the top of the array
+                this.mostRecentSymbols.unshift(currentSymbol);
+            }
+        }
+        else {
+            let maxSymbols = new Array();
+            //collect the top symbols in `this.symbols`
+            for (var list of this.symbols.values()) {
+                if (maxSymbols.length + list.length >= this.NUM_FILES) {
+                    let limit = this.NUM_FILES - maxSymbols.length;
+                    maxSymbols = maxSymbols.concat(list.slice(-1 * limit));
+                    break;
+                }
+                else {
+                    maxSymbols = maxSymbols.concat(list);
+                }
+            }
+            this.mostRecentSymbols = maxSymbols;
+        }
+    }
+}
+exports.preProcess = preProcess;
 
 /* 前端开发辅助功能 */
 
@@ -190,33 +360,34 @@ class HoverProvider {
         let commentList = [];
         let content = doc.lineAt(line).text;
         let isblank   = content.match(/\S+/g);
-        let l_comment = content.match(/\/\//g);
-        let b_comment = content.match(/\*\//g);
+        let l_comment = content.match(/\/\/.*/g);
+        let b_comment = content.match(/.*\*\//g);
         while (1) {
             if ( l_comment == null && b_comment == null && isblank != null) {
                 break;
             } else {
                 if ( isblank != null ) {                    
                     if (l_comment != null) {
-                        commentList.push(content + "\n");
+                        commentList.push(l_comment + "\n");
                     } else {
-                        commentList.push(content + "\n");
+                        commentList.push(b_comment + "\n");
                         while (1) {
                             line = line - 1;
                             content = doc.lineAt(line).text;
-                            commentList.push(content + "\n");
-                            b_comment = content.match(/\/\*/g);
+                            b_comment = content.match(/\/\*.*/g);
                             if (b_comment != null || line == 0) {
+                                commentList.push(b_comment + "\n");
                                 break;
                             }
+                            commentList.push(content + "\n");
                         }
                     }
                 }
                 line = line - 1;
                 content = doc.lineAt(line).text;
                 isblank   = content.match(/\S+/g);
-                l_comment = content.match(/\/\//g);
-                b_comment = content.match(/\*\//g);
+                l_comment = content.match(/\/\/.*/g);
+                b_comment = content.match(/.*\*\//g);
             }
         }
         for (let index = (commentList.length - 1); index >= 0; index--) {
@@ -628,6 +799,177 @@ class iverilogOperation {
     }
 }
 exports.iverilogOperation = iverilogOperation;
+
+class xvlogOperation {
+    constructor(logger) {
+        return _super.call(this, "xvlog", logger) || this;
+    }
+    lint(doc) {
+        var _this = this;
+        this.logger.log('xvlog lint requested');
+        if (doc.languageId == "vhdl") {
+            var command = "xvhdl " + " -nolog " + doc.fileName;
+        } else {
+            //Systemverilog args
+            var svArgs = (doc.languageId == "systemverilog") ? "-sv" : ""; 
+            var command = "xvlog " + svArgs + " -nolog " + doc.fileName;
+        }
+        this.logger.log(command, Logger.Log_Severity.Command);
+        child.exec(command, function (error, stdout, stderr) {
+            var diagnostics = [];
+            var lines = stdout.split(/\r?\n/g);
+            lines.forEach(function (line) {
+                var tokens = line.split(/:?\s*(?:\[|\])\s*/).filter(Boolean);
+                if (tokens.length < 4
+                    || tokens[0] != "ERROR"
+                    || !tokens[1].startsWith("VRFC")) {
+                    return;
+                }
+                var _a = tokens[3].split(/:(\d+)/), filename = _a[0], lineno_str = _a[1];
+                var lineno = parseInt(lineno_str) - 1;
+                var diagnostic = {
+                    severity: vscode.DiagnosticSeverity.Error,
+                    code: tokens[1],
+                    message: "[" + tokens[1] + "] " + tokens[2],
+                    range: new vscode.Range(lineno, 0, lineno, Number.MAX_VALUE),
+                    source: "xvlog"
+                };
+                diagnostics.push(diagnostic);
+            });
+            _this.logger.log(diagnostics.length + ' errors/warnings returned');
+            _this.diagnostic_collection.set(doc.uri, diagnostics);
+        });
+    }
+}
+exports.xvlogOperation = xvlogOperation;
+
+class LintManager {
+    constructor(logger) {
+        this.logger = logger;
+        vscode.workspace.onDidOpenTextDocument(this.lint, this, this.subscriptions);
+        vscode.workspace.onDidSaveTextDocument(this.lint, this, this.subscriptions);
+        vscode.workspace.onDidCloseTextDocument(this.removeFileDiagnostics, this, this.subscriptions);
+        vscode.workspace.onDidChangeConfiguration(this.configLinter, this, this.subscriptions);
+        this.configLinter();
+    }
+    configLinter() {
+        var linter_name;
+        linter_name = vscode.workspace.getConfiguration("HDL.linting").get("linter");
+        if (this.linter == null || this.linter.name != linter_name) {
+            switch (linter_name) {
+                case "iverilog":
+                    this.linter = new IcarusLinter["default"](this.logger);
+                    break;
+                case "xvlog":
+                    this.linter = new XvlogLinter["default"](this.logger);
+                    break;
+                case "modelsim":
+                    this.linter = new ModelsimLinter["default"](this.logger);
+                    break;
+                case "verilator":
+                    this.linter = new VerilatorLinter["default"](this.logger);
+                    break;
+                default:
+                    console.log("Invalid linter name.");
+                    this.linter = null;
+                    break;
+            }
+        }
+        if (this.linter != null) {
+            console.log("Using linter " + this.linter.name);
+        }
+    }
+    lint(doc) {
+        // Check for language id
+        var lang = doc.languageId;
+        var linter_name = vscode.workspace.getConfiguration("HDL.linting").get("linter");
+        if (linter_name == "xvlog") {
+            if (this.linter != null && (lang === "verilog" || lang === "systemverilog" || lang === "vhdl"))
+                this.linter.startLint(doc);
+        } else {
+            if (this.linter != null && (lang === "verilog" || lang === "systemverilog"))
+                this.linter.startLint(doc);
+        }
+    }
+    removeFileDiagnostics(doc) {
+        if (this.linter != null)
+            this.linter.removeFileDiagnostics(doc);
+    }
+    RunLintTool() {
+        return __awaiter(this, void 0, void 0, function () {
+            var lang, linterStr, tempLinter;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        lang = vscode.window.activeTextEditor.document.languageId;
+                        if (!(vscode.window.activeTextEditor === undefined || (lang !== "verilog" && lang !== "systemverilog" && lang !== "vhdl")))
+                            return [3 /*break*/, 1];
+                        vscode.window.showErrorMessage("Verilog HDL: No document opened");
+                        return [3 /*break*/, 4];
+                    case 1: return [4 /*yield*/, vscode.window.showQuickPick([
+                        {
+                            label: "iverilog",
+                            description: "Icarus Verilog"
+                        },
+                        {
+                            label: "xvlog",
+                            description: "Vivado Logical Simulator"
+                        },
+                        {
+                            label: "modelsim",
+                            description: "Modelsim"
+                        },
+                        {
+                            label: "verilator",
+                            description: "Verilator"
+                        }
+                    ], {
+                        matchOnDescription: true,
+                        placeHolder: "Choose a linter to run"
+                    })];
+                    case 2:
+                        linterStr = _a.sent();
+                        if (linterStr === undefined)
+                            return [2 /*return*/];
+                        switch (linterStr.label) {
+                            case "iverilog":
+                                tempLinter = new IcarusLinter["default"](this.logger);
+                                break;
+                            case "xvlog":
+                                tempLinter = new XvlogLinter["default"](this.logger);
+                                break;
+                            case "modelsim":
+                                tempLinter = new ModelsimLinter["default"](this.logger);
+                                break;
+                            case "verilator":
+                                tempLinter = new VerilatorLinter["default"](this.logger);
+                                break;
+                            default:
+                                return [2 /*return*/];
+                        }
+                        return [4 /*yield*/, vscode.window.withProgress({
+                            location: vscode.ProgressLocation.Notification,
+                            title: "Verilog HDL: Running lint tool..."
+                        }, function (progress, token) {
+                            return __awaiter(_this, void 0, void 0, function () {
+                                return __generator(this, function (_a) {
+                                    tempLinter.removeFileDiagnostics(vscode.window.activeTextEditor.document);
+                                    tempLinter.startLint(vscode.window.activeTextEditor.document);
+                                    return [2 /*return*/];
+                                });
+                            });
+                        })];
+                    case 3:
+                        _a.sent();
+                        _a.label = 4;
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    }
+}
+exports.LintManager = LintManager;
 
 class simulateManager {
 

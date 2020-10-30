@@ -27,9 +27,10 @@ function activate(context) {
 	//Output Channel
 	var outputChannel = vscode.window.createOutputChannel("HDL");
     // Back-end classes
-    const parser  = new parse.HDLParser();
-	const indexer = new monitor.HDLMonitor(statusBar, parser, outputChannel);
-
+    const parser     = new parse.HDLParser();
+    const preProcess = new serve.preProcess(statusBar, parser, outputChannel);
+    const HDLMonitor = new monitor.HDLMonitor(parser, preProcess);
+    
 	// Configure Provider manager
     const selector = [
         { scheme: 'file', language: 'systemverilog' }, 
@@ -37,27 +38,23 @@ function activate(context) {
         { scheme: 'file', language: 'vhdl' }
     ];
     // Providers
-    const docProvider = new serve.DocumentSymbolProvider(parser);
-    const symProvider = new serve.WorkspaceSymbolProvider(indexer);
-    const defProvider = new serve.DefinitionProvider(symProvider);
     const hovProvider = new serve.HoverProvider();
-    context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(selector, docProvider));
-    context.subscriptions.push(vscode.languages.registerDefinitionProvider(selector, defProvider));
-    context.subscriptions.push(vscode.languages.registerHoverProvider(selector, hovProvider));
+    const docProvider = new serve.DocumentSymbolProvider(parser);
+    const symProvider = new serve.WorkspaceSymbolProvider(preProcess);
+    const defProvider = new serve.DefinitionProvider(symProvider);
 	context.subscriptions.push(vscode.languages.registerWorkspaceSymbolProvider(symProvider));
+    context.subscriptions.push(vscode.languages.registerHoverProvider(selector, hovProvider));
+    context.subscriptions.push(vscode.languages.registerDefinitionProvider(selector, defProvider));
+    context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(selector, docProvider));
 	
     // Background processes
-    context.subscriptions.push(vscode.workspace.onDidSaveTextDocument((doc) => { indexer.onChange(doc); }));
-    context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor((editor) => { indexer.onChange(editor.document); }));
-    let watcher = vscode.workspace.createFileSystemWatcher(indexer.globPattern, false, false, false);
-    context.subscriptions.push(watcher.onDidCreate((uri) => { indexer.onCreate(uri); }));
-    context.subscriptions.push(watcher.onDidDelete((uri) => { indexer.onDelete(uri); }));
-    context.subscriptions.push(watcher.onDidChange((uri) => { indexer.onDelete(uri); }));
+    context.subscriptions.push(vscode.workspace.onDidSaveTextDocument((doc) => { HDLMonitor.onChange(doc); }));
+    context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor((editor) => { HDLMonitor.onChange(editor.document); }));
+    let watcher = vscode.workspace.createFileSystemWatcher(HDLMonitor.globPattern, false, false, false);
+    context.subscriptions.push(watcher.onDidCreate((uri) => { HDLMonitor.onCreate(uri); }));
+    context.subscriptions.push(watcher.onDidDelete((uri) => { HDLMonitor.onDelete(uri); }));
+    context.subscriptions.push(watcher.onDidChange((uri) => { HDLMonitor.onDelete(uri); }));
     context.subscriptions.push(watcher);
-
-    new tree.FileExplorer(context);
-
-    // parser.get_instModulePath();
 
     // //VHDL Language sever
     // context.subscriptions.push(
@@ -79,7 +76,7 @@ function activate(context) {
 //     SDK.register(context,root_path);
 //     TOOL.register(context,root_path);
 //     FPGA.register(context,root_path);
-    
+        // new tree.FileExplorer(context); 
 //     vscode.window.registerTreeDataProvider('TOOL.file_tree', new tree.fileProvider());
 //     vscode.window.registerTreeDataProvider('TOOL.sdk_tree' , new tree.sdkProvider());
 //     vscode.window.registerTreeDataProvider('TOOL.fpga_tree', new tree.fpgaProvider());

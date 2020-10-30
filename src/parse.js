@@ -185,6 +185,7 @@ class HDLParser {
         signaled by returning `undefined`, `null`, or an empty list.
     */
     get_HDLfileparam(document, type, offset = 0, parent) {
+        // this.removeCurrentFileParam(document)
         let symbols = [];
         let text = document.getText();
         let IllegalRange = this.getCommentRange(text,offset);
