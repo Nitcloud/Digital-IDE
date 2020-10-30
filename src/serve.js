@@ -9,6 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 
 const utils  = require("./utils");
+const parse  = require("./parse");
+
 const vscode = require("vscode");
 const child  = require("child_process");
 
@@ -449,6 +451,7 @@ class iverilogOperation {
         vscode.workspace.onDidChangeConfiguration(function () {
             this.getConfig();
         });
+        this.parse    = new parse.HDLParser();
         this.file     = new utils.fileOperation();
         this.array    = new utils.arrayOperation();
         this.folder   = new utils.folderOperation();
@@ -558,124 +561,79 @@ class iverilogOperation {
                 moduleNameList.push(element.moduleName);
             }
         });
-
-        // 获取仿真数据输出文件的格式
-
         if (moduleNameList.length != 0) {
+            // 选择要仿真的模块
+            let simModuleName = '';
             if (moduleNameList.length >= 2) {
                 vscode.window.showInformationMessage("There are multiple modules, please select one of them");
-                vscode.window.showQuickPick(moduleNameList).then(selection => {
-                    if (!selection) {
-                        return;
-                    }
-                    let iverilogPath = workspace_path + "prj/simulation/iVerilog/" + selection;
-                    let rtlFilePath = "";
-                    // 获取所选模块的例化模块名
-                    let instanceModuleNameList = [];
-                    HDLparam.forEach(element => {
-                        if (element.moduleName == selection) {
-                            element.instmodule.forEach(element => {
-                                instanceModuleNameList.push(element.instModule);
-                            });
-                        }
-                    });
-                    if (instanceModuleNameList != null) {                        
-                        // 获取所有例化模块所在文件的路径
-                        let moduleFilePathList = [];
-                        instanceModuleNameList.forEach(instanceModuleName => {     
-                            HDLparam.forEach(element => {
-                                if (element.moduleName == instanceModuleName) {
-                                    moduleFilePathList.push(element.modulePath);
-                                }
-                            });           
-                        });
-                        moduleFilePathList = this.array.removeDuplicates(moduleFilePathList);
-                        moduleFilePathList.forEach(element => {
-                            rtlFilePath = rtlFilePath + element + " ";
-                        });
-                    }
-                    let command = `${iVerilogPath} -g2012 -o ${iverilogPath} ${editor.document.fileName} ${rtlFilePath} ${GlblPath} ${LibPath}`;
-                    // terminal_ope.runCmd(command);
-                    exec(command,function (error, stdout, stderr) {
-                        vscode.window.showInformationMessage(stdout);
-                        if (error !== null) {
-                            vscode.window.showErrorMessage(stderr);
+                simModuleName = __awaiter(this, void 0, void 0, function* () {
+                    vscode.window.showQuickPick(moduleNameList).then(selection => {
+                        if (!selection) {
+                            return null;
                         } else {
-                            vscode.window.showInformationMessage("iVerilog simulates successfully!!!");
-                            let waveImagePath = module.getWaveImagePath(content);
-                            if (waveImagePath != '') {
-                                let waveImageExtname = waveImagePath.split('.');
-                                let Simulate = vscode.window.createTerminal({ name: 'Simulate' });
-                                Simulate.show(true);
-                                Simulate.sendText(`${vvpPath} ${iverilogPath} -${waveImageExtname[waveImageExtname.length-1]}`);
-                                let gtkwave = vscode.window.createTerminal({ name: 'gtkwave' });
-                                gtkwave.show(true);
-                                gtkwave.sendText(`${gtkwavePath} ${waveImagePath}`);
-                            } else {
-                                vscode.window.showWarningMessage("There is no wave image path in this testbench");
-                            }
+                            return selection;
                         }
                     });
                 });
             }
             else {
-                let iverilogPath = workspace_path + "prj/simulation/iVerilog/" + moduleNameList[0];
-                let rtlFilePath = "";
-                // 获取所选模块的例化模块名
-                let instanceModuleNameList = [];
-                HDLparam.forEach(element => {
-                    if (element.moduleName == selection) {
-                        element.instmodule.forEach(element => {
-                            instanceModuleNameList.push(element.instModule);
-                        });
-                    }
-                });
-                if (instanceModuleNameList != null) {                        
-                    // 获取所有例化模块所在文件的路径
-                    let moduleFilePathList = [];
-                    instanceModuleNameList.forEach(instanceModuleName => {     
-                        HDLparam.forEach(element => {
-                            if (element.moduleName == instanceModuleName) {
-                                moduleFilePathList.push(element.modulePath);
-                            }
-                        });           
-                    });
-                    moduleFilePathList = this.array.removeDuplicates(moduleFilePathList);
-                    moduleFilePathList.forEach(element => {
-                        rtlFilePath = rtlFilePath + element + " ";
-                    });
-                }
-                let command = `${iVerilogPath} -g2012 -o ${iverilogPath} ${editor.document.fileName} ${rtlFilePath} ${GlblPath} ${LibPath}`;
-                // terminal_ope.runCmd(command);
-                exec(command,function (error, stdout, stderr) {
-                    vscode.window.showInformationMessage(stdout);
-                    if (error !== null) {
-                        vscode.window.showErrorMessage(stderr);
-                    } else {
-                        vscode.window.showInformationMessage("iVerilog simulates successfully!!!");
-                        let waveImagePath = module.getWaveImagePath(content);
-                        if (waveImagePath != '') {
-                            let waveImageExtname = waveImagePath.split('.');
-                            let Simulate = vscode.window.createTerminal({ name: 'Simulate' });
-                            Simulate.show(true);
-                            Simulate.sendText(`${vvpPath} ${iverilogPath} -${waveImageExtname[waveImageExtname.length-1]}`);
-                            let gtkwave = vscode.window.createTerminal({ name: 'gtkwave' });
-                            gtkwave.show(true);
-                            gtkwave.sendText(`${gtkwavePath} ${waveImagePath}`);
+                simModuleName = moduleNameList[0];
+            }
+            let rtlFilePath  = "";
+            let iverilogPath = "";
+            iverilogPath = workspace_path + "prj/simulation/iVerilog/" + simModuleName;
+            iverilogPath = editor.document.fileName;                    
 
-                        } else {
-                            vscode.window.showWarningMessage("There is no wave image path in this testbench");
-                        }
+            // 获取所有例化模块所在文件的路径
+            let instmoduleFilePathList = [];
+            HDLparam.forEach(unitModule => {     
+                if (unitModule.moduleName == simModuleName) {
+                    unitModule.instmodule.forEach(instanceModule => {
+                        instmoduleFilePathList.push(instanceModule.instModPath);
+                    });
+                }          
+            });
+            instmoduleFilePathList = this.array.removeDuplicates(instmoduleFilePathList);
+            instmoduleFilePathList.forEach(element => {
+                rtlFilePath = rtlFilePath + element + " ";
+            });
+        
+            let command = `${iVerilogPath} -g2012 -o ${iverilogPath} ${editor.document.fileName} ${rtlFilePath} ${GlblPath} ${LibPath}`;
+
+            let waveImagePath = this.parse.getWaveImagePath(editor.document.text);
+            child.exec(command, { cwd: this.runFilePath }, function (error, stdout, stderr) {
+                vscode.window.showInformationMessage(stdout);
+                if (error !== null) {
+                    vscode.window.showErrorMessage(stderr);
+                } else {
+                    vscode.window.showInformationMessage("iVerilog simulates successfully!!!");
+                    if (waveImagePath != '') {
+                        let waveImageExtname = waveImagePath.split('.');
+                        let Simulate = vscode.window.createTerminal({ name: 'Simulate' });
+                        Simulate.show(true);
+                        Simulate.sendText(`${vvpPath} ${iverilogPath} -${waveImageExtname[waveImageExtname.length-1]}`);
+                        let gtkwave = vscode.window.createTerminal({ name: 'gtkwave' });
+                        gtkwave.show(true);
+                        gtkwave.sendText(`${gtkwavePath} ${waveImagePath}`);
+
+                    } else {
+                        vscode.window.showWarningMessage("There is no wave image path in this testbench");
                     }
-                });
-            }         
-        }
+                }
+            });
+        }         
         else {
             vscode.window.showWarningMessage("There is no module in this file")
         }
     }
 }
 exports.iverilogOperation = iverilogOperation;
+
+class simulateManager {
+
+}
+exports.simulateManager = simulateManager;
+
 /* 后端开发辅助功能 */
 
 /* 调试开发辅助功能 */

@@ -3,6 +3,47 @@ Object.defineProperty(exports, "__esModule", { value: true });
 
 const utils  = require("./utils");
 
+/*
+HDLfileparam = 
+{
+    "moduleName" : "",
+    "modulePath" : "",
+    "instmodule" : [
+        {
+            "instModule"  : "",
+            "instModPath" : "",
+            "instName"    : ""
+        }
+    ],
+    "param"      : [
+        {
+            "paramName"  : "",
+            "paramWidth" : "",
+            "paramInit"  : ""
+        }
+    ],
+    "port"       : {
+        "inout"  : [
+            {
+                "portName"  : "",
+                "portWidth" : ""
+            }
+        ],
+        "input"  : [
+            {
+                "portName"  : "",
+                "portWidth" : ""
+            }
+        ],
+        "output" : [
+            {
+                "portName"  : "",
+                "portWidth" : ""
+            }
+        ]
+    }  
+}
+*/
 let HDLparam = [];
 exports.HDLparam = HDLparam;
 
@@ -298,7 +339,7 @@ class HDLParser {
                 symbols.push(symbolInfo);
                 
                 // 获取端口参数信息（用于仿真，生成结构，生成仿真文件）
-                if (parent == null && HDLfileparam != null) {
+                if ( HDLfileparam != null ) {
                     switch (unitElement) {
                         case this.r_ports:
                             let portProperty = {

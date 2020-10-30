@@ -22,7 +22,7 @@ function isHDLDocument(document) {
     return false;
 }
 
-class HDLIndexer {
+class HDLMonitor {
     constructor(statusbar, parser, channel) {
         this.building = false;
         this.symbolsCount = 0;
@@ -241,4 +241,9 @@ class HDLIndexer {
         }
     }
 }
-exports.HDLIndexer = HDLIndexer;
+exports.HDLMonitor = HDLMonitor;
+
+class prjMonitor {
+
+}
+exports.prjMonitor = prjMonitor;

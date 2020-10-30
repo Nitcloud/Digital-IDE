@@ -48,18 +48,19 @@
     - [x] 文件标志
     - [x] 定义跳转
     - [x] 悬停提示
+    - [x] 工程结构
     - [ ] 语法诊断
-    - [ ] 自动补全
     - [ ] 自动对齐
+    - [ ] 自动补全
   - [ ] 仿真功能
     - [ ] 自动生成tb
-    - [x] vivado快速仿真
-    - [x] iverilog快速仿真
+    - [ ] vivado快速仿真
+    - [ ] iverilog快速仿真
     - [ ] modelsim快速仿真
     - [ ] Verilator快速仿真
   - [ ] 常见功能库
 - [ ] 后端开发辅助功能
-  - [x] vivado开发辅助
+  - [ ] vivado开发辅助
   - [ ] quartus开发辅助
   - [ ] icestorm开发辅助
 - [ ] soc开发辅助

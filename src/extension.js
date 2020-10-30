@@ -9,11 +9,12 @@
  */
 'use strict';
 
-const vscode = require("vscode");
-const utils  = require("./utils");
-const serve  = require("./serve");
-const parse  = require("./parse");
-const index  = require("./.Providers/index");
+const vscode   = require("vscode");
+const tree     = require("./tree");
+const utils    = require("./utils");
+const serve    = require("./serve");
+const parse    = require("./parse");
+const monitor  = require("./monitor");
 
 function activate(context) {
 //     // lint
@@ -27,15 +28,14 @@ function activate(context) {
 	var outputChannel = vscode.window.createOutputChannel("HDL");
     // Back-end classes
     const parser  = new parse.HDLParser();
-	const indexer = new index.HDLIndexer(statusBar, parser, outputChannel);
+	const indexer = new monitor.HDLMonitor(statusBar, parser, outputChannel);
 
 	// Configure Provider manager
     const selector = [
         { scheme: 'file', language: 'systemverilog' }, 
-        { scheme: 'file', language: 'verilog' }
+        { scheme: 'file', language: 'verilog' },
+        { scheme: 'file', language: 'vhdl' }
     ];
-    const VHDL_MODE = 
-        { scheme: 'file', language: 'vhdl' };
     // Providers
     const docProvider = new serve.DocumentSymbolProvider(parser);
     const symProvider = new serve.WorkspaceSymbolProvider(indexer);
@@ -54,6 +54,8 @@ function activate(context) {
     context.subscriptions.push(watcher.onDidDelete((uri) => { indexer.onDelete(uri); }));
     context.subscriptions.push(watcher.onDidChange((uri) => { indexer.onDelete(uri); }));
     context.subscriptions.push(watcher);
+
+    new tree.FileExplorer(context);
 
     // parser.get_instModulePath();
 

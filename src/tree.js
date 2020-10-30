@@ -16,7 +16,6 @@ var __extends = (this && this.__extends) || (function () {
 exports.__esModule = true;
 
 const vscode = require("vscode");
-const utils  = require("./utils");
 const parse  = require("./parse");
 
 class FileSystemProvider {
@@ -93,11 +92,11 @@ class FileSystemProvider {
     getChildren(element) {
         // 如果不是根节点
         if (element) {
-            switch (element) {
+            switch (element.type) {
                 case "src"       : return this.getTopElement("src");
                 case "Data"      : return this.getTopElement("Data");
                 // case "testbench" : return this.getTopElement("testbench");
-                default          : return this.getChildElement(element);
+                default          : return this.getChildElement(element.type);
             }
         }
 
@@ -123,24 +122,31 @@ class FileSystemProvider {
     command          属性，如果有这个属性的话，当点击这个树节点时，这个属性所指定的命令就会被执行了。
     */
     getTreeItem(element) {
-        let childrenList = this.getChildren(element.type);
+        let childrenList = this.getChildren(element);
+        let elementName = "";
+        if (element.name == "" || element.name == undefined) {
+            elementName = element.type;
+        } else {
+            elementName = element.name + ' \(' + element.type + '\)';
+        }
         const treeItem = new vscode.TreeItem(
-            element.type,
+            elementName,
             childrenList.length === 0 ? 
             vscode.TreeItemCollapsibleState.None :
             vscode.TreeItemCollapsibleState.Collapsed 
         );
-        treeItem.contextValue = 'FPGA';
         let TreeItemList = [];
         for (let index = 0; index < childrenList.length; index++) {
-            TreeItemList.push(this.getTreeItem(childrenList[index]));
+            const element = childrenList[index];
+            TreeItemList.push(this.getTreeItem(element));
         }
+        treeItem.contextValue = 'file';
         treeItem.children = TreeItemList;
-        // treeItem.command = { 
-        //     title:     "Open this HDL File", 
-        //     command:   'FILE.openFile', 
-        //     arguments: element.fspath, 
-        // };
+        treeItem.command = { 
+            title:     "Open this HDL File", 
+            command:   'FILE.openFile', 
+            arguments: [element.fspath], 
+        };
         return treeItem;
     }
 }
@@ -149,11 +155,11 @@ class FileExplorer {
     constructor(context) {
         const treeDataProvider = new FileSystemProvider();
         this.fileExplorer = vscode.window.createTreeView('TOOL.file_tree', { treeDataProvider });
-        // vscode.commands.registerCommand('FILE.openFile', (resource) => this.openResource(resource));
+        vscode.commands.registerCommand('FILE.openFile', (resource) => this.openResource(resource));
     }
-    // openResource(resource) {
-    //     vscode.window.showTextDocument(resource);
-    // }
+    openResource(resource) {
+        vscode.window.showTextDocument(vscode.Uri.file(resource));
+    }
 }
 exports.FileExplorer = FileExplorer;
 

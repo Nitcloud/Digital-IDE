@@ -312,6 +312,11 @@
 			}
 		],
 		"commands": [
+            {
+				"command": "FILE.openFile",
+				"title": "Open this File",
+				"category": "FILE"
+			},
 			{
 				"command": "TOOL.Gen_Property",
 				"title": "generate Property file",

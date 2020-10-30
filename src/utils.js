@@ -1,3 +1,13 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
 const fs     = require("fs");
 const fspath = require("path");
 const vscode = require("vscode");
@@ -441,8 +451,13 @@ exports.HDLSymbol = HDLSymbol;
 
 /* xilinx File TOOL */
 class xilinxFileExplorer {
+    constructor () {
+        this.json   = new jsonOperation();
+        this.file   = new fileOperation();
+        this.folder = new folderOperation();
+    }
     move_xbd_xIP(workspace_path, property_path) {
-        let prj_info = file.pullJsonInfo(property_path);
+        let prj_info = this.json.pullJsonInfo(property_path);
         let target_path = "";
         let source_IP_path = `${workspace_path}prj/xilinx/${prj_info.PRJ_NAME.FPGA}.srcs/sources_1/ip`;
         let source_bd_path = `${workspace_path}prj/xilinx/${prj_info.PRJ_NAME.FPGA}.srcs/sources_1/bd`;
@@ -464,24 +479,24 @@ class xilinxFileExplorer {
     }
     xclean(workspace_path,mode) {
         if (mode == "all") {
-            file.deleteDir(`${workspace_path}prj`);
+            this.folder.deleteDir(`${workspace_path}prj`);
         }
-        file.deleteDir(`${workspace_path}.Xil`);
-        let file_list = file.pick_file(workspace_path,".jou");
+        this.folder.deleteDir(`${workspace_path}.Xil`);
+        let file_list = this.file.pick_file(workspace_path,".jou");
         file_list.forEach(element => {
-            file.deleteFile(`${workspace_path}${element}`)
+            this.file.deleteFile(`${workspace_path}${element}`)
         });
-        file_list = file.pick_file(workspace_path,".log");
+        file_list = this.file.pick_file(workspace_path,".log");
         file_list.forEach(element => {
-            file.deleteFile(`${workspace_path}${element}`)
+            this.file.deleteFile(`${workspace_path}${element}`)
         });
-        file_list = file.pick_file(workspace_path,".str");
+        file_list = this.file.pick_file(workspace_path,".str");
         file_list.forEach(element => {
-            file.deleteFile(`${workspace_path}${element}`)
+            this.file.deleteFile(`${workspace_path}${element}`)
         });
     }
     pick_elf_file(boot_path) {
-        let elf_list = file.pick_file(boot_path,".elf");
+        let elf_list = this.file.pick_file(boot_path,".elf");
             elf_list = elf_list.filter(function (elf_file) {
             return elf_file !== 'fsbl.elf';
         });
@@ -633,22 +648,3 @@ class xilinxFileExplorer {
     }
 }
 exports.xilinxFileExplorer = xilinxFileExplorer;
-
-/**
-    Gets the `range` of a line given the line number
-
-    @param line the line number
-    @return the line's range
-*/
-function getLineRange(line, offendingSymbol, startPosition) {
-    let endPosition;
-    if (startPosition == null && offendingSymbol == null) {
-        startPosition = 0;
-        endPosition = Number.MAX_VALUE;
-    }
-    else {
-        endPosition = startPosition + offendingSymbol.length;
-    }
-    return vscode_languageserver.Range.create(vscode_languageserver.Position.create(line, startPosition), vscode_languageserver.Position.create(line, (endPosition)));
-}
-exports.getLineRange = getLineRange;
