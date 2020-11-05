@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -13,18 +14,6 @@ const fspath = require("path");
 const vscode = require("vscode");
 const exec   = require('child_process').exec;
 
-let prjInitparam = {
-	"FPGA_VERSION": "xilinx",
-	"PRJ_NAME": {
-		"FPGA": "template"
-	},
-	"SOC_MODE": {
-		"soc": "none"
-	},
-	"enableShowlog": false,
-	"Device": "xc7z020clg400-2"
-}
-exports.prjInitparam = prjInitparam;
 
 /* INIT */
 
@@ -33,16 +22,26 @@ exports.prjInitparam = prjInitparam;
 /* file or folder operation */
 
 // 获取当前工作区文件夹路径
-function getCurrentWorkspaceFolder() {
-	var folder = vscode.workspace.workspaceFolders[0].uri.toString();
+function getOpeParam(os, rootPath, workspacePath, propertyPath) {
+    os = process.platform;
+    rootPath = `${__dirname}`.replace(/\\/g,"\/");
+    var folder = vscode.workspace.workspaceFolders[0].uri.toString();
 	folder = folder.substr(8, folder.length);
 	folder += "/";
 	var Drive = folder[0];
 	folder = folder.substr(4, folder.length);
-	folder = Drive + ":" + folder;
-	return folder;
-};
-exports.getCurrentWorkspaceFolder = getCurrentWorkspaceFolder;
+    workspacePath = Drive + ":" + folder;
+    propertyPath = `${workspacePath}.vscode/property.json`;
+    if (!fs.existsSync(propertyPath)) {
+        if (!fs.existsSync(`${workspacePath}property.json`)) {
+            propertyPath = "";
+        }
+        else{
+            propertyPath = `${workspacePath}property.json`;
+        }
+    }
+}
+exports.getOpeParam = getOpeParam;
 
 /* folder operation */
 class folderOperation {
@@ -60,24 +59,22 @@ class folderOperation {
         }
     }
     deleteDir(path){
-        var files = [];
+        let files = [];
         if( fs.existsSync(path) ) {  
             files = fs.readdirSync(path);   
-            files.forEach(function(file,index){
-                var curPath = fspath.join(path,file);
-                    
+            files.forEach(element => {
+                let curPath = fspath.join(path,element).replace(/\\/g,"\/");
                 if(fs.statSync(curPath).isDirectory()) { 
                     this.deleteDir(curPath);
                 } else {    
                     fs.unlinkSync(curPath);    
                 }
-                    
             });
             fs.rmdirSync(path); //清除文件夹
         }
     }
     movedir(oldpath,newpath) {
-        folder  = fspath.basename(oldpath);
+        let folder  = fspath.basename(oldpath);
         newpath = newpath + '/' + folder;
         if (fs.existsSync(oldpath)) {
             if (fs.existsSync(newpath)) {
@@ -141,10 +138,6 @@ exports.fileOperation = fileOperation;
 
 /* JSON file operation */
 class jsonOperation {
-    addJsonInfo(sourceJSON,addJSON,objectName,jsonPath) {
-        sourceJSON[`${objectName}`] = addJSON;
-        this.pushJsonInfo(jsonPath,sourceJSON)
-    }
     pullJsonInfo(JSON_path) {
         var data = fs.readFileSync(JSON_path, 'utf8');
         let prjinfo = JSON.parse(data);
@@ -240,25 +233,23 @@ class refreshProperty {
         this.folder = new folderOperation();
     }
     generatePropertypath(workspace_path) {
-        let Property_path = `${workspace_path}.vscode/Property.json`;
+        let Property_path = `${workspace_path}.vscode/property.json`;
         if (!this.folder.ensureExists(Property_path)) {
-            if (!this.folder.ensureExists(`${workspace_path}Property.json`)) {
-                vscode.window.showInformationMessage("There is no Property.json here, where you want to generate?",'.vscode','root')
+            if (!this.folder.ensureExists(`${workspace_path}property.json`)) {
+                vscode.window.showInformationMessage("There is no property.json here, where you want to generate?",'.vscode','root')
                 .then(function(select){
                     if (select == ".vscode") {
-                        this.json.pushJsonInfo(`${workspace_path}.vscode/Property.json`,prjInitparam);
+                        this.json.pushJsonInfo(`${workspace_path}.vscode/property.json`,prjInitparam);
                     } else if (select == "root") {
-                        this.json.pushJsonInfo(`${workspace_path}Property.json`,prjInitparam);
-                    }  else if (select == "no") {
-                        Property_path = "";
+                        this.json.pushJsonInfo(`${workspace_path}property.json`,prjInitparam);
                     }
                 });
             }else {
-                vscode.window.showWarningMessage("Property file already exists");
+                vscode.window.showWarningMessage("property file already exists");
             }
         }
         else {
-            vscode.window.showWarningMessage("Property file already exists");
+            vscode.window.showWarningMessage("property file already exists");
         }
     }
     gentbFile(path,root_path) {
@@ -292,18 +283,6 @@ class refreshProperty {
             this.folder.movedir(`${workspace_path}user/sim` ,`${workspace_path}user/Hardware`);
             this.gentbFile(`${workspace_path}user/Hardware/sim/testbench.v`,root_path);
         }
-    }
-    getPropertypath(workspace_path) {
-        let Property_path = `${workspace_path}.vscode/Property.json`;
-        if (!this.folder.ensureExists(Property_path)) {
-            if (!this.folder.ensureExists(`${workspace_path}Property.json`)) {
-                Property_path = "";
-            }
-            else{
-                Property_path = `${workspace_path}Property.json`;
-            }
-        }
-        return Property_path;
     }
     getFpgaVersion(Property_path) {
         let prj_param = this.json.pullJsonInfo(Property_path);
@@ -348,7 +327,7 @@ class refreshProperty {
         
             this.file.writeFile(`${root_path}/.TOOL/CONFIG`,CONFIG_contex);
         } else {
-            vscode.window.showWarningMessage('There is no Property.json here!');
+            vscode.window.showWarningMessage('There is no property.json here!');
         }
     }
 }
@@ -406,13 +385,13 @@ class HDLSymbol {
             case 'assert':
             case 'event':       return vscode.SymbolKind.Event;
     
-            case 'time':
-            case 'define':
+            case 'time':        return vscode.SymbolKind.TypeParameter;
+            case 'define':      return vscode.SymbolKind.TypeParameter;
             case 'typedef':     return vscode.SymbolKind.TypeParameter;
             case 'generate':    return vscode.SymbolKind.Operator;
             case 'enum':        return vscode.SymbolKind.Enum;
             case 'modport':     return vscode.SymbolKind.Null;
-            case 'property':    return vscode.SymbolKind.Property;
+            case 'property':    return vscode.SymbolKind.property;
 
             // port 
             case 'interface':   return vscode.SymbolKind.Interface;
@@ -641,10 +620,6 @@ class xilinxFileExplorer {
                 });
             }
         }
-    }
-    bootLoad(workspace_path,root_path) {
-        let BOOT_folder = `${workspace_path}user/BOOT`;
-        let output_path = `${root_path}/.TOOL/Xilinx/BOOT`;
     }
 }
 exports.xilinxFileExplorer = xilinxFileExplorer;

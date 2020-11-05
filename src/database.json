@@ -1,0 +1,58 @@
+{
+    "prjInitProperty" : {
+        "FPGA_VERSION": "xilinx",
+        "PRJ_NAME": {
+            "FPGA": "template"
+        },
+        "SOC_MODE": {
+            "soc": "none"
+        },
+        "enableShowlog": false,
+        "Device": "none"
+    },
+    "opeParam" : {
+        "os"            : "",
+        "rootPath"      : "",
+        "workspacePath" : "",
+        "propertyPath"  : ""
+    },
+    "HDLfileparam" : {
+        "moduleName" : "",
+        "modulePath" : "",
+        "instmodule" : [
+            {
+                "instModule"  : "",
+                "instModPath" : "",
+                "instName"    : ""
+            }
+        ],
+        "param" : [
+            {
+                "paramName"  : "",
+                "paramWidth" : "",
+                "paramInit"  : ""
+            }
+        ],
+        "port" : {
+            "inout"  : [
+                {
+                    "portName"  : "",
+                    "portWidth" : ""
+                }
+            ],
+            "input"  : [
+                {
+                    "portName"  : "",
+                    "portWidth" : ""
+                }
+            ],
+            "output" : [
+                {
+                    "portName"  : "",
+                    "portWidth" : ""
+                }
+            ]
+        }
+    },
+    "HDLparam" : []
+}

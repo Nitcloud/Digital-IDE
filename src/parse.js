@@ -3,47 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 
 const utils  = require("./utils");
 
-/*
-HDLfileparam = 
-{
-    "moduleName" : "",
-    "modulePath" : "",
-    "instmodule" : [
-        {
-            "instModule"  : "",
-            "instModPath" : "",
-            "instName"    : ""
-        }
-    ],
-    "param"      : [
-        {
-            "paramName"  : "",
-            "paramWidth" : "",
-            "paramInit"  : ""
-        }
-    ],
-    "port"       : {
-        "inout"  : [
-            {
-                "portName"  : "",
-                "portWidth" : ""
-            }
-        ],
-        "input"  : [
-            {
-                "portName"  : "",
-                "portWidth" : ""
-            }
-        ],
-        "output" : [
-            {
-                "portName"  : "",
-                "portWidth" : ""
-            }
-        ]
-    }  
-}
-*/
 let HDLparam = [];
 exports.HDLparam = HDLparam;
 
@@ -91,6 +50,30 @@ class HDLParser {
             /(?<body>[\w\W]*?)/,
             /(?<end>end(function|task))/
         ].map(x => (typeof x === 'string') ? x : x.source).join(''), 'mg');
+        this.r_label = new RegExp([
+            /\b(?<type>begin)\b/,
+            /\s*:\s*/,
+            /(?<name>\w+)\s*(?:\/\/.*)?$/,
+            // Matches up to 5 nested begin/ends
+            // This is the only way to do it with RegExp without balancing groups
+            /(?<body>(?:\bbegin\b(?:\bbegin\b(?:\bbegin\b(?:\bbegin\b(?:\bbegin\b[\w\W]+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?)/,
+            /\bend\b(\s*:\s*\1)?/
+        ].map(x => x.source).join(''), 'mg');
+        // var N=0;
+        // str=str.replace(/({|})/g, function($0,$1)
+        // {
+        //      if($1=="{"){ return “<b"+(++N)+">"}
+        //      if($1=="}”){ return "</b"+(N–)+">"}
+        // });
+        // this.r_label = new RegExp([
+        //     /begin[^beginend]*(((?'Open'begin)[^beginendend]*)+((?'-Open'end)[^beginend]*)+)*(?(Open)(?!))end/
+        // ].map(x => x.source).join(''), 'mg');
+                         
+        // element
+        this.r_assert = new RegExp([
+            /(?<=^\s*(?<name>\w+)\s*:\s*)/,
+            /(?<type>assert\b)/
+        ].map(x => (typeof x === 'string') ? x : x.source).join(''), 'mg');
         this.r_instantiation = new RegExp([
             "(?<=^\\s*",
             /(?:(?<modifier>virtual|static|automatic|rand|randc|pure virtual)\s+)?/,
@@ -101,21 +84,6 @@ class HDLParser {
             /\b(?<name>\w+)\s*/,
             /(?:(\(\s*\.[\w\W]*?\)))\s*/,
             /\s*(?<end>;)/
-        ].map(x => (typeof x === 'string') ? x : x.source).join(''), 'mg');
-        this.r_label = new RegExp([
-            /\b(?<type>begin)\b/,
-            /\s*:\s*/,
-            /(?<name>\w+)\s*(?:\/\/.*)?$/,
-            // Matches up to 5 nested begin/ends
-            // This is the only way to do it with RegExp without balancing groups
-            /(?<body>(?:\bbegin\b(?:\bbegin\b(?:\bbegin\b(?:\bbegin\b(?:\bbegin\b[\w\W]+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?)/,
-            /\bend\b(\s*:\s*\1)?/
-        ].map(x => x.source).join(''), 'mg');
-        
-        // element
-        this.r_assert = new RegExp([
-            /(?<=^\s*(?<name>\w+)\s*:\s*)/,
-            /(?<type>assert\b)/
         ].map(x => (typeof x === 'string') ? x : x.source).join(''), 'mg');
         this.r_Variable = new RegExp([
             /(?<!(input\s|output\s|inout\s))/,
@@ -229,9 +197,9 @@ class HDLParser {
                     match[0], 
                     document, 
                     match.groups.name, 
-                    HDLfileparam, 
                     IllegalRange, 
                     symbols, 
+                    HDLfileparam, 
                     (match.index + offset));
                 if (type!="symbol") {
                     HDLfileparam.moduleName = match.groups.name;
@@ -310,12 +278,23 @@ class HDLParser {
                 Range.start = match.index + offset;
                 Range.end   = match.index + match[0].length + offset;
                 blockRange.push(Range);
-                get_element(text, document, match.groups.name, null, IllegalRange, symbols, Range.start);
+                this.get_element(text, document, match.groups.name, IllegalRange, symbols, null, Range.start);
             }
         }
         return blockRange;
     }
-    get_element(text, document, parent, HDLfileparam, IllegalRange, symbols, offset) {
+    /**
+     * Matches a single element in a file
+     * 
+     * @param  text         匹配的文本
+     * @param  document     匹配文本所在的文档属性
+     * @param  parent       根属性
+     * @param  symbols      符号数组，存放符号
+     * @param  HDLfileparam HDL文件属性
+     * @param  IllegalRange 非法区域，该区域内不匹配
+     * @param  offset       匹配地址偏移
+     */
+    get_element(text, document, parent, IllegalRange, symbols, HDLfileparam, offset) {
         if (!text) {
             text = document.getText();
         }

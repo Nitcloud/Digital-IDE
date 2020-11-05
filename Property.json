@@ -1,5 +1,5 @@
 {
-	"title": "Property",
+	"title": "property",
 	"$schema": "http://json-schema.org/draft-04/schema#",
 	"description": "A property file for project of FPGA",
 	"type": "object",

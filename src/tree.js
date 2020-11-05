@@ -20,10 +20,13 @@ const parse  = require("./parse");
 
 class FileSystemProvider {
     constructor() {
-        this._onDidChangeFile = new vscode.EventEmitter();
+        this.eventEmitter  = new vscode.EventEmitter();
     }
-    get onDidChangeFile() {
-        return this._onDidChangeFile.event;
+    get onDidChangeTreeData() {
+        return this.eventEmitter.event;
+    }
+    update() {
+        this.eventEmitter.fire();
     }
     getTopElement(param){
         let TopElementList = [];
@@ -207,9 +210,9 @@ var sdkProvider = /** @class */ (function () {
     Provider.prototype.getChildren = function (element) {
         if (!element) {
             return [
-                new Item('Init',    'SDK.Init',    'cmd', 'SDK_Init',   'Init'),
-                new Item('Build',   'SDK.Build',   'cmd', 'SDK_Update', 'Build current project'),
-                new Item('Download','SDK.Download','cmd', 'SDK_Sim',    'Download')
+                new Item('Init',    'SDK.Init',    'cmd', 'Init'),
+                new Item('Build',   'SDK.Build',   'cmd', 'Build current project'),
+                new Item('Download','SDK.Download','cmd', 'Download')
             ];
         }
         return undefined;
@@ -249,7 +252,7 @@ var Item = /** @class */ (function (_super) {
             command: command
         };
 		_this.tooltip = tooltip;
-		_this.iconPath = `${__dirname}/../../../images/svg/` + iconPath + ".svg"
+		_this.iconPath = `${__dirname}`.replace(/\\/g,"\/") + '/../images/svg/' + iconPath + ".svg"
         return _this;
     }
     return Item;

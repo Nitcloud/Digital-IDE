@@ -267,8 +267,8 @@
 		],
 		"jsonValidation": [
 			{
-				"fileMatch": "**/Property.json",
-				"url": "./Property.json"
+				"fileMatch": "**/property.json",
+				"url": "./property.json"
 			}
 		],
 		"grammars": [
@@ -319,7 +319,7 @@
 			},
 			{
 				"command": "TOOL.Gen_Property",
-				"title": "generate Property file",
+				"title": "generate property file",
 				"category": "TOOL"
 			},
 			{
@@ -328,8 +328,8 @@
 				"category": "TOOL"
 			},
 			{
-				"command": "TOOL.clean",
-				"title": "clean",
+				"command": "TOOL.Clean",
+				"title": "Clean",
 				"category": "TOOL"
 			},
 			{
@@ -358,8 +358,8 @@
 				"category": "FPGA"
 			},
 			{
-				"command": "FPGA.top",
-				"title": "Set as top",
+				"command": "FPGA.Top",
+				"title": "Set as TOP",
 				"category": "FPGA"
 			},
 			{
@@ -408,32 +408,32 @@
 				"category": "FPGA"
 			},
 			{
-				"command": "FPGA.addDevice",
-				"title": "Add devices to the database",
-				"category": "FPGA"
-			},
-			{
-				"command": "FPGA.delDevice",
-				"title": "Remove the device from the database",
-				"category": "FPGA"
-			},
-			{
-				"command": "FPGA.Overwrite testbench",
+				"command": "FPGA.Overwrite_tb",
 				"title": "Overwrite the template of testbench",
 				"category": "FPGA"
 			},
 			{
-				"command": "FPGA.Overwrite bd_file",
+				"command": "FPGA.Overwrite_bd",
 				"title": "Overwrite the bd_file",
+				"category": "FPGA"
+            },
+            {
+				"command": "FPGA.Add_dev",
+				"title": "Add devices to the database",
 				"category": "FPGA"
 			},
 			{
-				"command": "FPGA.Add bd_file",
+				"command": "FPGA.Delete_dev",
+				"title": "Remove the device from the database",
+				"category": "FPGA"
+			},
+			{
+				"command": "FPGA.Add_bd",
 				"title": "Add a bd_file",
 				"category": "FPGA"
 			},
 			{
-				"command": "FPGA.Delete bd_file",
+				"command": "FPGA.Delete_bd",
 				"title": "Delete the bd_file",
 				"category": "FPGA"
 			},
@@ -465,7 +465,7 @@
 			"editor/context": [
 				{
 					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-					"command": "FPGA.top",
+					"command": "FPGA.Top",
 					"group": "navigation@1"
                 },
                 {
@@ -487,7 +487,7 @@
             "explorer/context": [
                 {
                     "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
-					"command": "FPGA.top",
+					"command": "FPGA.Top",
 					"group": "navigation@1"
                 },
                 {

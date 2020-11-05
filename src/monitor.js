@@ -9,9 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 
+const fspath = require("path");
 const vscode = require("vscode");
 const parse  = require("./parse");
 const serve  = require("./serve");
+const utils  = require("./utils");
 
 function isHDLDocument(document) {
     if (!document) {
@@ -88,6 +90,21 @@ class HDLMonitor {
 exports.HDLMonitor = HDLMonitor;
 
 class prjMonitor {
-
+    constructor (context) {
+        this.context = context;
+        this.refreshProperty = new utils.refreshProperty();
+        this.monitorProperty(this.context);
+    }
+    monitorProperty(context) {
+        let jsonWatcher = vscode.workspace.createFileSystemWatcher("**/*.json", false, false, false);
+        context.subscriptions.push(jsonWatcher.onDidChange((uri) => {
+            // vscode.window.showInformationMessage("changed");
+            if (fspath.basename(uri.fsPath) == "property.json") {		
+                this.refreshProperty.updateFolder(serve.opeParam.rootPath,serve.opeParam.workspacePath,uri.fsPath);
+                this.refreshProperty.updatePrjInfo(serve.opeParam.rootPath,uri.fsPath);
+            }
+        }));
+        context.subscriptions.push(jsonWatcher);
+    }
 }
 exports.prjMonitor = prjMonitor;

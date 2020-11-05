@@ -19,8 +19,9 @@ let gtkwaveInstallPath = vscode.workspace.getConfiguration().get('TOOL.gtkwave.i
 
 let opeParam = {
     "os"            : "",
-    "rootPath"      : `${__dirname}`.replace(/\\/g,"\/"),
-    "workspacePath" : ""
+    "rootPath"      : "",
+    "workspacePath" : "",
+    "propertyPath"  : ""
 }
 exports.opeParam = opeParam;
 
@@ -35,10 +36,14 @@ class preProcess {
         this.globPattern = "**/*.{" + this.HDLFileExtensions.join(",") + "}";
         this.exclude = undefined;
         this.forceFastIndexing = false;
+
         this.statusbar = statusbar;
         this.parser = parser;
         this.outputChannel = channel;
+
         this.symbols = new Map();
+        this.treeView = new tree.FileSystemProvider();
+        utils.getOpeParam();
         const settings = vscode.workspace.getConfiguration();
         if (!settings.get('HDL.Indexing')) {
             this.statusbar.text = "HDL: Indexing disabled on boot";
@@ -71,6 +76,7 @@ class preProcess {
                 }));
             })).then((output) => {
                 if (output.length > 0) {
+                    this.treeView.update();
                     if (this.symbols.has(uri.fsPath)) {
                         this.symbolsCount += output.length - this.symbols.get(uri.fsPath).length;
                     }
@@ -613,6 +619,22 @@ class vhdlCompletionOption {
             return resolve(suggestions);
         });
     }
+    Register(context) {
+        // // VHDL Language sever
+        // context.subscriptions.push(
+        //     vscode.languages.registerCompletionItemProvider(
+        //         VHDL_MODE, 
+        //         new VhdlSuggest.VhdlCompletionItemProvider(), 
+        //         '.', 
+        //         '\"'));
+        // vscode.languages.setLanguageConfiguration(VHDL_MODE.language, {
+        //     indentationRules: {
+        //         increaseIndentPattern: /^.*(begin|then|loop|is)$/,
+        //         decreaseIndentPattern: /^end\s+\w*$/
+        //     },
+        //     wordPattern: /(-?\d*\.\d\w*)|([^\`\~\!\@\#\%\^\&\*\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g,
+        // });
+    }
 }
 exports.vhdlCompletionOption = vhdlCompletionOption;
 
@@ -636,7 +658,7 @@ class iverilogOperation {
     lint(doc) {
         var lastIndex = doc.uri.fsPath.replace(/\\/g,"\/");
         var docFolder = doc.uri.fsPath.substr(0, lastIndex); 
-        var runLocation = (this.runAtFileLocation == true) ? docFolder : vscode.workspace.rootPath; //choose correct location to run
+        var runLocation = (this.runAtFileLocation == true) ? docFolder : vscode.workspace.opeParam.rootPath; //choose correct location to run
         var svArgs = (doc.languageId == "systemverilog") ? "-g2012" : ""; //SystemVerilog args
         var command = 'iverilog ' + svArgs + ' -t null ' + this.iverilogArgs + ' \"' + doc.fileName + '\"'; //command to execute
         // this.logger.log(command, Logger.Log_Severity.Command);
@@ -680,14 +702,14 @@ class iverilogOperation {
             this.diagnostic_collection.set(doc.uri, diagnostics);
         });
     }
-    simulate(workspace_path) {
+    simulate() {
         let editor = vscode.window.activeTextEditor;
         if (!editor) {
             return;
         }
         // 获取运行时的路径
         if (this.runFilePath == "") {
-            this.runFilePath = `${workspace_path}prj/simulation/iVerilog`
+            this.runFilePath = `${opeParam.workspacePath}prj/simulation/iVerilog`
             this.folder.mkdir(this.runFilePath);
         }
 
@@ -707,9 +729,8 @@ class iverilogOperation {
         let LibPath = "";
         let GlblPath = "";
         let simLibRootPath = "";
-        let propertyPath = this.property.getPropertypath(workspace_path);
-        if (propertyPath != '') {
-            if (this.property.getFpgaVersion(propertyPath) == "xilinx") {					
+        if (opeParam.propertyPath != '') {
+            if (this.property.getFpgaVersion(opeParam.propertyPath) == "xilinx") {					
                 simLibRootPath = vscode.workspace.getConfiguration().get('TOOL.xilinx.install.path');
                 if (simLibRootPath != "") {                
                     simLibRootPath = simLibRootPath + "/Vivado/2018.3/data/verilog/src";
@@ -752,7 +773,7 @@ class iverilogOperation {
             }
             let rtlFilePath  = "";
             let iverilogPath = "";
-            iverilogPath = workspace_path + "prj/simulation/iVerilog/" + simModuleName;
+            iverilogPath = opeParam.workspacePath + "prj/simulation/iVerilog/" + simModuleName;
             iverilogPath = editor.document.fileName;                    
 
             // 获取所有例化模块所在文件的路径
@@ -972,10 +993,544 @@ class LintManager {
 exports.LintManager = LintManager;
 
 class simulateManager {
+    simope(){
+        let vInstance_Gen = vscode.commands.registerCommand('FPGA.instance', () => {
+            let editor = vscode.window.activeTextEditor;
+            if (!editor) {
+                return;
+            }
+            // if (terminal_ope.ensureTerminalExists("Instance")) {
+            // 	Instance.sendText(`python ${tool_path}/.Script/vInstance_Gen.py ${editor.document.fileName}`);
+            // 	vscode.window.showInformationMessage('Generate instance successfully!');
+            // }
+            // else {
+            // 	Instance = vscode.window.createTerminal({ name: 'Instance' });
+            // 	Instance.show(true);
+            // 	Instance.sendText(`python ${tool_path}/.Script/vInstance_Gen.py ${editor.document.fileName}`);
+            // 	vscode.window.showInformationMessage('Generate instance successfully!');
+            // }
 
+            let moduleName;
+            let moduleNameList  = [];
+            let verilogFileList = [];
+            verilogFileList = file.pick_Allfile(`${workspace_path}user`,".v");
+            verilogFileList.forEach(element => {
+                let content;
+                let verilogFilePath = element;
+                content = file.readFile(verilogFilePath);
+                moduleName = module.getModuleName(content);
+                if (moduleName.length != 0) {
+                    moduleName.forEach(element => {                    
+                        element = element + "    ." + verilogFilePath;
+                        element = element.replace(`${workspace_path}`,"");
+                        moduleNameList.push(element);
+                    });
+                }
+            });
+            vscode.window.showQuickPick(moduleNameList).then(selection => {
+                if (!selection) {
+                    return;
+                }
+                let modulePathList = selection.split("    .");
+                let modulePath = `${workspace_path}` + modulePathList[1];
+                let content = file.readFile(modulePath);
+                content = module.delComment(content);
+                module.instanceVerilogModule(content,modulePathList[0])
+                //  editor.edit((editBuilder) => {
+                //      editBuilder.replace(editor.selection, v);
+                //  });
+            });
+        });
+        context.subscriptions.push(vInstance_Gen);
+        let testbench = vscode.commands.registerCommand('FPGA.testbench', () => {
+            let editor = vscode.window.activeTextEditor;
+            if (!editor) {
+                return;
+            }
+            let command = `python ${tool_path}/.Script/vTbgenerator.py ${workspace_path} ${editor.document.fileName}`;
+            terminal_ope.runCmd(command);
+            vscode.window.showInformationMessage(command);
+        });
+        context.subscriptions.push(testbench);
+    }
 }
 exports.simulateManager = simulateManager;
 
 /* 后端开发辅助功能 */
 
+class fpgaRegister {
+    constructor (context) {
+        this.StartFPGA = null;
+        this.StartFPGA_flag = false;
+
+        this.context = context;
+
+        this.json      = new utils.jsonOperation();
+        this.file      = new utils.fileOperation();
+        this.array     = new utils.arrayOperation();
+        this.folder    = new utils.folderOperation();
+        this.property  = new utils.refreshProperty();
+        this.terminal  = new utils.terminalOperation();
+        this.xilinxOpe = new utils.xilinxFileExplorer();
+
+        // this.rootPath      = opeParam.rootPath;
+        // this.propertyPath  = opeParam.propertyPath;
+        // this.workspacePath = opeParam.workspacePath;
+        var _this = this;
+        vscode.window.onDidCloseTerminal(function (terminal) {
+            if (terminal.name == "StartFPGA") {
+                _this.StartFPGA_flag = false;
+                _this.xilinxOpe.xclean(opeParam.workspacePath,"none");
+                _this.xilinxOpe.move_xbd_xIP(opeParam.workspacePath,opeParam.propertyPath);
+                vscode.window.showInformationMessage("Terminal Closed, name: " + terminal.name);
+            }
+        });
+
+        this.Register(this.context);
+    }
+    Init() {
+        if (opeParam.propertyPath != "") {
+            this.property.updatePrjInfo(opeParam.rootPath, opeParam.propertyPath);
+            this.property.updateFolder(opeParam.rootPath, opeParam.workspacePath, opeParam.propertyPath);
+            if (!this.terminal.ensureTerminalExists("StartFPGA")) {
+                this.StartFPGA = vscode.window.createTerminal({ name: 'StartFPGA' });
+            }
+            if (!this.StartFPGA_flag) {			
+                this.StartFPGA.show(true);
+                if (this.property.getFpgaVersion(opeParam.propertyPath) == "xilinx") {					
+                    this.StartFPGA.sendText(`vivado -mode tcl -s ${opeParam.rootPath}/.TOOL/Xilinx/Script/Xilinx_TCL/Vivado/Run.tcl -notrace -nolog -nojournal`);
+                }
+                this.StartFPGA_flag = true;
+            }
+        }
+    }
+    Update() {
+        if (this.StartFPGA_flag == true) {			
+			this.property.updateFolder(opeParam.rootPath,opeParam.workspacePath,opeParam.propertyPath);
+			this.StartFPGA.show(true);
+			this.StartFPGA.sendText(`update`);
+		}
+    }
+    Top() {
+        if (this.StartFPGA_flag == true) {			
+			if (this.property.getFpgaVersion(opeParam.propertyPath) == "xilinx") {	
+				let editor = vscode.window.activeTextEditor;
+				if (!editor) {
+					return;
+				}
+                parse.HDLparam.forEach(element => {
+                    if ( element.modulePath == editor.document.fileName ) {
+                        moduleNameList.push(element.moduleName);
+                    }
+                });
+				if (moduleNameList == null) {
+					vscode.window.showWarningMessage("there is no module here")
+				} else {
+					if (moduleNameList.length > 1) {
+						vscode.window.showQuickPick(moduleNameList).then(selection => {
+							if (!selection) {
+								return;
+							}
+							this.StartFPGA.sendText(`set_property top ${selection} [current_fileset]`);
+						});
+					} else {
+						this.StartFPGA.sendText(`set_property top ${moduleNameList[0]} [current_fileset]`);
+					}
+				}
+			}
+		}
+    }
+    Build() {
+        if (this.StartFPGA_flag == true){
+			this.StartFPGA.show(true);
+			this.StartFPGA.sendText(`build`);
+		}
+    }
+    Synth() {
+        if (this.StartFPGA_flag == true){
+			this.StartFPGA.show(true);
+			this.StartFPGA.sendText(`synth`);
+		}
+    }
+    Impl() {
+        if (this.StartFPGA_flag == true){
+			this.StartFPGA.show(true);
+			this.StartFPGA.sendText(`impl`);
+		}
+    }
+    Gen_Bit() {
+        if (this.StartFPGA_flag == true){
+			this.StartFPGA.show(true);
+			this.StartFPGA.sendText(`bits`);
+		}
+    }
+    Program() {
+        if (this.StartFPGA_flag == true){
+			this.StartFPGA.show(true);
+			this.StartFPGA.sendText(`program`);
+		}
+    }
+    GUI() {
+        if (this.StartFPGA_flag == true){
+			this.StartFPGA_flag = false;
+			this.StartFPGA.sendText(`gui`);
+			this.StartFPGA.hide();
+        } else {
+            this.property.updatePrjInfo(opeParam.rootPath,opeParam.propertyPath);
+            this.property.updateFolder(opeParam.rootPath, opeParam.workspacePath, opeParam.propertyPath);
+            if (!this.terminal.ensureTerminalExists("StartFPGA")) {
+                this.StartFPGA = vscode.window.createTerminal({ name: 'StartFPGA' });
+            }	
+            this.StartFPGA.show(true);
+            this.StartFPGA_flag = false;
+            if (this.property.getFpgaVersion(opeParam.propertyPath) == "xilinx") {					
+                this.StartFPGA.sendText(`vivado -mode gui -s ${opeParam.rootPath}/.TOOL/Xilinx/Script/Xilinx_TCL/Vivado/Run.tcl -notrace -nolog -nojournal`);
+            }
+        }
+    }
+    Exit() {
+        this.StartFPGA_flag = false;
+		this.StartFPGA.show(true);
+		this.StartFPGA.sendText(`exit`);
+		this.xilinxOpe.xclean(opeParam.workspacePath,"none");
+		this.xilinxOpe.move_xbd_xIP(opeParam.workspacePath,opeParam.propertyPath);
+    }
+    Overwrite_tb() {
+        const path = `${opeParam.rootPath}/.TOOL/.Data/testbench.v`;
+		const options = {
+			preview: false,
+			viewColumn: vscode.ViewColumn.Active
+		};
+		vscode.window.showTextDocument(vscode.Uri.file(path), options);
+    }
+    Overwrite_bd() {
+        vscode.window.showQuickPick(this.file.pick_file(`${opeParam.rootPath}/.TOOL/Xilinx/IP/Example_bd`,".bd")).then(selection => {
+            // the user canceled the selection
+          if (!selection) {
+              return;
+          }
+          // the user selected some item. You could use `selection.name` too
+          const bd_path = `${opeParam.rootPath}/.TOOL/Xilinx/IP/Example_bd/` + selection;
+          const options = {
+              preview: false,
+              viewColumn: vscode.ViewColumn.Active
+          };
+          vscode.window.showTextDocument(vscode.Uri.file(bd_path), options);
+      });
+    }
+    Add_dev() {
+        let Property_param   = this.json.pullJsonInfo(`${opeParam.rootPath}/../property.json`);
+        let xilinxDevicelist = Property_param.properties.Device.enum;
+        vscode.window.showInputBox({
+            password:false, 
+            ignoreFocusOut:true,
+            placeHolder:'Please input the name of device', }).then(function(Device) {
+    
+            if (xilinxDevicelist.find(function(value) {
+                if(value === Device) {
+                    return false;
+                }
+                else{
+                    return true;
+                }
+            })) {		
+                xilinxDevicelist.push(Device);
+                this.json.pushJsonInfo(`${opeParam.rootPath}/../property.json`,Property_param);
+                vscode.window.showInformationMessage(`Add the ${Device} successfully!!!`)
+            }
+            else {
+                vscode.window.showWarningMessage("The device already exists")
+            }
+        });
+    }
+    Delete_dev() {
+        let Property_param   = this.json.pullJsonInfo(`${opeParam.rootPath}/../property.json`);
+        let xilinxDevicelist = Property_param.properties.Device.enum;
+        vscode.window.showQuickPick(xilinxDevicelist).then(selection => {
+            if (!selection) {
+                return;
+            }
+            for(var index = 0; index < xilinxDevicelist.length; index++){
+                if(selection == xilinxDevicelist[index]){
+                    xilinxDevicelist.splice(index,1);
+                }
+            }
+            this.json.pushJsonInfo(`${opeParam.rootPath}/../property.json`,Property_param);
+            vscode.window.showInformationMessage(`Delete the ${Device} successfully!!!`)
+        });
+    }
+    Add_bd() {
+        let Property_param = this.json.pullJsonInfo(`${opeParam.rootPath}/../property.json`);
+        let bd_folder = vscode.workspace.getConfiguration().get('PRJ.xilinx.BD.repo.path')
+        if ( bd_folder == "") {
+            bd_folder = `${opeParam.rootPath}/.TOOL/Xilinx/IP/Example_bd/`;
+        }
+		vscode.window.showInputBox({
+			password:false, 
+			ignoreFocusOut:true,
+			placeHolder:'Please input the name of bd_file', }).then(function(bd_file) {
+			let bd_list = Property_param.properties.SOC_MODE.properties.bd_file.enum;
+			if (bd_list.find(function(value) {
+				if(value === bd_file) {
+					return false;
+				}
+				else{
+					return true;
+				}
+			})) {		
+				bd_list.push(bd_file);
+				this.json.pushJsonInfo(`${opeParam.rootPath}/../property.json`,Property_param);
+				const bd_path = bd_folder + bd_file + '.bd';
+				this.file.writeFile(bd_path,"\n\n");
+				vscode.window.showInformationMessage(`generate the ${bd_file} successfully!!!`);
+				const options = {
+					preview: false,
+					viewColumn: vscode.ViewColumn.Active
+				};
+				vscode.window.showTextDocument(vscode.Uri.file(bd_path), options);
+			}
+			else {
+				vscode.window.showWarningMessage(`The ${bd_file} already exists`)
+			}
+		});
+    }
+    Delete_bd() {
+        let Property_param = this.json.pullJsonInfo(`${opeParam.rootPath}/../property.json`);
+		vscode.window.showQuickPick(this.file.pick_file(`${opeParam.rootPath}/.TOOL/Xilinx/IP/Example_bd`,".bd")).then(selection => {
+		  	// the user canceled the selection
+			if (!selection) {
+				return;
+			}
+			// the user selected some item. You could use `selection.name` too
+			let bd_list = Property_param.properties.SOC_MODE.properties.bd_file.enum;
+			for(var index = 0; index < bd_list.length;index++){
+				if(selection == (bd_list[index] + '.bd')){
+					bd_list.splice(index,1);
+				}
+			}
+			this.json.pushJsonInfo(`${opeParam.rootPath}/../property.json`,Property_param);
+			const bd_path = `${opeParam.rootPath}/.TOOL/Xilinx/IP/Example_bd/` + selection;
+			this.file.deleteFile(bd_path);
+			vscode.window.showInformationMessage(`delete the ${selection} successfully!!!`);
+		});
+    }
+    Register(context) {
+        context.subscriptions.push(vscode.commands.registerCommand('FPGA.Init', () => {
+            this.Init();
+        }));
+        context.subscriptions.push(vscode.commands.registerCommand('FPGA.Update', () => {
+            this.Update();
+        }));
+        context.subscriptions.push(vscode.commands.registerCommand('FPGA.Top', () => {
+            this.Top();
+        }));
+        context.subscriptions.push(vscode.commands.registerCommand('FPGA.Build', () => {
+            this.Build();
+        }));
+        context.subscriptions.push(vscode.commands.registerCommand('FPGA.Synth', () => {
+            this.Synth();
+        }));
+        context.subscriptions.push(vscode.commands.registerCommand('FPGA.Impl', () => {
+            this.Impl();
+        }));
+        context.subscriptions.push(vscode.commands.registerCommand('FPGA.Gen_Bit', () => {
+            this.Gen_Bit();
+        }));
+        context.subscriptions.push(vscode.commands.registerCommand('FPGA.Program', () => {
+            this.Program();
+        }));
+        context.subscriptions.push(vscode.commands.registerCommand('FPGA.GUI', () => {
+            this.GUI();
+        }));
+        context.subscriptions.push(vscode.commands.registerCommand('FPGA.exit', () => {
+            this.Exit();
+        }));
+        context.subscriptions.push(vscode.commands.registerCommand('FPGA.Add_dev', () => {
+            this.Add_dev();
+        }));
+        context.subscriptions.push(vscode.commands.registerCommand('FPGA.Delete_dev', () => {
+            this.Delete_dev();
+        }));
+        context.subscriptions.push(vscode.commands.registerCommand('FPGA.Overwrite_tb', () => {
+            this.Overwrite_tb();
+        }));
+        context.subscriptions.push(vscode.commands.registerCommand('FPGA.Overwrite_bd', () => {
+            this.Overwrite_bd();
+        }));
+        context.subscriptions.push(vscode.commands.registerCommand('FPGA.Add_bd', () => {
+            this.Add_bd();
+        }));
+        context.subscriptions.push(vscode.commands.registerCommand('FPGA.Delete_bd', () => {
+            this.Delete_bd();
+        }));
+    }
+}
+exports.fpgaRegister = fpgaRegister;
+
+/* soc开发辅助 */
+
+class socRegister {
+    constructor (context) {
+        this.StartSDK = null;
+
+        this.context = context;
+
+        this.json      = new utils.jsonOperation();
+        this.file      = new utils.fileOperation();
+        this.array     = new utils.arrayOperation();
+        this.folder    = new utils.folderOperation();
+        this.property  = new utils.refreshProperty();
+        this.terminal  = new utils.terminalOperation();
+        this.xilinxOpe = new utils.xilinxFileExplorer();
+
+        // this.rootPath      = opeParam.rootPath;
+        // this.propertyPath  = opeParam.propertyPath;
+        // this.workspacePath = opeParam.workspacePath;
+
+        this.Register(this.context);
+    }
+    SDK_Init() {
+        if (this.property.getSocMode(opeParam.propertyPath)) {
+			if (this.terminal.ensureTerminalExists("this.StartSDK")) {
+				this.StartSDK.show(true);		
+				this.StartSDK.sendText(`xsct ${opeParam.rootPath}/.TOOL/Xilinx/Script/Xilinx_TCL/SDK/xsct_create_prj.tcl`);
+			}
+			else {
+				this.StartSDK = vscode.window.createTerminal({ name: 'this.StartSDK' });
+				this.StartSDK.show(true);
+				this.StartSDK.sendText(`xsct ${opeParam.rootPath}/.TOOL/Xilinx/Script/Xilinx_TCL/SDK/xsct_create_prj.tcl`);
+			}
+			this.xilinxOpe.xclean(opeParam.workspacePath,"none");
+		} else {
+			vscode.window.showWarningMessage("Please confirm the mode of soc");
+		}
+    }
+    SDK_Build() {
+        if (this.property.getSocMode(opeParam.propertyPath)) {
+			if (this.terminal.ensureTerminalExists("this.StartSDK")) {
+				this.StartSDK.show(true);		
+				this.StartSDK.sendText(`xsct ${opeParam.rootPath}/.TOOL/Xilinx/Script/Xilinx_TCL/SDK/xsct_Build.tcl`);
+			}
+			else {
+				this.StartSDK = vscode.window.createTerminal({ name: 'this.StartSDK' });
+				this.StartSDK.show(true);
+				this.StartSDK.sendText(`xsct ${opeParam.rootPath}/.TOOL/Xilinx/Script/Xilinx_TCL/SDK/xsct_Build.tcl`);
+			}
+			this.xilinxOpe.xclean(opeParam.workspacePath,"none");
+		} else {
+			vscode.window.showWarningMessage("Please confirm the mode of soc");
+		}	
+    }
+    SDK_Download() {
+        if (this.property.getSocMode(opeParam.propertyPath)){
+			if (this.terminal.ensureTerminalExists("this.StartSDK")) {
+				this.StartSDK.show(true);
+				this.StartSDK.sendText(`xsct ${opeParam.rootPath}/.TOOL/Xilinx/Script/Xilinx_TCL/SDK/xsct_Download.tcl`);
+			}
+			else {
+				this.StartSDK = vscode.window.createTerminal({ name: 'this.StartSDK' });
+				this.StartSDK.show(true);
+				this.StartSDK.sendText(`xsct ${opeParam.rootPath}/.TOOL/Xilinx/Script/Xilinx_TCL/SDK/xsct_Download.tcl`);
+			}
+			this.xilinxOpe.xclean(opeParam.workspacePath,"none");
+		} else {
+			vscode.window.showWarningMessage("Please confirm the mode of soc");
+		}
+    }
+    Register(context) {
+        context.subscriptions.push(vscode.commands.registerCommand('SDK.Init', () => {
+            this.SDK_Init();
+        }));
+        context.subscriptions.push(vscode.commands.registerCommand('SDK.Build', () => {
+            this.SDK_Build();
+        }));
+        context.subscriptions.push(vscode.commands.registerCommand('SDK.Download', () => {
+            this.SDK_Download();
+        }));
+    }
+}
+exports.socRegister = socRegister;
+
 /* 调试开发辅助功能 */
+
+class toolRegister {
+    constructor (context) {
+        this.context = context;
+        this.property  = new utils.refreshProperty();
+        this.xilinxOpe = new utils.xilinxFileExplorer();
+        this.Register(this.context);
+    }
+    serialPortTerminal(serialPortName,command) {
+        if (this.terminal.ensureTerminalExists(`${serialPortName}`)) {
+            vscode.window.showWarningMessage('This serial port number is in use!');
+        }
+        else {
+            let serialPort = vscode.window.createTerminal({ name: `${serialPortName}` });
+            serialPort.show(true);
+            serialPort.sendText(command);
+        }
+    }
+    runSerialPort(command,) {
+        exec(command,function (error, stdout, stderr) {
+            let content = stdout.replace(/\s*/g,'');
+            let SerialPortList = content.split("-");
+            let Parity    = vscode.workspace.getConfiguration().get('TOOL.SerialPortMonitor.Parity');
+            let BaudRate  = vscode.workspace.getConfiguration().get('TOOL.SerialPortMonitor.BaudRate');
+            let DataBits  = vscode.workspace.getConfiguration().get('TOOL.SerialPortMonitor.DataBits');
+            let StopBits  = vscode.workspace.getConfiguration().get('TOOL.SerialPortMonitor.StopBits');
+            let porteries = `${BaudRate} ${DataBits} ${StopBits} ${Parity}`;
+            if (SerialPortList[0] == "none") {
+                vscode.window.showWarningMessage("Not found any serial port !");
+            }
+            if (SerialPortList[0] == "one") {
+                porteries = SerialPortList[1] + " " + porteries;
+                let command = `python ${opeParam.rootPath}/.TOOL/.Script/Serial_Port.py runthread ${porteries}`;
+                serialPortTerminal(SerialPortList[1],command);
+            }
+            if (SerialPortList[0] == "multiple") {
+                SerialPortList.splice(0,1);
+                vscode.window.showQuickPick(SerialPortList).then(selection => {
+                    if (!selection) {
+                        return;
+                    }
+                    porteries = selection + " " + porteries;
+                    let command = `python ${opeParam.rootPath}/.TOOL/.Script/Serial_Port.py runthread ${porteries}`;
+                    serialPortTerminal(selection,command);
+                });
+            }
+            if (error !== null) {
+                console.log('stderr: ' + stderr);
+                vscode.window.showErrorMessage(error);
+            }
+        });
+    }
+    genBootLoadFile() {
+        this.xilinxOpe.xbootgenerate(opeParam.workspacePath,opeParam.rootPath);
+    }
+    clean() {
+        this.xilinxOpe.move_xbd_xIP(opeParam.workspacePath,opeParam.propertyPath);
+        this.xilinxOpe.xclean(opeParam.workspacePath,"all");
+    }
+    serialPort() {
+        let command = `python ${opeParam.rootPath}/.TOOL/.Script/Serial_Port.py getCurrentPort`;
+        runSerialPort(command,opeParam.rootPath);
+    }
+    genProperty() {
+        this.property.generatePropertypath(opeParam.workspacePath);
+    }
+    Register(context) {
+        context.subscriptions.push(vscode.commands.registerCommand('TOOL.Gen_BOOT', () => {
+            this.genBootLoadFile();
+        }));
+        context.subscriptions.push(vscode.commands.registerCommand('TOOL.Clean', () => {
+            this.clean();
+        }));
+        context.subscriptions.push(vscode.commands.registerCommand('TOOL.Gen_Property', () => {
+            this.genProperty();
+        }));
+        context.subscriptions.push(vscode.commands.registerCommand('TOOL.SerialPort', () => {
+            this.serialPort();
+        }));
+    }
+}
+exports.toolRegister = toolRegister;
