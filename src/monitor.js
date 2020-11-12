@@ -27,9 +27,10 @@ function isHDLDocument(document) {
 }
 
 class HDLMonitor {
-    constructor (parser,preProcess) {
+    constructor (context, parser, preProcess) {
         this.parser = parser;
         this.preProcess = preProcess;
+        this.register(context, this.preProcess.globPattern);
     }
     /**
         Removes the given `document`'s symbols from `this.symbols`,
@@ -44,7 +45,6 @@ class HDLMonitor {
         return __awaiter(this, void 0, void 0, function* () {
             return yield new Promise(() => {
                 this.parser.removeCurrentFileParam(document);
-                console.log(parse.HDLparam);
                 if (!isHDLDocument(document)) {
                     return;
                 }
@@ -85,6 +85,13 @@ class HDLMonitor {
                 });
             });
         });
+    }
+    register(context, globPattern) {
+        let watcher = vscode.workspace.createFileSystemWatcher(globPattern, false, false, false);
+        context.subscriptions.push(watcher.onDidCreate((uri) => { this.onCreate(uri); }));
+        context.subscriptions.push(watcher.onDidDelete((uri) => { this.onDelete(uri); }));
+        context.subscriptions.push(watcher.onDidChange((uri) => { this.onDelete(uri); }));
+        context.subscriptions.push(watcher);
     }
 }
 exports.HDLMonitor = HDLMonitor;

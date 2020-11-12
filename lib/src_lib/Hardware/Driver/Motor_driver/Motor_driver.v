@@ -9,8 +9,7 @@ Motor_driver Motor_driver_u(
     .Motor_Control(Motor_Control)
 );
 ********************************************/
-module Motor_driver
-(
+module Motor_driver (
     input         clk_in,
     input         rst_n,
     input         Trig,
@@ -67,8 +66,7 @@ end
 //define the time counter
 reg [15:0]      cnt1 = 0;
 reg             CNT_CE = 0;
-always@(posedge clk_in)
-begin
+always@(posedge clk_in) begin
 	if (Trig_SIG_pose) begin
 		CNT_CE <= 1'd1;
 	end

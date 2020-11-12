@@ -204,7 +204,8 @@ class HDLParser {
                 if (type!="symbol") {
                     HDLfileparam.moduleName = match.groups.name;
                     HDLfileparam.modulePath = document.uri._fsPath.replace(/\\/g,"\/");            
-                    HDLparam.push(HDLfileparam);    
+                    HDLparam.push(HDLfileparam); 
+                    HDLparam = HDLparam;   
                 }
             }
         }

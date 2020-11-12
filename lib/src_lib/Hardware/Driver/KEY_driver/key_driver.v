@@ -27,8 +27,7 @@ assign q_reset = (DFF1  ^ DFF2);          // xor input flip flops to look for le
 assign q_add = ~(q_reg == TIMER_MAX_VAL); // add to counter when q_reg msb is equal to 0
     
 //// combo counter to manage q_next 
-always @ ( q_reset, q_add, q_reg)
-begin
+always @ ( q_reset, q_add, q_reg) begin
     case( {q_reset , q_add})
         2'b00 :
                 q_next <= q_reg;
@@ -40,16 +39,13 @@ begin
 end
 
 //// Flip flop inputs and q_reg update
-always @ ( posedge clk or posedge rst)
-begin
-    if(rst == 1'b1)
-    begin
+always @ ( posedge clk or posedge rst) begin
+    if(rst == 1'b1) begin
         DFF1 <= 1'b0;
         DFF2 <= 1'b0;
         q_reg <= { N {1'b0} };
     end
-    else
-    begin
+    else begin
         DFF1 <= button_in;
         DFF2 <= DFF1;
         q_reg <= q_next;
@@ -57,8 +53,7 @@ begin
 end
 
 //// counter control
-always @ ( posedge clk or posedge rst)
-begin
+always @ ( posedge clk or posedge rst) begin
 	if(rst == 1'b1)
 		button_out <= 1'b1;
     else if(q_reg == TIMER_MAX_VAL)
@@ -67,21 +62,19 @@ begin
         button_out <= button_out;
 end
 
-always @ ( posedge clk or posedge rst)
-begin
-	if(rst == 1'b1)
-	begin
+always @ ( posedge clk or posedge rst) begin
+	if(rst == 1'b1) begin
 		button_out_d0 <= 1'b1;
 		button_posedge <= 1'b0;
 		button_negedge <= 1'b0;
 	end
-	else
-	begin
+	else begin
 		button_out_d0 <= button_out;
 		button_posedge <= ~button_out_d0 & button_out;
 		button_negedge <= button_out_d0 & ~button_out;
 	end	
 end
+
 endmodule
 
 

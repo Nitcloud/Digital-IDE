@@ -23,14 +23,15 @@ function activate(context) {
 	// Status Bar
     const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
 	context.subscriptions.push(statusBar);
-	//Output Channel
+	// Output Channel
 	var outputChannel = vscode.window.createOutputChannel("HDL");
     // Back-end classes
     const parser     = new parse.HDLParser();
     const preProcess = new serve.preProcess(statusBar, parser, outputChannel);
-    const HDLMonitor = new monitor.HDLMonitor(parser, preProcess);
 
+    new monitor.HDLMonitor(context, parser, preProcess);
     new monitor.prjMonitor(context);
+
     new serve.fpgaRegister(context);
     new serve.socRegister(context);
     new serve.toolRegister(context);
@@ -56,14 +57,6 @@ function activate(context) {
     context.subscriptions.push(vscode.languages.registerDefinitionProvider(selector, defProvider));
     context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(selector, docProvider));
 	
-    // Background processes
-    context.subscriptions.push(vscode.workspace.onDidSaveTextDocument((doc) => { HDLMonitor.onChange(doc); }));
-    context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor((editor) => { HDLMonitor.onChange(editor.document); }));
-    let watcher = vscode.workspace.createFileSystemWatcher(preProcess.globPattern, false, false, false);
-    context.subscriptions.push(watcher.onDidCreate((uri) => { HDLMonitor.onCreate(uri); }));
-    context.subscriptions.push(watcher.onDidDelete((uri) => { HDLMonitor.onDelete(uri); }));
-    context.subscriptions.push(watcher.onDidChange((uri) => { HDLMonitor.onDelete(uri); }));
-    context.subscriptions.push(watcher);
 }
 exports.activate = activate;
 function deactivate() {}

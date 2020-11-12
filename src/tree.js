@@ -18,142 +18,152 @@ exports.__esModule = true;
 const vscode = require("vscode");
 const parse  = require("./parse");
 
-class FileSystemProvider {
-    constructor() {
-        this.eventEmitter  = new vscode.EventEmitter();
-    }
-    get onDidChangeTreeData() {
-        return this.eventEmitter.event;
-    }
-    update() {
-        this.eventEmitter.fire();
-    }
-    getTopElement(param){
-        let TopElementList = [];
-        let isTopElement = true;
-        for (let index = 0; index < param.length; index++) {
-            const currentModule = param[index];
+var FileSystemProvider = /** @class */ (function () {
+    class FileSystemProvider {
+        constructor() {
+            this.eventEmitter  = new vscode.EventEmitter();
+        }
+        get onDidChangeTreeData() {
+            return this.eventEmitter.event;
+        }
+        update() {
+            this.eventEmitter.fire("onDidChangeTreeData");
+        }
+        getTopElement(param){
+            let TopElementList = [];
+            let isTopElement = true;
             for (let index = 0; index < param.length; index++) {
-                const unitModule = param[index];
-                for (let index = 0; index < unitModule.instmodule.length; index++) {
-                    const unitInstModule = unitModule.instmodule[index];
-                    if (unitInstModule.instModule == currentModule.moduleName) {
-                        isTopElement = false;
+                const currentModule = param[index];
+                for (let index = 0; index < param.length; index++) {
+                    const unitModule = param[index];
+                    for (let index = 0; index < unitModule.instmodule.length; index++) {
+                        const unitInstModule = unitModule.instmodule[index];
+                        if (unitInstModule.instModule == currentModule.moduleName) {
+                            isTopElement = false;
+                            break;
+                        }
+                    }
+                    if (!isTopElement) {
                         break;
                     }
                 }
-                if (!isTopElement) {
-                    break;
-                }
-            }
-            if (isTopElement) {
-                let TopElement = {
-                    "name"   : "",
-                    "type"   : "",
-                    "fspath" : ""
-                };
-                TopElement.name   = "";
-                TopElement.type   = currentModule.moduleName;
-                TopElement.fspath = currentModule.modulePath;
-                TopElementList.push(TopElement);
-            } else {
-                isTopElement = true;
-            }
-        }
-        return TopElementList;
-    }
-    getChildElement(element, param){
-        let childElementList = [];
-        param.forEach(unitModule => {
-            if (unitModule.moduleName == element) {
-                unitModule.instmodule.forEach(unitInstModule => {
-                    let childElement = {
+                if (isTopElement) {
+                    let TopElement = {
                         "name"   : "",
                         "type"   : "",
                         "fspath" : ""
                     };
-                    childElement.name   = unitInstModule.instName;
-                    childElement.type   = unitInstModule.instModule;
-                    childElement.fspath = unitInstModule.instModPath;
-                    childElementList.push(childElement);
-                });
+                    TopElement.name   = "";
+                    TopElement.type   = currentModule.moduleName;
+                    TopElement.fspath = currentModule.modulePath;
+                    TopElementList.push(TopElement);
+                } else {
+                    isTopElement = true;
+                }
             }
-        });
-        return childElementList;
-    }
-    getSrcTopElement() {
-        return this.TopElementList;
-    }
-    getTbTopElement() {
-        return [];
-    }
-    // 用于获取某个节点下属的节点数组，根节点记为 null；
-    // 返回一个树节点的所有子节点的数据。
-    /**
-     * 1. 先创建根节点
-     * 2. 再根据根节点创建子节点
-     */
-    getChildren(element) {
-        // 如果不是根节点
-        if (element) {
-            switch (element.type) {
-                case "src"       : return this.getTopElement(parse.HDLparam)//getSrcTopElement();
-                // case "Data"      : return this.getDataTopElement();
-                // case "testbench" : return this.getTbTopElement();
-                default          : return this.getChildElement(element.type, parse.HDLparam);
-            }
+            return TopElementList;
         }
+        getChildElement(element, param){
+            let childElementList = [];
+            param.forEach(unitModule => {
+                if (unitModule.moduleName == element) {
+                    unitModule.instmodule.forEach(unitInstModule => {
+                        let childElement = {
+                            "name"   : "",
+                            "type"   : "",
+                            "fspath" : ""
+                        };
+                        childElement.name   = unitInstModule.instName;
+                        childElement.type   = unitInstModule.instModule;
+                        childElement.fspath = unitInstModule.instModPath;
+                        childElementList.push(childElement);
+                    });
+                }
+            });
+            return childElementList;
+        }
+        getSrcTopElement() {
+            return this.TopElementList;
+        }
+        getTbTopElement() {
+            return [];
+        }
+        // 用于获取某个节点下属的节点数组，根节点记为 null；
+        // 返回一个树节点的所有子节点的数据。
+        /**
+         * 1. 先创建根节点
+         * 2. 再根据根节点创建子节点
+         */
+        getChildren(element) {
+            // 如果不是根节点
+            if (element) {
+                switch (element.type) {
+                    case "src"       : return this.getTopElement(parse.HDLparam)//getSrcTopElement();
+                    // case "Data"      : return this.getDataTopElement();
+                    // case "testbench" : return this.getTbTopElement();
+                    default          : return this.getChildElement(element.type, parse.HDLparam);
+                }
+            }
 
-        // 根节点
-        return [
-            { "type" : "src" },
-            // { "type" : "Data" },
-            // { "type" : "testbench" }
-        ];
-    }
-    // 用于获取实际渲染的 TreeItem 实例。
-    /* 
-    TreeItem 有两种创建方式： 
-        1. 第一种，就是提供 label，也就是一个字符串，VS Code 会把这个字符串渲染在树形结构中； 
-        2. 第二种就是提供 resourceUri，也就是一个资源地址，
-           VS Code 则会像资源管理器里渲染文件和文件夹一样渲染这个节点的。 
-    iconPath         属性，是用于控制树节点前的图标的。 
-                           如果说自己通过 TreeView API 来实现一个资源管理器的话，
-                           就可以使用 iconPath 来为不同的文件类型指定不同的图标。
-    tooltip          属性，当把鼠标移动到某个节点上等待片刻，VS Code 就会显示出这个节点对应的 tooltip 文字。
-    collapsibleState 属性，是用于控制这个树节点是应该展开还是折叠。 
-                           当然，如果这个节点没有子节点的话，这个属性就用不着了。
-    command          属性，如果有这个属性的话，当点击这个树节点时，这个属性所指定的命令就会被执行了。
-    */
-    getTreeItem(element) {
-        let childrenList = this.getChildren(element);
-        let elementName = "";
-        if (element.name == "" || element.name == undefined) {
-            elementName = element.type;
-        } else {
-            elementName = element.name + ' \(' + element.type + '\)';
+            // 根节点
+            return [
+                { "type" : "src" },
+                // { "type" : "Data" },
+                // { "type" : "testbench" }
+            ];
         }
-        const treeItem = new vscode.TreeItem(
-            elementName,
-            childrenList.length === 0 ? 
-            vscode.TreeItemCollapsibleState.None :
-            vscode.TreeItemCollapsibleState.Collapsed 
-        );
-        let TreeItemList = [];
-        for (let index = 0; index < childrenList.length; index++) {
-            const element = childrenList[index];
-            TreeItemList.push(this.getTreeItem(element));
+        // 用于获取实际渲染的 TreeItem 实例。
+        /* 
+        TreeItem 有两种创建方式： 
+            1. 第一种，就是提供 label，也就是一个字符串，VS Code 会把这个字符串渲染在树形结构中； 
+            2. 第二种就是提供 resourceUri，也就是一个资源地址，
+            VS Code 则会像资源管理器里渲染文件和文件夹一样渲染这个节点的。 
+        iconPath         属性，是用于控制树节点前的图标的。 
+                            如果说自己通过 TreeView API 来实现一个资源管理器的话，
+                            就可以使用 iconPath 来为不同的文件类型指定不同的图标。
+        tooltip          属性，当把鼠标移动到某个节点上等待片刻，VS Code 就会显示出这个节点对应的 tooltip 文字。
+        collapsibleState 属性，是用于控制这个树节点是应该展开还是折叠。 
+                            当然，如果这个节点没有子节点的话，这个属性就用不着了。
+        command          属性，如果有这个属性的话，当点击这个树节点时，这个属性所指定的命令就会被执行了。
+        */
+        getTreeItem(element) {
+            let childrenList = this.getChildren(element);
+            let elementName = "";
+            if (element.name == "" || element.name == undefined) {
+                elementName = element.type;
+            } else {
+                elementName = element.name + ' \(' + element.type + '\)';
+            }
+            const treeItem = new vscode.TreeItem(
+                elementName,
+                childrenList.length === 0 ? 
+                vscode.TreeItemCollapsibleState.None :
+                vscode.TreeItemCollapsibleState.Collapsed 
+            );
+            let TreeItemList = [];
+            for (let index = 0; index < childrenList.length; index++) {
+                const element = childrenList[index];
+                TreeItemList.push(this.getTreeItem(element));
+            }
+            treeItem.contextValue = 'file';
+            treeItem.children = TreeItemList;
+            treeItem.command = { 
+                title:     "Open this HDL File", 
+                command:   'FILE.openFile', 
+                arguments: [element.fspath], 
+            };
+            return treeItem;
         }
-        treeItem.contextValue = 'file';
-        treeItem.children = TreeItemList;
-        treeItem.command = { 
-            title:     "Open this HDL File", 
-            command:   'FILE.openFile', 
-            arguments: [element.fspath], 
-        };
-        return treeItem;
     }
-}
+    Object.defineProperty(FileSystemProvider.prototype, "onDidChangeTreeData", {
+        get: function () {
+            return this.eventEmitter.event;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return FileSystemProvider;
+}());
 exports.FileSystemProvider = FileSystemProvider;
 class FileExplorer {
     constructor(context) {

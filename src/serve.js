@@ -352,7 +352,7 @@ class HoverProvider {
 					} else {
 						content = content.replace(/^\s+(.*?)\s+$/g, "$1");
                     }
-                    this.del_spacing(content, 4);
+                    content = this.del_spacing(content, 4);
                     content = content.replace(/\/\//g, "\n//") + "\n" + this.get_comment(doc, loc[0].range.start.line - 1);
 					return content;
                 });
@@ -366,7 +366,7 @@ class HoverProvider {
         let commentList = [];
         let content = doc.lineAt(line).text;
         let isblank   = content.match(/\S+/g);
-        let l_comment = content.match(/\/\/.*/g);
+        let l_comment = content.match(/(\/\/.*)/g);
         let b_comment = content.match(/.*\*\//g);
         while (1) {
             if ( l_comment == null && b_comment == null && isblank != null) {
@@ -409,14 +409,14 @@ class HoverProvider {
             if (element == ' ') {
                 i++;
             }
-            if ((element != ' ') || (i <= spacingNum)) {
+            if (((element != ' ') && (element != '\t')) || (i <= spacingNum)) {
                 newContent = newContent + element;
                 if (i > spacingNum) {
                     i = 0;
                 }
             }
         }
-        content = newContent;
+        return newContent;
     }
 }
 exports.HoverProvider = HoverProvider;
@@ -993,7 +993,7 @@ class LintManager {
 exports.LintManager = LintManager;
 
 class simulateManager {
-    simope(){
+    simPreOpeRegister(context) {
         let vInstance_Gen = vscode.commands.registerCommand('FPGA.instance', () => {
             let editor = vscode.window.activeTextEditor;
             if (!editor) {
