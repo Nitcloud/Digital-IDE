@@ -56,11 +56,11 @@ LVDS_DDR_clk  DAC3162_clk_u
 
 LVDS_DDR_data  DAC3162_data_u
 (                                            // input  [47:0] data_out_from_device
+    .clk_in               ( clk_in        ), // input clk_in
+    .clk_div_in           ( clk_div       ), // input clk_div_in
     .data_out_from_device ({dac_a_int,dac_b_int,dac_a_intt,dac_b_intt}  ), 
     .data_out_to_pins_p   ( dac_data_p    ), // output [11:0] data_out_to_pins_p
     .data_out_to_pins_n   ( dac_data_n    ), // output [11:0] data_out_to_pins_n
-    .clk_in               ( clk_in        ), // input clk_in
-    .clk_div_in           ( clk_div       ), // input clk_div_in
     .io_reset             ( power_on_rst  )  // input io_reset
 ); 
 

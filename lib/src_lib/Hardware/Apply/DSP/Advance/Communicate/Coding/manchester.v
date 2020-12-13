@@ -1,6 +1,5 @@
 `timescale 1ns / 1ps
-module manchester
-(
+module manchester (
     input  clk,
     input  sig_in,
     output man_sig_out

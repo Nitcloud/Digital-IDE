@@ -1,6 +1,14 @@
-# 目录
-- [目录](#目录)
+# FPGA_Develop_Support
+
+在vscode上的FPGA开发插件
+
+如有问题的话欢迎在[issues](https://github.com/Bestduan/fpga_support_plug/issues)上发表。
+另外喜欢的话请给个[star](https://github.com/Bestduan/fpga_support_plug)吧
+
+## 目录
 - [FPGA_Develop_Support](#fpga_develop_support)
+  - [目录](#目录)
+  - [TODO LIST](#todo-list)
 - [开发目的](#开发目的)
 - [前期配置](#前期配置)
 - [现有功能介绍](#现有功能介绍)
@@ -34,13 +42,7 @@
 - [其他用户配置说明](#其他用户配置说明)
 - [鸣谢](#鸣谢)
 
-# FPGA_Develop_Support
-[返回目录](#目录)
-
-在vscode上的FPGA开发插件
-
-疫情期间，条件有限，如有问题的话欢迎在[issues](https://github.com/Bestduan/fpga_support_plug/issues)上发表。
-开发不易，喜欢的话请给个[star](https://github.com/Bestduan/fpga_support_plug)吧
+## TODO LIST
 
 - [ ] 前端开发辅助功能 
   - [ ] 语言支持
@@ -81,7 +83,6 @@ It needs **python3** **vivado** environment.
 
 * `./Vivado/2018.3/bin`
 * `./SDK/2018.3/bin`
-* `./Microsoft VS Code/bin`
 
 最后要求安装python，并且请在安装过程中请选择自动添加到环境变量，以及安装pip工具。如果需要自动编写testbench以及instance功能的还需安装chardet包。
 安装方式**pip install chardet**。

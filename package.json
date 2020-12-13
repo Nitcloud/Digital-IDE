@@ -1,7 +1,7 @@
 {
 	"name": "fpga-support",
 	"displayName": "FPGA Develop Support",
-	"description": "Language support for TCL&HDL",
+	"description": "Auxiliary Design For FPGA ",
 	"publisher": "sterben",
 	"homepage": "https://github.com/Bestduan/fpga_support_plug",
     "version": "0.1.12",
@@ -48,10 +48,16 @@
 					"scope": "window",
 					"type": "string",
 					"enum": [
-						"xvlog",
-						"iverilog",
+                        "xvlog",
+                        "xvhdl",
+                        "vlog",
+                        "vhdl",
+                        "xmixed",
+                        "vmixed",
+                        "cmixed",
+                        "ghdl",
+                        "iverilog",
 						"verilator",
-						"modelsim",
 						"none"
 					],
 					"default": "xvlog",
@@ -313,6 +319,15 @@
 		],
 		"commands": [
             {
+				"command": "FILE.refresh",
+                "title": "Refresh this File List",
+                "icon": {
+					"light": "images/light/refresh.svg",
+					"dark": "images/dark/refresh.svg"
+				},
+				"category": "FILE"
+            },
+            {
 				"command": "FILE.openFile",
 				"title": "Open this File",
 				"category": "FILE"
@@ -462,6 +477,13 @@
 			}
 		],
 		"menus": {
+            "view/title": [
+				{
+					"command": "FILE.refresh",
+					"group": "navigation@1",
+					"when": "view == TOOL"
+				}
+			],
 			"editor/context": [
 				{
 					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",

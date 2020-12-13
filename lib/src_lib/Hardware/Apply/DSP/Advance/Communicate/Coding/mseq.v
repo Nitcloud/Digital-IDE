@@ -1,10 +1,8 @@
 `timescale 1ns / 1ps
-module mseq
-#(  
+module mseq #(  
     parameter W = 4'd4,
     parameter POLY = 5'b10011
-)
-(   
+) (   
     input  clk,
     input  rst_n,
     output mseq_out

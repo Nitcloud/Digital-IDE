@@ -3,8 +3,63 @@ Object.defineProperty(exports, "__esModule", { value: true });
 
 const utils  = require("./utils");
 
-let HDLparam = [];
-exports.HDLparam = HDLparam;
+class vhdlparser {
+    constructor(text,textAll) {
+        this.text     = text.replace(/[\r\n]/g, " ")
+        this.allText  = textAll
+    }
+
+    get name() {
+        return this.text.match(/entity\s+(\w+)\s/i)
+    }
+
+    get generics() {
+        const generics = []
+        const genericMatch = this.text.match(/generic\s*\((.*?)\)\s*;\s*port\s*\(/i)
+        if (genericMatch) {
+        const genericText = genericMatch[1] + ";" // Append a semicolon, to help match the last item
+        const genericRegExp = /(\w+)\s*:\s*(\w+)\s*(:=\s*(\w+))?\s*;?/g
+        let match = genericRegExp.exec(genericText)
+        while (match) {
+            generics.push({name: match[1],
+                            type: match[2],
+                            default: match[4]
+                        })
+            match = genericRegExp.exec(genericText)
+        }
+        }
+        return generics
+    }
+
+    get ports() {
+        let ports = []
+        const portMatch = this.text.match(/port\s*\((.*?)\)\s*;\s*end/i)
+
+        if (portMatch) {
+            const portText = portMatch[1] + ";" // Append a semicolon, to help match the last item
+            const portRegExp = /(\w+)\s*:\s*(\w+)\s+(.*?)\s*;/g
+            let match = portRegExp.exec(portText)
+            while (match) {
+                ports.push({name: match[1],
+                            dir: match[2],
+                            type: match[3]
+                        })
+                match = portRegExp.exec(portText)
+            }
+        }
+        return ports
+    }
+
+    get libraryNoStandard() {
+        if(this.allText.indexOf("ieee.std_logic_arith") > -1) {
+            return true
+        }
+        else{
+            return false
+        }
+    }
+}
+exports.vhdlparser = vhdlparser;
 
 class HDLParser {
     constructor() {
@@ -65,9 +120,6 @@ class HDLParser {
         //      if($1=="{"){ return “<b"+(++N)+">"}
         //      if($1=="}”){ return "</b"+(N–)+">"}
         // });
-        // this.r_label = new RegExp([
-        //     /begin[^beginend]*(((?'Open'begin)[^beginendend]*)+((?'-Open'end)[^beginend]*)+)*(?(Open)(?!))end/
-        // ].map(x => x.source).join(''), 'mg');
                          
         // element
         this.r_assert = new RegExp([
@@ -152,7 +204,7 @@ class HDLParser {
         @return A list of `HDLSymbol` objects or a thenable that resolves to such. The lack of a result can be
         signaled by returning `undefined`, `null`, or an empty list.
     */
-    get_HDLfileparam(document, type, offset = 0, parent) {
+    get_HDLfileparam(document, type, offset = 0, parent, HDLparam) {
         // this.removeCurrentFileParam(document)
         let symbols = [];
         let text = document.getText();
@@ -205,7 +257,6 @@ class HDLParser {
                     HDLfileparam.moduleName = match.groups.name;
                     HDLfileparam.modulePath = document.uri._fsPath.replace(/\\/g,"\/");            
                     HDLparam.push(HDLfileparam); 
-                    HDLparam = HDLparam;   
                 }
             }
         }
@@ -371,7 +422,7 @@ class HDLParser {
             }
         }
     }
-    get_instModulePath() {
+    get_instModulePath(HDLparam) {
         HDLparam.forEach(unitMoudule => {
             unitMoudule.instmodule.forEach(unitInstanceModule => {
                 HDLparam.forEach(element => {
@@ -421,7 +472,7 @@ class HDLParser {
         }
         return isComment;
     }
-    removeCurrentFileParam(document) {
+    removeCurrentFileParam(document, HDLparam) {
         let currentFilePath = document.uri._fsPath.replace(/\\/g,"\/");
         let newHDLparam = [];
         HDLparam.forEach(element => {
@@ -429,7 +480,7 @@ class HDLParser {
                 newHDLparam.push(element);
             }
         });
-        HDLparam = newHDLparam;
+        return newHDLparam;
     }
 }
 exports.HDLParser = HDLParser;

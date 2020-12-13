@@ -10,7 +10,21 @@
 			"enum": [
 				"xilinx"
 			]
-		},
+        },
+        "LIB": {
+            "type": "object",
+			"properties": {
+				"Common_lib": {
+                    "type": "array"
+				},
+				"Ailinx_lib": {
+					"type": "array"
+                },
+                "Intel_lib": {
+					"type": "array"
+				}
+			}
+        },
 		"PRJ_NAME": {
 			"type": "object",
 			"default": {

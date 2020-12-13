@@ -51,8 +51,7 @@ module LVDS_DDR_data
      ////------------------------------
 
      // declare the oserdes
-     OSERDESE2
-       # (
+     OSERDESE2 # (
          .DATA_RATE_OQ   ("DDR"),
          .DATA_RATE_TQ   ("DDR"),
          .DATA_WIDTH     (4),

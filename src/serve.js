@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 const tree   = require("./tree");
 const utils  = require("./utils");
 const parse  = require("./parse");
-
+// const SerialPort = require('serialport');
 const vscode = require("vscode");
 const child  = require("child_process");
 
@@ -28,22 +28,22 @@ exports.opeParam = opeParam;
 /* 启动预处理服务 */
 
 class preProcess {
-    constructor(statusbar, parser, channel) {
+    constructor(statusbar, parser, channel, HDLparam) {
         this.building = false;
         this.symbolsCount = 0;
         this.NUM_FILES = 250;
-        this.HDLFileExtensions = ["sv", "v", "svh", "vh"];
-        this.globPattern = "**/*.{" + this.HDLFileExtensions.join(",") + "}";
+        this.FileExtensions = ["sv", "v", "svh", "vh", "json"];
+        this.globPattern = "**/*.{" + this.FileExtensions.join(",") + "}";
         this.exclude = undefined;
         this.forceFastIndexing = false;
 
+        this.HDLparam = HDLparam
         this.statusbar = statusbar;
         this.parser = parser;
         this.outputChannel = channel;
 
         this.symbols = new Map();
-        this.treeView = new tree.FileSystemProvider();
-        utils.getOpeParam();
+        utils.getOpeParam(opeParam);
         const settings = vscode.workspace.getConfiguration();
         if (!settings.get('HDL.Indexing')) {
             this.statusbar.text = "HDL: Indexing disabled on boot";
@@ -51,6 +51,7 @@ class preProcess {
         else {
             this.build_index().then(() => {
                 this.updateMostRecentSymbols(undefined);
+                new tree.FileExplorer(this.parser, this.globPattern, this.HDLparam);
             });
         }
     };
@@ -60,23 +61,22 @@ class preProcess {
         @param uri uri to the document
         @param total_files total number of files to determine parse-precision
     */
-    processFile(uri, total_files = 0) {
+    processFile(uri, total_files = 0, HDLparam) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
                 resolve(vscode.workspace.openTextDocument(uri).then(doc => {
                     if (total_files >= 1000 * this.parallelProcessing || this.forceFastIndexing) {
-                        return this.parser.get_HDLfileparam(doc, null, 0, null);
+                        return this.parser.get_HDLfileparam(doc, null, 0, null, HDLparam);
                     }
                     else if (total_files >= 100 * this.parallelProcessing) {
-                        return this.parser.get_HDLfileparam(doc, null, 0, null);
+                        return this.parser.get_HDLfileparam(doc, null, 0, null, HDLparam);
                     }
                     else {
-                        return this.parser.get_HDLfileparam(doc, null, 0, null);
+                        return this.parser.get_HDLfileparam(doc, null, 0, null, HDLparam);
                     }
                 }));
             })).then((output) => {
                 if (output.length > 0) {
-                    this.treeView.update();
                     if (this.symbols.has(uri.fsPath)) {
                         this.symbolsCount += output.length - this.symbols.get(uri.fsPath).length;
                     }
@@ -134,13 +134,12 @@ class preProcess {
                         break;
                     }
                     yield Promise.all(subset.map(uri => {
-                        return this.processFile(uri, uris.length);
+                        return this.processFile(uri, uris.length, this.HDLparam);
                     }));
                 }
             })).then(() => {
                 this.building = false;
-                this.parser.get_instModulePath();
-                new tree.FileExplorer();
+                this.parser.get_instModulePath(this.HDLparam);
                 if (cancelled) {
                     this.statusbar.text = "HDL: Indexing cancelled";
                 }
@@ -443,7 +442,7 @@ class DocumentSymbolProvider {
         signaled by returning `undefined`, `null`, or an empty list.
     */
     provideDocumentSymbols(document, token) {
-        console.debug("provideDocumentSymbols!", document.uri.path);
+        // console.debug("provideDocumentSymbols!", document.uri.path);
         return new Promise((resolve) => {
             /*
             Matches the regex and uses the index from the regex to find the position
@@ -891,13 +890,13 @@ class LintManager {
                     this.linter = new VerilatorLinter["default"](this.logger);
                     break;
                 default:
-                    console.log("Invalid linter name.");
+                    // console.log("Invalid linter name.");
                     this.linter = null;
                     break;
             }
         }
         if (this.linter != null) {
-            console.log("Using linter " + this.linter.name);
+            // console.log("Using linter " + this.linter.name);
         }
     }
     lint(doc) {
@@ -1499,7 +1498,6 @@ class toolRegister {
                 });
             }
             if (error !== null) {
-                console.log('stderr: ' + stderr);
                 vscode.window.showErrorMessage(error);
             }
         });

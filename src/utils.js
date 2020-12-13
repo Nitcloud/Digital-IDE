@@ -22,22 +22,22 @@ const exec   = require('child_process').exec;
 /* file or folder operation */
 
 // 获取当前工作区文件夹路径
-function getOpeParam(os, rootPath, workspacePath, propertyPath) {
-    os = process.platform;
-    rootPath = `${__dirname}`.replace(/\\/g,"\/");
+function getOpeParam(opeParam) {
+    opeParam.os = process.platform;
+    opeParam.rootPath = `${__dirname}`.replace(/\\/g,"\/");
     var folder = vscode.workspace.workspaceFolders[0].uri.toString();
 	folder = folder.substr(8, folder.length);
 	folder += "/";
 	var Drive = folder[0];
 	folder = folder.substr(4, folder.length);
-    workspacePath = Drive + ":" + folder;
-    propertyPath = `${workspacePath}.vscode/property.json`;
-    if (!fs.existsSync(propertyPath)) {
-        if (!fs.existsSync(`${workspacePath}property.json`)) {
-            propertyPath = "";
+    opeParam.workspacePath = Drive + ":" + folder;
+    opeParam.propertyPath = `${opeParam.workspacePath}.vscode/property.json`;
+    if (!fs.existsSync(opeParam.propertyPath)) {
+        if (!fs.existsSync(`${opeParam.workspacePath}property.json`)) {
+            opeParam.propertyPath = "";
         }
         else{
-            propertyPath = `${workspacePath}property.json`;
+            opeParam.propertyPath = `${opeParam.workspacePath}property.json`;
         }
     }
 }
@@ -224,6 +224,34 @@ class terminalOperation {
     }
 }
 exports.terminalOperation = terminalOperation;
+
+/* Logger Output */
+class Logger {
+    constructor(channel) {
+        var _this = this;
+        this.channel = channel;
+        // Register for any changes to logging
+        vscode.workspace.onDidChangeConfiguration(function () {
+            _this.CheckIfEnabled();
+        });
+        this.CheckIfEnabled();
+    }
+    CheckIfEnabled() {
+        this.isEnabled = vscode.workspace.getConfiguration().get('HDL.logging.enabled');
+    }
+    log(msg, severity) {
+        let Log_Severity = ["Info","Warn","Error","Command"]
+        if (severity === void 0) 
+            { severity = Log_Severity.Info; }
+        if (this.isEnabled) {
+            if (severity == Log_Severity.Command)
+                this.channel.appendLine("> " + msg);
+            else
+                this.channel.appendLine("[" + Log_Severity[severity] + "] " + msg);
+        }
+    }
+}
+exports.Logger = Logger;
 
 /* refresh property */
 class refreshProperty {
