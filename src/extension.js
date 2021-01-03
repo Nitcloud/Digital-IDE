@@ -13,12 +13,13 @@ const vscode   = require("vscode");
 const tree     = require("./tree");
 const serve    = require("./serve");
 const parse    = require("./parse");
+const linter   = require("./linter/LintManager");
 
 function activate(context) {
-    // // lint
-    // var lintManager = new LintManager["default"](logger);
-    // vscode.commands.registerCommand("verilog.lint", lintManager.RunLintTool);
-    
+    // lint
+    var lintManager = new linter["default"]();
+    vscode.commands.registerCommand("verilog.lint", lintManager.RunLintTool);
+
     let HDLparam = [];
     // Status Bar
     const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
@@ -53,7 +54,6 @@ function activate(context) {
     context.subscriptions.push(vscode.languages.registerHoverProvider(selector, hovProvider));
     context.subscriptions.push(vscode.languages.registerDefinitionProvider(selector, defProvider));
     context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(selector, docProvider));
-	
 }
 exports.activate = activate;
 function deactivate() {}

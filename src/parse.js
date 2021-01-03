@@ -1,65 +1,6 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 
 const utils  = require("./utils");
-
-class vhdlparser {
-    constructor(text,textAll) {
-        this.text     = text.replace(/[\r\n]/g, " ")
-        this.allText  = textAll
-    }
-
-    get name() {
-        return this.text.match(/entity\s+(\w+)\s/i)
-    }
-
-    get generics() {
-        const generics = []
-        const genericMatch = this.text.match(/generic\s*\((.*?)\)\s*;\s*port\s*\(/i)
-        if (genericMatch) {
-        const genericText = genericMatch[1] + ";" // Append a semicolon, to help match the last item
-        const genericRegExp = /(\w+)\s*:\s*(\w+)\s*(:=\s*(\w+))?\s*;?/g
-        let match = genericRegExp.exec(genericText)
-        while (match) {
-            generics.push({name: match[1],
-                            type: match[2],
-                            default: match[4]
-                        })
-            match = genericRegExp.exec(genericText)
-        }
-        }
-        return generics
-    }
-
-    get ports() {
-        let ports = []
-        const portMatch = this.text.match(/port\s*\((.*?)\)\s*;\s*end/i)
-
-        if (portMatch) {
-            const portText = portMatch[1] + ";" // Append a semicolon, to help match the last item
-            const portRegExp = /(\w+)\s*:\s*(\w+)\s+(.*?)\s*;/g
-            let match = portRegExp.exec(portText)
-            while (match) {
-                ports.push({name: match[1],
-                            dir: match[2],
-                            type: match[3]
-                        })
-                match = portRegExp.exec(portText)
-            }
-        }
-        return ports
-    }
-
-    get libraryNoStandard() {
-        if(this.allText.indexOf("ieee.std_logic_arith") > -1) {
-            return true
-        }
-        else{
-            return false
-        }
-    }
-}
-exports.vhdlparser = vhdlparser;
 
 class HDLParser {
     constructor() {
@@ -71,8 +12,9 @@ class HDLParser {
             /\/\*[\s\S]*?\*\//
         ].map(x => (typeof x === 'string') ? x : x.source).join(''), 'mg');
 
+        /* vlog parse */
         // block
-        this.r_decl_block = new RegExp([
+        this.vlog_block = new RegExp([
             "(?<=^\\s*",
             /(?<type>module|program|interface|package|primitive|config|property)\s+/,
             /(?:automatic\s+)?/,
@@ -84,7 +26,7 @@ class HDLParser {
             /(?<body>[\W\w]*?)/,
             /(?<end>end\1)/,
         ].map(x => (typeof x === 'string') ? x : x.source).join(''), 'mg');
-        this.r_decl_class = new RegExp([
+        this.vlog_class = new RegExp([
             "(?<=^\\s*(virtual\\s+)?",
             /(?<type>class)\s+/,
             ")",
@@ -94,7 +36,7 @@ class HDLParser {
             /(?<body>[\w\W]*?)/,
             /(?<end>endclass)/
         ].map(x => (typeof x === 'string') ? x : x.source).join(''), 'mg');
-        this.r_decl_method = new RegExp([
+        this.vlog_method = new RegExp([
             "(?<=^\\s*(virtual|local|extern|pure\\s+virtual)?\\s*",
             /(?<type>(function|task))\s+/,
             /((?<return>\[.+?\])\s+)?/,
@@ -105,7 +47,7 @@ class HDLParser {
             /(?<body>[\w\W]*?)/,
             /(?<end>end(function|task))/
         ].map(x => (typeof x === 'string') ? x : x.source).join(''), 'mg');
-        this.r_label = new RegExp([
+        this.vlog_label = new RegExp([
             /\b(?<type>begin)\b/,
             /\s*:\s*/,
             /(?<name>\w+)\s*(?:\/\/.*)?$/,
@@ -114,19 +56,13 @@ class HDLParser {
             /(?<body>(?:\bbegin\b(?:\bbegin\b(?:\bbegin\b(?:\bbegin\b(?:\bbegin\b[\w\W]+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?\bend\b|[\w\W])+?)/,
             /\bend\b(\s*:\s*\1)?/
         ].map(x => x.source).join(''), 'mg');
-        // var N=0;
-        // str=str.replace(/({|})/g, function($0,$1)
-        // {
-        //      if($1=="{"){ return “<b"+(++N)+">"}
-        //      if($1=="}”){ return "</b"+(N–)+">"}
-        // });
-                         
+        
         // element
-        this.r_assert = new RegExp([
+        this.vlog_assert = new RegExp([
             /(?<=^\s*(?<name>\w+)\s*:\s*)/,
             /(?<type>assert\b)/
         ].map(x => (typeof x === 'string') ? x : x.source).join(''), 'mg');
-        this.r_instantiation = new RegExp([
+        this.vlog_instantiation = new RegExp([
             "(?<=^\\s*",
             /(?:(?<modifier>virtual|static|automatic|rand|randc|pure virtual)\s+)?/,
             /\b(?<type>[:\w]+)\s*/,
@@ -137,7 +73,7 @@ class HDLParser {
             /(?:(\(\s*\.[\w\W]*?\)))\s*/,
             /\s*(?<end>;)/
         ].map(x => (typeof x === 'string') ? x : x.source).join(''), 'mg');
-        this.r_Variable = new RegExp([
+        this.vlog_variable = new RegExp([
             /(?<!(input\s|output\s|inout\s))/,
             /(?<type>parameter|localparam|reg|wire|bit|int|char|float|integer)\s+/,
             /(signed\s|unsigned\s)?\s*/,
@@ -147,7 +83,7 @@ class HDLParser {
             /(=\s)?\s*(?<init>.+)?\s*/,
             /(,|\)|;)?/
         ].map(x => x.source).join(''), 'mgi');
-        this.r_ports = new RegExp([
+        this.vlog_ports = new RegExp([
             /(?<type>input|output|inout)\s+/,
             /(wire\s|reg\s)?\s*(signed\s|unsigned\s)?\s*/,
             /(?<width>\[.+?\]\s)?\s*/,
@@ -155,7 +91,7 @@ class HDLParser {
             /(=([0-9]+'(b|d|x))?[0-9]+)?\s*/,
             /(,|\)|;)?/
         ].map(x => x.source).join(''), 'mgi');
-        this.r_typedef = new RegExp([
+        this.vlog_typedef = new RegExp([
             /(?<=^\s*)/,
             /(?<type>typedef)\s+/,
             /(?<body>[^;]*)/,
@@ -163,7 +99,7 @@ class HDLParser {
             /\s*(\[[^;]*?\])*?/,
             /\s*(?<end>;)/
         ].map(x => x.source).join(''), 'mg');
-        this.r_define = new RegExp([
+        this.vlog_define = new RegExp([
             /(?<=^\s*)/,
             /`(?<type>define)\s+/,
             /(?<name>\w+)\b/,
@@ -172,24 +108,25 @@ class HDLParser {
             /(?<!\\)(?=\n)/
         ].map(x => x.source).join(''), 'mg');
 
+        /* vhdl parse */
+
         // others
         this.comment = [
             this.l_comment,
             this.b_comment
         ];
-        this.block = [
-            this.r_decl_block,
-            this.r_decl_class,
-            this.r_decl_method,
-            this.r_label
+        this.vlog_decl_block = [
+            this.vlog_class,
+            this.vlog_method,
+            this.vlog_label
         ];
-        this.element = [
-            this.r_ports,
-            this.r_Variable,
-            this.r_instantiation,
-            this.r_assert,
-            this.r_typedef,
-            this.r_define
+        this.vlog_decl_element = [
+            this.vlog_ports,
+            this.vlog_variable,
+            this.vlog_instantiation,
+            this.vlog_assert,
+            this.vlog_typedef,
+            this.vlog_define
         ]
         this.HDLSymbol = new utils.HDLSymbol();
     }
@@ -211,19 +148,19 @@ class HDLParser {
         let IllegalRange = this.getCommentRange(text,offset);
         // Find blocks
         while (1) {
-            let match = this.r_decl_block.exec(text);
+            let match = this.vlog_block.exec(text);
             if (match == null) {
                 break;
             }
             else if ( (match.index == 0 && parent != undefined) ||
-                    this.isIllegalRange(match,IllegalRange,offset) ) {
+                this.isIllegalRange(match,IllegalRange,offset) ) {
                 continue;
             }
             let symbolInfo = this.HDLSymbol.setSymbolInformation(
                 match, parent, document, offset);
             symbols.push(symbolInfo);
             IllegalRange = IllegalRange.concat(
-                this.get_method(
+                this.get_block(
                     match[0], 
                     document, 
                     match.groups.name, 
@@ -262,61 +199,20 @@ class HDLParser {
         }
         return symbols;
     };
-    get_method(text, document, parent, IllegalRange, symbols, offset) {
-        let methodRange = [];
-        if (!text) {
-            text = document.getText();
-        }
-        while (1) {
-            let match = this.r_decl_method.exec(text);
-            if (match == null) {
-                break;
-            }
-            else if ((match.index == 0 && parent == undefined) || 
-                    this.isIllegalRange(match,IllegalRange,offset)) {
-                continue;
-            }
-            let Range = {
-                "start"   : 0,
-                "end"     : 0
-            }
-            Range.start = match.index + offset;
-            Range.end   = match.index + match[0].length + offset;
-            methodRange.push(Range);
-            let symbolInfo = this.HDLSymbol.setSymbolInformation(
-                match, parent, document, offset);
-            symbols.push(symbolInfo);
-            let portOffset = match.index + offset;
-            let methodName = match.groups.name;
-            while (1) {
-                match = this.r_ports.exec(match[0]);
-                if (match == null) {
-                    break;
-                }
-                else if (this.isIllegalRange(match,IllegalRange,portOffset)) {
-                    continue;
-                }
-                symbolInfo = this.HDLSymbol.setSymbolInformation(
-                    match, methodName, document, portOffset);
-                symbols.push(symbolInfo);
-            }
-        }
-        return methodRange;
-    }
     get_block(text, document, parent, IllegalRange, symbols, offset) {
         let blockRange = [];
         if (!text) {
             text = document.getText();
         }
-        for (let index = 0; index < this.block.length; index++) {
-            const unitBlock = this.block[index];
+        for (let index = 0; index < this.vlog_decl_block.length; index++) {
+            const unitBlock = this.vlog_decl_block[index];
             while (1) {
                 let match = unitBlock.exec(text);
                 if (match == null) {
                     break;
                 }
                 else if ((match.index == 0 && parent == undefined) || 
-                        this.isIllegalRange(match,IllegalRange,offset)) {
+                    this.isIllegalRange(match,IllegalRange,offset)) {
                     continue;
                 }
                 let symbolInfo = this.HDLSymbol.setSymbolInformation(
@@ -330,7 +226,7 @@ class HDLParser {
                 Range.start = match.index + offset;
                 Range.end   = match.index + match[0].length + offset;
                 blockRange.push(Range);
-                this.get_element(text, document, match.groups.name, IllegalRange, symbols, null, Range.start);
+                this.get_element(match[0], document, match.groups.name, IllegalRange, symbols, null, Range.start);
             }
         }
         return blockRange;
@@ -344,14 +240,14 @@ class HDLParser {
      * @param  symbols      符号数组，存放符号
      * @param  HDLfileparam HDL文件属性
      * @param  IllegalRange 非法区域，该区域内不匹配
-     * @param  offset       匹配地址偏移
+     * @param  offset       匹配地址偏移(即匹配的文本在文件中的地址位置)
      */
     get_element(text, document, parent, IllegalRange, symbols, HDLfileparam, offset) {
         if (!text) {
             text = document.getText();
         }
-        for (let index = 0; index < this.element.length; index++) {
-            const unitElement = this.element[index];
+        for (let index = 0; index < this.vlog_decl_element.length; index++) {
+            const unitElement = this.vlog_decl_element[index];
             while (1) {
                 // 匹配每个元素
                 let match = unitElement.exec(text);
@@ -373,7 +269,7 @@ class HDLParser {
                 // 获取端口参数信息（用于仿真，生成结构，生成仿真文件）
                 if ( HDLfileparam != null ) {
                     switch (unitElement) {
-                        case this.r_ports:
+                        case this.vlog_ports:
                             let portProperty = {
                                 "portName"  : "",
                                 "portWidth" : ""
@@ -393,7 +289,7 @@ class HDLParser {
                                 default: break;
                             }
                             break;
-                        case this.r_Variable:
+                        case this.vlog_variable:
                             if ( match.groups.type == "parameter" ) {
                                 let parmProperty = {
                                     "paramName"  : "",
@@ -406,7 +302,7 @@ class HDLParser {
                                 HDLfileparam.param.push(parmProperty);
                             }
                             break;
-                        case this.r_instantiation:
+                        case this.vlog_instantiation:
                             let instProperty = {
                                 "instModule"  : "",
                                 "instModPath" : "",

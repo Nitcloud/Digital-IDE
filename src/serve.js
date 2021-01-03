@@ -528,6 +528,7 @@ class WorkspaceSymbolProvider {
 exports.WorkspaceSymbolProvider = WorkspaceSymbolProvider;
 
 /* 自动补全功能 */
+// VHDL自动补全功能
 class vhdlCompletionOption {
     constructor () {
         let Keyword = ['library','use','package','entity','configuration','is','begin','map','of','for']
@@ -821,20 +822,10 @@ class iverilogOperation {
 exports.iverilogOperation = iverilogOperation;
 
 class xvlogOperation {
-    constructor(logger) {
-        return _super.call(this, "xvlog", logger) || this;
-    }
     lint(doc) {
         var _this = this;
-        this.logger.log('xvlog lint requested');
-        if (doc.languageId == "vhdl") {
-            var command = "xvhdl " + " -nolog " + doc.fileName;
-        } else {
-            //Systemverilog args
-            var svArgs = (doc.languageId == "systemverilog") ? "-sv" : ""; 
-            var command = "xvlog " + svArgs + " -nolog " + doc.fileName;
-        }
-        this.logger.log(command, Logger.Log_Severity.Command);
+        var svArgs = (doc.languageId == "systemverilog") ? "-sv" : ""; 
+        var command = "xvlog " + svArgs + " -nolog " + doc.fileName;
         child.exec(command, function (error, stdout, stderr) {
             var diagnostics = [];
             var lines = stdout.split(/\r?\n/g);
@@ -856,7 +847,6 @@ class xvlogOperation {
                 };
                 diagnostics.push(diagnostic);
             });
-            _this.logger.log(diagnostics.length + ' errors/warnings returned');
             _this.diagnostic_collection.set(doc.uri, diagnostics);
         });
     }
@@ -864,8 +854,7 @@ class xvlogOperation {
 exports.xvlogOperation = xvlogOperation;
 
 class LintManager {
-    constructor(logger) {
-        this.logger = logger;
+    constructor() {
         vscode.workspace.onDidOpenTextDocument(this.lint, this, this.subscriptions);
         vscode.workspace.onDidSaveTextDocument(this.lint, this, this.subscriptions);
         vscode.workspace.onDidCloseTextDocument(this.removeFileDiagnostics, this, this.subscriptions);
@@ -878,16 +867,16 @@ class LintManager {
         if (this.linter == null || this.linter.name != linter_name) {
             switch (linter_name) {
                 case "iverilog":
-                    this.linter = new IcarusLinter["default"](this.logger);
+                    this.linter = new IcarusLinter();
                     break;
                 case "xvlog":
-                    this.linter = new XvlogLinter["default"](this.logger);
+                    this.linter = new xvlogOperation().lint();
                     break;
                 case "modelsim":
-                    this.linter = new ModelsimLinter["default"](this.logger);
+                    this.linter = new ModelsimLinter();
                     break;
                 case "verilator":
-                    this.linter = new VerilatorLinter["default"](this.logger);
+                    this.linter = new VerilatorLinter();
                     break;
                 default:
                     // console.log("Invalid linter name.");
@@ -954,16 +943,16 @@ class LintManager {
                             return [2 /*return*/];
                         switch (linterStr.label) {
                             case "iverilog":
-                                tempLinter = new IcarusLinter["default"](this.logger);
+                                tempLinter = new IcarusLinter();
                                 break;
                             case "xvlog":
-                                tempLinter = new XvlogLinter["default"](this.logger);
+                                tempLinter = new XvlogLinter();
                                 break;
                             case "modelsim":
-                                tempLinter = new ModelsimLinter["default"](this.logger);
+                                tempLinter = new ModelsimLinter();
                                 break;
                             case "verilator":
-                                tempLinter = new VerilatorLinter["default"](this.logger);
+                                tempLinter = new VerilatorLinter();
                                 break;
                             default:
                                 return [2 /*return*/];

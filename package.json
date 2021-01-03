@@ -4,9 +4,9 @@
 	"description": "Auxiliary Design For FPGA ",
 	"publisher": "sterben",
 	"homepage": "https://github.com/Bestduan/fpga_support_plug",
-    "version": "0.1.12",
-    "main": "./src/extension",
-    "icon": "images/FPGAs.png",
+	"version": "0.1.12",
+	"main": "./src/extension",
+	"icon": "images/FPGAs.png",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Bestduan/fpga_support_plug.git"
@@ -48,22 +48,22 @@
 					"scope": "window",
 					"type": "string",
 					"enum": [
-                        "xvlog",
-                        "xvhdl",
-                        "vlog",
-                        "vhdl",
-                        "xmixed",
-                        "vmixed",
-                        "cmixed",
-                        "ghdl",
-                        "iverilog",
+						"xvlog",
+						"xvhdl",
+						"vlog",
+						"vhdl",
+						"xmixed",
+						"vmixed",
+						"cmixed",
+						"ghdl",
+						"iverilog",
 						"verilator",
 						"none"
 					],
 					"default": "xvlog",
 					"description": "Select the verilog linter. Possible values are 'iverilog', 'verilator', xvlog' or 'none'"
-                },
-                "HDL.linting.runFilePath": {
+				},
+				"HDL.linting.runFilePath": {
 					"scope": "window",
 					"type": "string",
 					"default": "default",
@@ -93,36 +93,36 @@
 					"default": "",
 					"description": "Add Modelsim work library here."
 				},
-                "PRJ.xilinx.install.path": {
+				"PRJ.xilinx.install.path": {
 					"scope": "window",
 					"type": "string",
 					"default": "",
 					"description": "set the xilinx install path. \n e.g. : D:/APP/vivado_18_3"
 				},
-                "PRJ.xilinx.BD.repo.path": {
+				"PRJ.xilinx.BD.repo.path": {
 					"scope": "window",
 					"type": "string",
 					"default": "",
 					"description": "set the xilinx bd_repo_path"
 				},
-                "PRJ.xilinx.IP.repo.path": {
+				"PRJ.xilinx.IP.repo.path": {
 					"scope": "window",
 					"type": "string",
 					"default": "D:/project/FPGA/.Lib/xIP",
 					"description": "set the xilinx ip_repo_path"
-                },
-                "TOOL.iVerilog.install.path": {
+				},
+				"TOOL.iVerilog.install.path": {
 					"scope": "window",
 					"type": "string",
 					"default": "",
-                    "description": "set the iVerilog install path. \n e.g. : D:/APP/iverilog/bin"
-                },
-                "TOOL.gtkwave.install.path": {
+					"description": "set the iVerilog install path. \n e.g. : D:/APP/iverilog/bin"
+				},
+				"TOOL.gtkwave.install.path": {
 					"scope": "window",
 					"type": "string",
 					"default": "",
-                    "description": "set the gtkwave install path. \n e.g. : D:/APP/iverilog/gtkwave/bin"
-                },
+					"description": "set the gtkwave install path. \n e.g. : D:/APP/iverilog/gtkwave/bin"
+				},
 				"TOOL.SerialPortMonitor.BaudRate": {
 					"type": "integer",
 					"scope": "resource",
@@ -184,7 +184,7 @@
 					]
 				}
 			}
-		},		
+		},
 		"viewsContainers": {
 			"activitybar": [
 				{
@@ -196,12 +196,12 @@
 		},
 		"views": {
 			"TOOL": [
-                {
-                    "id": "TOOL.file_tree",
+				{
+					"id": "TOOL.file_tree",
 					"name": "File"
 				},
 				{
-                    "id": "TOOL.Tool_tree",
+					"id": "TOOL.Tool_tree",
 					"name": "Tool"
 				},
 				{
@@ -318,16 +318,16 @@
 			}
 		],
 		"commands": [
-            {
+			{
 				"command": "FILE.refresh",
-                "title": "Refresh this File List",
-                "icon": {
+				"title": "Refresh this File List",
+				"icon": {
 					"light": "images/light/refresh.svg",
 					"dark": "images/dark/refresh.svg"
 				},
 				"category": "FILE"
-            },
-            {
+			},
+			{
 				"command": "FILE.openFile",
 				"title": "Open this File",
 				"category": "FILE"
@@ -361,8 +361,8 @@
 				"command": "FPGA.testbench",
 				"title": "Testbench",
 				"category": "FPGA"
-            },
-            {
+			},
+			{
 				"command": "FPGA.Simulate",
 				"title": "Simulate",
 				"category": "FPGA"
@@ -431,8 +431,8 @@
 				"command": "FPGA.Overwrite_bd",
 				"title": "Overwrite the bd_file",
 				"category": "FPGA"
-            },
-            {
+			},
+			{
 				"command": "FPGA.Add_dev",
 				"title": "Add devices to the database",
 				"category": "FPGA"
@@ -477,7 +477,7 @@
 			}
 		],
 		"menus": {
-            "view/title": [
+			"view/title": [
 				{
 					"command": "FILE.refresh",
 					"group": "navigation@1",
@@ -489,8 +489,8 @@
 					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
 					"command": "FPGA.Top",
 					"group": "navigation@1"
-                },
-                {
+				},
+				{
 					"when": "editorLangId == verilog || editorLangId == systemverilog",
 					"command": "FPGA.Simulate",
 					"group": "navigation@1"
@@ -505,19 +505,19 @@
 					"command": "FPGA.instance",
 					"group": "navigation@1"
 				}
-            ],
-            "explorer/context": [
-                {
-                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+			],
+			"explorer/context": [
+				{
+					"when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
 					"command": "FPGA.Top",
 					"group": "navigation@1"
-                },
-                {
-                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+				},
+				{
+					"when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
 					"command": "FPGA.Simulate",
 					"group": "navigation@2"
-                }
-            ]
+				}
+			]
 		}
 	},
 	"devDependencies": {
@@ -529,6 +529,7 @@
 		"glob": "^7.1.6",
 		"mocha": "^7.0.1",
 		"typescript": "^3.7.5",
-		"vscode-test": "^1.3.0"
+		"vscode-test": "^1.3.0",
+		"webpack": "^5.11.1"
 	}
 }
