@@ -38,17 +38,7 @@ class FileSystemProvider {
         this.parser = parser;
         this.HDLparam = HDLparam;
         this.refreshProperty = new utils.refreshProperty();
-        fs.watch(serve.opeParam.workspacePath, { recursive : true }, function (event, fileName) {
-            if (fileName) {
-                if (fsWait) return;
-                fsWait = setTimeout(() => {
-                  fsWait = false;
-                }, 50);
-                console.log(`${event}`);
-                console.log(`${fileName}`);
-                // this.onChange(fileName);
-            }
-        });
+        
         this.FileSystemWatcher(globPattern);
     }
     getHDLDocumentType(document) {

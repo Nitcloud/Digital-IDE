@@ -13,7 +13,7 @@ const vscode   = require("vscode");
 const tree     = require("./tree");
 const serve    = require("./serve");
 const parse    = require("./parse");
-const linter   = require("./linter/LintManager");
+const linter   = require("HDLlinter");
 
 function activate(context) {
     // lint
