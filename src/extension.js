@@ -14,11 +14,11 @@ const tree     = require("./tree");
 const serve    = require("./serve");
 const parse    = require("./parse");
 const linter   = require("HDLlinter");
-
+const tool     = require("HDLtool");
 function activate(context) {
     // lint
     var lintManager = new linter["default"]();
-    vscode.commands.registerCommand("verilog.lint", lintManager.RunLintTool);
+    vscode.commands.registerCommand("HDL.lint", lintManager.RunLintTool);
 
     let HDLparam = [];
     // Status Bar
@@ -39,21 +39,7 @@ function activate(context) {
     vscode.window.registerTreeDataProvider('TOOL.fpga_tree', new tree.fpgaProvider());
     vscode.window.registerTreeDataProvider('TOOL.Tool_tree', new tree.toolProvider());
     
-	// Configure Provider manager
-    const selector = [
-        { scheme: 'file', language: 'systemverilog' }, 
-        { scheme: 'file', language: 'verilog' },
-        { scheme: 'file', language: 'vhdl' }
-    ];
-    // Providers
-    const hovProvider = new serve.HoverProvider();
-    const docProvider = new serve.DocumentSymbolProvider(parser);
-    const symProvider = new serve.WorkspaceSymbolProvider(preProcess);
-    const defProvider = new serve.DefinitionProvider(symProvider);
-	context.subscriptions.push(vscode.languages.registerWorkspaceSymbolProvider(symProvider));
-    context.subscriptions.push(vscode.languages.registerHoverProvider(selector, hovProvider));
-    context.subscriptions.push(vscode.languages.registerDefinitionProvider(selector, defProvider));
-    context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(selector, docProvider));
+    tool.registerLspServer(context, parser, preProcess);
 }
 exports.activate = activate;
 function deactivate() {}
