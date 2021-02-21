@@ -77,47 +77,6 @@ class FileSystemProvider {
             this.refresh();
         }
     }
-    /**
-        Adds the given `document`'s symbols to `this.symbols`.
-        Updates the status bar with the current symbols count in the workspace.
-
-        @param uri the document's Uri
-        @return status message when indexing is successful or failed with an error.
-    */
-    onCreate(uri) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield new Promise(() => {
-                return vscode.workspace.openTextDocument(uri).then((document) => {
-                    return this.onChange(document);
-                });
-            });
-        });
-    }
-    /**
-        Removes the given `document`'s symbols from `this.symbols`.
-        Updates the status bar with the current symbols count in the workspace.
-
-        @param uri the document's Uri
-        @return status message when indexing is successful or failed with an error.
-    */
-    onDelete(uri) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield new Promise(() => {
-                return vscode.workspace.openTextDocument(uri).then((document) => {
-                    return this.onChange(document);
-                });
-            });
-        });
-    }
-    FileSystemWatcher(globPattern) {
-        vscode.workspace.onDidChangeWorkspaceFolders((uri) => { 
-            this.onCreate(uri);
-        });
-        let watcher = vscode.workspace.createFileSystemWatcher(globPattern, false, false, false);
-        watcher.onDidCreate((uri) => { this.onCreate(uri); });
-        watcher.onDidDelete((uri) => { this.onDelete(uri); });
-        watcher.onDidChange((uri) => { this.onDelete(uri); });
-    }
     refresh(element) {
         if (element) {
             this._onDidChangeTreeData.fire(element);
