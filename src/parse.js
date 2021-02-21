@@ -275,7 +275,11 @@ class HDLParser {
                                 "portWidth" : ""
                             };
                             portProperty.portName = match.groups.name;
-                            portProperty.portWidth = match.groups.width;
+                            if (match.groups.width == null) {
+                                portProperty.portWidth = " ";
+                            } else {
+                                portProperty.portWidth = match.groups.width;
+                            }
                             switch (match.groups.type) {
                                 case "inout":
                                     HDLfileparam.port.inout.push(portProperty);

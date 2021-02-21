@@ -352,6 +352,11 @@
 				"title": "Serial monitor",
 				"category": "TOOL"
 			},
+            {
+				"command": "FPGA.alignment",
+				"title": "Alignment",
+				"category": "FPGA"
+			},
 			{
 				"command": "FPGA.instance",
 				"title": "Instance",
@@ -491,18 +496,23 @@
 					"group": "navigation@1"
 				},
 				{
-					"when": "editorLangId == verilog || editorLangId == systemverilog",
+					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
 					"command": "FPGA.Simulate",
 					"group": "navigation@1"
 				},
 				{
-					"when": "editorLangId == verilog || editorLangId == systemverilog",
+					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
 					"command": "FPGA.testbench",
 					"group": "navigation@1"
 				},
-				{
-					"when": "editorLangId == verilog || editorLangId == systemverilog",
+                {
+					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
 					"command": "FPGA.instance",
+					"group": "navigation@1"
+				},
+				{
+					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+					"command": "FPGA.alignment",
 					"group": "navigation@1"
 				}
 			],

@@ -38,8 +38,6 @@ class FileSystemProvider {
         this.parser = parser;
         this.HDLparam = HDLparam;
         this.refreshProperty = new utils.refreshProperty();
-        
-        this.FileSystemWatcher(globPattern);
     }
     getHDLDocumentType(document) {
         if (!document) {

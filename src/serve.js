@@ -45,15 +45,15 @@ class preProcess {
         this.symbols = new Map();
         utils.getOpeParam(opeParam);
         const settings = vscode.workspace.getConfiguration();
-        if (!settings.get('HDL.Indexing')) {
-            this.statusbar.text = "HDL: Indexing disabled on boot";
-        }
-        else {
-            this.build_index().then(() => {
-                this.updateMostRecentSymbols(undefined);
-                new tree.FileExplorer(this.parser, this.globPattern, this.HDLparam);
-            });
-        }
+        // if (!settings.get('HDL.Indexing')) {
+        //     this.statusbar.text = "HDL: Indexing disabled on boot";
+        // }
+        // else {
+        //     this.build_index().then(() => {
+        //         this.updateMostRecentSymbols(undefined);
+        //         new tree.FileExplorer(this.parser, this.globPattern, this.HDLparam);
+        //     });
+        // }
     };
     /**
         Processes one file and updates this.symbols with an entry if symbols exist in the file.

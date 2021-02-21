@@ -29,6 +29,11 @@ function activate(context) {
     // Back-end classes
     const parser     = new parse.HDLParser();
     const preProcess = new serve.preProcess(statusBar, parser, outputChannel, HDLparam);
+    preProcess.build_index().then(() => {
+        preProcess.updateMostRecentSymbols(undefined);
+        tool.registerSimServer(context, HDLparam);
+        new tree.FileExplorer(preProcess.parser, preProcess.globPattern, HDLparam);
+    });
 
     new serve.fpgaRegister(context);
     new serve.socRegister(context);
