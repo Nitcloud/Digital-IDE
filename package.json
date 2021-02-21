@@ -525,6 +525,11 @@
 	},
 	"devDependencies": {},
 	"dependencies": {
+		"mkdirp": "^1.0.4",
+        "HDLfilesys": "^1.0.0",
+        "HDLlinter" : "^1.0.0",
+        "HDLparser" : "^1.0.0",
+        "HDLtool"   : "^1.0.0",
 		"serialport": "^9.0.6"
 	}
 }
