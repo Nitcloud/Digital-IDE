@@ -67,7 +67,7 @@
 					"scope": "window",
 					"type": "string",
 					"default": "default",
-					"description": "simulate tool will be run at the file location for linting. Else it will be run at workspace folder."
+					"description": "Simulate tool will be run at the file location for linting. Else it will be run at workspace folder."
 				},
 				"HDL.linting.iverilog.arguments": {
 					"scope": "window",
@@ -368,7 +368,7 @@
 				"category": "FPGA"
 			},
 			{
-				"command": "FPGA.Simulate",
+				"command": "FPGA.simulate",
 				"title": "Simulate",
 				"category": "FPGA"
 			},
@@ -497,7 +497,7 @@
 				},
 				{
 					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-					"command": "FPGA.Simulate",
+					"command": "FPGA.simulate",
 					"group": "navigation@1"
 				},
 				{
@@ -524,7 +524,7 @@
 				},
 				{
 					"when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
-					"command": "FPGA.Simulate",
+					"command": "FPGA.simulate",
 					"group": "navigation@2"
 				}
 			]

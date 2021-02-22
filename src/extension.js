@@ -12,7 +12,7 @@
 const vscode   = require("vscode");
 const tree     = require("./tree");
 const serve    = require("./serve");
-const parse    = require("./parse");
+const parser   = require("HDLparser");
 const linter   = require("HDLlinter");
 const tool     = require("HDLtool");
 function activate(context) {
@@ -21,18 +21,21 @@ function activate(context) {
     vscode.commands.registerCommand("HDL.lint", lintManager.RunLintTool);
 
     let HDLparam = [];
+
+	// Output Channel
+	var outputChannel = vscode.window.createOutputChannel("HDL");
+
     // Status Bar
     const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
 	context.subscriptions.push(statusBar);
-	// Output Channel
-	var outputChannel = vscode.window.createOutputChannel("HDL");
+
     // Back-end classes
-    const parser     = new parse.HDLParser();
-    const preProcess = new serve.preProcess(statusBar, parser, outputChannel, HDLparam);
-    preProcess.build_index().then(() => {
-        preProcess.updateMostRecentSymbols(undefined);
+    const index = new parser.index(statusBar, HDLparam);
+    index.build_index().then(() => {
+        index.updateMostRecentSymbols(undefined);
+        console.log(HDLparam);
         tool.registerSimServer(context, HDLparam);
-        new tree.FileExplorer(preProcess.parser, preProcess.globPattern, HDLparam);
+        // new tree.FileExplorer(preProcess.parser, preProcess.globPattern, HDLparam);
     });
 
     new serve.fpgaRegister(context);
@@ -44,7 +47,7 @@ function activate(context) {
     vscode.window.registerTreeDataProvider('TOOL.fpga_tree', new tree.fpgaProvider());
     vscode.window.registerTreeDataProvider('TOOL.Tool_tree', new tree.toolProvider());
     
-    tool.registerLspServer(context, parser, preProcess);
+    tool.registerLspServer(context, parser, index);
 }
 exports.activate = activate;
 function deactivate() {}
