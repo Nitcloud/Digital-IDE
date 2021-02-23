@@ -10,17 +10,26 @@
 'use strict';
 
 const vscode   = require("vscode");
-const tree     = require("./tree");
-const serve    = require("./serve");
-const parser   = require("HDLparser");
-const linter   = require("HDLlinter");
-const tool     = require("HDLtool");
-function activate(context) {
-    // lint
-    var lintManager = new linter["default"]();
-    vscode.commands.registerCommand("HDL.lint", lintManager.RunLintTool);
 
+const tool     = require("HDLtool");
+const linter   = require("HDLlinter");
+const parser   = require("HDLparser");
+const filesys  = require("HDLfilesys");
+
+function activate(context) {
     let HDLparam = [];
+    let opeParam = {
+        "os"            : "",
+        "rootPath"      : "",
+        "workspacePath" : "",
+        "prjInitParam"  : "",
+        "propertyPath"  : ""
+    }
+    filesys.prjs.getOpeParam(`${__dirname}`,opeParam);
+    filesys.registerPrjsServer(context,opeParam);
+
+    // linter
+    linter.registerLinterServer(context);
 
 	// Output Channel
 	var outputChannel = vscode.window.createOutputChannel("HDL");
@@ -38,16 +47,17 @@ function activate(context) {
         // new tree.FileExplorer(preProcess.parser, preProcess.globPattern, HDLparam);
     });
 
-    new serve.fpgaRegister(context);
-    new serve.socRegister(context);
-    new serve.toolRegister(context);
-    
-    // Tree View
-    vscode.window.registerTreeDataProvider('TOOL.sdk_tree' , new tree.sdkProvider());
-    vscode.window.registerTreeDataProvider('TOOL.fpga_tree', new tree.fpgaProvider());
-    vscode.window.registerTreeDataProvider('TOOL.Tool_tree', new tree.toolProvider());
-    
+    // tool
     tool.registerLspServer(context, parser, index);
+    
+    // new serve.fpgaRegister(context);
+    // new serve.socRegister(context);
+    // new serve.toolRegister(context);
+    
+    // // Tree View
+    // vscode.window.registerTreeDataProvider('TOOL.sdk_tree' , new tree.sdkProvider());
+    // vscode.window.registerTreeDataProvider('TOOL.fpga_tree', new tree.fpgaProvider());
+    // vscode.window.registerTreeDataProvider('TOOL.Tool_tree', new tree.toolProvider());
 }
 exports.activate = activate;
 function deactivate() {}

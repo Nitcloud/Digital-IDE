@@ -1,0 +1,11 @@
+{
+    "FPGA_VERSION": "xilinx",
+    "PRJ_NAME": {
+        "FPGA": "template"
+    },
+    "SOC_MODE": {
+        "soc": "none"
+    },
+    "enableShowlog": false,
+    "Device": "none"
+}

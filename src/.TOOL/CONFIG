@@ -1,3 +1,5 @@
+xip_repo_path
+D:/project/FPGA/.Lib/xIP
 FPGA_VERSION
 xilinx
 PRJ_NAME.FPGA
@@ -15,6 +17,4 @@ undefined
 enableShowlog
 false
 Device
-xc7z020clg400-2
-xip_repo_path
-D:/project/FPGA/.Lib/xIP
+none
