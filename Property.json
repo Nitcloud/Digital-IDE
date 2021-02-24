@@ -10,21 +10,21 @@
 			"enum": [
 				"xilinx"
 			]
-        },
-        "LIB": {
-            "type": "object",
+		},
+		"LIB": {
+			"type": "object",
 			"properties": {
 				"Common_lib": {
-                    "type": "array"
+					"type": "array"
 				},
 				"Ailinx_lib": {
 					"type": "array"
-                },
-                "Intel_lib": {
+				},
+				"Intel_lib": {
 					"type": "array"
 				}
 			}
-        },
+		},
 		"PRJ_NAME": {
 			"type": "object",
 			"default": {
@@ -124,9 +124,15 @@
 				}
 			},
 			"dependencies": {
-				"bd_file":["soc"],
-				"os":["soc"],
-				"app":["soc"]
+				"bd_file": [
+					"soc"
+				],
+				"os": [
+					"soc"
+				],
+				"app": [
+					"soc"
+				]
 			}
 		},
 		"enableShowlog": {
@@ -142,7 +148,7 @@
 			"type": "string",
 			"description": "The device type",
 			"enum": [
-                "none",
+				"none",
 				"xc7z020clg400-2",
 				"xc7a35tftg256-1",
 				"xc7a35tcsg324-1"

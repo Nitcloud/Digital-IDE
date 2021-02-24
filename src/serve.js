@@ -375,15 +375,7 @@ class fpgaRegister {
         context.subscriptions.push(vscode.commands.registerCommand('FPGA.exit', () => {
             this.Exit();
         }));
-        context.subscriptions.push(vscode.commands.registerCommand('FPGA.Add_dev', () => {
-            this.Add_dev();
-        }));
-        context.subscriptions.push(vscode.commands.registerCommand('FPGA.Delete_dev', () => {
-            this.Delete_dev();
-        }));
-        context.subscriptions.push(vscode.commands.registerCommand('FPGA.Overwrite_tb', () => {
-            this.Overwrite_tb();
-        }));
+        
         context.subscriptions.push(vscode.commands.registerCommand('FPGA.Overwrite_bd', () => {
             this.Overwrite_bd();
         }));

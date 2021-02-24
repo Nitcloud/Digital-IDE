@@ -26,9 +26,11 @@ function activate(context) {
         "propertyPath"  : ""
     }
     filesys.prjs.getOpeParam(`${__dirname}`,opeParam);
-    filesys.registerPrjsServer(context,opeParam);
 
-    // linter
+    // project Server
+    filesys.registerPrjsServer(context,opeParam,HDLparam);
+
+    // linter Server
     linter.registerLinterServer(context);
 
 	// Output Channel
@@ -47,8 +49,8 @@ function activate(context) {
         // new tree.FileExplorer(preProcess.parser, preProcess.globPattern, HDLparam);
     });
 
-    // tool
-    tool.registerLspServer(context, parser, index);
+    // tool Server
+    tool.registerLspServer(context, index);
     
     // new serve.fpgaRegister(context);
     // new serve.socRegister(context);
