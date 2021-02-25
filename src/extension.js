@@ -27,9 +27,6 @@ function activate(context) {
     }
     filesys.prjs.getOpeParam(`${__dirname}`,opeParam);
 
-    // project Server
-    filesys.registerPrjsServer(context,opeParam,HDLparam);
-
     // linter Server
     linter.registerLinterServer(context);
 
@@ -40,18 +37,18 @@ function activate(context) {
     const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
 	context.subscriptions.push(statusBar);
 
-    // Back-end classes
     const index = new parser.index(statusBar, HDLparam);
     index.build_index().then(() => {
         index.updateMostRecentSymbols(undefined);
         console.log(HDLparam);
+        // project Server
+        filesys.registerPrjsServer(context,opeParam,HDLparam);
+        // tool Server
         tool.registerSimServer(context, HDLparam);
+        tool.registerLspServer(context, index, HDLparam);
         // new tree.FileExplorer(preProcess.parser, preProcess.globPattern, HDLparam);
     });
 
-    // tool Server
-    tool.registerLspServer(context, index);
-    
     // new serve.fpgaRegister(context);
     // new serve.socRegister(context);
     // new serve.toolRegister(context);
