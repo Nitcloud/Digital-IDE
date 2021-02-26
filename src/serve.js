@@ -213,18 +213,6 @@ class fpgaRegister {
         this.StartFPGA_flag = false;
 
         this.context = context;
-
-        this.json      = new utils.jsonOperation();
-        this.file      = new utils.fileOperation();
-        this.array     = new utils.arrayOperation();
-        this.folder    = new utils.folderOperation();
-        this.property  = new utils.refreshProperty();
-        this.terminal  = new utils.terminalOperation();
-        this.xilinxOpe = new utils.xilinxFileExplorer();
-
-        // this.rootPath      = opeParam.rootPath;
-        // this.propertyPath  = opeParam.propertyPath;
-        // this.workspacePath = opeParam.workspacePath;
         var _this = this;
         vscode.window.onDidCloseTerminal(function (terminal) {
             if (terminal.name == "StartFPGA") {

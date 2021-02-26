@@ -37,26 +37,21 @@ function activate(context) {
     const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
 	context.subscriptions.push(statusBar);
 
-    const index = new parser.index(statusBar, HDLparam);
-    index.build_index().then(() => {
-        index.updateMostRecentSymbols(undefined);
+    const indexer = new parser.indexer(statusBar, HDLparam);
+    indexer.build_index().then(() => {
+        indexer.updateMostRecentSymbols(undefined);
         console.log(HDLparam);
         // project Server
         filesys.registerPrjsServer(context,opeParam,HDLparam);
         // tool Server
+        tool.registerTreeServer(HDLparam);
         tool.registerSimServer(context, HDLparam);
-        tool.registerLspServer(context, index, HDLparam);
-        // new tree.FileExplorer(preProcess.parser, preProcess.globPattern, HDLparam);
+        tool.registerLspServer(context, indexer, HDLparam);
     });
 
     // new serve.fpgaRegister(context);
     // new serve.socRegister(context);
     // new serve.toolRegister(context);
-    
-    // // Tree View
-    // vscode.window.registerTreeDataProvider('TOOL.sdk_tree' , new tree.sdkProvider());
-    // vscode.window.registerTreeDataProvider('TOOL.fpga_tree', new tree.fpgaProvider());
-    // vscode.window.registerTreeDataProvider('TOOL.Tool_tree', new tree.toolProvider());
 }
 exports.activate = activate;
 function deactivate() {}
