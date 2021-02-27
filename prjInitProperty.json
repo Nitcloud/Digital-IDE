@@ -1,9 +1,11 @@
 {
     "opeParam" : {
-        "os"            : "",
-        "rootPath"      : "",
-        "workspacePath" : "",
-        "propertyPath"  : ""
+        "os"             : "",
+        "rootPath"       : "",
+        "workspacePath"  : "",
+        "currentSrcPath" : "",
+        "prjInitParam"   : "",
+        "propertyPath"   : ""
     },
     "HDLfileparam" : {
         "moduleName" : "",

@@ -378,8 +378,8 @@
 				"category": "FPGA"
 			},
 			{
-				"command": "FPGA.Init",
-				"title": "Init",
+				"command": "FPGA.Launch",
+				"title": "Launch",
 				"category": "FPGA"
 			},
 			{
@@ -393,7 +393,7 @@
 				"category": "FPGA"
 			},
 			{
-				"command": "FPGA.Sim",
+				"command": "FPGA.Simulate",
 				"title": "Run the Simulation",
 				"category": "FPGA"
 			},
@@ -428,7 +428,7 @@
 				"category": "FPGA"
 			},
 			{
-				"command": "FPGA.exit",
+				"command": "FPGA.Exit",
 				"title": "Exit the current project",
 				"category": "FPGA"
 			},
@@ -463,8 +463,8 @@
 				"category": "FPGA"
 			},
 			{
-				"command": "SDK.Init",
-				"title": "Init",
+				"command": "SDK.Launch",
+				"title": "Launch",
 				"category": "SDK"
 			},
 			{
@@ -480,17 +480,22 @@
 		],
 		"keybindings": [
 			{
-				"command": "FPGA.Init",
+				"command": "FPGA.Launch",
 				"key": "Alt+z",
 				"mac": "Alt+z",
 				"when": "editorTextFocus"
 			}
 		],
 		"menus": {
-			"view/title": [
+			"view/item/context": [
 				{
 					"command": "FILE.refresh",
-					"group": "navigation@1",
+                    "title": "files refresh",
+					"group": "inline",
+                    "icon": {
+                        "light": "images/svg/light/refresh.svg",
+                        "dark": "images/svg/dark/refresh.svg"
+                    },
 					"when": "view == TOOL"
 				}
 			],

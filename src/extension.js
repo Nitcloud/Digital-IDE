@@ -19,11 +19,12 @@ const filesys  = require("HDLfilesys");
 function activate(context) {
     let HDLparam = [];
     let opeParam = {
-        "os"            : "",
-        "rootPath"      : "",
-        "workspacePath" : "",
-        "prjInitParam"  : "",
-        "propertyPath"  : ""
+        "os"             : "",
+        "rootPath"       : "",
+        "workspacePath"  : "",
+        "currentSrcPath" : "",
+        "prjInitParam"   : "",
+        "propertyPath"   : ""
     }
     filesys.prjs.getOpeParam(`${__dirname}`,opeParam);
 
@@ -42,10 +43,11 @@ function activate(context) {
         indexer.updateMostRecentSymbols(undefined);
         console.log(HDLparam);
         // project Server
-        filesys.registerPrjsServer(context,opeParam,HDLparam);
+        filesys.registerPrjsServer(context, opeParam, HDLparam);
         // tool Server
-        tool.registerTreeServer(HDLparam);
+        tool.registerTreeServer(opeParam, HDLparam);
         tool.registerSimServer(context, HDLparam);
+        tool.registerBuildServer(context, HDLparam);
         tool.registerLspServer(context, indexer, HDLparam);
     });
 
