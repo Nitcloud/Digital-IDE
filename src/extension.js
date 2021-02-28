@@ -12,7 +12,7 @@
 const vscode   = require("vscode");
 
 const tool     = require("HDLtool");
-const linter   = require("HDLlinter");
+const linter   = require("HDLlinter/linter");
 const parser   = require("HDLparser");
 const filesys  = require("HDLfilesys");
 
