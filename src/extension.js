@@ -18,6 +18,7 @@ const filesys  = require("HDLfilesys");
 
 function activate(context) {
     let HDLparam = [];
+    let HDLFileList = [];
     let opeParam = {
         "os"             : "",
         "rootPath"       : "",
@@ -27,7 +28,7 @@ function activate(context) {
         "propertyPath"   : ""
     }
     filesys.prjs.getOpeParam(`${__dirname}`,opeParam);
-
+    filesys.prjs.refreshPrjFiles(opeParam.workspacePath, HDLFileList);
     // linter Server
     linter.registerLinterServer(context);
 
@@ -39,21 +40,23 @@ function activate(context) {
 	context.subscriptions.push(statusBar);
 
     const indexer = new parser.indexer(statusBar, HDLparam);
-    indexer.build_index().then(() => {
-        indexer.updateMostRecentSymbols(undefined);
+    indexer.build_index(HDLFileList).then(() => {
         console.log(HDLparam);
+        indexer.updateMostRecentSymbols(undefined);
+        var fileExplorer = new tool.tree.FileExplorer(HDLparam);
+        filesys.monitor.momitor(opeParam.workspacePath, opeParam, indexer, () => {
+            HDLparam = indexer.HDLparam;
+            fileExplorer.treeDataProvider.HDLparam = indexer.HDLparam;
+            fileExplorer.treeDataProvider.refresh();
+        });
         // project Server
-        filesys.registerPrjsServer(context, opeParam, HDLparam);
+        filesys.registerPrjsServer(context, opeParam, indexer);
         // tool Server
-        tool.registerTreeServer(opeParam, HDLparam);
+        tool.registerTreeServer(opeParam);
         tool.registerSimServer(context, HDLparam);
-        tool.registerBuildServer(context, HDLparam);
+        tool.registerBuildServer(context, HDLparam, opeParam);
         tool.registerLspServer(context, indexer, HDLparam);
     });
-
-    // new serve.fpgaRegister(context);
-    // new serve.socRegister(context);
-    // new serve.toolRegister(context);
 }
 exports.activate = activate;
 function deactivate() {}
