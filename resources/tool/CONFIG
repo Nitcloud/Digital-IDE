@@ -7,7 +7,7 @@ template
 PRJ_NAME.SOC
 undefined
 SOC_MODE.soc
-none
+cortexM3
 SOC_MODE.bd_file
 undefined
 SOC_MODE.os
