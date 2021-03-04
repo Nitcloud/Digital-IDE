@@ -14,10 +14,20 @@
 		"LIB": {
 			"type": "object",
 			"properties": {
-				"Common_lib": {
+                "state" : {
+                    "type" : "string",
+                    "enum": [
+                        "virtual",
+                        "real"
+                    ]
+                },
+				"Hardware": {
 					"type": "array"
 				},
-				"Ailinx_lib": {
+                "Customer": {
+					"type": "array"
+				},
+				"Xilinx_lib": {
 					"type": "array"
 				},
 				"Intel_lib": {

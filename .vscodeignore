@@ -1,11 +1,12 @@
 .vscode/**
-node_modules
-src
+node_modules/**
+src/**
 .vscode-test/**
 test/**
 .gitignore
-vsc-extension-quickstart.md
+README_cn.md
 **/jsconfig.json
 **/*.map
 **/.eslintrc.json
+prjInitProperty.json
 webpack.config.js

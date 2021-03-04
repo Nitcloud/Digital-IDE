@@ -111,6 +111,12 @@
 					"default": "D:/project/FPGA/.Lib/xIP",
 					"description": "set the xilinx ip_repo_path"
 				},
+                "PRJ.customer.Lib.repo.path": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "set the customer lib_repo_path"
+				},
 				"TOOL.iVerilog.install.path": {
 					"scope": "window",
 					"type": "string",
@@ -269,6 +275,32 @@
 					".SV"
 				],
 				"configuration": "./config/systemverilog.configuration.json"
+			},
+            {
+				"id": "arm",
+				"aliases": [
+					"ARM",
+					"arm"
+				],
+				"extensions": [
+					".s",
+					".S",
+					".asm",
+					".sx"
+				],
+				"configuration": "./config/arm.configuration.json"
+			},
+            {
+				"id": "linkerscript",
+				"aliases": [
+					"LinkerScript",
+					"linkerscript"
+				],
+				"extensions": [
+					".ld",
+					".dld"
+				],
+				"configuration": "./config/link.configuration.json"
 			}
 		],
 		"jsonValidation": [
@@ -278,6 +310,16 @@
 			}
 		],
 		"grammars": [
+            {
+				"language": "linkerscript",
+				"scopeName": "source.ld",
+				"path": "./syntaxes/link.json"
+			},
+            {
+				"language": "arm",
+				"scopeName": "source.arm",
+				"path": "./syntaxes/arm.json"
+			},
 			{
 				"language": "tcl",
 				"scopeName": "source.tcl",
@@ -388,8 +430,8 @@
 				"category": "FPGA"
 			},
 			{
-				"command": "FPGA.Update",
-				"title": "Update designed file",
+				"command": "FPGA.Refresh",
+				"title": "refresh designed file",
 				"category": "FPGA"
 			},
 			{
