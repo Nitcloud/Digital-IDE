@@ -39,11 +39,6 @@
 					"default": 10,
 					"description": "This is the number of files it should attempt to process in parallel. Processing consist of opening found files and perform matching to find symbols."
 				},
-				"HDL.excludeIndexing": {
-					"type": "string",
-					"default": "insert globPattern here",
-					"description": "Exclude files from indexing by a globPattern"
-				},
 				"HDL.linting.linter": {
 					"scope": "window",
 					"type": "string",

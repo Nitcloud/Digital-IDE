@@ -11,17 +11,17 @@
 				"xilinx"
 			]
 		},
-		"LIB": {
+		"HardwareLIB": {
 			"type": "object",
 			"properties": {
-                "state" : {
+                "State" : {
                     "type" : "string",
                     "enum": [
                         "virtual",
                         "real"
                     ]
                 },
-				"Hardware": {
+				"Common": {
 					"type": "array"
 				},
                 "Customer": {
