@@ -88,6 +88,12 @@
 					"default": "",
 					"description": "Add Modelsim work library here."
 				},
+                "PRJ.file.structure.notice": {
+					"scope": "window",
+					"type": "boolean",
+					"default": true,
+					"description": "notice when change file structure"
+				},
 				"PRJ.xilinx.install.path": {
 					"scope": "window",
 					"type": "string",
@@ -472,6 +478,11 @@
 			{
 				"command": "FPGA.Overwrite_tb",
 				"title": "Overwrite the template of testbench",
+				"category": "FPGA"
+			},
+            {
+				"command": "FPGA.Overwrite_InitProperty",
+				"title": "Overwrite the InitPropertyParam",
 				"category": "FPGA"
 			},
 			{

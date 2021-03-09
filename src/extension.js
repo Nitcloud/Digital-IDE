@@ -29,6 +29,7 @@ function activate(context) {
     }
     filesys.prjs.getOpeParam(`${__dirname}`,opeParam);
     filesys.prjs.refreshPrjFiles(opeParam.workspacePath, HDLFileList);
+    HDLFileList = HDLFileList.concat(filesys.prjs.getLibParam(opeParam));
     // linter Server
     linter.registerLinterServer(context);
 
