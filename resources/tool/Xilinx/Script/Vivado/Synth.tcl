@@ -1,7 +1,7 @@
 set_param general.maxThreads 8
 
 set current_Location [file normalize [info script]]
-set xilinx_path [file dirname [file dirname [file dirname [file dirname $current_Location]]]]
+set xilinx_path [file dirname [file dirname [file dirname $current_Location]]]
 set root_path   [file dirname $xilinx_path]
 # get the project info
 set Device        none

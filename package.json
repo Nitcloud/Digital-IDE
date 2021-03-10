@@ -47,10 +47,6 @@
 						"xvhdl",
 						"xmixed",
 						"vlog",
-						"vhdl",
-						"vmixed",
-						"cmixed",
-						"ghdl",
 						"iverilog",
 						"verilator",
 						"default"
@@ -94,12 +90,6 @@
 					"default": true,
 					"description": "notice when change file structure"
 				},
-				"PRJ.xilinx.install.path": {
-					"scope": "window",
-					"type": "string",
-					"default": "",
-					"description": "set the xilinx install path. \n e.g. : D:/APP/vivado_18_3"
-				},
 				"PRJ.xilinx.BD.repo.path": {
 					"scope": "window",
 					"type": "string",
@@ -117,6 +107,12 @@
 					"type": "string",
 					"default": "",
 					"description": "set the customer lib_repo_path"
+				},
+                "TOOL.xilinx.install.path": {
+					"scope": "window",
+					"type": "string",
+					"default": "D:/APP/vivado_19_2",
+					"description": "set the xilinx install path. \n e.g. : D:/APP/vivado_18_3"
 				},
 				"TOOL.iVerilog.install.path": {
 					"scope": "window",

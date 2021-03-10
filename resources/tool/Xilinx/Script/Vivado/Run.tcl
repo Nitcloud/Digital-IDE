@@ -1,7 +1,7 @@
 set_param general.maxThreads 6
 
 set current_Location [file normalize [info script]]
-set root_path [file dirname [file dirname [file dirname [file dirname [file dirname $current_Location]]]]]
+set root_path [file dirname [file dirname [file dirname [file dirname $current_Location]]]]
 
 set update  "[file dirname $current_Location]/Update.tcl"
 set sim     "[file dirname $current_Location]/Simulation.tcl"

@@ -17,7 +17,7 @@ const parser   = require("HDLparser");
 const filesys  = require("HDLfilesys");
 
 function activate(context) {
-    let HDLparam = [];
+    var HDLparam = [];
     let HDLFileList = [];
     let opeParam = {
         "os"             : "",
@@ -42,20 +42,21 @@ function activate(context) {
 
     const indexer = new parser.indexer(statusBar, HDLparam);
     indexer.build_index(HDLFileList).then(() => {
-        console.log(HDLparam);
+        console.log(indexer.HDLparam);
         indexer.updateMostRecentSymbols(undefined);
-        var fileExplorer = new tool.tree.FileExplorer(HDLparam, opeParam);
+        var fileExplorer = new tool.tree.FileExplorer(indexer.HDLparam, opeParam);
         filesys.monitor.momitor(opeParam.workspacePath, opeParam, indexer, () => {
             HDLparam = indexer.HDLparam;
             fileExplorer.treeDataProvider.HDLparam = indexer.HDLparam;
             fileExplorer.treeDataProvider.refresh();
         });
         // project Server
-        filesys.registerPrjsServer(context, opeParam, indexer);
+        filesys.registerPrjsServer(context, opeParam);
         // tool Server
+        // TODO HDLparam 没有跟着变
         tool.registerTreeServer(opeParam);
-        tool.registerSimServer(context, HDLparam);
-        tool.registerLspServer(context, indexer, HDLparam);
+        tool.registerSimServer(context, HDLparam, opeParam);
+        tool.registerLspServer(context, indexer);
         tool.registerBuildServer(context, HDLparam, opeParam);
         tool.registerXilinxDesigner(context, opeParam);
     });

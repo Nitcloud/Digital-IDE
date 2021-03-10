@@ -61,7 +61,7 @@
     - [ ] iverilog快速仿真
     - [ ] modelsim快速仿真
     - [ ] Verilator快速仿真
-  - [ ] 常见功能库
+  - [x] 常见功能库
 - [ ] 后端开发辅助功能
   - [ ] vivado开发辅助
   - [ ] quartus开发辅助
@@ -303,6 +303,7 @@ note：由于之前已经添加vivado的路径到环境变量所以建议这里�
 [返回目录](#目录)
 
 * [VHDL](https://github.com/puorc/awesome-vhdl)
+* [TerosHDL](https://github.com/TerosTechnology/vscode-terosHDL)
 * [TCL Language Support](https://github.com/go2sh/tcl-language-support)
 * [Verilog HDL/SystemVerilog](https://github.com/mshr-h/vscode-verilog-hdl-support)
 * [SystemVerilog - Language Support](https://github.com/eirikpre/VSCode-SystemVerilog)
