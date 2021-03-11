@@ -5,11 +5,24 @@ set xilinx_path [file dirname [file dirname [file dirname $current_Location]]]
 
 if {[current_sim] != ""} {
 	relaunch_sim -quiet
-	set sim_state [exec python $xilinx_path/Script/Python/Log.py sim [current_project]]
 } else {
 	launch_simulation -quiet
-	set sim_state [exec python $xilinx_path/Script/Python/Log.py sim [current_project]]
 }
+
+set fd [open $root_path/THREAD r] 
+set newfd [open $root_path/THREAD.tmp w] 
+while {[gets $fd line] >= 0} { 
+    if { [string equal -length 4 $line "simulate"] == 1 } {
+		puts $newfd $line 
+		puts $newfd "true"
+        gets $fd    $line
+	} else {
+        puts $newfd $line
+    }
+} 
+close $fd 
+close $newfd 
+file rename -force $root_path/THREAD.tmp $root_path/THREAD
 
 if {$sim_state == "none"} {
 	set curr_wave [current_wave_config]

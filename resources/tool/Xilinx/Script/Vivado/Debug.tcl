@@ -1,5 +1,4 @@
-
-
+set_param general.maxThreads 8
 write_debug_probes -no_partial_ltxfile -quiet -force ./[current_project].ltx
 
 set Device    none

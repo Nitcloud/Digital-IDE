@@ -30,8 +30,6 @@ function activate(context) {
     filesys.prjs.getOpeParam(`${__dirname}`,opeParam);
     filesys.prjs.refreshPrjFiles(opeParam.workspacePath, HDLFileList);
     HDLFileList = HDLFileList.concat(filesys.prjs.getLibParam(opeParam));
-    // linter Server
-    linter.registerLinterServer(context);
 
 	// Output Channel
 	var outputChannel = vscode.window.createOutputChannel("HDL");
@@ -45,20 +43,22 @@ function activate(context) {
         console.log(indexer.HDLparam);
         indexer.updateMostRecentSymbols(undefined);
         var fileExplorer = new tool.tree.FileExplorer(indexer.HDLparam, opeParam);
-        filesys.monitor.momitor(opeParam.workspacePath, opeParam, indexer, () => {
+        filesys.monitor.monitor(opeParam.workspacePath, opeParam, indexer, () => {
             HDLparam = indexer.HDLparam;
             fileExplorer.treeDataProvider.HDLparam = indexer.HDLparam;
             fileExplorer.treeDataProvider.refresh();
         });
+        // linter Server
+        linter.registerLinterServer(context);
         // project Server
         filesys.registerPrjsServer(context, opeParam);
         // tool Server
         // TODO HDLparam 没有跟着变
         tool.registerTreeServer(opeParam);
-        tool.registerSimServer(context, HDLparam, opeParam);
+        tool.registerSimServer(indexer, opeParam);
         tool.registerLspServer(context, indexer);
-        tool.registerBuildServer(context, HDLparam, opeParam);
-        tool.registerXilinxDesigner(context, opeParam);
+        tool.registerBuildServer(context, indexer, opeParam);
+        tool.registerXilinxDesigner(opeParam);
     });
 }
 exports.activate = activate;

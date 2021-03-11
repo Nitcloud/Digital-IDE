@@ -31,5 +31,17 @@ if {$enableShowlog == "true"} {
 	wait_on_run synth_1 -quiet
 }
 
-set    synth_state [exec python $xilinx_path/Script/Python/Log.py synth [current_project]]
-return $synth_state
+set fd [open $root_path/THREAD r] 
+set newfd [open $root_path/THREAD.tmp w] 
+while {[gets $fd line] >= 0} { 
+    if { [string equal -length 4 $line "synth"] == 1 } {
+		puts $newfd $line 
+		puts $newfd "true"
+        gets $fd    $line
+	} else {
+        puts $newfd $line
+    }
+} 
+close $fd 
+close $newfd 
+file rename -force $root_path/THREAD.tmp $root_path/THREAD

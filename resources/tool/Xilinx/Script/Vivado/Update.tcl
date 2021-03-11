@@ -66,7 +66,7 @@ proc cortexM3_IP_add { current_Location } {
     }
 	if { $ensureExsit == 0 } {			
 		file mkdir ./user/Hardware/bd/m3_xIP_default
-		file copy  -force $current_Location/IP/Example_bd/m3_xIP_default.bd ./user/Hardware/bd/m3_xIP_default
+		file copy  -force $current_Location/../../lib/Ailinx_lib/bd/m3_xIP_default.bd ./user/Hardware/bd/m3_xIP_default
 		add_file   ./user/Hardware/bd/m3_xIP_default/m3_xIP_default.bd -force -quiet
 		generate_target all [get_files ./user/Hardware/bd/m3_xIP_default/m3_xIP_default.bd] -quiet
 		make_wrapper -files [get_files ./user/Hardware/bd/m3_xIP_default/m3_xIP_default.bd] -top -quiet
@@ -79,7 +79,7 @@ proc cortexA9_IP_add { current_Location } {
     }
 	if { $ensureExsit == 0 } {		
 		file mkdir ./user/Hardware/bd/zynq_default
-		file copy  -force $current_Location/IP/Example_bd/zynq_default.bd ./user/Hardware/bd/zynq_default
+		file copy  -force $current_Location/../../lib/Ailinx_lib/bd/zynq_default.bd ./user/Hardware/bd/zynq_default
 		add_file   ./user/Hardware/bd/zynq_default/zynq_default.bd -force -quiet
 		generate_target all [get_files ./user/Hardware/bd/zynq_default/zynq_default.bd] -quiet
 		make_wrapper -files [get_files ./user/Hardware/bd/zynq_default/zynq_default.bd] -top -quiet
@@ -92,7 +92,7 @@ proc MicroBlaze_IP_add { current_Location } {
     }
 	if { $ensureExsit == 0 } {		
 		file mkdir ./user/Hardware/bd/MicroBlaze_default
-		file copy  -force $current_Location/IP/Example_bd/MicroBlaze_default.bd ./user/Hardware/bd/MicroBlaze_default
+		file copy  -force $current_Location/../../lib/Ailinx_lib/bd/MicroBlaze_default.bd ./user/Hardware/bd/MicroBlaze_default
 		add_file   ./user/Hardware/bd/MicroBlaze_default/MicroBlaze_default.bd -force -quiet
 		generate_target all [get_files ./user/Hardware/bd/MicroBlaze_default/MicroBlaze_default.bd]  -quiet
 		make_wrapper -files [get_files ./user/Hardware/bd/MicroBlaze_default/MicroBlaze_default.bd] -top -quiet
@@ -124,10 +124,10 @@ if {[string equal -length 4 $soc none] == 1} {
     # reset ip_repo_paths
     if { [file isdirectory ./user/IP/lib] == 1 } {        
         set ip_lib_paths {./user/IP/lib}
-        lappend ip_lib_paths $xilinx_path/IP
+        lappend ip_lib_paths $root_path/../../lib/Ailinx_lib/ip
     } else {
         set ip_lib_paths {}
-        lappend ip_lib_paths $xilinx_path/IP
+        lappend ip_lib_paths $root_path/../../lib/Ailinx_lib/ip
     }
     if {$xip_repo_path != ""} {
         lappend ip_lib_paths $xip_repo_path
@@ -140,10 +140,10 @@ if {[string equal -length 4 $soc none] == 1} {
     # reset ip_repo_paths
     if { [file isdirectory ./user/Hardware/IP/lib] == 1 } {        
         set ip_lib_paths {./user/Hardware/IP/lib}
-        lappend ip_lib_paths $xilinx_path/IP
+        lappend ip_lib_paths $root_path/../../lib/Ailinx_lib/ip
     } else {
         set ip_lib_paths {}
-        lappend ip_lib_paths $xilinx_path/IP
+        lappend ip_lib_paths $root_path/../../lib/Ailinx_lib/ip
     }
     if {$xip_repo_path != ""} {
         lappend ip_lib_paths $xip_repo_path
@@ -153,10 +153,10 @@ if {[string equal -length 4 $soc none] == 1} {
     # add BD Design
 	if {$bd_file == "default"} {				
 		switch $soc {
-			cortexM3       {cortexM3_IP_add   $xilinx_path}
-			microblaze     {MicroBlaze_IP_add $xilinx_path}
-			ps7_cortexa9_0 {cortexA9_IP_add   $xilinx_path}
-			ps7_cortexa9_1 {cortexA9_IP_add   $xilinx_path}
+			cortexM3       {cortexM3_IP_add   $root_path}
+			microblaze     {MicroBlaze_IP_add $root_path}
+			ps7_cortexa9_0 {cortexA9_IP_add   $root_path}
+			ps7_cortexa9_1 {cortexA9_IP_add   $root_path}
 		}
 	} else {
 		if {$bd_file != "none"} {
@@ -166,7 +166,7 @@ if {[string equal -length 4 $soc none] == 1} {
             }
 			if { $ensureExsit == 0 } {	
 				file mkdir ./user/Hardware/bd/$bd_file
-				file copy  -force $xilinx_path/IP/Example_bd/$bd_file.bd ./user/Hardware/bd/$bd_file
+				file copy  -force $root_path/../../lib/Ailinx_lib/bd/$bd_file.bd ./user/Hardware/bd/$bd_file
 				add_file   ./user/Hardware/bd/$bd_file/$bd_file.bd -force -quiet
 				generate_target all [get_files ./user/Hardware/bd/$bd_file/$bd_file.bd] -quiet
 				make_wrapper -files [get_files ./user/Hardware/bd/$bd_file/$bd_file.bd] -top -quiet
@@ -177,4 +177,4 @@ if {[string equal -length 4 $soc none] == 1} {
 	soc_add
 }
 
-update_file $root_path/FILES
+# update_file $root_path/FILES

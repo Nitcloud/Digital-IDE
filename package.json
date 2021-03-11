@@ -57,7 +57,7 @@
 				"HDL.linting.runFilePath": {
 					"scope": "window",
 					"type": "string",
-					"default": "default",
+					"default": "",
 					"description": "Simulate tool will be run at the file location for linting. Else it will be run at workspace folder."
 				},
 				"HDL.linting.iverilog.arguments": {
