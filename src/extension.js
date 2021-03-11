@@ -42,9 +42,11 @@ function activate(context) {
     indexer.build_index(HDLFileList).then(() => {
         console.log(indexer.HDLparam);
         indexer.updateMostRecentSymbols(undefined);
+        var vlogComplete = new tool.lspCompletion.vlogCompletion(indexer.HDLparam);
         var fileExplorer = new tool.tree.FileExplorer(indexer.HDLparam, opeParam);
+        filesys.monitor.threadMonitor(outputChannel, opeParam);
         filesys.monitor.monitor(opeParam.workspacePath, opeParam, indexer, () => {
-            HDLparam = indexer.HDLparam;
+            vlogComplete.HDLparam = indexer.HDLparam;
             fileExplorer.treeDataProvider.HDLparam = indexer.HDLparam;
             fileExplorer.treeDataProvider.refresh();
         });
@@ -53,10 +55,9 @@ function activate(context) {
         // project Server
         filesys.registerPrjsServer(context, opeParam);
         // tool Server
-        // TODO HDLparam 没有跟着变
         tool.registerTreeServer(opeParam);
         tool.registerSimServer(indexer, opeParam);
-        tool.registerLspServer(context, indexer);
+        tool.registerLspServer(context, indexer, vlogComplete);
         tool.registerBuildServer(context, indexer, opeParam);
         tool.registerXilinxDesigner(opeParam);
     });
