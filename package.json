@@ -29,11 +29,6 @@
 		"configuration": {
 			"title": "FPGAs",
 			"properties": {
-				"HDL.Indexing": {
-					"type": "boolean",
-					"default": true,
-					"description": "Enable the automatic indexing when opening a folder or workspace"
-				},
 				"HDL.parallelProcessing": {
 					"type": "integer",
 					"default": 10,
@@ -376,6 +371,11 @@
 				"title": "generate property file",
 				"category": "TOOL"
 			},
+            {
+				"command": "TOOL.Overwrite_InitProperty",
+				"title": "Overwrite the InitPropertyParam",
+				"category": "TOOL"
+			},
 			{
 				"command": "TOOL.Gen_BOOT",
 				"title": "Gen_BOOT",
@@ -477,8 +477,8 @@
 				"category": "FPGA"
 			},
             {
-				"command": "FPGA.Overwrite_InitProperty",
-				"title": "Overwrite the InitPropertyParam",
+				"command": "FPGA.Generate_tb",
+				"title": "generate testbench file",
 				"category": "FPGA"
 			},
 			{
@@ -588,6 +588,9 @@
 				}
 			]
 		}
+	},
+    "scripts": {
+		"vscode:prepublish": "webpack --mode production"
 	},
 	"devDependencies": {},
 	"dependencies": {
