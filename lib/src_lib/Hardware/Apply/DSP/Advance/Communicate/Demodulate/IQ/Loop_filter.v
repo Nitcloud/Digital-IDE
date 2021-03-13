@@ -1,6 +1,5 @@
 `timescale 1ns / 1ps
-module Loop_filter
-(
+module Loop_filter (
     input                clk_sys,
     input                rst_n,
     input  signed [27:0] Xdin,

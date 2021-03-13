@@ -177,4 +177,7 @@ if {[string equal -length 4 $soc none] == 1} {
 	soc_add
 }
 
+
+source [file dirname $current_Location]/library.tcl
+
 # update_file $root_path/FILES

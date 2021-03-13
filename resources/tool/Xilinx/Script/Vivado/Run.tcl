@@ -3,7 +3,7 @@ set_param general.maxThreads 6
 set current_Location [file normalize [info script]]
 set root_path [file dirname [file dirname [file dirname [file dirname $current_Location]]]]
 
-set update  "[file dirname $current_Location]/Update.tcl"
+set refresh "[file dirname $current_Location]/Refresh.tcl"
 set sim     "[file dirname $current_Location]/Simulation.tcl"
 set synth   "[file dirname $current_Location]/synth.tcl"
 set impl    "[file dirname $current_Location]/Impl.tcl"
@@ -42,9 +42,9 @@ while { [gets $fp data] >= 0 } {
 }
 close $fp
 
-proc update   {} {
-	global update
-	source $update -notrace
+proc refresh   {} {
+	global refresh
+	source $refresh -notrace
 }
 proc sim      {} {
 	global sim
@@ -130,7 +130,7 @@ proc ope      {} {
 	while {1} {
 		puts "---------what do you want to do next---------"
 		puts "*** Input e to break ***"
-		puts "1) Update_file"
+		puts "1) Refresh"
 		puts "2) Simulation"
 		puts "3) Build"
 		puts "4) program"
@@ -138,7 +138,7 @@ proc ope      {} {
 		puts "6) GUI"
 		gets stdin your_choice;
 		switch $your_choice {
-			1  {update   }
+			1  {refresh  }
 			2  {sim;break}
 			3  {build    }
 			4  {program  }
@@ -165,7 +165,7 @@ if { $prj_path == "" } {
 	open_project $prj_path -quiet
 }
 
-update
+refresh
 
 # ope
 

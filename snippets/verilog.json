@@ -125,12 +125,10 @@
 "module": {
 	"prefix": "module",
 	"body": [
-"module ${1:module_name} #",
-"(",
+"module ${1:module_name} #(",
 "    parameter    INPUT_WIDTH  = ${2:12},",
 "    parameter    OUTPUT_WIDTH = $2,${3:}",
-")",
-"(",
+") (",
 "    input                           clk_in,",
 "    input                           rst_n,",
 "    input  [INPUT_WIDTH - 1 : 0]    ${4:data_in},",
