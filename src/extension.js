@@ -37,6 +37,11 @@ function activate(context) {
     // Status Bar
     const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
 	context.subscriptions.push(statusBar);
+    
+    tool.registerXilinxDesigner(opeParam);
+    tool.registerDebugDesigner(opeParam);
+    tool.registerSocDesigner(opeParam);
+    tool.registerTreeServer(opeParam);
 
     const indexer = new parser.indexer(statusBar, HDLparam);
     indexer.build_index(HDLFileList).then(() => {
@@ -44,8 +49,7 @@ function activate(context) {
         indexer.updateMostRecentSymbols(undefined);
         var vlogComplete = new tool.lspCompletion.vlogCompletion(indexer.HDLparam);
         var fileExplorer = new tool.tree.FileExplorer(indexer.HDLparam, opeParam);
-        filesys.monitor.threadMonitor(outputChannel, opeParam);
-        filesys.monitor.monitor(opeParam.workspacePath, opeParam, indexer, () => {
+        filesys.monitor.monitor(opeParam.workspacePath, opeParam, indexer, outputChannel, () => {
             vlogComplete.HDLparam = indexer.HDLparam;
             fileExplorer.treeDataProvider.HDLparam = indexer.HDLparam;
             fileExplorer.treeDataProvider.refresh();
@@ -55,11 +59,9 @@ function activate(context) {
         // project Server
         filesys.registerPrjsServer(context, opeParam);
         // tool Server
-        tool.registerTreeServer(opeParam);
         tool.registerSimServer(indexer, opeParam);
         tool.registerLspServer(context, indexer, vlogComplete);
         tool.registerBuildServer(context, indexer, opeParam);
-        tool.registerXilinxDesigner(opeParam);
     });
 }
 exports.activate = activate;

@@ -17,9 +17,10 @@
       - [语言高亮](#语言高亮)
       - [语法诊断](#语法诊断)
       - [文件标志](#文件标志)
-      - [定义跳转](#定义跳转)
       - [悬停提示](#悬停提示)
       - [自动补全](#自动补全)
+      - [工程结构](#工程结构)
+      - [定义跳转](#定义跳转)
       - [自动对齐](#自动对齐)
     - [仿真功能](#仿真功能)
       - [自动生成tb](#自动生成tb)
@@ -44,7 +45,7 @@
 
 ## TODO LIST
 
-- [x] 前端开发辅助功能 
+- [ ] 前端开发辅助功能 
   - [x] 语言支持
     - [x] 语言高亮
     - [x] 文件标志
@@ -57,38 +58,44 @@
   - [ ] 仿真功能
     - [x] 自动生成tb
     - [x] 快速例化
-    - [ ] vivado快速仿真
-    - [ ] iverilog快速仿真
+    - [x] vivado快速仿真
+    - [x] iverilog快速仿真
     - [ ] modelsim快速仿真
     - [ ] Verilator快速仿真
   - [x] 常见功能库
 - [ ] 后端开发辅助功能
-  - [ ] vivado开发辅助
+  - [x] vivado开发辅助
   - [ ] quartus开发辅助
   - [ ] icestorm开发辅助
 - [ ] soc开发辅助
-  - [ ] ZYNQ开发辅助
+  - [x] ZYNQ开发辅助
   - [ ] RISC开发辅助
   - [ ] Cortex-M开发辅助
 
 # 开发目的
 [返回目录](#目录)
 
-本插件的开发目的首先在于为数字前端设计提供友好便捷的开发工具，在此之后，再在对FPGA的开发过程中进行去平台化，同时规范文件结构，完成完整统一友好的数字前端设计链。紧接着兼容多家FPGA原厂后端设计，完成一条完整的数字设计链。最后，提供在FPGA上的soc设计方案，兼容soc调试工具，跟上后摩尔时代的异构潮流。
+本插件的开发目的首先在于为数字前端设计提供友好便捷的开发工具，在此之后，再在对FPGA的开发过程中进行去平台化，同时规范文件结构，完成完整统一友好的数字前端设计链。紧接着兼容多家FPGA原厂后端设计，完成一条完整的数字设计链。最后，提供在FPGA上的soc设计方案，兼容soc调试工具
 
 # 前期配置
 [返回目录](#目录)
 
-It needs **python3** **vivado** environment.
-需要添加的变量如下(**添加一定要添加绝对路径，我写相对路径的形式只是告知需要添加哪些**)
+1. 如果你需要自带串口调试工具请安装 **python3** 并将其添加到系统环境变量
 
-* `./Vivado/2018.3/bin`
-* `./SDK/2018.3/bin`
+2. 如果你需要兼容vivado相关功能（包括语法检查、工程搭建、功能仿真等）请添加如下变量
+   
+   注：(**添加一定要添加绝对路径，我写相对路径的形式只是告知需要添加哪些，同时注意版本号**)
 
-最后要求安装python，并且请在安装过程中请选择自动添加到环境变量，以及安装pip工具。如果需要自动编写testbench以及instance功能的还需安装chardet包。
-安装方式**pip install chardet**。
+* `./Vivado/2019.2/bin`
+* `./Vitis/2019.2/bin` 或 `./SDK/2018.3/bin`
 
-检测配置成功的方式：在shell中输入**xsct**、**vivado -version**、**python**、**code** 均能执行即为成功
+检测配置成功的方式：在shell中输入
+- **xsct**
+- **vivado -version**
+- **python**
+均能执行即为成功
+
+【注】：目前暂时支持vivado开发，后期会兼容其他厂商的开发环境
 
 # 现有功能介绍
 [返回目录](#目录)
@@ -109,43 +116,63 @@ It needs **python3** **vivado** environment.
 [返回目录](#目录)
 
 ----
-
+![语言高亮.png](https://i.loli.net/2021/03/19/3qzOwZkIMay5rvD.png)
 现支持以下语言的高亮
 
 - Verilog
 - SystemVerilog
 - VHDL
-- tcl（包括xdc、sdc、fdc约束文件）
+- TCL（包括xdc、sdc、fdc约束文件）
 
 #### 语法诊断
 [返回目录](#目录)
 
 ----
+![语法诊断.png](https://i.loli.net/2021/03/19/bSQFuNgZzaTknwD.png)
+语法诊断使用的是外部编译器，因此在setting中配置对应的诊断设置之前请配置好相应的环境。
+
+目前支持的诊断工具有 需要的环境 + setting中HDL.Linting.Linter的设置说明
+1. xilinx系列     xvlog--检查Verilog以及systemVerilog  xvhdl--检查vhdl  xmixed--检查HDL语言。
+2. modelsim系列   vlog--检查Verilog以及systemVerilog
+3. iverilog      检查Verilog以及systemVerilog
+4. verilator     检查Verilog以及systemVerilog
 
 #### 文件标志
 [返回目录](#目录)
 
 ----
+![文件标志.png](https://i.loli.net/2021/03/19/42KuR8l5brX1Hz7.png)
+
+#### 悬停提示
+[返回目录](#目录)
+
+----
+![悬停提示.png](https://i.loli.net/2021/03/19/PXdTfWU7MkLYcSF.png)
+【注】：悬停提示使用的是内置的简单Verilog解析器，目前暂时只支持Verilog以及systemVerilog
+
+#### 自动补全
+[返回目录](#目录)
+
+----
+![自动补全.png](https://i.loli.net/2021/03/19/gMWw3bBpycFDjmP.png)
+
+#### 工程结构
+[返回目录](#目录)
+
+----
+![工程结构.png](https://i.loli.net/2021/03/20/IJOAf4zqHLS6Zpr.png)
 
 #### 定义跳转
 [返回目录](#目录)
 
 ----
 
-#### 悬停提示
-[返回目录](#目录)
-
-----
-
-#### 自动补全
-[返回目录](#目录)
-
-----
 
 #### 自动对齐
 [返回目录](#目录)
 
 ----
+
 
 ### 仿真功能
 [返回目录](#目录)
@@ -194,20 +221,21 @@ It needs **python3** **vivado** environment.
 
 ----
 
-* 步骤一：将已有的文件代码放入新建的文件夹中用vscode打开，在这里新建文件夹所在的路径不要有中文。因为vivado无法打开含有中文路径的文件夹。
+数字前端辅助功能是安装后即可使用，内置Verilog的简单解析器，vhdl的支持后续有时间会补充上去。
+
+数字后端辅助设计需要配置对应厂商的开发环境，相比于之前版本增加的功能不是很多，后期会继续补充。
+现有支持vivado的辅助设计，使用方式如下：
+
+* 步骤一：如果是新建工程则需要生成property文件，注明工程的相关配置
+    `使用快捷键 ctrl+shfit+p/F1 打开命令框，输入 **generate property file** 来自动生成`
+
+【注】：生成后进行配置，只有在保存后才会自动生成对应的文件结构。通过`使用快捷键 ctrl+shfit+p/F1 打开命令框，输入 **Overwrite the InitPropertyParam** `可以改写默认工程配置
 
 * 步骤二：启动方式如下：
-* `使用快捷键 ctrl+shfit+p/F1 打开命令框，输入 **StartFPGA** 来启动`
-* `使用快捷键 Alt+z 打开启动命令`
-* `随意打开一个文件右键选择 **StartFPGA** 来启动`
+    1. `使用快捷键 ctrl+shfit+p/F1 打开命令框，输入 **FPGA:Launch** 来启动`
+    2. `使用快捷键 Alt+z 打开启动命令`
+    3. `从功能框中点击FPGA OPTIONS下的 Launch`
 
-启动后会自动生成文件结构。
-
-在此有以下注意点：
-
-1、**testbench.v** 和 **TOP.v** 是自带的，用于顶层例化和仿真，因此这两个文件会被**强制**自动定义为仿真和综合的顶层
-
-2、如果文件夹下没有**Makefile**就会自动生成**Makefile**文件，请不要删除，里面含配置内容，之后的文件更新和综合布线都会用到。（当然刚开始啥都没加，就是说DSP库没有加进去，但在0.1.2的版本中加入了cortexM3的xilinx的IP核，可以使用。）另外**Makefile**删了还是会自动生成。最后如果文件夹下本来有**Makefile**插件就会根据该存在的**Makefile**文件来配置工程。由于刚刚设计插件很多功能没有加上去，所以**Makefile**文件需要配置的很少，基本只有在0.1.2版本的Soc一项。
 
 注：在设置Soc为非none时，文件结构会被更改，**在文件结构更改的时候如果从有soc结构改回none，文件夹Software会被强制删除，如有重要文件请妥善保存！！！！！**。
 
@@ -224,21 +252,17 @@ It needs **python3** **vivado** environment.
 
 ----
 
-* 1、testbench/instance功能，右键菜单栏里选择testbench，即可将本文件写出tb文件并且写入默认的testbench.v文件中。右键菜单栏里选择instance，即可将本文件例化并且在终端中显示(本来想直接复制到剪贴板中，但是tkinter库好像没效果，希望实现成功的大佬能教一下我(T ^ T)。)
+1. Refresh功能，更新xilinx工程下所包含的文件，因为包含的形式是全包含，所以在./user/src和./user/sim下都会包含进去，所以你在src，data，sim下的文件就是你的工程已经包含的文件。更新机制是先全删除再全包含，所以你在文件夹里增删文件，选择**1) Update**后，工程里也会一起更新。
 
-* 2、Update功能，更新xilinx工程下所包含的文件，因为包含的形式是全包含，所以在./user/src和./user/sim下都会包含进去，所以你在src，data，sim下的文件就是你的工程已经包含的文件。更新机制是先全删除再全包含，所以你在文件夹里增删文件，选择**1) Update**后，工程里也会一起更新。
-
-* 3、Build功能，完成综合，布局布线，你可以在Makefile下的**Showlog**里选择实时显示综合布线的日志。当出错的时候会自动跳出错误日志，在设置时如果出现**[CRITICAL WARNING]**时也会跳出，如果正常生成bit和bin文件则可以忽略。
+2. Build功能，完成综合，布局布线，你可以在Makefile下的**Showlog**里选择实时显示综合布线的日志。当出错的时候会自动跳出错误日志，在设置时如果出现**[CRITICAL WARNING]**时也会跳出，如果正常生成bit和bin文件则可以忽略。
 
 注：bin文件的生成是附带的，和bit一起在工程根目录下，当器件为zynq时生成的bin是可以直接固化的，因为我自制了fsbl.elf和ps_test.elf用于生成可固化的bin，我的fsbl是按照microphase的板子来设计的，他的SD0的IO是MIO40-MIO45，QSPI是MIO1-MIO6，如果相同估计就可以直接用了(没直接试过，疫情期间条件有限，请以实际为准)，如果不相同就需要你自己生成fsbl.elf和ps_test.elf，放到./user/BOOT下，注意名称要一直，插件会自动生成output.bif从而生成对应的可固化的bin文件。
 
-* 4、Program功能，一键下载，只是下载，固化功能后续补上，不过有zynq的bin文件直接下载到SD卡上插入即可固化。
+3. Program功能，一键下载，只是下载，固化功能后续补上，不过有zynq的bin文件直接下载到SD卡上插入即可固化。
 
-* 5、GUI功能，如果需要IP设计，sim时序仿真或者bd设计选择**5) GUI**,之后就会自动打开图形界面。
+4. GUI功能，如果需要IP设计，sim时序仿真或者bd设计选择**5) GUI**,之后就会自动打开图形界面。
+    【注】：打开GUI后，打开对应工程的vscode，以及对应的startfpga运行终端不能关闭，关闭后GUI会自动关闭
 
-注：打开GUI后，打开对应工程的vscode，以及对应的startfpga运行终端不能关闭，关闭后GUI会自动关闭
-
-* 6、在0.1.6版本中添加了对IP和bd设计的支持，具体设计还是打开GUI进行设计，重点在关闭工程后插件会自动将prj下的IP和bd设计内容剪贴到user下方便移植，此外如果需要从其他工程移植IP和bd设计只需将其设计内容复制到user下对应的IP和bd文件夹下再选择**1) Update**即可。
 
 ### vivado开发辅助
 [返回目录](#目录)
@@ -283,19 +307,6 @@ It needs **python3** **vivado** environment.
 # 其他用户配置说明
 [返回目录](#目录)
 
-Use the following settings to configure the extension to your needs
-
-* `HDL.linting.linter` (Default: `none`)
-
-Choose the linter for you. Possible values are
-
-* `iverilog`
-* `xvlog`
-* `modelsim`
-* `verilator`
-* `none`
-
-note：由于之前已经添加vivado的路径到环境变量所以建议这里选择xvlog。
 
 -----
 

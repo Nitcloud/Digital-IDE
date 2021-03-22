@@ -228,6 +228,15 @@
 				],
 				"configuration": "./config/tcl.configuration.json"
 			},
+            {
+				"id": "json",
+				"extensions": [
+					".json"
+				],
+				"aliases": [
+					"Json"
+				]
+			},
 			{
 				"id": "vhdl",
 				"aliases": [
@@ -392,24 +401,34 @@
 				"category": "TOOL"
 			},
             {
-				"command": "FPGA.alignment",
-				"title": "Alignment",
-				"category": "FPGA"
-			},
-			{
-				"command": "FPGA.instance",
-				"title": "Instance",
-				"category": "FPGA"
-			},
-			{
-				"command": "FPGA.testbench",
-				"title": "Testbench",
-				"category": "FPGA"
-			},
-			{
-				"command": "FPGA.simulate",
+				"command": "TOOL.simulate",
 				"title": "Simulate",
-				"category": "FPGA"
+				"category": "TOOL"
+			},
+            {
+				"command": "TOOL.alignment",
+				"title": "Alignment",
+				"category": "TOOL"
+			},
+			{
+				"command": "TOOL.instance",
+				"title": "Instance",
+				"category": "TOOL"
+			},
+			{
+				"command": "TOOL.testbench",
+				"title": "Testbench",
+				"category": "TOOL"
+			},
+            {
+				"command": "TOOL.Overwrite_tb",
+				"title": "Overwrite the template of testbench",
+				"category": "TOOL"
+			},
+            {
+				"command": "TOOL.Generate_tb",
+				"title": "generate testbench file",
+				"category": "TOOL"
 			},
             {
 				"command": "FPGA.netlist",
@@ -469,16 +488,6 @@
 			{
 				"command": "FPGA.Exit",
 				"title": "Exit the current project",
-				"category": "FPGA"
-			},
-			{
-				"command": "FPGA.Overwrite_tb",
-				"title": "Overwrite the template of testbench",
-				"category": "FPGA"
-			},
-            {
-				"command": "FPGA.Generate_tb",
-				"title": "generate testbench file",
 				"category": "FPGA"
 			},
 			{
@@ -551,7 +560,7 @@
 				},
 				{
 					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-					"command": "FPGA.simulate",
+					"command": "TOOL.simulate",
 					"group": "navigation@1"
 				},
                 {
@@ -561,17 +570,17 @@
 				},
 				{
 					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-					"command": "FPGA.testbench",
+					"command": "TOOL.testbench",
 					"group": "navigation@1"
 				},
                 {
 					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-					"command": "FPGA.instance",
+					"command": "TOOL.instance",
 					"group": "navigation@1"
 				},
 				{
 					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-					"command": "FPGA.alignment",
+					"command": "TOOL.alignment",
 					"group": "navigation@1"
 				}
 			],
@@ -583,7 +592,7 @@
 				},
 				{
 					"when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
-					"command": "FPGA.simulate",
+					"command": "TOOL.simulate",
 					"group": "navigation@2"
 				}
 			]

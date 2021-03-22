@@ -1,11 +1,3 @@
-<!--
- * #Author       : sterben(Duan)
- * #LastAuthor   : sterben(Duan)
- * #Date         : 2020-02-15 12:14:01
- * #lastTime     : 2020-02-15 22:24:38
- * #FilePath     : \README.md
- * #Description  : 
- -->
 
 # FPGA Develop Support
 
@@ -134,10 +126,39 @@ Use the following settings to configure the extension to your needs
 
 -----
 
+## TODO LIST
+
+- [ ] 前端开发辅助功能 
+  - [ ] 语言支持
+    - [x] 语言高亮
+    - [ ] 文件标志
+    - [ ] 定义跳转
+    - [ ] 悬停提示
+    - [ ] 工程结构
+    - [ ] 语法诊断
+    - [ ] 自动对齐
+    - [ ] 自动补全
+  - [ ] 仿真功能
+    - [ ] 自动生成tb
+    - [ ] 快速例化
+    - [ ] vivado快速仿真
+    - [ ] iverilog快速仿真
+    - [ ] modelsim快速仿真
+    - [ ] Verilator快速仿真
+  - [ ] 常见功能库
+- [ ] 后端开发辅助功能
+  - [ ] vivado开发辅助
+  - [ ] quartus开发辅助
+  - [ ] icestorm开发辅助
+- [ ] soc开发辅助
+  - [ ] ZYNQ开发辅助
+  - [ ] RISC开发辅助
+  - [ ] Cortex-M开发辅助
+
 ## Thanks
 
 * [VHDL](https://github.com/puorc/awesome-vhdl)
-* [Verilog_Testbench](https://github.com/truecrab/VSCode_Extension_Verilog)
+* [TerosHDL](https://github.com/TerosTechnology/vscode-terosHDL)
 * [TCL Language Support](https://github.com/go2sh/tcl-language-support)
-* [Verilog HDL / SystemVerilog](https://github.com/mshr-h/vscode-verilog-hdl-support)
+* [Verilog HDL/SystemVerilog](https://github.com/mshr-h/vscode-verilog-hdl-support)
 * [SystemVerilog - Language Support](https://github.com/eirikpre/VSCode-SystemVerilog)

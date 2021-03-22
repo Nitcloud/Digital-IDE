@@ -45,7 +45,7 @@ wire  [OUTPUT_WIDTH-1:0] Y_diff;
 Cordic # (
     .XY_BITS(OUTPUT_WIDTH),               
     .PH_BITS(OUTPUT_WIDTH),      //1~32
-    .ITERATIONS(16),     //1~32
+    .ITERATIONS(16),             //1~32
     .CORDIC_STYLE("VECTOR")      //ROTATE  //VECTOR
 ) Demodule_Gen_u (
     .clk_in(clk_out),
