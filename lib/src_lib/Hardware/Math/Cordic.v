@@ -12,13 +12,13 @@
              To compute the cos and sin of the angle, set the inputs as follows:
  
              y_in = 0;
-             x_in = `CORDIC_1
-             phase_inn = the input angle
+             x_in = CORDIC_PARAM
+             phase_in = the input angle A
  
              on completion:
  
-             y_out = sin
-             x_out = cos
+             y_out = sin(A)
+             x_out = cos(A)
  
              The `CORDIC_1 above is the inverse of the cordic gain... or ~0.603
              The input angle depends on whether you build in radian or degree mode
@@ -31,11 +31,11 @@
              To compute the arctan set the inputs as follows
  
              y_in and x_in  such that y/x = the tangent value for which you wish to find the angle
-             phase_inn = 0;
+             phase_in = 0;
  
              on completion
  
-             phase_outut = the angle
+             phase_output = the angle arctan(y/x)
 */
  
 /* data valid flag
@@ -52,15 +52,13 @@
 CORDIC
 */
 `timescale 1ns / 1ps
-module Cordic #
-(
+module Cordic #(
 	parameter XY_BITS      = 12,
 	parameter PH_BITS      = 32,
 	parameter ITERATIONS   = 32,
 	parameter CORDIC_STYLE = "ROTATE",
 	parameter PHASE_ACC    = "ON"
-)
-(
+) (
 	input   clk_in,
 	input   RST,
 	input   signed [XY_BITS-1:0] x_i,
@@ -82,43 +80,43 @@ localparam [XY_BITS-1:0] K_COS = (0.607252935 * 2**(XY_BITS-1))-2;
 //1°--2^16/360
 */
 function [PH_BITS-1:0] tanangle;
-input [4:0] i;
-begin
-	case (i)
-		5'b00000: tanangle = (32'h20000000 >> (32 - PH_BITS));   //tan = 1/2^1 = 1/2
-		5'b00001: tanangle = (32'h12e4051e >> (32 - PH_BITS));   //tan = 1/2^2 = 1/4
-		5'b00010: tanangle = (32'h09fb385b >> (32 - PH_BITS));   //tan = 1/2^3 = 1/8
-		5'b00011: tanangle = (32'h051111d4 >> (32 - PH_BITS));   //tan = 1/2^4 = 1/16
-		5'b00100: tanangle = (32'h028b0d43 >> (32 - PH_BITS));   //tan = 1/2^5 = 1/32
-		5'b00101: tanangle = (32'h0145d7e1 >> (32 - PH_BITS));   //tan = 1/2^6 = 1/64
-		5'b00110: tanangle = (32'h00a2f61e >> (32 - PH_BITS));   //tan = 1/2^7 = 1/128
-		5'b00111: tanangle = (32'h00517c55 >> (32 - PH_BITS));   //tan = 1/2^8 = 1/256
-		5'b01000: tanangle = (32'h0028be53 >> (32 - PH_BITS));   //tan = 1/2^9 = 1/512
-		5'b01001: tanangle = (32'h00145f2f >> (32 - PH_BITS));   //tan = 1/2^10 = 1/1024
-		5'b01010: tanangle = (32'h000a2f98 >> (32 - PH_BITS));   //tan = 1/2^11 = 1/2048
-		5'b01011: tanangle = (32'h000517cc >> (32 - PH_BITS));   //tan = 1/2^12 = 1/4096
-		5'b01100: tanangle = (32'h00028be6 >> (32 - PH_BITS));   //tan = 1/2^13 = 1/8192
-		5'b01101: tanangle = (32'h000145f3 >> (32 - PH_BITS));   //tan = 1/2^14 = 1/16384
-		5'b01110: tanangle = (32'h0000a2fa >> (32 - PH_BITS));   //tan = 1/2^15 = 1/32768
-		5'b01111: tanangle = (32'h0000517d >> (32 - PH_BITS));   //tan = 1/2^16 = 1/65536
-		5'b10000: tanangle = (32'h000028be >> (32 - PH_BITS));   //tan = 1/2^17 = 1/131072
-		5'b10001: tanangle = (32'h0000145f >> (32 - PH_BITS));   //tan = 1/2^18 = 1/262144
-		5'b10010: tanangle = (32'h00000a30 >> (32 - PH_BITS));   //tan = 1/2^19 = 1/524288
-		5'b10011: tanangle = (32'h00000518 >> (32 - PH_BITS));   //tan = 1/2^20 = 1/1048576
-		5'b10100: tanangle = (32'h0000028c >> (32 - PH_BITS));   //tan = 1/2^21 = 1/2097152
-		5'b10101: tanangle = (32'h00000146 >> (32 - PH_BITS));   //tan = 1/2^22 = 1/4194304
-		5'b10110: tanangle = (32'h000000a3 >> (32 - PH_BITS));   //tan = 1/2^23 = 1/8388608
-		5'b10111: tanangle = (32'h00000051 >> (32 - PH_BITS));   //tan = 1/2^24 = 1/16777216
-		5'b11000: tanangle = (32'h00000029 >> (32 - PH_BITS));   //tan = 1/2^25 = 1/33554432
-		5'b11001: tanangle = (32'h00000014 >> (32 - PH_BITS));   //tan = 1/2^26 = 1/67108864
-		5'b11010: tanangle = (32'h0000000a >> (32 - PH_BITS));   //tan = 1/2^27 = 1/134217728
-		5'b11011: tanangle = (32'h00000005 >> (32 - PH_BITS));   //tan = 1/2^28 = 1/268435456
-		5'b11100: tanangle = (32'h00000003 >> (32 - PH_BITS));   //tan = 1/2^29 = 1/536870912
-		5'b11101: tanangle = (32'h00000001 >> (32 - PH_BITS));   //tan = 1/2^30 = 1/1073741824
-		5'b11110: tanangle = (32'h00000001 >> (32 - PH_BITS));   //tan = 1/2^31 = 1/2147483648
-		5'b11111: tanangle = (32'h00000000 >> (32 - PH_BITS));   //tan = 1/2^32 = 1/4294967296
-	endcase
-end
+    input [4:0] i;
+    begin
+        case (i)
+            5'b00000: tanangle = (32'h20000000 >> (32 - PH_BITS));   //tan = 1/2^1 = 1/2
+            5'b00001: tanangle = (32'h12e4051e >> (32 - PH_BITS));   //tan = 1/2^2 = 1/4
+            5'b00010: tanangle = (32'h09fb385b >> (32 - PH_BITS));   //tan = 1/2^3 = 1/8
+            5'b00011: tanangle = (32'h051111d4 >> (32 - PH_BITS));   //tan = 1/2^4 = 1/16
+            5'b00100: tanangle = (32'h028b0d43 >> (32 - PH_BITS));   //tan = 1/2^5 = 1/32
+            5'b00101: tanangle = (32'h0145d7e1 >> (32 - PH_BITS));   //tan = 1/2^6 = 1/64
+            5'b00110: tanangle = (32'h00a2f61e >> (32 - PH_BITS));   //tan = 1/2^7 = 1/128
+            5'b00111: tanangle = (32'h00517c55 >> (32 - PH_BITS));   //tan = 1/2^8 = 1/256
+            5'b01000: tanangle = (32'h0028be53 >> (32 - PH_BITS));   //tan = 1/2^9 = 1/512
+            5'b01001: tanangle = (32'h00145f2f >> (32 - PH_BITS));   //tan = 1/2^10 = 1/1024
+            5'b01010: tanangle = (32'h000a2f98 >> (32 - PH_BITS));   //tan = 1/2^11 = 1/2048
+            5'b01011: tanangle = (32'h000517cc >> (32 - PH_BITS));   //tan = 1/2^12 = 1/4096
+            5'b01100: tanangle = (32'h00028be6 >> (32 - PH_BITS));   //tan = 1/2^13 = 1/8192
+            5'b01101: tanangle = (32'h000145f3 >> (32 - PH_BITS));   //tan = 1/2^14 = 1/16384
+            5'b01110: tanangle = (32'h0000a2fa >> (32 - PH_BITS));   //tan = 1/2^15 = 1/32768
+            5'b01111: tanangle = (32'h0000517d >> (32 - PH_BITS));   //tan = 1/2^16 = 1/65536
+            5'b10000: tanangle = (32'h000028be >> (32 - PH_BITS));   //tan = 1/2^17 = 1/131072
+            5'b10001: tanangle = (32'h0000145f >> (32 - PH_BITS));   //tan = 1/2^18 = 1/262144
+            5'b10010: tanangle = (32'h00000a30 >> (32 - PH_BITS));   //tan = 1/2^19 = 1/524288
+            5'b10011: tanangle = (32'h00000518 >> (32 - PH_BITS));   //tan = 1/2^20 = 1/1048576
+            5'b10100: tanangle = (32'h0000028c >> (32 - PH_BITS));   //tan = 1/2^21 = 1/2097152
+            5'b10101: tanangle = (32'h00000146 >> (32 - PH_BITS));   //tan = 1/2^22 = 1/4194304
+            5'b10110: tanangle = (32'h000000a3 >> (32 - PH_BITS));   //tan = 1/2^23 = 1/8388608
+            5'b10111: tanangle = (32'h00000051 >> (32 - PH_BITS));   //tan = 1/2^24 = 1/16777216
+            5'b11000: tanangle = (32'h00000029 >> (32 - PH_BITS));   //tan = 1/2^25 = 1/33554432
+            5'b11001: tanangle = (32'h00000014 >> (32 - PH_BITS));   //tan = 1/2^26 = 1/67108864
+            5'b11010: tanangle = (32'h0000000a >> (32 - PH_BITS));   //tan = 1/2^27 = 1/134217728
+            5'b11011: tanangle = (32'h00000005 >> (32 - PH_BITS));   //tan = 1/2^28 = 1/268435456
+            5'b11100: tanangle = (32'h00000003 >> (32 - PH_BITS));   //tan = 1/2^29 = 1/536870912
+            5'b11101: tanangle = (32'h00000001 >> (32 - PH_BITS));   //tan = 1/2^30 = 1/1073741824
+            5'b11110: tanangle = (32'h00000001 >> (32 - PH_BITS));   //tan = 1/2^31 = 1/2147483648
+            5'b11111: tanangle = (32'h00000000 >> (32 - PH_BITS));   //tan = 1/2^32 = 1/4294967296
+        endcase
+    end
 endfunction
 
 reg        [1:0] data_in_buff[ITERATIONS:0];

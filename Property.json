@@ -11,6 +11,9 @@
 				"xilinx"
 			]
 		},
+        "HardwareSrc" : {
+            "type": "string"
+        },
 		"HardwareLIB": {
 			"type": "object",
 			"properties": {
