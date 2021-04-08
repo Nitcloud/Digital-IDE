@@ -39,7 +39,7 @@ close $fp
 connect 
 
 if { [string equal -length 12 $cpu "ps7_cortexa9"] == 1 } {
-	set index [sting range $cpu 13]
+	set index [string range $cpu 13 13]
 	targets -set -filter {name =~ "ARM*#$index"}
 }
 

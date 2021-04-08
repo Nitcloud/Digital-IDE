@@ -10,21 +10,6 @@ if {[current_sim] != ""} {
 	launch_simulation -quiet
 }
 
-set fd [open $root_path/THREAD r] 
-set newfd [open $root_path/THREAD.tmp w] 
-while {[gets $fd line] >= 0} { 
-    if { [string equal -length 4 $line "simulate"] == 1 } {
-		puts $newfd $line 
-		puts $newfd "true"
-        gets $fd    $line
-	} else {
-        puts $newfd $line
-    }
-} 
-close $fd 
-close $newfd 
-file rename -force $root_path/THREAD.tmp $root_path/THREAD
-
 set curr_wave [current_wave_config]
 if { [string length $curr_wave] == 0 } {
     if { [llength [get_objects]] > 0} {

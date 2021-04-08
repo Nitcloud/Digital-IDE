@@ -29,7 +29,9 @@ function activate(context) {
         "propertyPath"   : ""
     }
     filesys.prjs.getOpeParam(`${__dirname}`,opeParam);
-    filesys.prjs.refreshPrjFiles(opeParam.currentSrcPath, HDLFileList);
+    // filesys.prjs.refreshPrjFiles(opeParam.currentSrcPath, HDLFileList);
+    filesys.prjs.refreshPrjFiles(`${opeParam.currentSrcPath}/src`, HDLFileList);
+    filesys.prjs.refreshPrjFiles(`${opeParam.currentSrcPath}/sim`, HDLFileList);
     HDLFileList = HDLFileList.concat(filesys.prjs.getLibParam(opeParam));
 
 	// Output Channel

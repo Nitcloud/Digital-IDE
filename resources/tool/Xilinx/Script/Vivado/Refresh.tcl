@@ -98,6 +98,20 @@ proc MicroBlaze_IP_add { current_Location } {
 		make_wrapper -files [get_files ./user/Hardware/bd/MicroBlaze_default/MicroBlaze_default.bd] -top -quiet
 	}
 }
+
+proc generatebdFiles {bd_path} {
+    foreach bd_folder [glob -nocomplain $bd_path] {
+        if { [file isdirectory $bd_folder] == 1 } {
+            set bd_name         
+            if { [file exists ./user/Hardware/bd/$bd_name/$bd_name.bd] == 1} {
+                # TODO
+                add_file $xci_file -quiet
+            }
+        }
+    }
+}
+
+# 获取配置信息
 set fp [open $root_path/CONFIG r]
 while { [gets $fp data] >= 0 } {
 	if { [string equal -length 12 $data "SOC_MODE.soc"] == 1 } {
@@ -164,7 +178,7 @@ if {[string equal -length 4 $soc none] == 1} {
 			if { [file exists ./user/Hardware/bd/$bd_file/$bd_file.bd] == 1} {
                 set ensureExsit 1
             }
-			if { $ensureExsit == 0 } {	
+			if { $ensureExsit == 1 } {	
 				file mkdir ./user/Hardware/bd/$bd_file
 				file copy  -force $root_path/../../lib/Ailinx_lib/bd/$bd_file.bd ./user/Hardware/bd/$bd_file
 				add_file   ./user/Hardware/bd/$bd_file/$bd_file.bd -force -quiet
@@ -179,6 +193,6 @@ if {[string equal -length 4 $soc none] == 1} {
 
 if { [file exists [file dirname $current_Location]/library.tcl] == 1 } {
     source        [file dirname $current_Location]/library.tcl
-    file   delete [file dirname $current_Location]/library.tcl
+    file   delete [file dirname $current_Location]/library.tcl -force
 }
 # update_file $root_path/FILES
