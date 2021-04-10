@@ -32,20 +32,15 @@ set synth "[file dirname $current_Location]/synth.tcl"
 set impl  "[file dirname $current_Location]/Impl.tcl"
 
 # build function
-if {[source $synth -notrace] == "none"} {	
-	puts "synth has done"
-	if { [source $impl -notrace] == "none"} {
-		puts "impl has done"
-		if {$enableShowlog == "false"} {			
-			open_run impl_1		  -quiet	
-			report_timing_summary -quiet
-		} else {
-			open_run impl_1		  
-			report_timing_summary 
-		}
-	}
+source $synth -notrace
+source $impl  -notrace
+if {$enableShowlog == "false"} {			
+    open_run impl_1		  -quiet	
+    report_timing_summary -quiet
+} else {
+    open_run impl_1		  
+    report_timing_summary 
 }
-
 #Gen bit/hdf file
 if { [string equal -length 4 $Device xc7z] == 0 } {
 	set_property STEPS.WRITE_BITSTREAM.ARGS.BIN_FILE true [get_runs impl_1]

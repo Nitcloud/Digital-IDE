@@ -82,7 +82,8 @@
 						"none",
 						"zynq_default",
 						"m3_xIP_default",
-						"MicroBlaze_default"
+						"MicroBlaze_default",
+						null
 					]
 				},
 				"os": {

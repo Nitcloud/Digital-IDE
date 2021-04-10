@@ -38,7 +38,7 @@ typedef struct uart_ps_data_t
 
 
 extern void ConfigureUART(int mode, int band);
-extern void UARTprintf(int style, char *pcString, ...);
+extern void void UARTprintf(int DeviceId, char *pcString, ...);
 extern int  UARTRead(int DeviceId,char *pui8Buffer);
 extern int  UARTInit(int DeviceId,Xil_InterruptHandler UART_IntHandler);
 extern void UARTIntHandler_MSP(int DeviceId);

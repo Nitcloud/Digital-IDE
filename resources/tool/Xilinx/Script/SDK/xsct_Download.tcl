@@ -53,5 +53,6 @@ namespace eval xsdb {
 }
 
 # Download the elf
-dow ./user/Software/src/$prj_name/Debug/$prj_name.elf
+fpga ./$prj_name.bit
+dow  ./user/Software/src/$prj_name/Debug/$prj_name.elf
 con

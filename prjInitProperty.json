@@ -12,6 +12,7 @@
     },
     "opeParam" : {
         "os"             : "",
+        "prjInfo"        : null,
         "rootPath"       : "",
         "workspacePath"  : "",
         "currentSrcPath" : "",

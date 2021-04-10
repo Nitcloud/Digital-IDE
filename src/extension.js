@@ -29,9 +29,7 @@ function activate(context) {
         "propertyPath"   : ""
     }
     filesys.prjs.getOpeParam(`${__dirname}`,opeParam);
-    // filesys.prjs.refreshPrjFiles(opeParam.currentSrcPath, HDLFileList);
-    filesys.prjs.refreshPrjFiles(`${opeParam.currentSrcPath}/src`, HDLFileList);
-    filesys.prjs.refreshPrjFiles(`${opeParam.currentSrcPath}/sim`, HDLFileList);
+    filesys.prjs.refreshPrjFiles(opeParam, HDLFileList);
     HDLFileList = HDLFileList.concat(filesys.prjs.getLibParam(opeParam));
 
 	// Output Channel
@@ -41,10 +39,11 @@ function activate(context) {
     const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
 	context.subscriptions.push(statusBar);
     
-    tool.registerXilinxDesigner(opeParam);
-    tool.registerDebugDesigner(opeParam);
-    tool.registerSocDesigner(opeParam);
+    tool.registerXilinxServer(opeParam);
+    tool.registerDebugServer(opeParam);
     tool.registerTreeServer(opeParam);
+    tool.registerToolServer(opeParam);
+    tool.registerSocServer(opeParam);
 
     const indexer = new parser.indexer(statusBar, HDLparam);
     indexer.build_index(HDLFileList).then(() => {
