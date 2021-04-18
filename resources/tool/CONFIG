@@ -3,18 +3,18 @@ D:/project/FPGA/.Lib/xIP
 FPGA_VERSION
 xilinx
 PRJ_NAME.FPGA
-SDR
+VEXRISC
 PRJ_NAME.SOC
-SDR
+undefined
 SOC_MODE.soc
-ps7_cortexa9_0
-SOC_MODE.bd_file
 none
+SOC_MODE.bd_file
+undefined
 SOC_MODE.os
-standalone
+undefined
 SOC_MODE.app
-Hello World
+undefined
 enableShowlog
-true
+false
 Device
-xc7z020clg484-1
+xc7z035ffg676-2

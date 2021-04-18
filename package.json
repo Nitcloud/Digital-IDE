@@ -5,7 +5,7 @@
 	"publisher": "sterben",
 	"homepage": "https://github.com/Bestduan/fpga_support_plug",
 	"version": "0.1.12",
-	"main": "./src/extension",
+	"main": "./out/extension",
 	"icon": "images/FPGAs.png",
 	"repository": {
 		"type": "git",
@@ -231,7 +231,8 @@
             {
 				"id": "json",
 				"extensions": [
-					".json"
+					".json",
+                    ".bd"
 				],
 				"aliases": [
 					"Json"
@@ -582,18 +583,6 @@
 					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
 					"command": "TOOL.alignment",
 					"group": "navigation@1"
-				}
-			],
-			"explorer/context": [
-				{
-					"when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
-					"command": "FPGA.Top",
-					"group": "navigation@1"
-				},
-				{
-					"when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
-					"command": "TOOL.simulate",
-					"group": "navigation@2"
 				}
 			]
 		}
