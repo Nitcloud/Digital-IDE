@@ -10,11 +10,21 @@ Development is not easy, please [star](https://github.com/Bestduan/fpga_support_
 
 `Note`:I'm really sorry that I will stop updating this Extension for half a year, because I need to prepare for the Unified National Graduate Entrance Examination. In the meantime, if there is a simple bug, I'll fix it quickly, but I won't consider any new features for now.
 
+The plug-in for personal development is only interested in at the beginning, only to open out a force, but with the deepening of the late development encountered bottlenecks, and more and more unable to solve the problem, at the same time the exam of postgraduate in oneself still faces again, half a year may not be able to continue to further behind, because too many plug-in content system, tutorial cannot continue to supplement, the apology, You are free to use it. Finally, if you like this plugin and like digital development, please connact with me.
+
+- Email: sterben.661214@gmail.com.
+
 -----
 
-* Contains support for languages ​​required during FPGA development (e.g.:**VHDL**, **Verilog**, **SystemVerilog**, **TCL**, **XDC**, **SDC**).
+* Contains support for languages ​​required during FPGA development 
+- **VHDL**
+- **Verilog**
+- **SystemVerilog**
+* others
+- **TCL**, **XDC**, **SDC**
+- **ld**
 * Supports automatic testbench generation (and **save as file**).
-* Supports rapid development with Vivado, `one-key new project`, `one-key synthesis`, and `one-key download`.
+* Supports rapid development with Vivado, `one-key create new project`, `one-key synthesis`, `one-key simulation` and `one-key download`.
 
 ## START GIF
 
@@ -31,8 +41,6 @@ Development is not easy, please [star](https://github.com/Bestduan/fpga_support_
    
 * `./Vivado/2018.3/bin`
 * `./Vitis/2019.2/bin` 或 `./SDK/2018.3/bin`
-
-Finally, Python is required, so when installing it please choose to automatically add to the environment variables during the installation process, and install the pip tool. If you need to automatically write testbench and instance functions, you need to install the `chardet` package.
 
 Ways to detect successful configuration: enter 
 - **xsct**

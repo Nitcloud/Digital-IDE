@@ -4,8 +4,8 @@
 	"description": "Auxiliary Design For FPGA ",
 	"publisher": "sterben",
 	"homepage": "https://github.com/Bestduan/fpga_support_plug",
-	"version": "0.1.12",
-	"main": "./out/extension",
+	"version": "0.1.14",
+	"main": "./src/extension",
 	"icon": "images/FPGAs.png",
 	"repository": {
 		"type": "git",

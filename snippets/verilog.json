@@ -59,8 +59,22 @@
 "end"
 	]
 },
-
-
+"initial": {
+	"prefix": "initial",
+	"body": [
+"initial begin",
+"   $display(\"start\");",    
+"   $dumpfile(\"wave.vcd\");",                       
+"   #6000 $finish;",                      
+"end"
+	]
+},
+"dumpfile": {
+	"prefix": "dumpfile",
+	"body": [
+"$dumpfile(\"wave.vcd\");"
+	]
+},
 "generate_for": {
 	"prefix": "generate",
 	"body": [
@@ -110,7 +124,7 @@
 	"prefix": "assign",
 	"body": ["assign ${1:} = ${2:};${3:}"]
 },
-"initial": {
+"initial param": {
 	"prefix": "initial",
 	"body": [
 "integer ${1:i};",

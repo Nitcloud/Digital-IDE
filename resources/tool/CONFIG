@@ -7,7 +7,7 @@ VEXRISC
 PRJ_NAME.SOC
 undefined
 SOC_MODE.soc
-none
+microblaze
 SOC_MODE.bd_file
 undefined
 SOC_MODE.os
@@ -17,4 +17,4 @@ undefined
 enableShowlog
 false
 Device
-xc7z035ffg676-2
+xc7a35tcsg324-1
