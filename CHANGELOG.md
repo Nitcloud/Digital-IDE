@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.12] - 2020-04-16
+## [0.1.15] - 2021-05-02
+
+- Fix some bugs and add instructions
+
+## [0.1.12] - 2021-04-28
 
 - Added simulation function, automatically pop up error message
 

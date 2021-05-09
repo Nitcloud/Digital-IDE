@@ -4,8 +4,8 @@
 	"description": "Auxiliary Design For FPGA ",
 	"publisher": "sterben",
 	"homepage": "https://github.com/Bestduan/fpga_support_plug",
-	"version": "0.1.14",
-	"main": "./src/extension",
+	"version": "0.1.16",
+	"main": "./out/extension",
 	"icon": "images/FPGAs.png",
 	"repository": {
 		"type": "git",
@@ -94,8 +94,8 @@
 				"PRJ.xilinx.IP.repo.path": {
 					"scope": "window",
 					"type": "string",
-					"default": "D:/project/FPGA/.Lib/xIP",
-					"description": "set the xilinx ip_repo_path"
+					"default": "",
+					"description": "set the xilinx ip_repo_path \n e.g. : D:/project/FPGA/.Lib/xIP"
 				},
                 "PRJ.customer.Lib.repo.path": {
 					"scope": "window",
@@ -106,7 +106,7 @@
                 "TOOL.xilinx.install.path": {
 					"scope": "window",
 					"type": "string",
-					"default": "D:/APP/vivado_19_2",
+					"default": "",
 					"description": "set the xilinx install path. \n e.g. : D:/APP/vivado_18_3"
 				},
 				"TOOL.iVerilog.install.path": {
@@ -430,6 +430,16 @@
 				"command": "TOOL.Generate_tb",
 				"title": "generate testbench file",
 				"category": "TOOL"
+			},
+            {
+				"command": "TOOL.state_machine.designer",
+				"title": "State machine designer",
+                "category": "TOOL"
+			},
+			{
+				"command": "TOOL.state_machine.viewer",
+				"title": "State machine viewer",
+                "category": "TOOL"
 			},
             {
 				"command": "FPGA.netlist",

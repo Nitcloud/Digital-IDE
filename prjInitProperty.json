@@ -11,13 +11,16 @@
         "Device": "none"
     },
     "opeParam" : {
-        "os"             : "",
-        "prjInfo"        : null,
-        "rootPath"       : "",
-        "workspacePath"  : "",
-        "currentSrcPath" : "",
-        "prjInitParam"   : "",
-        "propertyPath"   : ""
+        "os"                : "",
+        "prjInfo"           : null,
+        "rootPath"          : "",
+        "workspacePath"     : "",
+        "currentSrcTopPath" : "",
+        "currentTbTopPath"  : "",
+        "currentSrcPath"    : "",
+        "currentTbPath"     : "",
+        "prjInitParam"      : "",
+        "propertyPath"      : ""
     },
     "HDLfileparam" : {
         "moduleName" : "",

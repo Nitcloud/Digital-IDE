@@ -10,3 +10,4 @@ README_cn.md
 **/.eslintrc.json
 prjInitProperty.json
 webpack.config.js
+resources/iverilog

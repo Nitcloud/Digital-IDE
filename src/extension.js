@@ -42,7 +42,7 @@ function activate(context) {
     tool.registerXilinxServer(opeParam);
     tool.registerDebugServer(opeParam);
     tool.registerTreeServer(opeParam);
-    tool.registerToolServer(opeParam);
+    tool.registerToolServer(opeParam, context);
     tool.registerSocServer(opeParam);
 
     const indexer = new parser.indexer(statusBar, HDLparam);

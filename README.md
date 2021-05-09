@@ -40,7 +40,7 @@ The plug-in for personal development is only interested in at the beginning, onl
 2. If you need compatibility with Vivado features (including syntax checking, engineering, feature emulation, etc.) please add the following variables
    
 * `./Vivado/2018.3/bin`
-* `./Vitis/2019.2/bin` 或 `./SDK/2018.3/bin`
+* `./Vitis/2019.2/bin` or `./SDK/2018.3/bin`
 
 Ways to detect successful configuration: enter 
 - **xsct**
@@ -98,6 +98,31 @@ The diagnostic tools currently supported have the relevant environment required 
 
 ![Define.gif](https://i.loli.net/2021/04/18/dgNytkS5r6Gqap1.gif)
 
+## Automate instantiated
+
+![automatically instantiated. GIF](https://i.loli.net/2021/05/01/gCxJud91GhIWAmL.gif)
+
+The plug-in supports the instantiation of Verilog and VHDL modules in a Verilog file and in a VHDL file
+
+1. Place the cursor where the text needs to be instantiated.
+2. Use the shortcut key `F1` to launch the command box, input `instance`, and select `Tool:instance`
+3. Enter the keyword of the module that needs to be instantiated.
+4. Select the modules to be instantiated.
+
+## Iverilog quick simulation
+
+![iverilog fast simulation](https://i.loli.net/2021/05/02/bfJ1lFGWTjXkeRq.png)
+
+1. Build-in multi-file emulation without 'include'
+2. Support Xilinx simulation library
+
+[Note] : This feature requires both iVerilog and Gtkwave to add system environment variables
+
+If you want to support the Xilinx emulation library, you need to set the Xilinx installation path in the setting `TOOL.Xilinx.Install.path`
+
+Example: `{xilinx installation path}/Vivado/<Version number, for example 18.3>/data/verilog/src`
+
+Setting enters the contents of the curly braces, followed by the reference file structure
 
 ## Thanks
 

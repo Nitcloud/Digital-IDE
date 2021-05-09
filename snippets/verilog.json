@@ -63,16 +63,10 @@
 	"prefix": "initial",
 	"body": [
 "initial begin",
-"   $display(\"start\");",    
-"   $dumpfile(\"wave.vcd\");",                       
-"   #6000 $finish;",                      
+"   \\$dumpfile(\"wave.vcd\");",
+"   \\$dumpvars(0, testbench);",                     
+"   #6000 \\$finish;",                      
 "end"
-	]
-},
-"dumpfile": {
-	"prefix": "dumpfile",
-	"body": [
-"$dumpfile(\"wave.vcd\");"
 	]
 },
 "generate_for": {
