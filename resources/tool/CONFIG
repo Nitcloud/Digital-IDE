@@ -3,17 +3,17 @@ D:/project/FPGA/.Lib/xIP
 FPGA_VERSION
 xilinx
 PRJ_NAME.FPGA
-template
+pz_7z035_pcie
 PRJ_NAME.SOC
-undefined
+pz_7z035_pcie
 SOC_MODE.soc
-none
+ps7_cortexa9_0
 SOC_MODE.bd_file
-undefined
+none
 SOC_MODE.os
-undefined
+standalone
 SOC_MODE.app
-undefined
+Hello World
 enableShowlog
 false
 Device

@@ -5,7 +5,7 @@
 	"publisher": "sterben",
 	"homepage": "https://github.com/Bestduan/fpga_support_plug",
 	"version": "0.1.16",
-	"main": "./out/extension",
+	"main": "./src/extension",
 	"icon": "images/FPGAs.png",
 	"repository": {
 		"type": "git",
@@ -307,8 +307,8 @@
 		],
 		"jsonValidation": [
 			{
-				"fileMatch": "**/property.json",
-				"url": "./property.json"
+				"fileMatch": "**/property-schema.json",
+				"url": "./property-schema.json"
 			}
 		],
 		"grammars": [
