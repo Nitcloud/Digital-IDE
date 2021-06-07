@@ -7,6 +7,12 @@
 	"version": "0.1.16",
 	"main": "./src/extension",
 	"icon": "images/FPGAs.png",
+    "keywords": [
+        "FPGA",
+        "Verilog",
+        "VHDL",
+        "Vivado"
+    ],
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Bestduan/fpga_support_plug.git"
