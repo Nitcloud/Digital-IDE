@@ -1,14 +1,52 @@
 {
-    "prjParam" : {
-        "FPGA_VERSION": "xilinx",
-        "PRJ_NAME": {
-            "FPGA": "template"
+    "verilogElementTree" : {
+        "library" : "none", 
+        "time"    : "none", 
+        "define"  : "none", 
+        "include" : "none", 
+        "struct"  : "none", 
+        "interface" : {
+            "ports"  : "none",
+            "signal" : "none",
+            "modport" : {
+                "ports" : "none"
+            }
         },
-        "SOC_MODE": {
-            "soc": "none"
-        },
-        "enableShowlog": false,
-        "Device": "none"
+        "class" : [
+            "function",
+            "task"
+        ],
+        "module" : {
+
+            "enum"    : "none",
+            "ports"   : "none",
+            "signal"  : "none",
+            "param"   : "none",
+            "struct"  : "none",  
+            "number"  : "none",  
+            "initial" : "none",
+            "interconnect" : "none",
+            "localparam"   : "none",
+            "instance"     : "none",
+            "always"       : "none",
+
+            "generate" : {
+                "localparam" : "none",
+                "param"      : "none",
+                "signal"     : "none",
+                "always"     : "none"
+            },
+            "function" : [
+                "ports",
+                "signal",
+                "number"
+            ],
+            "task" : [
+                "ports",
+                "signal",
+                "number"
+            ]
+        }
     },
     "opeParam" : {
         "os"                : "",
@@ -60,5 +98,16 @@
             ]
         }
     },
-    "HDLparam" : []
+    "HDLparam" : [],
+    "prjParam" : {
+        "FPGA_VERSION": "xilinx",
+        "PRJ_NAME": {
+            "FPGA": "template"
+        },
+        "SOC_MODE": {
+            "soc": "none"
+        },
+        "enableShowlog": false,
+        "Device": "none"
+    }
 }

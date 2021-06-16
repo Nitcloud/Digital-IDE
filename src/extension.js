@@ -45,6 +45,15 @@ function activate(context) {
     tool.registerToolServer(opeParam, context);
     tool.registerSocServer(opeParam);
 
+    // let parse = new parser.ParserLib.ParserFactory;
+    // parse.getParser("verilog").then((lang_parser)=>{
+    //     for (let i = 0; i < HDLFileList.length; i++) {
+    //         const element = HDLFileList[i];
+            
+    //         let structure = lang_parser.getFileParam(text);
+    //     }
+    // });
+
     const indexer = new parser.indexer(statusBar, HDLparam);
     indexer.build_index(HDLFileList).then(() => {
         console.log(indexer.HDLparam);
