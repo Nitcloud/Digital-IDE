@@ -45,35 +45,37 @@ function activate(context) {
     tool.registerToolServer(opeParam, context);
     tool.registerSocServer(opeParam);
 
-    // let parse = new parser.ParserLib.ParserFactory;
-    // parse.getParser("verilog").then((lang_parser)=>{
-    //     for (let i = 0; i < HDLFileList.length; i++) {
-    //         const element = HDLFileList[i];
-            
-    //         let structure = lang_parser.getFileParam(text);
-    //     }
-    // });
-
-    const indexer = new parser.indexer(statusBar, HDLparam);
-    indexer.build_index(HDLFileList).then(() => {
+    let parse = new parser.ParserLib.ParserFactory;
+    console.time('timer');
+    parse.getParser("verilog").then((lang_parser)=>{
+        const indexer = new parser.indexer(statusBar, HDLparam, lang_parser);
+        for (let i = 0; i < HDLFileList.length; i++) {
+            const HDLFileElement = HDLFileList[i];
+            lang_parser.getFileParam(HDLFileElement, indexer.HDLSymbol, indexer.HDLparam, '');
+        }
         console.log(indexer.HDLparam);
-        indexer.updateMostRecentSymbols(undefined);
-        var vlogComplete = new tool.lspCompletion.vlogCompletion(indexer.HDLparam);
-        var fileExplorer = new tool.tree.FileExplorer(indexer.HDLparam, opeParam);
-        filesys.monitor.monitor(opeParam.workspacePath, opeParam, indexer, outputChannel, () => {
-            vlogComplete.HDLparam = indexer.HDLparam;
-            fileExplorer.treeDataProvider.HDLparam = indexer.HDLparam;
-            fileExplorer.treeDataProvider.refresh();
-        });
-        // linter Server
-        linter.registerLinterServer(context);
-        // project Server
-        filesys.registerPrjsServer(context, opeParam);
-        // tool Server
-        tool.registerSimServer(indexer, opeParam);
-        tool.registerLspServer(context, indexer, vlogComplete);
-        tool.registerBuildServer(context, indexer, opeParam);
+        console.log(indexer.HDLSymbol);
+        // var vlogComplete = new tool.lspCompletion.vlogCompletion(HDLparam);
+        // var fileExplorer = new tool.tree.FileExplorer(HDLparam, opeParam);
+        // filesys.monitor.monitor(opeParam.workspacePath, opeParam, indexer, outputChannel, () => {
+        //     vlogComplete.HDLparam = HDLparam;
+        //     fileExplorer.treeDataProvider.HDLparam = HDLparam;
+        //     fileExplorer.treeDataProvider.refresh();
+        // });
+        // // linter Server
+        // linter.registerLinterServer(context);
+        // // project Server
+        // filesys.registerPrjsServer(context, opeParam);
+        // // tool Server
+        // tool.registerSimServer(indexer, opeParam);
+        // tool.registerLspServer(context, indexer, vlogComplete);
+        // tool.registerBuildServer(context, indexer, opeParam);
+        // indexer.build_index(HDLFileList).then(() => {
+        //     console.timeEnd('timer');
+        //     indexer.updateMostRecentSymbols(undefined);
+        // });
     });
+
 }
 exports.activate = activate;
 function deactivate() {}
