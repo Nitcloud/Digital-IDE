@@ -108,10 +108,10 @@ if {[string equal -length 4 $soc none] == 1} {
     # reset ip_repo_paths
     if { [file isdirectory ./user/IP/lib] == 1 } {        
         set ip_lib_paths {./user/IP/lib}
-        lappend ip_lib_paths $root_path/../../lib/Ailinx_lib/ip
+        lappend ip_lib_paths $root_path/../../lib/Xilinx_lib/ip
     } else {
         set ip_lib_paths {}
-        lappend ip_lib_paths $root_path/../../lib/Ailinx_lib/ip
+        lappend ip_lib_paths $root_path/../../lib/Xilinx_lib/ip
     }
     if {$xip_repo_path != ""} {
         lappend ip_lib_paths $xip_repo_path
@@ -124,10 +124,10 @@ if {[string equal -length 4 $soc none] == 1} {
     # reset ip_repo_paths
     if { [file isdirectory ./user/Hardware/IP/lib] == 1 } {        
         set ip_lib_paths {./user/Hardware/IP/lib}
-        lappend ip_lib_paths $root_path/../../lib/Ailinx_lib/ip
+        lappend ip_lib_paths $root_path/../../lib/Xilinx_lib/ip
     } else {
         set ip_lib_paths {}
-        lappend ip_lib_paths $root_path/../../lib/Ailinx_lib/ip
+        lappend ip_lib_paths $root_path/../../lib/Xilinx_lib/ip
     }
     if {$xip_repo_path != ""} {
         lappend ip_lib_paths $xip_repo_path
@@ -143,7 +143,7 @@ if {[string equal -length 4 $soc none] == 1} {
         }
         if { $ensureExsit == 0 } {	
             file mkdir ./user/Hardware/bd/$bd_file
-            file copy  -force $root_path/../../lib/Ailinx_lib/bd/$bd_file.bd ./user/Hardware/bd/$bd_file
+            file copy  -force $root_path/../../lib/Xilinx_lib/bd/$bd_file.bd ./user/Hardware/bd/$bd_file
         }
     }
     generatebdPrj ./user/Hardware/bd/*
