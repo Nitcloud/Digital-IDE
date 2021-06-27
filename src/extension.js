@@ -41,7 +41,7 @@ function activate(context) {
     tool.registerXilinxServer(opeParam);
     tool.registerDebugServer(opeParam);
     tool.registerTreeServer(opeParam);
-    tool.registerToolServer(opeParam, context);
+    tool.registerToolServer(opeParam);
     tool.registerSocServer(opeParam);
 
     let parse = new parser.ParserLib.ParserFactory;
@@ -64,7 +64,7 @@ function activate(context) {
                 let processLib = new filesys.prjs.processLib(opeParam, watcher);
                 filesys.monitor.processPropertyFile(opeParam, indexer, processLib);
                 // linter Server
-                linter.registerLinterServer(context);
+                new linter.registerLinterServer("vhdl", "linter", context);
                 // project Server
                 filesys.registerPrjsServer(context, opeParam);
                 // tool Server

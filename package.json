@@ -1,613 +1,661 @@
 {
-	"name": "fpga-support",
-	"displayName": "FPGA Develop Support",
-	"description": "Auxiliary Design For FPGA ",
-	"publisher": "sterben",
-	"homepage": "https://github.com/Bestduan/fpga_support_plug",
-	"version": "0.1.16",
-	"main": "./src/extension",
-	"icon": "images/FPGAs.png",
+    "name": "fpga-support",
+    "displayName": "FPGA Develop Support",
+    "description": "Auxiliary Design For FPGA ",
+    "publisher": "sterben",
+    "homepage": "https://github.com/Bestduan/fpga_support_plug",
+    "version": "0.1.16",
+    "main": "./src/extension",
+    "icon": "images/FPGAs.png",
     "keywords": [
         "FPGA",
         "Verilog",
         "VHDL",
         "Vivado"
     ],
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/Bestduan/fpga_support_plug.git"
-	},
-	"bugs": {
-		"url": "https://github.com/Bestduan/fpga_support_plug/issues"
-	},
-	"engines": {
-		"vscode": "^1.42.1"
-	},
-	"categories": [
-		"Extension Packs",
-		"Programming Languages",
-		"Snippets"
-	],
-	"activationEvents": [
-		"*"
-	],
-	"contributes": {
-		"configuration": {
-			"title": "FPGAs",
-			"properties": {
-				"HDL.parallelProcessing": {
-					"type": "integer",
-					"default": 10,
-					"description": "This is the number of files it should attempt to process in parallel. Processing consist of opening found files and perform matching to find symbols."
-				},
-				"HDL.linting.linter": {
-					"scope": "window",
-					"type": "string",
-					"enum": [
-						"xvlog",
-						"xvhdl",
-						"xmixed",
-						"vlog",
-						"iverilog",
-						"verilator",
-						"default"
-					],
-					"default": "xvlog",
-					"description": "Select the verilog linter. Possible values are 'iverilog', 'verilator', xvlog' or 'none'"
-				},
-				"HDL.linting.runFilePath": {
-					"scope": "window",
-					"type": "string",
-					"default": "",
-					"description": "Simulate tool will be run at the file location for linting. Else it will be run at workspace folder."
-				},
-				"HDL.linting.iverilog.arguments": {
-					"scope": "window",
-					"type": "string",
-					"default": "",
-					"description": "Add Icarus Verilog arguments here (like macros). They will be added to Icarus Verilog while linting (The command \"-t null\" will be added by the linter by default)"
-				},
-				"HDL.linting.modelsim.arguments": {
-					"scope": "window",
-					"type": "string",
-					"default": "",
-					"description": "Add Modelsim arguments here. They will be added to Modelsim while linting."
-				},
-				"HDL.linting.verilator.arguments": {
-					"scope": "window",
-					"type": "string",
-					"default": "",
-					"description": "Add Verilator arguments here (like macros). They will be added to Verilator while linting (The command \"--lint-only -I<document folder>\" will be added by the linter by default)"
-				},
-				"HDL.linting.modelsim.work": {
-					"scope": "window",
-					"type": "string",
-					"default": "",
-					"description": "Add Modelsim work library here."
-				},
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Bestduan/fpga_support_plug.git"
+    },
+    "bugs": {
+        "url": "https://github.com/Bestduan/fpga_support_plug/issues"
+    },
+    "engines": {
+        "vscode": "^1.42.1"
+    },
+    "categories": [
+        "Extension Packs",
+        "Programming Languages",
+        "Snippets"
+    ],
+    "activationEvents": [
+        "*"
+    ],
+    "contributes": {
+        "configuration": {
+            "title": "FPGAs",
+            "properties": {
+                "HDL.linting.linter": {
+                    "scope": "window",
+                    "type": "string",
+                    "enum": [
+                        "xilinx",
+                        "modelsim",
+                        "iverilog",
+                        "ghdl",
+                        "verible",
+                        "verilator",
+                        "vsg",
+                        "automate",
+                        "default"
+                    ],
+                    "default": "xilinx",
+                    "description": "Select the verilog linter. Possible values are 'iverilog', 'verilator', xvlog' or 'none'"
+                },
+                "HDL.linting.wsl.enable": {
+                    "description": "Enable WSL call",
+                    "type": "boolean",
+                    "default": false
+                },
+                "HDL.linting.runFilePath": {
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "Simulate tool will be run at the file location for linting. Else it will be run at workspace folder."
+                },
+                "HDL.linting.ghdl.arguments": {
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "Add ghdl arguments here. They will be added to ghdl while linting."
+                },
+                "HDL.linting.iverilog.arguments": {
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "Add Icarus Verilog arguments here (like macros). They will be added to Icarus Verilog while linting)"
+                },
+                "HDL.linting.xilinx.arguments": {
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "Add Xilinx arguments here. They will be added to Xilinx while linting."
+                },
+                "HDL.linting.modelsim.arguments": {
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "Add Modelsim arguments here. They will be added to Modelsim while linting."
+                },
+                "HDL.linting.verible.arguments": {
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "Add verible arguments here. They will be added to verible while linting."
+                },
+                "HDL.linting.verilator.arguments": {
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "Add Verilator arguments here (like macros). They will be added to Verilator while linting)"
+                },
+                "HDL.linting.vsg.arguments": {
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "Add vsg arguments here (like macros). They will be added to vsg while linting)"
+                },
                 "PRJ.file.structure.notice": {
-					"scope": "window",
-					"type": "boolean",
-					"default": true,
-					"description": "notice when change file structure"
-				},
-				"PRJ.xilinx.BD.repo.path": {
-					"scope": "window",
-					"type": "string",
-					"default": "",
-					"description": "set the xilinx bd_repo_path"
-				},
-				"PRJ.xilinx.IP.repo.path": {
-					"scope": "window",
-					"type": "string",
-					"default": "",
-					"description": "set the xilinx ip_repo_path \n e.g. : D:/project/FPGA/.Lib/xIP"
-				},
+                    "scope": "window",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "notice when change file structure"
+                },
                 "PRJ.customer.Lib.repo.path": {
-					"scope": "window",
-					"type": "string",
-					"default": "",
-					"description": "set the customer lib_repo_path"
-				},
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "set the customer lib_repo_path"
+                },
+                "PRJ.xilinx.BD.repo.path": {
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "set the xilinx bd_repo_path"
+                },
+                "PRJ.xilinx.IP.repo.path": {
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "set the xilinx ip_repo_path \n e.g. : D:/project/FPGA/.Lib/xIP"
+                },
                 "TOOL.xilinx.install.path": {
-					"scope": "window",
-					"type": "string",
-					"default": "",
-					"description": "set the xilinx install path. \n e.g. : D:/APP/vivado_18_3"
-				},
-				"TOOL.iVerilog.install.path": {
-					"scope": "window",
-					"type": "string",
-					"default": "",
-					"description": "set the iVerilog install path. \n e.g. : D:/APP/iverilog/bin"
-				},
-				"TOOL.gtkwave.install.path": {
-					"scope": "window",
-					"type": "string",
-					"default": "",
-					"description": "set the gtkwave install path. \n e.g. : D:/APP/iverilog/gtkwave/bin"
-				},
-				"TOOL.SerialPortMonitor.BaudRate": {
-					"type": "integer",
-					"scope": "resource",
-					"markdownDescription": "SerialPort Baud Rate",
-					"default": "115200",
-					"enum": [
-						"1382400",
-						"921600",
-						"460800",
-						"256000",
-						"230400",
-						"128000",
-						"115200",
-						"9600",
-						"4800",
-						"2400",
-						"1200"
-					]
-				},
-				"TOOL.SerialPortMonitor.DataBits": {
-					"type": "string",
-					"scope": "resource",
-					"markdownDescription": "SerialPort Data Bits width",
-					"default": "8",
-					"enum": [
-						"5",
-						"6",
-						"7",
-						"8"
-					]
-				},
-				"TOOL.SerialPortMonitor.Parity": {
-					"type": "string",
-					"scope": "resource",
-					"markdownDescription": "SerialPort Parity bit",
-					"default": "None",
-					"enum": [
-						"None",
-						"Odd",
-						"Even",
-						"Mark",
-						"Space"
-					]
-				},
-				"TOOL.SerialPortMonitor.StopBits": {
-					"type": "string",
-					"scope": "resource",
-					"markdownDescription": "SerialPort Stop Bits",
-					"default": "1",
-					"enum": [
-						"1",
-						"1.5",
-						"2"
-					],
-					"enumDescriptions": [
-						"One",
-						"Two",
-						"OnePointFive"
-					]
-				}
-			}
-		},
-		"viewsContainers": {
-			"activitybar": [
-				{
-					"id": "TOOL",
-					"title": "FPGA Tool",
-					"icon": "images/svg/FPGAs.svg"
-				}
-			]
-		},
-		"views": {
-			"TOOL": [
-				{
-					"id": "TOOL.file_tree",
-					"name": "File"
-				},
-				{
-					"id": "TOOL.Tool_tree",
-					"name": "Tool"
-				},
-				{
-					"id": "TOOL.fpga_tree",
-					"name": "FPGA Options"
-				},
-				{
-					"id": "TOOL.sdk_tree",
-					"name": "SDK Options"
-				}
-			]
-		},
-		"languages": [
-			{
-				"id": "tcl",
-				"aliases": [
-					"TCL",
-					"Xilinx Constraints File",
-					"Synopsis Constraints File"
-				],
-				"extensions": [
-					".tcl",
-					".sdc",
-					".xdc",
-					".fdc"
-				],
-				"configuration": "./config/tcl.configuration.json"
-			},
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "set the xilinx install path. \n e.g. : D:/APP/vivado_18_3/Vivado/2018.3/bin"
+                },
+                "TOOL.modelsim.install.path": {
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "set the modelsim install path. \n e.g. : D:/APP/modelsim/bin"
+                },
+                "TOOL.verilator.install.path": {
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "set the verilator install path. \n e.g. : D:/APP/verilator/bin"
+                },
+                "TOOL.verible.install.path": {
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "set the verible install path. \n e.g. : D:/APP/verible/bin"
+                },
+                "TOOL.ghdl.install.path": {
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "set the verible install path. \n e.g. : D:/APP/ghdl/bin"
+                },
+                "TOOL.vsg.install.path": {
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "set the vsg install path. \n e.g. : D:/APP/vsg/bin"
+                },
+                "TOOL.iverilog.install.path": {
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "set the iVerilog install path. \n e.g. : D:/APP/iverilog/bin"
+                },
+                "TOOL.gtkwave.install.path": {
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "set the gtkwave install path. \n e.g. : D:/APP/iverilog/gtkwave/bin"
+                },
+                "TOOL.SerialPortMonitor.BaudRate": {
+                    "type": "integer",
+                    "scope": "resource",
+                    "markdownDescription": "SerialPort Baud Rate",
+                    "default": "115200",
+                    "enum": [
+                        "1382400",
+                        "921600",
+                        "460800",
+                        "256000",
+                        "230400",
+                        "128000",
+                        "115200",
+                        "9600",
+                        "4800",
+                        "2400",
+                        "1200"
+                    ]
+                },
+                "TOOL.SerialPortMonitor.DataBits": {
+                    "type": "string",
+                    "scope": "resource",
+                    "markdownDescription": "SerialPort Data Bits width",
+                    "default": "8",
+                    "enum": [
+                        "5",
+                        "6",
+                        "7",
+                        "8"
+                    ]
+                },
+                "TOOL.SerialPortMonitor.Parity": {
+                    "type": "string",
+                    "scope": "resource",
+                    "markdownDescription": "SerialPort Parity bit",
+                    "default": "None",
+                    "enum": [
+                        "None",
+                        "Odd",
+                        "Even",
+                        "Mark",
+                        "Space"
+                    ]
+                },
+                "TOOL.SerialPortMonitor.StopBits": {
+                    "type": "string",
+                    "scope": "resource",
+                    "markdownDescription": "SerialPort Stop Bits",
+                    "default": "1",
+                    "enum": [
+                        "1",
+                        "1.5",
+                        "2"
+                    ],
+                    "enumDescriptions": [
+                        "One",
+                        "Two",
+                        "OnePointFive"
+                    ]
+                }
+            }
+        },
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "TOOL",
+                    "title": "FPGA Tool",
+                    "icon": "images/svg/FPGAs.svg"
+                }
+            ]
+        },
+        "views": {
+            "TOOL": [
+                {
+                    "id": "TOOL.file_tree",
+                    "name": "File"
+                },
+                {
+                    "id": "TOOL.Tool_tree",
+                    "name": "Tool"
+                },
+                {
+                    "id": "TOOL.fpga_tree",
+                    "name": "FPGA Options"
+                },
+                {
+                    "id": "TOOL.sdk_tree",
+                    "name": "SDK Options"
+                }
+            ]
+        },
+        "languages": [
             {
-				"id": "json",
-				"extensions": [
-					".json",
+                "id": "tcl",
+                "aliases": [
+                    "TCL",
+                    "Xilinx Constraints File",
+                    "Synopsis Constraints File"
+                ],
+                "extensions": [
+                    ".tcl",
+                    ".sdc",
+                    ".xdc",
+                    ".fdc"
+                ],
+                "configuration": "./config/tcl.configuration.json"
+            },
+            {
+                "id": "json",
+                "extensions": [
+                    ".json",
                     ".bd"
-				],
-				"aliases": [
-					"Json"
-				]
-			},
-			{
-				"id": "vhdl",
-				"aliases": [
-					"VHDL",
-					"vhdl"
-				],
-				"extensions": [
-					".vhd",
-					".vhdl",
-					".vho",
-					".vht"
-				],
-				"configuration": "./config/vhdl.configuration.json"
-			},
-			{
-				"id": "verilog",
-				"aliases": [
-					"Verilog",
-					"verilog"
-				],
-				"extensions": [
-					".v",
-					".V",
-					".vh",
-					".vl"
-				],
-				"configuration": "./config/verilog.configuration.json"
-			},
-			{
-				"id": "systemverilog",
-				"aliases": [
-					"System Verilog",
-					"systemverilog"
-				],
-				"extensions": [
-					".sv",
-					".SV"
-				],
-				"configuration": "./config/systemverilog.configuration.json"
-			},
+                ],
+                "aliases": [
+                    "Json"
+                ]
+            },
             {
-				"id": "arm",
-				"aliases": [
-					"ARM",
-					"arm"
-				],
-				"extensions": [
-					".s",
-					".S",
-					".asm",
-					".sx"
-				],
-				"configuration": "./config/arm.configuration.json"
-			},
+                "id": "vhdl",
+                "aliases": [
+                    "VHDL",
+                    "vhdl"
+                ],
+                "extensions": [
+                    ".vhd",
+                    ".vhdl",
+                    ".vho",
+                    ".vht"
+                ],
+                "configuration": "./config/vhdl.configuration.json"
+            },
             {
-				"id": "linkerscript",
-				"aliases": [
-					"LinkerScript",
-					"linkerscript"
-				],
-				"extensions": [
-					".ld",
-					".dld"
-				],
-				"configuration": "./config/link.configuration.json"
-			}
-		],
-		"jsonValidation": [
-			{
-				"fileMatch": "**/property-schema.json",
-				"url": "./property-schema.json"
-			}
-		],
-		"grammars": [
+                "id": "verilog",
+                "aliases": [
+                    "Verilog",
+                    "verilog"
+                ],
+                "extensions": [
+                    ".v",
+                    ".V",
+                    ".vh",
+                    ".vl"
+                ],
+                "configuration": "./config/verilog.configuration.json"
+            },
             {
-				"language": "linkerscript",
-				"scopeName": "source.ld",
-				"path": "./syntaxes/link.json"
-			},
+                "id": "systemverilog",
+                "aliases": [
+                    "System Verilog",
+                    "systemverilog"
+                ],
+                "extensions": [
+                    ".sv",
+                    ".SV"
+                ],
+                "configuration": "./config/systemverilog.configuration.json"
+            },
             {
-				"language": "arm",
-				"scopeName": "source.arm",
-				"path": "./syntaxes/arm.json"
-			},
-			{
-				"language": "tcl",
-				"scopeName": "source.tcl",
-				"path": "./syntaxes/tcl.json"
-			},
-			{
-				"language": "vhdl",
-				"scopeName": "source.vhdl",
-				"path": "./syntaxes/vhdl.json"
-			},
-			{
-				"language": "verilog",
-				"scopeName": "source.verilog",
-				"path": "./syntaxes/verilog.json"
-			},
-			{
-				"language": "systemverilog",
-				"scopeName": "source.systemverilog",
-				"path": "./syntaxes/systemverilog.json"
-			}
-		],
-		"snippets": [
-			{
-				"language": "tcl",
-				"path": "./snippets/tcl.json"
-			},
-			{
-				"language": "vhdl",
-				"path": "./snippets/vhdl.json"
-			},
-			{
-				"language": "verilog",
-				"path": "./snippets/verilog.json"
-			},
-			{
-				"language": "systemverilog",
-				"path": "./snippets/systemverilog.json"
-			}
-		],
-		"commands": [
-			{
-				"command": "FILE.refresh",
-				"title": "Refresh this File List",
-				"icon": {
-					"light": "images/light/refresh.svg",
-					"dark": "images/dark/refresh.svg"
-				},
-				"category": "FILE"
-			},
-			{
-				"command": "FILE.openFile",
-				"title": "Open this File",
-				"category": "FILE"
-			},
-			{
-				"command": "TOOL.Gen_Property",
-				"title": "generate property file",
-				"category": "TOOL"
-			},
+                "id": "arm",
+                "aliases": [
+                    "ARM",
+                    "arm"
+                ],
+                "extensions": [
+                    ".s",
+                    ".S",
+                    ".asm",
+                    ".sx"
+                ],
+                "configuration": "./config/arm.configuration.json"
+            },
             {
-				"command": "TOOL.Overwrite_InitProperty",
-				"title": "Overwrite the InitPropertyParam",
-				"category": "TOOL"
-			},
-			{
-				"command": "TOOL.Gen_BOOT",
-				"title": "Gen_BOOT",
-				"category": "TOOL"
-			},
-			{
-				"command": "TOOL.Clean",
-				"title": "Clean",
-				"category": "TOOL"
-			},
-			{
-				"command": "TOOL.SerialPort",
-				"title": "Serial monitor",
-				"category": "TOOL"
-			},
+                "id": "linkerscript",
+                "aliases": [
+                    "LinkerScript",
+                    "linkerscript"
+                ],
+                "extensions": [
+                    ".ld",
+                    ".dld"
+                ],
+                "configuration": "./config/link.configuration.json"
+            }
+        ],
+        "jsonValidation": [
             {
-				"command": "TOOL.simulate",
-				"title": "Simulate",
-				"category": "TOOL"
-			},
+                "fileMatch": "**/property-schema.json",
+                "url": "./property-schema.json"
+            }
+        ],
+        "grammars": [
             {
-				"command": "TOOL.alignment",
-				"title": "Alignment",
-				"category": "TOOL"
-			},
-			{
-				"command": "TOOL.instance",
-				"title": "Instance",
-				"category": "TOOL"
-			},
-			{
-				"command": "TOOL.testbench",
-				"title": "Testbench",
-				"category": "TOOL"
-			},
+                "language": "linkerscript",
+                "scopeName": "source.ld",
+                "path": "./syntaxes/link.json"
+            },
             {
-				"command": "TOOL.Overwrite_tb",
-				"title": "Overwrite the template of testbench",
-				"category": "TOOL"
-			},
+                "language": "arm",
+                "scopeName": "source.arm",
+                "path": "./syntaxes/arm.json"
+            },
             {
-				"command": "TOOL.Generate_tb",
-				"title": "generate testbench file",
-				"category": "TOOL"
-			},
+                "language": "tcl",
+                "scopeName": "source.tcl",
+                "path": "./syntaxes/tcl.json"
+            },
             {
-				"command": "TOOL.state_machine.designer",
-				"title": "State machine designer",
+                "language": "vhdl",
+                "scopeName": "source.vhdl",
+                "path": "./syntaxes/vhdl.json"
+            },
+            {
+                "language": "verilog",
+                "scopeName": "source.verilog",
+                "path": "./syntaxes/verilog.json"
+            },
+            {
+                "language": "systemverilog",
+                "scopeName": "source.systemverilog",
+                "path": "./syntaxes/systemverilog.json"
+            }
+        ],
+        "snippets": [
+            {
+                "language": "tcl",
+                "path": "./snippets/tcl.json"
+            },
+            {
+                "language": "vhdl",
+                "path": "./snippets/vhdl.json"
+            },
+            {
+                "language": "verilog",
+                "path": "./snippets/verilog.json"
+            },
+            {
+                "language": "systemverilog",
+                "path": "./snippets/systemverilog.json"
+            }
+        ],
+        "commands": [
+            {
+                "command": "FILE.refresh",
+                "title": "Refresh this File List",
+                "icon": {
+                    "light": "images/light/refresh.svg",
+                    "dark": "images/dark/refresh.svg"
+                },
+                "category": "FILE"
+            },
+            {
+                "command": "FILE.openFile",
+                "title": "Open this File",
+                "category": "FILE"
+            },
+            {
+                "command": "TOOL.Gen_Property",
+                "title": "generate property file",
                 "category": "TOOL"
-			},
-			{
-				"command": "TOOL.state_machine.viewer",
-				"title": "State machine viewer",
-                "category": "TOOL"
-			},
+            },
             {
-				"command": "FPGA.netlist",
-				"title": "show netlist",
-				"category": "FPGA"
-			},
-			{
-				"command": "FPGA.Launch",
-				"title": "Launch",
-				"category": "FPGA"
-			},
-			{
-				"command": "FPGA.Top",
-				"title": "Set as TOP",
-				"category": "FPGA"
-			},
-			{
-				"command": "FPGA.Refresh",
-				"title": "refresh designed file",
-				"category": "FPGA"
-			},
-			{
-				"command": "FPGA.Simulate",
-				"title": "Run the Simulation",
-				"category": "FPGA"
-			},
-			{
-				"command": "FPGA.Build",
-				"title": "Build the current fpga project",
-				"category": "FPGA"
-			},
-			{
-				"command": "FPGA.Synth",
-				"title": "Synth the current fpga project",
-				"category": "FPGA"
-			},
-			{
-				"command": "FPGA.Impl",
-				"title": "Impl the current fpga project",
-				"category": "FPGA"
-			},
-			{
-				"command": "FPGA.Gen_Bit",
-				"title": "Generate the bit file",
-				"category": "FPGA"
-			},
-			{
-				"command": "FPGA.Program",
-				"title": "Download the bit file into the device",
-				"category": "FPGA"
-			},
-			{
-				"command": "FPGA.GUI",
-				"title": "Open the GUI",
-				"category": "FPGA"
-			},
-			{
-				"command": "FPGA.Exit",
-				"title": "Exit the current project",
-				"category": "FPGA"
-			},
-			{
-				"command": "FPGA.Overwrite_bd",
-				"title": "Overwrite the bd_file",
-				"category": "FPGA"
-			},
-			{
-				"command": "FPGA.Add_dev",
-				"title": "Add devices to the database",
-				"category": "FPGA"
-			},
-			{
-				"command": "FPGA.Delete_dev",
-				"title": "Remove the device from the database",
-				"category": "FPGA"
-			},
-			{
-				"command": "FPGA.Add_bd",
-				"title": "Add a bd_file",
-				"category": "FPGA"
-			},
-			{
-				"command": "FPGA.Delete_bd",
-				"title": "Delete the bd_file",
-				"category": "FPGA"
-			},
-			{
-				"command": "SDK.Launch",
-				"title": "Launch",
-				"category": "SDK"
-			},
-			{
-				"command": "SDK.Build",
-				"title": "Build",
-				"category": "SDK"
-			},
-			{
-				"command": "SDK.Download",
-				"title": "Download",
-				"category": "SDK"
-			}
-		],
-		"keybindings": [
-			{
-				"command": "FPGA.Launch",
-				"key": "Alt+z",
-				"mac": "Alt+z",
-				"when": "editorTextFocus"
-			}
-		],
-		"menus": {
-			"view/item/context": [
-				{
-					"command": "FILE.refresh",
+                "command": "TOOL.Overwrite_InitProperty",
+                "title": "Overwrite the InitPropertyParam",
+                "category": "TOOL"
+            },
+            {
+                "command": "TOOL.Gen_BOOT",
+                "title": "Gen_BOOT",
+                "category": "TOOL"
+            },
+            {
+                "command": "TOOL.Clean",
+                "title": "Clean",
+                "category": "TOOL"
+            },
+            {
+                "command": "TOOL.SerialPort",
+                "title": "Serial monitor",
+                "category": "TOOL"
+            },
+            {
+                "command": "TOOL.simulate",
+                "title": "Simulate",
+                "category": "TOOL"
+            },
+            {
+                "command": "TOOL.alignment",
+                "title": "Alignment",
+                "category": "TOOL"
+            },
+            {
+                "command": "TOOL.instance",
+                "title": "Instance",
+                "category": "TOOL"
+            },
+            {
+                "command": "TOOL.testbench",
+                "title": "Testbench",
+                "category": "TOOL"
+            },
+            {
+                "command": "TOOL.Overwrite_tb",
+                "title": "Overwrite the template of testbench",
+                "category": "TOOL"
+            },
+            {
+                "command": "TOOL.Generate_tb",
+                "title": "generate testbench file",
+                "category": "TOOL"
+            },
+            {
+                "command": "TOOL.state_machine.designer",
+                "title": "State machine designer",
+                "category": "TOOL"
+            },
+            {
+                "command": "TOOL.state_machine.viewer",
+                "title": "State machine viewer",
+                "category": "TOOL"
+            },
+            {
+                "command": "FPGA.netlist",
+                "title": "show netlist",
+                "category": "FPGA"
+            },
+            {
+                "command": "FPGA.Launch",
+                "title": "Launch",
+                "category": "FPGA"
+            },
+            {
+                "command": "FPGA.Top",
+                "title": "Set as TOP",
+                "category": "FPGA"
+            },
+            {
+                "command": "FPGA.Refresh",
+                "title": "refresh designed file",
+                "category": "FPGA"
+            },
+            {
+                "command": "FPGA.Simulate",
+                "title": "Run the Simulation",
+                "category": "FPGA"
+            },
+            {
+                "command": "FPGA.Build",
+                "title": "Build the current fpga project",
+                "category": "FPGA"
+            },
+            {
+                "command": "FPGA.Synth",
+                "title": "Synth the current fpga project",
+                "category": "FPGA"
+            },
+            {
+                "command": "FPGA.Impl",
+                "title": "Impl the current fpga project",
+                "category": "FPGA"
+            },
+            {
+                "command": "FPGA.Gen_Bit",
+                "title": "Generate the bit file",
+                "category": "FPGA"
+            },
+            {
+                "command": "FPGA.Program",
+                "title": "Download the bit file into the device",
+                "category": "FPGA"
+            },
+            {
+                "command": "FPGA.GUI",
+                "title": "Open the GUI",
+                "category": "FPGA"
+            },
+            {
+                "command": "FPGA.Exit",
+                "title": "Exit the current project",
+                "category": "FPGA"
+            },
+            {
+                "command": "FPGA.Overwrite_bd",
+                "title": "Overwrite the bd_file",
+                "category": "FPGA"
+            },
+            {
+                "command": "FPGA.Add_dev",
+                "title": "Add devices to the database",
+                "category": "FPGA"
+            },
+            {
+                "command": "FPGA.Delete_dev",
+                "title": "Remove the device from the database",
+                "category": "FPGA"
+            },
+            {
+                "command": "FPGA.Add_bd",
+                "title": "Add a bd_file",
+                "category": "FPGA"
+            },
+            {
+                "command": "FPGA.Delete_bd",
+                "title": "Delete the bd_file",
+                "category": "FPGA"
+            },
+            {
+                "command": "SDK.Launch",
+                "title": "Launch",
+                "category": "SDK"
+            },
+            {
+                "command": "SDK.Build",
+                "title": "Build",
+                "category": "SDK"
+            },
+            {
+                "command": "SDK.Download",
+                "title": "Download",
+                "category": "SDK"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "FPGA.Launch",
+                "key": "Alt+z",
+                "mac": "Alt+z",
+                "when": "editorTextFocus"
+            }
+        ],
+        "menus": {
+            "view/item/context": [
+                {
+                    "command": "FILE.refresh",
                     "title": "files refresh",
-					"group": "inline",
+                    "group": "inline",
                     "icon": {
                         "light": "images/svg/light/refresh.svg",
                         "dark": "images/svg/dark/refresh.svg"
                     },
-					"when": "view == TOOL"
-				}
-			],
-			"editor/context": [
-				{
-					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-					"command": "FPGA.Top",
-					"group": "navigation@1"
-				},
-				{
-					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-					"command": "TOOL.simulate",
-					"group": "navigation@1"
-				},
+                    "when": "view == TOOL"
+                }
+            ],
+            "editor/context": [
                 {
-					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-					"command": "FPGA.netlist",
-					"group": "navigation@1"
-				},
-				{
-					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-					"command": "TOOL.testbench",
-					"group": "navigation@1"
-				},
+                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+                    "command": "FPGA.Top",
+                    "group": "navigation@1"
+                },
                 {
-					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-					"command": "TOOL.instance",
-					"group": "navigation@1"
-				},
-				{
-					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-					"command": "TOOL.alignment",
-					"group": "navigation@1"
-				}
-			]
-		}
-	},
+                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+                    "command": "TOOL.simulate",
+                    "group": "navigation@1"
+                },
+                {
+                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+                    "command": "FPGA.netlist",
+                    "group": "navigation@1"
+                },
+                {
+                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+                    "command": "TOOL.testbench",
+                    "group": "navigation@1"
+                },
+                {
+                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+                    "command": "TOOL.instance",
+                    "group": "navigation@1"
+                },
+                {
+                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+                    "command": "TOOL.alignment",
+                    "group": "navigation@1"
+                }
+            ]
+        }
+    },
     "scripts": {
-		"vscode:prepublish": "webpack --mode production"
-	},
-	"devDependencies": {},
-	"dependencies": {
-		
-	}
+        "vscode:prepublish": "webpack --mode production"
+    },
+    "devDependencies": {},
+    "dependencies": {}
 }
