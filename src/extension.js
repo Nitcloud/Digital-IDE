@@ -61,10 +61,10 @@ function activate(context) {
                     fileExplorer.treeDataProvider.HDLparam = indexer.HDLparam;
                     fileExplorer.treeDataProvider.refresh();
                 });
-                let processLib = new filesys.prjs.processLib(opeParam, watcher);
-                filesys.monitor.processPropertyFile(opeParam, indexer, processLib);
+            //    let processLib = new filesys.prjs.processLib(opeParam, watcher);
+            //     filesys.monitor.processPropertyFile(opeParam, indexer, processLib); 
                 // linter Server
-                new linter.registerLinterServer("vhdl", "linter", context);
+                // new linter.registerLinterServer("vhdl", "linter", context);
                 // project Server
                 filesys.registerPrjsServer(context, opeParam);
                 // tool Server
