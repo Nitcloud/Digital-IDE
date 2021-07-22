@@ -12,7 +12,7 @@
 			]
 		},
 		"HardwareSrc": {
-			"type": "string"
+			"type": "array"
 		},
 		"HardwareLIB": {
 			"type": "object",
