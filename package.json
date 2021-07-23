@@ -35,25 +35,40 @@
         "configuration": {
             "title": "FPGAs",
             "properties": {
-                "HDL.linting.linter": {
+                "HDL.linting.vlog.linter": {
                     "scope": "window",
                     "type": "string",
                     "enum": [
                         "xilinx",
                         "modelsim",
                         "iverilog",
-                        "ghdl",
                         "verible",
                         "verilator",
                         "vsg",
-                        "automate",
                         "default"
                     ],
                     "default": "xilinx",
-                    "description": "Select the verilog linter. Possible values are 'iverilog', 'verilator', xvlog' or 'none'"
+                    "description": "Select the verilog linter."
                 },
-                "HDL.linting.wsl.enable": {
-                    "description": "Enable WSL call",
+                "HDL.linting.vhdl.linter": {
+                    "scope": "window",
+                    "type": "string",
+                    "enum": [
+                        "xilinx",
+                        "modelsim",
+                        "ghdl",
+                        "default"
+                    ],
+                    "default": "xilinx",
+                    "description": "Select the vhdl linter."
+                },
+                "HDL.linting.vlog.wsl.enable": {
+                    "description": "Enable verilog WSL call",
+                    "type": "boolean",
+                    "default": false
+                },
+                "HDL.linting.vhdl.wsl.enable": {
+                    "description": "Enable VHDL WSL call",
                     "type": "boolean",
                     "default": false
                 },
@@ -657,5 +672,7 @@
         "vscode:prepublish": "webpack --mode production"
     },
     "devDependencies": {},
-    "dependencies": {}
+    "dependencies": {
+        "tree-sitter": "^0.19.0"
+    }
 }
