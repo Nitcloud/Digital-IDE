@@ -144,11 +144,17 @@
                     "default": "",
                     "description": "set the xilinx ip_repo_path \n e.g. : D:/project/FPGA/.Lib/xIP"
                 },
+                "SIM.Xilinx.LIB.path" : {
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "set the Xilinx SIM LIB path. \n e.g. : D:/APP/vivado_18_3/Vivado/2018.3/data/verilog/src"
+                },
                 "TOOL.vivado.install.path": {
                     "scope": "window",
                     "type": "string",
                     "default": "",
-                    "description": "set the xilinx install path. \n e.g. : D:/APP/vivado_18_3/Vivado/2018.3/bin/"
+                    "description": "set the xilinx install path. \n e.g. : D:/APP/vivado_18_3/Vivado/2018.3/bin/ \n This applies only to WIN For other systems, add it to environment variables"
                 },
                 "TOOL.modelsim.install.path": {
                     "scope": "window",

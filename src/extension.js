@@ -9,12 +9,12 @@
  */
 'use strict';
 
-const vscode   = require("vscode");
+const vscode  = require("vscode");
 
-const tool     = require("HDLtool");
-const linter   = require("HDLlinter");
-const parser   = require("HDLparser");
-const filesys  = require("HDLfilesys");
+const tool    = require("HDLtool");
+const linter  = require("HDLlinter");
+const parser  = require("HDLparser");
+const filesys = require("HDLfilesys");
 
 function activate(context) {
     var HDLparam = [];
@@ -33,20 +33,19 @@ function activate(context) {
     
         // Output Channel
         var outputChannel = vscode.window.createOutputChannel("HDL");
-    
-        // Status Bar
-        const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
-        context.subscriptions.push(statusBar);
         
         tool.registerXilinxServer(opeParam);
         tool.registerDebugServer(opeParam);
         tool.registerTreeServer(opeParam);
         tool.registerToolServer(opeParam);
         tool.registerSocServer(opeParam);
+
+        // project Server
+        filesys.registerPrjsServer(context, opeParam);
     
         try {
             console.time('timer');
-            const indexer = new parser.indexer(statusBar, HDLparam);
+            const indexer = new parser.indexer(HDLparam);
             indexer.build_index(HDLFileList).then(() => {
                 console.timeEnd('timer');
                 console.log(indexer.HDLparam);
@@ -54,14 +53,11 @@ function activate(context) {
                 
                 var fileExplorer = new tool.tree.FileExplorer(indexer.HDLparam, opeParam);
                 filesys.monitor.monitor(opeParam.workspacePath, opeParam, indexer, outputChannel, () => {
-                    vlogComplete.HDLparam = indexer.HDLparam;
                     fileExplorer.treeDataProvider.HDLparam = indexer.HDLparam;
                     fileExplorer.treeDataProvider.refresh();
                 });
                 // linter Server
                 // new linter.registerLinterServer("vhdl", "linter", context);
-                // project Server
-                filesys.registerPrjsServer(context, opeParam);
                 // tool Server
                 tool.registerSimServer(indexer, opeParam);
                 tool.registerLspServer(context, indexer);
