@@ -39,38 +39,27 @@
                     "scope": "window",
                     "type": "string",
                     "enum": [
-                        "xilinx",
+                        "vivado",
                         "modelsim",
                         "iverilog",
                         "verible",
                         "verilator",
-                        "vsg",
                         "default"
                     ],
-                    "default": "xilinx",
-                    "description": "Select the verilog linter."
+                    "default": "vivado",
+                    "description": "Select the verilog or systemverilog linter. default means none"
                 },
                 "HDL.linting.vhdl.linter": {
                     "scope": "window",
                     "type": "string",
                     "enum": [
-                        "xilinx",
+                        "vivado",
                         "modelsim",
                         "ghdl",
                         "default"
                     ],
-                    "default": "xilinx",
-                    "description": "Select the vhdl linter."
-                },
-                "HDL.linting.vlog.wsl.enable": {
-                    "description": "Enable verilog WSL call",
-                    "type": "boolean",
-                    "default": false
-                },
-                "HDL.linting.vhdl.wsl.enable": {
-                    "description": "Enable VHDL WSL call",
-                    "type": "boolean",
-                    "default": false
+                    "default": "vivado",
+                    "description": "Select the vhdl linter. default means none"
                 },
                 "HDL.linting.runFilePath": {
                     "scope": "window",
@@ -88,13 +77,13 @@
                     "scope": "window",
                     "type": "string",
                     "default": "",
-                    "description": "Add Icarus Verilog arguments here (like macros). They will be added to Icarus Verilog while linting)"
+                    "description": "Add Icarus Verilog arguments here (like macros). They will be added to Icarus Verilog while linting."
                 },
-                "HDL.linting.xilinx.arguments": {
+                "HDL.linting.vivado.arguments": {
                     "scope": "window",
                     "type": "string",
                     "default": "",
-                    "description": "Add Xilinx arguments here. They will be added to Xilinx while linting."
+                    "description": "Add Vivado arguments here. They will be added to Vivado while linting."
                 },
                 "HDL.linting.modelsim.arguments": {
                     "scope": "window",
@@ -112,14 +101,59 @@
                     "scope": "window",
                     "type": "string",
                     "default": "",
-                    "description": "Add Verilator arguments here (like macros). They will be added to Verilator while linting)"
+                    "description": "Add Verilator arguments here (like macros). They will be added to Verilator while linting."
                 },
                 "HDL.linting.vsg.arguments": {
                     "scope": "window",
                     "type": "string",
                     "default": "",
-                    "description": "Add vsg arguments here (like macros). They will be added to vsg while linting)"
+                    "description": "Add vsg arguments here (like macros). They will be added to vsg while linting."
                 },
+                "HDL.formatter.verilog.default.style" : {
+                    "scope": "window",
+                    "type": "string",
+                    "enum": [
+                        "kr",
+                        "ansi",
+                        "gnu"
+                    ],
+                    "default": "kr",
+                    "description": "Select the verilog formatter style."
+                },
+                "HDL.formatter.verilog.default.args": {
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "Add verilog formatter arguments here (like istyle)."
+                },
+                "HDL.formatter.vhdl.default.keyword-case": {
+					"description": "Keyword case",
+					"type": "string",
+					"default": "LowerCase",
+					"enum": [
+						"LowerCase",
+						"UpperCase"
+					]
+				},
+				"HDL.formatter.vhdl.default.align-comments": {
+					"description": "Align comments",
+					"type": "boolean",
+					"default": false
+				},
+				"HDL.formatter.vhdl.default.type-name-case": {
+					"description": "Type name case",
+					"type": "string",
+					"default": "LowerCase",
+					"enum": [
+						"LowerCase",
+						"UpperCase"
+					]
+				},
+				"HDL.formatter.vhdl.default.indentation": {
+					"description": "Indentation",
+					"type": "string",
+					"default": "  "
+				},
                 "PRJ.file.structure.notice": {
                     "scope": "window",
                     "type": "boolean",

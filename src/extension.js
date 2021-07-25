@@ -25,6 +25,7 @@ function activate(context) {
         "workspacePath"  : "",
         "prjInfo"        : null,
         "currentHDLPath" : [],
+        "tbFilePath"     : "",
         "prjInitParam"   : "",
         "propertyPath"   : ""
     }
@@ -57,7 +58,7 @@ function activate(context) {
                     fileExplorer.treeDataProvider.refresh();
                 });
                 // linter Server
-                // new linter.registerLinterServer("vhdl", "linter", context);
+                linter.registerLinterServer();
                 // tool Server
                 tool.registerSimServer(indexer, opeParam);
                 tool.registerLspServer(context, indexer);
