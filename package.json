@@ -144,53 +144,53 @@
                     "default": "",
                     "description": "set the xilinx ip_repo_path \n e.g. : D:/project/FPGA/.Lib/xIP"
                 },
-                "TOOL.xilinx.install.path": {
+                "TOOL.vivado.install.path": {
                     "scope": "window",
                     "type": "string",
                     "default": "",
-                    "description": "set the xilinx install path. \n e.g. : D:/APP/vivado_18_3/Vivado/2018.3/bin"
+                    "description": "set the xilinx install path. \n e.g. : D:/APP/vivado_18_3/Vivado/2018.3/bin/"
                 },
                 "TOOL.modelsim.install.path": {
                     "scope": "window",
                     "type": "string",
                     "default": "",
-                    "description": "set the modelsim install path. \n e.g. : D:/APP/modelsim/bin"
+                    "description": "set the modelsim install path. \n e.g. : D:/APP/modelsim/bin/"
                 },
                 "TOOL.verilator.install.path": {
                     "scope": "window",
                     "type": "string",
                     "default": "",
-                    "description": "set the verilator install path. \n e.g. : D:/APP/verilator/bin"
+                    "description": "set the verilator install path. \n e.g. : D:/APP/verilator/bin/"
                 },
                 "TOOL.verible.install.path": {
                     "scope": "window",
                     "type": "string",
                     "default": "",
-                    "description": "set the verible install path. \n e.g. : D:/APP/verible/bin"
+                    "description": "set the verible install path. \n e.g. : D:/APP/verible/bin/"
                 },
                 "TOOL.ghdl.install.path": {
                     "scope": "window",
                     "type": "string",
                     "default": "",
-                    "description": "set the verible install path. \n e.g. : D:/APP/ghdl/bin"
+                    "description": "set the verible install path. \n e.g. : D:/APP/ghdl/bin/"
                 },
                 "TOOL.vsg.install.path": {
                     "scope": "window",
                     "type": "string",
                     "default": "",
-                    "description": "set the vsg install path. \n e.g. : D:/APP/vsg/bin"
+                    "description": "set the vsg install path. \n e.g. : D:/APP/vsg/bin/"
                 },
                 "TOOL.iverilog.install.path": {
                     "scope": "window",
                     "type": "string",
                     "default": "",
-                    "description": "set the iVerilog install path. \n e.g. : D:/APP/iverilog/bin"
+                    "description": "set the iVerilog install path. \n e.g. : D:/APP/iverilog/bin/"
                 },
                 "TOOL.gtkwave.install.path": {
                     "scope": "window",
                     "type": "string",
                     "default": "",
-                    "description": "set the gtkwave install path. \n e.g. : D:/APP/iverilog/gtkwave/bin"
+                    "description": "set the gtkwave install path. \n e.g. : D:/APP/iverilog/gtkwave/bin/"
                 },
                 "TOOL.SerialPortMonitor.BaudRate": {
                     "type": "integer",

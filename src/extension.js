@@ -51,7 +51,7 @@ function activate(context) {
                 console.timeEnd('timer');
                 console.log(indexer.HDLparam);
                 console.log(indexer.symbols);
-                var vlogComplete = new tool.lspCompletion.vlogCompletion(indexer.HDLparam);
+                
                 var fileExplorer = new tool.tree.FileExplorer(indexer.HDLparam, opeParam);
                 filesys.monitor.monitor(opeParam.workspacePath, opeParam, indexer, outputChannel, () => {
                     vlogComplete.HDLparam = indexer.HDLparam;
@@ -64,7 +64,7 @@ function activate(context) {
                 filesys.registerPrjsServer(context, opeParam);
                 // tool Server
                 tool.registerSimServer(indexer, opeParam);
-                tool.registerLspServer(context, indexer, vlogComplete);
+                tool.registerLspServer(context, indexer);
                 tool.registerBuildServer(context, indexer, opeParam);
             });
         } catch (error) {

@@ -851,7 +851,7 @@
         "storage-type-verilog": {
             "patterns": [
                 {
-                    "match": "\\s*\\b(var|wire|tri|tri[01]|supply[01]|wand|triand|wor|trior|trireg|reg|integer|int|longint|shortint|logic|bit|byte|shortreal|string|time|realtime|real|process|void)\\b",
+                    "match": "\\s*\\b(var|wire|tri|tri[01]|supply[01]|wand|triand|wor|trior|trireg|reg|integer|int|longint|shortint|byte|shortreal|string|time|realtime|real|process|void)\\b",
                     "name": "storage.type.verilog"
                 },
                 {
