@@ -151,8 +151,8 @@ if {[string equal -length 4 $soc none] == 1} {
 	soc_add
 }
 
-if { [file exists [file dirname $current_Location]/library.tcl] == 1 } {
-    source        [file dirname $current_Location]/library.tcl
-    file   delete [file dirname $current_Location]/library.tcl -force
+if { [file exists $root_path/library.tcl] == 1 } {
+    source        $root_path/library.tcl
+    file   delete $root_path/library.tcl -force
 }
 # update_file $root_path/FILES

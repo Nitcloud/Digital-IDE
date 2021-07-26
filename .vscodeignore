@@ -11,3 +11,5 @@ README_cn.md
 prjInitProperty.json
 webpack.config.js
 resources/iverilog
+system.drawio
+toolchain-flow.svg

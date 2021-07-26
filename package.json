@@ -5,7 +5,7 @@
     "publisher": "sterben",
     "homepage": "https://github.com/Bestduan/fpga_support_plug",
     "version": "0.1.16",
-    "main": "./src/extension",
+    "main": "./out/extension",
     "icon": "images/FPGAs.png",
     "keywords": [
         "FPGA",
@@ -152,8 +152,14 @@
 				"HDL.formatter.vhdl.default.indentation": {
 					"description": "Indentation",
 					"type": "string",
-					"default": "  "
+					"default": "    "
 				},
+                "PRJ.file.limit.number": {
+                    "scope": "window",
+                    "type": "number",
+                    "default": 600,
+                    "description": "PRJ file limit number"
+                },
                 "PRJ.file.structure.notice": {
                     "scope": "window",
                     "type": "boolean",
@@ -712,7 +718,5 @@
         "vscode:prepublish": "webpack --mode production"
     },
     "devDependencies": {},
-    "dependencies": {
-        "tree-sitter": "^0.19.0"
-    }
+    "dependencies": {}
 }
