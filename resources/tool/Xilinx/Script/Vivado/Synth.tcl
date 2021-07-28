@@ -19,10 +19,10 @@ close $fp
 
 if {$enableShowlog == "true"} {
 	reset_run   synth_1
-	launch_run  synth_1
+	launch_runs synth_1 -jobs 4
 	wait_on_run synth_1
 } else {
 	reset_run   synth_1 -quiet
-	launch_run  synth_1 -quiet
+	launch_runs synth_1 -quiet -jobs 4 
 	wait_on_run synth_1 -quiet
 }

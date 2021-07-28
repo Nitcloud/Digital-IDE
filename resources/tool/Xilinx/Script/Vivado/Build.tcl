@@ -48,6 +48,8 @@ if { [string equal -length 4 $Device xc7z] == 0 } {
 if {$soc != "none"} {
     if { [file exists ./prj/xilinx/[current_project].runs/impl_1/[current_project].sysdef] == 1} {
         file copy -force ./prj/xilinx/[current_project].runs/impl_1/[current_project].sysdef ./user/Software/data/[current_project].hdf
+    } else {
+        write_hwdef -force -file ./user/Software/data/[current_project].hdf
     }
     write_bitstream ./[current_project].bit -force -quiet
 } else {

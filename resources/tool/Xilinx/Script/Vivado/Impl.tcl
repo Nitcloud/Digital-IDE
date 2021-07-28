@@ -19,10 +19,10 @@ close $fp
 
 if {$enableShowlog == "true"} {
 	reset_run   impl_1 
-	launch_run  impl_1 
+	launch_runs impl_1 -jobs 4 
 	wait_on_run impl_1 
 } else {
 	reset_run   impl_1 -quiet
-	launch_run  impl_1 -quiet
+	launch_runs impl_1 -quiet -jobs 4
 	wait_on_run impl_1 -quiet
 }

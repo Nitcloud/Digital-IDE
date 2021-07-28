@@ -109,7 +109,7 @@
                     "default": "",
                     "description": "Add vsg arguments here (like macros). They will be added to vsg while linting."
                 },
-                "HDL.formatter.verilog.default.style" : {
+                "HDL.formatter.vlog.default.style" : {
                     "scope": "window",
                     "type": "string",
                     "enum": [
@@ -118,9 +118,9 @@
                         "gnu"
                     ],
                     "default": "kr",
-                    "description": "Select the verilog formatter style."
+                    "description": "Select the verilog and systemverilog formatter style."
                 },
-                "HDL.formatter.verilog.default.args": {
+                "HDL.formatter.vlog.default.args": {
                     "scope": "window",
                     "type": "string",
                     "default": "",
@@ -151,8 +151,8 @@
 				},
 				"HDL.formatter.vhdl.default.indentation": {
 					"description": "Indentation",
-					"type": "string",
-					"default": "    "
+					"type": "number",
+					"default": 4
 				},
                 "PRJ.file.limit.number": {
                     "scope": "window",
@@ -424,8 +424,8 @@
         ],
         "jsonValidation": [
             {
-                "fileMatch": "**/property-schema.json",
-                "url": "./property-schema.json"
+                "fileMatch": "**/propertySch.json",
+                "url": "./propertySch.json"
             }
         ],
         "grammars": [
@@ -524,11 +524,6 @@
                 "category": "TOOL"
             },
             {
-                "command": "TOOL.alignment",
-                "title": "Alignment",
-                "category": "TOOL"
-            },
-            {
                 "command": "TOOL.instance",
                 "title": "Instance",
                 "category": "TOOL"
@@ -546,6 +541,11 @@
             {
                 "command": "TOOL.Generate_tb",
                 "title": "generate testbench file",
+                "category": "TOOL"
+            },
+            {
+                "command": "TOOL.Generate_template",
+                "title": "generate template file",
                 "category": "TOOL"
             },
             {
@@ -569,8 +569,13 @@
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Top",
+                "command": "FPGA.srcTop",
                 "title": "Set as TOP",
+                "category": "FPGA"
+            },
+            {
+                "command": "FPGA.simTop",
+                "title": "Set as Testbench TOP",
                 "category": "FPGA"
             },
             {
@@ -665,6 +670,12 @@
                 "key": "Alt+z",
                 "mac": "Alt+z",
                 "when": "editorTextFocus"
+            },
+            {
+                "command": "TOOL.instance",
+                "key": "Alt+i",
+                "mac": "Alt+i",
+                "when": "editorTextFocus"
             }
         ],
         "menus": {
@@ -683,7 +694,12 @@
             "editor/context": [
                 {
                     "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-                    "command": "FPGA.Top",
+                    "command": "FPGA.srcTop",
+                    "group": "navigation@1"
+                },
+                {
+                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+                    "command": "FPGA.simTop",
                     "group": "navigation@1"
                 },
                 {
@@ -693,22 +709,7 @@
                 },
                 {
                     "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-                    "command": "FPGA.netlist",
-                    "group": "navigation@1"
-                },
-                {
-                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-                    "command": "TOOL.testbench",
-                    "group": "navigation@1"
-                },
-                {
-                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
                     "command": "TOOL.instance",
-                    "group": "navigation@1"
-                },
-                {
-                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-                    "command": "TOOL.alignment",
                     "group": "navigation@1"
                 }
             ]

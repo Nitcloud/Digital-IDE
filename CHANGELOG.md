@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.16] - 2021-07-26
+
+- Optimization of the kernel, fix High CPU usage
+
+- Fix some other known bugs
+
+- Add Formatter function
+
 ## [0.1.15] - 2021-05-02
 
 - Fix some bugs and add instructions
