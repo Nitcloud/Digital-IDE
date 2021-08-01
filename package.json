@@ -5,7 +5,7 @@
     "publisher": "sterben",
     "homepage": "https://github.com/Bestduan/fpga_support_plug",
     "version": "0.1.16",
-    "main": "./out/extension",
+    "main": "./src/extension",
     "icon": "images/FPGAs.png",
     "keywords": [
         "FPGA",
@@ -109,7 +109,7 @@
                     "default": "",
                     "description": "Add vsg arguments here (like macros). They will be added to vsg while linting."
                 },
-                "HDL.formatter.vlog.default.style" : {
+                "HDL.formatter.vlog.default.style": {
                     "scope": "window",
                     "type": "string",
                     "enum": [
@@ -127,33 +127,33 @@
                     "description": "Add verilog formatter arguments here (like istyle)."
                 },
                 "HDL.formatter.vhdl.default.keyword-case": {
-					"description": "Keyword case",
-					"type": "string",
-					"default": "LowerCase",
-					"enum": [
-						"LowerCase",
-						"UpperCase"
-					]
-				},
-				"HDL.formatter.vhdl.default.align-comments": {
-					"description": "Align comments",
-					"type": "boolean",
-					"default": false
-				},
-				"HDL.formatter.vhdl.default.type-name-case": {
-					"description": "Type name case",
-					"type": "string",
-					"default": "LowerCase",
-					"enum": [
-						"LowerCase",
-						"UpperCase"
-					]
-				},
-				"HDL.formatter.vhdl.default.indentation": {
-					"description": "Indentation",
-					"type": "number",
-					"default": 4
-				},
+                    "description": "Keyword case",
+                    "type": "string",
+                    "default": "LowerCase",
+                    "enum": [
+                        "LowerCase",
+                        "UpperCase"
+                    ]
+                },
+                "HDL.formatter.vhdl.default.align-comments": {
+                    "description": "Align comments",
+                    "type": "boolean",
+                    "default": false
+                },
+                "HDL.formatter.vhdl.default.type-name-case": {
+                    "description": "Type name case",
+                    "type": "string",
+                    "default": "LowerCase",
+                    "enum": [
+                        "LowerCase",
+                        "UpperCase"
+                    ]
+                },
+                "HDL.formatter.vhdl.default.indentation": {
+                    "description": "Indentation",
+                    "type": "number",
+                    "default": 4
+                },
                 "PRJ.file.limit.number": {
                     "scope": "window",
                     "type": "number",
@@ -184,7 +184,7 @@
                     "default": "",
                     "description": "set the xilinx ip_repo_path \n e.g. : D:/project/FPGA/.Lib/xIP"
                 },
-                "SIM.Xilinx.LIB.path" : {
+                "SIM.Xilinx.LIB.path": {
                     "scope": "window",
                     "type": "string",
                     "default": "",
@@ -482,10 +482,19 @@
             {
                 "command": "FILE.refresh",
                 "title": "Refresh this File List",
-                "icon": {
-                    "light": "images/light/refresh.svg",
-                    "dark": "images/dark/refresh.svg"
-                },
+                "icon": "$(refresh)",
+                "category": "FILE"
+            },
+            {
+                "command": "FILE.expand",
+                "title": "Refresh this File List",
+                "icon": "$(expand-all)",
+                "category": "FILE"
+            },
+            {
+                "command": "FILE.collapse",
+                "title": "Refresh this File List",
+                "icon": "$(collapse-all)",
                 "category": "FILE"
             },
             {
@@ -521,6 +530,10 @@
             {
                 "command": "TOOL.simulate",
                 "title": "Simulate",
+                "icon": {
+                    "light": "images/svg/light/debug.svg",
+                    "dark": "images/svg/dark/debug.svg"
+                },
                 "category": "TOOL"
             },
             {
@@ -679,16 +692,28 @@
             }
         ],
         "menus": {
-            "view/item/context": [
+            "view/title": [
+                {
+                    "command": "FILE.expand",
+                    "when": "view == TOOL.file_tree",
+                    "group": "navigation"
+                },
+                {
+                    "command": "FILE.collapse",
+                    "when": "view == TOOL.file_tree",
+                    "group": "navigation"
+                },
                 {
                     "command": "FILE.refresh",
-                    "title": "files refresh",
+                    "group": "navigation",
+                    "when": "view == TOOL.file_tree"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "TOOL.simulate",
                     "group": "inline",
-                    "icon": {
-                        "light": "images/svg/light/refresh.svg",
-                        "dark": "images/svg/dark/refresh.svg"
-                    },
-                    "when": "view == TOOL"
+                    "when": "view == TOOL.file_tree && viewItem == file"
                 }
             ],
             "editor/context": [
@@ -711,6 +736,23 @@
                     "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
                     "command": "TOOL.instance",
                     "group": "navigation@1"
+                }
+            ],
+            "explorer/context": [
+                {
+                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+                    "command": "FPGA.srcTop",
+                    "group": "navigation@5"
+                },
+                {
+                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+                    "command": "FPGA.simTop",
+                    "group": "navigation@6"
+                },
+                {
+                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+                    "command": "TOOL.simulate",
+                    "group": "navigation@7"
                 }
             ]
         }

@@ -1,7 +1,6 @@
 <html>
 
 <head>
-    <script type="text/javascript" src="../web/yosysjs.js"></script>
     <script type="text/javascript" src="../web/bundle.js"></script>
     <script type="text/javascript" src="../web/elk.bundled.js"></script>
     <script type="text/javascript" src="../web/netlistsvg.bundle.js"></script>
@@ -9,6 +8,7 @@
     <script type="text/javascript" src="../web/svg-pan-zoom.min.js"></script>
     <script type="text/javascript" src="../web/viz.js"></script>
     <script type="text/javascript" src="../web/full.render.js"></script>
+    <script type="text/javascript" src="synth.js"></script>
     <link rel="stylesheet" href="netlist_viewer.css" type="text/css" />
     <style type="text/css">
         .noedit {
@@ -52,10 +52,6 @@
     let last_embed_svg;
     let pan_zoom;
     let last_svg = '';
-
-    function on_ys_ready() {
-        html_loaded();
-    }
 
     function html_loaded() {
         vscode.postMessage({

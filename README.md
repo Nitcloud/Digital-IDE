@@ -203,11 +203,13 @@ Example: `{xilinx installation path}/Vivado/<Version number, for example 18.3>/d
 
 Because currently only support vivado related functions, so for Vivado development assistance, see the general function instructions.
 [Note] : For the *`Device`* property in the property.json file, the following is currently available:
+
 - xc7z020clg400-2
 - xc7a35tftg256-1
 - xc7a35tcsg324-1
 - xc7z035ffg676-2
 - xc7z020clg484-1
+
 In theory, it can support all the devices that Vivado can support. You can write your Device directly under the *`Device`* property. You can also Add your device to the database with the *FPGA:Add Devices to the Database* command, or Remove it from the database with the *FPGA:Remove the Device from the Database* command.
 
 ## Thanks

@@ -24,6 +24,8 @@ function activate(context) {
         "rootPath"       : "",
         "workspacePath"  : "",
         "prjInfo"        : null,
+        "srcTopModule"   : null,
+        "simTopModule"   : null,
         "currentHDLPath" : [],
         "tbFilePath"     : "",
         "prjInitParam"   : "",
@@ -47,7 +49,7 @@ function activate(context) {
         if (HDLFileList.length > limitNum) {
             vscode.window.showWarningMessage(`The project has exceeded the limit of ${HDLFileList.length} HDL files, \
             so parsing and parse-related functions will be stopped directly.`);
-            return null;
+            // return null;
         }
         if (HDLFileList.length >= 250) {
             vscode.window.showInformationMessage(`The project contains ${HDLFileList.length} HDL files, \
@@ -63,7 +65,7 @@ function activate(context) {
                 console.log(indexer.HDLparam);
                 console.log(indexer.symbols);
                 
-                var fileExplorer = new tool.tree.FileExplorer(indexer.HDLparam, opeParam);
+                var fileExplorer = new tool.tree.FileExplorer(indexer.HDLparam, opeParam, context);
                 filesys.monitor.monitor(opeParam.workspacePath, opeParam, indexer, outputChannel, () => {
                     fileExplorer.treeDataProvider.HDLparam = indexer.HDLparam;
                     fileExplorer.treeDataProvider.refresh();
