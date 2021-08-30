@@ -49,7 +49,7 @@ function activate(context) {
         if (HDLFileList.length > limitNum) {
             vscode.window.showWarningMessage(`The project has exceeded the limit of ${HDLFileList.length} HDL files, \
             so parsing and parse-related functions will be stopped directly.`);
-            // return null;
+            return null;
         }
         if (HDLFileList.length >= 250) {
             vscode.window.showInformationMessage(`The project contains ${HDLFileList.length} HDL files, \
@@ -75,7 +75,7 @@ function activate(context) {
                 // tool Server
                 tool.registerSimServer(indexer, opeParam);
                 tool.registerLspServer(context, indexer);
-                tool.registerBuildServer(context, indexer, opeParam);
+                tool.registerBuildServer(context, indexer, opeParam, fileExplorer);
                 vscode.window.showInformationMessage("Init Finished.");
             });
         } catch (error) {
