@@ -3,7 +3,7 @@ D:/project/FPGA/.Lib/xIP
 FPGA_VERSION
 xilinx
 PRJ_NAME.FPGA
-template
+test
 PRJ_NAME.SOC
 undefined
 SOC_MODE.soc

@@ -1,5 +1,4 @@
-
-# FPGA Develop Support
+# DIDE
 
 FPGA development plugin for VS Code
 

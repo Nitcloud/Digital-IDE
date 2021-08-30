@@ -1,5 +1,5 @@
 #! https://zhuanlan.zhihu.com/p/365805011
-# FPGA_Develop_Support
+# DIDE
 
 在vscode上的FPGA开发插件
 
@@ -118,7 +118,7 @@
 
 - 针对 vhdl
   
-    *HDL.linting.vlog.linter* 支持的有: 
+    *HDL.linting.vhdl.linter* 支持的有: 
     1. vivado系列     
     2. modelsim系列   
     3. ghdl 

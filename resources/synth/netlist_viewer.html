@@ -8,7 +8,6 @@
     <script type="text/javascript" src="../web/svg-pan-zoom.min.js"></script>
     <script type="text/javascript" src="../web/viz.js"></script>
     <script type="text/javascript" src="../web/full.render.js"></script>
-    <script type="text/javascript" src="synth.js"></script>
     <link rel="stylesheet" href="netlist_viewer.css" type="text/css" />
     <style type="text/css">
         .noedit {
@@ -46,6 +45,7 @@
 </body>
 
 </html>
+
 <script>
     // "use strict";
     const vscode = acquireVsCodeApi();
@@ -53,115 +53,20 @@
     let pan_zoom;
     let last_svg = '';
 
+    function export_message(type) {
+        vscode.postMessage({
+            command: 'export',
+            type: type,
+            svg: last_svg
+        });
+    }
+
     function html_loaded() {
         vscode.postMessage({
             command: 'html_loaded'
         });
     }
-
-    function check_model(code, filename) {
-        let netlist_container = document.getElementById('netlist_container');
-        // document.getElementById('popup').style.visibility = 'hidden';
-        let code_hdl = code.replace(/`include/g, "//`include");
-        let w = document.getElementById('wave');
-        w.innerHTML = '';
-        // let code_hdl = code;
-        // ys.run('design -reset; read_verilog -sv code.v; flatten; hierarchy -auto-top;  memory -nomap; dff2dffe; show -stretch -width -colors 1;  write_json output.json');
-        // ys.run('design -reset; read_verilog -sv code.v; flatten; synth -run coarse; show -width -colors 1;  write_json output.json');
-        // ys.run('design -reset; read_verilog -sv code.v; flatten; synth -noalumacc -run coarse; show -stretch -width -colors 1;  write_json output.json');
-        // ys.run('design -reset; read_verilog -sv code.v; proc; opt; flatten; show -stretch -width -colors 1;  write_json output.json');
-        // ys.run('design -reset; read_verilog -sv code.v; proc; opt;  write_json output.json');
-        netlist = JSON.parse(netlist);
-        netlist = normalize_netlist(netlist);
-        netlistsvg.render(0, netlist, function (e, svg) {
-            //Create SVG element
-            let embed_svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-            embed_svg.setAttribute('style', 'width: 100%; height: 100%');
-            embed_svg.setAttribute('type', 'image/svg+xml');
-            embed_svg.id = "svg_yosys";
-            last_svg = svg;
-            //Add to container
-            netlist_container = document.getElementById('netlist_container');
-            netlist_container.innerHTML = '';
-            netlist_container.appendChild(embed_svg);
-
-            // let dot_out = ys.read_file('show.dot');
-            // YosysJS.dot_into_svg(dot_out, 'svg_yosys');
-            embed_svg.innerHTML = svg;
-            set_svg_click(embed_svg);
-
-            last_embed_svg = embed_svg;
-            set_line_width();
-
-            netlist_container.setAttribute('style', 'width: 100%; height: 100%');
-            let pan_config = {
-                zoomEnabled: true,
-                controlIconsEnabled: true,
-                maxZoom: 50,
-                fit: true,
-                center: true
-            };
-            pan_zoom = svgPanZoom(embed_svg, pan_config);
-            pan_zoom.center();
-            pan_zoom.resize();
-
-            let main = document.getElementById('main')
-            main.setAttribute('style', 'width: 100%; height: 100%');
-            document.getElementById('popup').style.visibility = 'hidden';
-            document.getElementById('main').style.visibility = 'visible';
-        });
-        document.getElementById('popup').style.visibility = 'visible';
-        window.setTimeout(work, 100);
-    }
     
-    function normalize_netlist(netlist) {
-        try {
-            let norm_netlist = netlist;
-            let modules = netlist.modules;
-            // Obteniendo todas las claves del JSON
-            for (let module in modules) {
-                let cells_module = modules[module].cells;
-                for (let cell in cells_module) {
-                    let cell_i = cells_module[cell];
-                    if (cell_i.type === '$dff') {
-                        cell_i.type = 'D-Flip Flop';
-                    }
-                    else if (cell_i.type === '$adff') {
-                        cell_i.type = 'D-Flip Flop areset';
-                    }
-                    else if (cell_i.type === '$eq') {
-                        cell_i.type = 'equal';
-                    }
-                    else {
-                        cell_i.type = cell_i.type.replace('$', '');
-                    }
-                    if (cell_i.port_directions === undefined) {
-                        let tt = cell_i.connections;
-                        cell_i.port_directions = {};
-                        for (let port in cell_i.connections) {
-                            cell_i.port_directions[port] = 'input';
-                        }
-                    }
-                }
-            }
-            norm_netlist.modules = modules;
-            return norm_netlist;
-        }
-        catch (e) {
-            return netlist;
-        }
-    }
-
-    // Handle the message inside the webview
-    window.addEventListener('message', event => {
-        const message = event.data;
-        switch (message.command) {
-            case 'update':
-                check_model(message.code, message.filename);
-                break;
-        }
-    });
-
     function set_svg_click(svg) {
         let countries = svg.childNodes;
         for (let i = 0; i < countries.length; i++) {
@@ -246,12 +151,104 @@
         return match;
     }
 
-    document.getElementById("export-as-svg").onclick = function () { export_message("svg"); };
-    function export_message(type) {
-        vscode.postMessage({
-            command: 'export',
-            type: type,
-            svg: last_svg
-        });
+    function normalize_netlist(netlist) {
+        try {
+            let norm_netlist = netlist;
+            let modules = netlist.modules;
+            // Obteniendo todas las claves del JSON
+            for (let module in modules) {
+                let cells_module = modules[module].cells;
+                for (let cell in cells_module) {
+                    let cell_i = cells_module[cell];
+                    if (cell_i.type === '$dff') {
+                        cell_i.type = 'D-Flip Flop';
+                    }
+                    else if (cell_i.type === '$adff') {
+                        cell_i.type = 'D-Flip Flop areset';
+                    }
+                    else if (cell_i.type === '$eq') {
+                        cell_i.type = 'equal';
+                    }
+                    else {
+                        cell_i.type = cell_i.type.replace('$', '');
+                    }
+                    if (cell_i.port_directions === undefined) {
+                        let tt = cell_i.connections;
+                        cell_i.port_directions = {};
+                        for (let port in cell_i.connections) {
+                            cell_i.port_directions[port] = 'input';
+                        }
+                    }
+                }
+            }
+            norm_netlist.modules = modules;
+            return norm_netlist;
+        }
+        catch (e) {
+            return netlist;
+        }
     }
+
+    function refreshModel(netlist) {
+        let netlist_container = document.getElementById('netlist_container');
+        // ys.run('design -reset; read_verilog -sv code.v; flatten; hierarchy -auto-top;  memory -nomap; dff2dffe; show -stretch -width -colors 1;  write_json output.json');
+        // ys.run('design -reset; read_verilog -sv code.v; flatten; synth -run coarse; show -width -colors 1;  write_json output.json');
+        // ys.run('design -reset; read_verilog -sv code.v; flatten; synth -noalumacc -run coarse; show -stretch -width -colors 1;  write_json output.json');
+        // ys.run('design -reset; read_verilog -sv code.v; proc; opt; flatten; show -stretch -width -colors 1;  write_json output.json');
+        // ys.run('design -reset; read_verilog -sv code.v; proc; opt;  write_json output.json');
+        netlist = JSON.parse(netlist);
+        netlist = normalize_netlist(netlist);
+        netlistsvg.render(0, netlist, function (e, svg) {
+            //Create SVG element
+            let embed_svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            embed_svg.setAttribute('style', 'width: 100%; height: 100%');
+            embed_svg.setAttribute('type', 'image/svg+xml');
+            embed_svg.id = "svg_yosys";
+            last_svg = svg;
+            //Add to container
+            netlist_container = document.getElementById('netlist_container');
+            netlist_container.innerHTML = '';
+            netlist_container.appendChild(embed_svg);
+            
+            embed_svg.innerHTML = svg;
+            set_svg_click(embed_svg);
+
+            last_embed_svg = embed_svg;
+            set_line_width();
+
+            netlist_container.setAttribute('style', 'width: 100%; height: 100%');
+            let pan_config = {
+                zoomEnabled: true,
+                controlIconsEnabled: true,
+                maxZoom: 50,
+                fit: true,
+                center: true
+            };
+            pan_zoom = svgPanZoom(embed_svg, pan_config);
+            pan_zoom.center();
+            pan_zoom.resize();
+
+            let main = document.getElementById('main')
+            main.setAttribute('style', 'width: 100%; height: 100%');
+            document.getElementById('popup').style.visibility = 'hidden';
+            document.getElementById('main').style.visibility = 'visible';
+        });
+        document.getElementById('popup').style.visibility = 'visible';
+        window.setTimeout(work, 100);
+    }
+    
+    // Handle the message inside the webview
+    window.addEventListener('message', event => {
+        const message = event.data;
+        switch (message.command) {
+            case 'update':
+                refreshModel(message.netlist);
+                break;
+        }
+    });
+
+    document.getElementById("export-as-svg").onclick = function () { 
+        export_message("svg"); 
+    };
+
 </script>
