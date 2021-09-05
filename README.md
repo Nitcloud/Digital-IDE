@@ -1,9 +1,11 @@
-# DIDE
+# FPGA Develop Support
 
 FPGA development plugin for VS Code
 
 If you have any questions, please post them under [issues](https://github.com/Bestduan/fpga_support_plug/issues).
 Development is not easy, please [star](https://github.com/Bestduan/fpga_support_plug) if you like it.
+
+Versions released before January 2022 are bug-fixed, and new features will be released after January.
 
 [中文教程](https://bestduan.github.io/2020/03/03/FPGA-Develop-Support%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/)
 
@@ -108,9 +110,9 @@ The Vivado series is used by default in this function, and different diagnostic 
 
 ![Automatic completion.png](https://i.loli.net/2021/03/19/gMWw3bBpycFDjmP.png)
 
-## Engineering structure
+## Project structure
 
-![Engineering structure.png](https://i.loli.net/2021/03/20/IJOAf4zqHLS6Zpr.png)
+![Project structure.png](https://i.loli.net/2021/09/05/5RUmrpCl7sSuQ12.png)
 
 ## Define Jump
 

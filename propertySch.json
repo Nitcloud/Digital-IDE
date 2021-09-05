@@ -11,6 +11,20 @@
 				"xilinx"
 			]
 		},
+        "PRJ_STRUCTURE" : {
+            "type": "string",
+			"description": "the project structure",
+			"enum": [
+				"standard",
+                "customer"
+			]
+        },
+        "PRJ_Path": {
+			"type": "string"
+		},
+        "HardwareData": {
+			"type": "array"
+		},
 		"HardwareSrc": {
 			"type": "array"
 		},

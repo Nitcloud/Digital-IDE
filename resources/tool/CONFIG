@@ -3,7 +3,7 @@ D:/project/FPGA/.Lib/xIP
 FPGA_VERSION
 xilinx
 PRJ_NAME.FPGA
-template
+test
 PRJ_NAME.SOC
 undefined
 SOC_MODE.soc
@@ -17,4 +17,4 @@ undefined
 enableShowlog
 false
 Device
-xc7a35tcsg324-1
+xc7z035ffg676-2

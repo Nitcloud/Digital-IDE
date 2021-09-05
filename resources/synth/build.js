@@ -1,8 +1,8 @@
 var fs     = require("fs");
 var fspath = require("path");
 // init
-// var synth  = require("./synth");
-// exports.synth = synth;
+var synth  = require("./synth");
+exports.synth = synth;
 
 /*
     add                  add objects to the design
@@ -352,15 +352,27 @@ exports.synthXilinx = synthXilinx;
  * @param {*} parent            对应的父级路径
  * @returns synth.TTY(.message) 导入之后自动将TTY.message清空。
  */
-function synthLoadFile(verilogFilePath, parent) {
+function synthLoadFromFile(verilogFilePath, parent) {
     synth.TTY.message = "";
     const synthSysPath = verilogFilePath.replace(parent, "");
     synthSystemWriteFile(verilogFilePath, synthSysPath);
     synth.ccall('run', '', ['string'], [`read_verilog /${synthSysPath}`]);
     return synth.TTY;
 }
-exports.synthLoadFile = synthLoadFile;
+exports.synthLoadFromFile = synthLoadFromFile;
 
+function synthLoadFromCode(code) {
+    synth.TTY.message = "";
+    synth.FS.writeFile(`/code.v`, code, { encoding: 'utf8' });
+    synth.ccall('run', '', ['string'], [`design -reset; read_verilog /code.v`]);
+    return synth.TTY;
+}
+exports.synthLoadFromCode = synthLoadFromCode;
 
-
-
+function synthSimple(code) {
+    synthLoadFromCode(code);
+    synthRun("proc; opt; write_json output.json");
+    let netlist = synthSystemReadFile("output.json");
+    return netlist;
+}
+exports.synthSimple = synthSimple;

@@ -4,7 +4,7 @@
     "description": "Auxiliary Design For FPGA ",
     "publisher": "sterben",
     "homepage": "https://github.com/Bestduan/fpga_support_plug",
-    "version": "0.1.16",
+    "version": "0.1.18",
     "main": "./src/extension",
     "icon": "images/FPGAs.png",
     "keywords": [
@@ -537,6 +537,21 @@
                 "category": "TOOL"
             },
             {
+                "command": "TOOL.test",
+                "title": "test",
+                "icon": "$(beaker)",
+                "category": "TOOL"
+            },
+            {
+                "command": "TOOL.netlist",
+                "title": "show netlist",
+                "icon": {
+                    "light": "images/svg/light/list-tree.svg",
+                    "dark": "images/svg/dark/list-tree.svg"
+                },
+                "category": "TOOL"
+            },
+            {
                 "command": "TOOL.instance",
                 "title": "Instance",
                 "category": "TOOL"
@@ -570,11 +585,6 @@
                 "command": "TOOL.state_machine.viewer",
                 "title": "State machine viewer",
                 "category": "TOOL"
-            },
-            {
-                "command": "FPGA.netlist",
-                "title": "show netlist",
-                "category": "FPGA"
             },
             {
                 "command": "FPGA.Launch",
@@ -694,16 +704,6 @@
         "menus": {
             "view/title": [
                 {
-                    "command": "FILE.expand",
-                    "when": "view == TOOL.file_tree",
-                    "group": "navigation"
-                },
-                {
-                    "command": "FILE.collapse",
-                    "when": "view == TOOL.file_tree",
-                    "group": "navigation"
-                },
-                {
                     "command": "FILE.refresh",
                     "group": "navigation",
                     "when": "view == TOOL.file_tree"
@@ -712,6 +712,16 @@
             "view/item/context": [
                 {
                     "command": "TOOL.simulate",
+                    "group": "inline",
+                    "when": "view == TOOL.file_tree && viewItem == file"
+                },
+                {
+                    "command": "TOOL.netlist",
+                    "group": "inline",
+                    "when": "view == TOOL.file_tree && viewItem == file"
+                },
+                {
+                    "command": "TOOL.test",
                     "group": "inline",
                     "when": "view == TOOL.file_tree && viewItem == file"
                 }

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.17] - 2021-09-04
+
+- Fix issue [#22](https://github.com/Bestduan/fpga_support_plug/issues/22)
+
+- Fix issue [#21](https://github.com/Bestduan/fpga_support_plug/issues/21)
+
+- Fix issue [#20](https://github.com/Bestduan/fpga_support_plug/issues/20)
+
+
 ## [0.1.16] - 2021-07-26
 
 - Optimization of the kernel, fix High CPU usage

@@ -8,6 +8,7 @@
     <script type="text/javascript" src="../web/svg-pan-zoom.min.js"></script>
     <script type="text/javascript" src="../web/viz.js"></script>
     <script type="text/javascript" src="../web/full.render.js"></script>
+    <script type="text/javascript" src="build.js"></script>
     <link rel="stylesheet" href="netlist_viewer.css" type="text/css" />
     <style type="text/css">
         .noedit {
@@ -30,13 +31,14 @@
             </label>
         </div>
     </div>
-    <div id="popup" style="position: fixed; left: 0; top: 0; width:100%; height:100%; text-align:center; z-index: 1000;
+    <!-- <div id="popup" style="position: fixed; left: 0; top: 0; width:100%; height:100%; text-align:center; z-index: 1000;
             background-color: rgba(100, 100, 100, 0.5);">
         <div style="width:300px; margin: 200px auto; background-color: #88f;
-            border:3px dashed #000; padding:15px; text-align:center;"><span id="popupmsg">Loading...</span></div>
-    </div>
+            border:3px dashed #000; padding:15px; text-align:center;">
+            <span id="popupmsg">Loading...</span>
+        </div>
+    </div> -->
     <p></p>
-    <b>&nbsp&nbsp&nbspBe careful with the "include" clauses. Only this file is analized, not externals.</b>
     <div id="graph" style="text-align: center;"></div>
     <div id="main">
         <div id="netlist_container"></div>
@@ -66,7 +68,7 @@
             command: 'html_loaded'
         });
     }
-    
+
     function set_svg_click(svg) {
         let countries = svg.childNodes;
         for (let i = 0; i < countries.length; i++) {
@@ -189,13 +191,15 @@
         }
     }
 
-    function refreshModel(netlist) {
+    function refreshModel(code) {
+        let netlist = synthSimple(code);
         let netlist_container = document.getElementById('netlist_container');
         // ys.run('design -reset; read_verilog -sv code.v; flatten; hierarchy -auto-top;  memory -nomap; dff2dffe; show -stretch -width -colors 1;  write_json output.json');
         // ys.run('design -reset; read_verilog -sv code.v; flatten; synth -run coarse; show -width -colors 1;  write_json output.json');
         // ys.run('design -reset; read_verilog -sv code.v; flatten; synth -noalumacc -run coarse; show -stretch -width -colors 1;  write_json output.json');
         // ys.run('design -reset; read_verilog -sv code.v; proc; opt; flatten; show -stretch -width -colors 1;  write_json output.json');
         // ys.run('design -reset; read_verilog -sv code.v; proc; opt;  write_json output.json');
+        
         netlist = JSON.parse(netlist);
         netlist = normalize_netlist(netlist);
         netlistsvg.render(0, netlist, function (e, svg) {
@@ -209,7 +213,7 @@
             netlist_container = document.getElementById('netlist_container');
             netlist_container.innerHTML = '';
             netlist_container.appendChild(embed_svg);
-            
+
             embed_svg.innerHTML = svg;
             set_svg_click(embed_svg);
 
@@ -230,25 +234,22 @@
 
             let main = document.getElementById('main')
             main.setAttribute('style', 'width: 100%; height: 100%');
-            document.getElementById('popup').style.visibility = 'hidden';
             document.getElementById('main').style.visibility = 'visible';
         });
-        document.getElementById('popup').style.visibility = 'visible';
-        window.setTimeout(work, 100);
     }
-    
+
     // Handle the message inside the webview
     window.addEventListener('message', event => {
         const message = event.data;
         switch (message.command) {
             case 'update':
-                refreshModel(message.netlist);
+                refreshModel(message.code);
                 break;
         }
     });
 
-    document.getElementById("export-as-svg").onclick = function () { 
-        export_message("svg"); 
+    document.getElementById("export-as-svg").onclick = function () {
+        export_message("svg");
     };
 
 </script>
