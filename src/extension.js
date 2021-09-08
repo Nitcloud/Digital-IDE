@@ -24,8 +24,14 @@ function activate(context) {
         "rootPath"       : "",
         "workspacePath"  : "",
         "prjInfo"        : null,
-        "srcTopModule"   : null,
-        "simTopModule"   : null,
+        "srcTopModule"   : {
+            name: '',
+            path: ''
+        },
+        "simTopModule"   : {
+            name: '',
+            path: ''
+        },
         "currentHDLPath" : [],
         "tbFilePath"     : "",
         "prjInitParam"   : "",

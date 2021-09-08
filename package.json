@@ -567,11 +567,6 @@
                 "category": "TOOL"
             },
             {
-                "command": "TOOL.Generate_tb",
-                "title": "generate testbench file",
-                "category": "TOOL"
-            },
-            {
                 "command": "TOOL.Generate_template",
                 "title": "generate template file",
                 "category": "TOOL"
@@ -735,17 +730,22 @@
                 {
                     "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
                     "command": "FPGA.simTop",
-                    "group": "navigation@1"
-                },
-                {
-                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-                    "command": "TOOL.simulate",
-                    "group": "navigation@1"
+                    "group": "navigation@2"
                 },
                 {
                     "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
                     "command": "TOOL.instance",
-                    "group": "navigation@1"
+                    "group": "navigation@3"
+                },
+                {
+                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+                    "command": "TOOL.testbench",
+                    "group": "navigation@4"
+                },
+                {
+                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+                    "command": "TOOL.simulate",
+                    "group": "navigation@5"
                 }
             ],
             "explorer/context": [
@@ -760,9 +760,14 @@
                     "group": "navigation@6"
                 },
                 {
+                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+                    "command": "TOOL.testbench",
+                    "group": "navigation@7"
+                },
+                {
                     "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
                     "command": "TOOL.simulate",
-                    "group": "navigation@7"
+                    "group": "navigation@8"
                 }
             ]
         }

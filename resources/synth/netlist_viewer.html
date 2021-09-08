@@ -1,28 +1,42 @@
+<!DOCTYPE html>
 <html>
 
 <head>
-    <script type="text/javascript" src="../web/bundle.js"></script>
     <script type="text/javascript" src="../web/elk.bundled.js"></script>
-    <script type="text/javascript" src="../web/netlistsvg.bundle.js"></script>
     <script type="text/javascript" src="../web/jquery-2.2.4.min.js"></script>
     <script type="text/javascript" src="../web/svg-pan-zoom.min.js"></script>
     <script type="text/javascript" src="../web/viz.js"></script>
     <script type="text/javascript" src="../web/full.render.js"></script>
+    <script type="text/javascript" src="netlistsvg.bundle.js"></script>
     <script type="text/javascript" src="build.js"></script>
+    <script type="text/javascript" src="synth.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>netlist view</title>
     <link rel="stylesheet" href="netlist_viewer.css" type="text/css" />
-    <style type="text/css">
-        .noedit {
-            color: #666;
-        }
-
-        body {
-            color: rgb(39, 143, 190);
-            background-color: rgb(197, 194, 194);
-        }
-    </style>
 </head>
 
-<body id="body_element">
+<body>
+    <p> Terminal of synth</p>
+    <div class="main">
+        <div>
+            <div style=display:flex;justify-content:space-between>
+                <button id=Clean>Clean this terminal</button>
+                <div>
+                    <label for=synthStyle>Synth Style:</label>
+                    <select id=synthStyle>
+                        <option value="Before Behavioral Synth">Before Behavioral Synth</option>
+                        <option value="After Behavioral Synth">After Behavioral Synth</option>
+                        <option value="After RTL Synth">After RTL Synth</option>
+                    </select>
+                    <button id=RUN>RUN</button>
+                </div>
+            </div>
+            <textarea id="synthTerminal" style=width:500px;height:620px spellcheck="false" autocomplete="off"
+                autocapitalize="off" autocorrect="off"></textarea>
+        </div>
+        <div class="container" id="netlist_container"></div>
+    </div>
     <div class="toolbar">
         <div class="center-panel">
             <label class="fancy-checkbox">
@@ -30,19 +44,6 @@
                 <div class="button">Save as SVG</div>
             </label>
         </div>
-    </div>
-    <!-- <div id="popup" style="position: fixed; left: 0; top: 0; width:100%; height:100%; text-align:center; z-index: 1000;
-            background-color: rgba(100, 100, 100, 0.5);">
-        <div style="width:300px; margin: 200px auto; background-color: #88f;
-            border:3px dashed #000; padding:15px; text-align:center;">
-            <span id="popupmsg">Loading...</span>
-        </div>
-    </div> -->
-    <p></p>
-    <div id="graph" style="text-align: center;"></div>
-    <div id="main">
-        <div id="netlist_container"></div>
-        <p id="wave">&nbsp;</p>
     </div>
 </body>
 
@@ -194,12 +195,6 @@
     function refreshModel(code) {
         let netlist = synthSimple(code);
         let netlist_container = document.getElementById('netlist_container');
-        // ys.run('design -reset; read_verilog -sv code.v; flatten; hierarchy -auto-top;  memory -nomap; dff2dffe; show -stretch -width -colors 1;  write_json output.json');
-        // ys.run('design -reset; read_verilog -sv code.v; flatten; synth -run coarse; show -width -colors 1;  write_json output.json');
-        // ys.run('design -reset; read_verilog -sv code.v; flatten; synth -noalumacc -run coarse; show -stretch -width -colors 1;  write_json output.json');
-        // ys.run('design -reset; read_verilog -sv code.v; proc; opt; flatten; show -stretch -width -colors 1;  write_json output.json');
-        // ys.run('design -reset; read_verilog -sv code.v; proc; opt;  write_json output.json');
-        
         netlist = JSON.parse(netlist);
         netlist = normalize_netlist(netlist);
         netlistsvg.render(0, netlist, function (e, svg) {
@@ -207,7 +202,7 @@
             let embed_svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
             embed_svg.setAttribute('style', 'width: 100%; height: 100%');
             embed_svg.setAttribute('type', 'image/svg+xml');
-            embed_svg.id = "svg_yosys";
+            embed_svg.id = "svg_synth";
             last_svg = svg;
             //Add to container
             netlist_container = document.getElementById('netlist_container');
@@ -220,7 +215,6 @@
             last_embed_svg = embed_svg;
             set_line_width();
 
-            netlist_container.setAttribute('style', 'width: 100%; height: 100%');
             let pan_config = {
                 zoomEnabled: true,
                 controlIconsEnabled: true,
@@ -231,20 +225,15 @@
             pan_zoom = svgPanZoom(embed_svg, pan_config);
             pan_zoom.center();
             pan_zoom.resize();
-
-            let main = document.getElementById('main')
-            main.setAttribute('style', 'width: 100%; height: 100%');
-            document.getElementById('main').style.visibility = 'visible';
         });
     }
 
     // Handle the message inside the webview
     window.addEventListener('message', event => {
         const message = event.data;
+        console.log("get the message");
         switch (message.command) {
-            case 'update':
-                refreshModel(message.code);
-                break;
+            case 'update': refreshModel(message.code); break;
         }
     });
 
