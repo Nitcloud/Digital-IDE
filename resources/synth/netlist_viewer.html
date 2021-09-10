@@ -10,6 +10,7 @@
     <script type="text/javascript" src="netlistsvg.bundle.js"></script>
     <script type="text/javascript" src="build.js"></script>
     <script type="text/javascript" src="synth.js"></script>
+    <script type="text/javascript" src="test.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>netlist view</title>
@@ -21,19 +22,25 @@
     <div class="main">
         <div>
             <div style=display:flex;justify-content:space-between>
-                <button id=Clean>Clean this terminal</button>
+                <button id=Clean>Clean </button>
+                <!-- <button id=Display>Hide </button> -->
                 <div>
                     <label for=synthStyle>Synth Style:</label>
                     <select id=synthStyle>
-                        <option value="Before Behavioral Synth">Before Behavioral Synth</option>
-                        <option value="After Behavioral Synth">After Behavioral Synth</option>
-                        <option value="After RTL Synth">After RTL Synth</option>
+                        <option value=0>Before Behavioral Synth</option>
+                        <option value=1>After Behavioral Synth</option>
+                        <option value=2>After RTL Synth</option>
                     </select>
-                    <button id=RUN>RUN</button>
+                    <button id=Run>RUN</button>
                 </div>
             </div>
-            <textarea id="synthTerminal" style=width:500px;height:620px spellcheck="false" autocomplete="off"
-                autocapitalize="off" autocorrect="off"></textarea>
+            <!-- <textarea id="synthTerminal" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off"></textarea> -->
+            <div class="terminal">
+                <div class="input-box">
+                    <span  class="input-span"></span>
+                    <input type="text" class="input">
+                </div>
+            </div>
         </div>
         <div class="container" id="netlist_container"></div>
     </div>
@@ -50,195 +57,49 @@
 </html>
 
 <script>
-    // "use strict";
-    const vscode = acquireVsCodeApi();
-    let last_embed_svg;
-    let pan_zoom;
-    let last_svg = '';
-
-    function export_message(type) {
-        vscode.postMessage({
-            command: 'export',
-            type: type,
-            svg: last_svg
-        });
+    function run() {
+        let textarea = document.getElementById('synthTerminal');
+        let synthStyle = document.getElementById('synthStyle');
+        let netlist = synth(synthStyle.value, textarea);
+        showNetlist(netlist);
     }
-
-    function html_loaded() {
-        vscode.postMessage({
-            command: 'html_loaded'
-        });
+    function clean() {
+        let textarea = document.getElementById('synthTerminal');
+        textarea.value = '';
+        TTY.message = '';
     }
-
-    function set_svg_click(svg) {
-        let countries = svg.childNodes;
-        for (let i = 0; i < countries.length; i++) {
-            countries[i].addEventListener('click', e => {
-                let element = e.target;
-
-                if (element.tagName === 'line') {
-                    let class_name = element.getAttribute("class");
-                    select_net(class_name);
-                }
-            });
+    terminal.on('click', () => {
+        input.focus();
+    })
+    input.on('keypress', function (e) {
+        if (e.keyCode == 13) {
+            print(input.val());
         }
-    }
+    })
+    // const vscode = acquireVsCodeApi();
 
-    function select_net(class_name) {
-        search_in_tree(last_embed_svg, 'line', class_name);
-    }
+    // function export_message(type) {
+    //     vscode.postMessage({
+    //         command: 'export',
+    //         type: type,
+    //         svg: last_svg
+    //     });
+    // }
 
-    function search_in_tree(element, tag_name, class_name) {
-        let match = undefined;
-        function recursive_searchTree(element, tag_name) {
-            let type = element.tagName;
-            let class_name_i = undefined;
-            try {
-                class_name_i = element.getAttribute("class");
-            }
-            catch {
-                class_name_i = '';
-            }
+    // // Handle the message inside the webview
+    // window.addEventListener('message', event => {
+    //     const message = event.data;
+    //     console.log("get the message");
+    //     switch (message.command) {
+    //         case 'update': refreshModel(message.synthPrjInfo); break;
+    //     }
+    // });
 
-            if (type === tag_name && class_name_i === class_name) {
-                element.style = "stroke:#84da00;stroke-width:3";
-                match = element;
-            }
-            else if (type === tag_name && class_name_i !== class_name) {
-                element.style = "stroke:#000000;stroke-width:2";
-            }
-            else if (element !== null) {
-                let i;
-                let result = null;
-                let childs = element.childNodes;
-                for (i = 0; result === null && i < childs.length; i++) {
-                    result = recursive_searchTree(childs[i], tag_name, class_name);
-                    if (result !== null) {
-                        break;
-                    }
-                }
-                return result;
-            }
-            return null;
-        }
-        recursive_searchTree(element, tag_name, class_name);
-        return match;
-    }
-
-    function set_line_width() {
-        let tag_name = 'line';
-        let element = last_embed_svg;
-        let width = 2;
-        let match = undefined;
-        function recursive_searchTree(element, tag_name) {
-            let type = element.tagName;
-            if (type === tag_name) {
-                element.style = `stroke:#000000;stroke-width:${width}`;
-                match = element;
-            }
-            else if (element !== null) {
-                let i;
-                let result = null;
-                let childs = element.childNodes;
-                for (i = 0; result === null && i < childs.length; i++) {
-                    result = recursive_searchTree(childs[i], tag_name);
-                    if (result !== null) {
-                        break;
-                    }
-                }
-                return result;
-            }
-            return null;
-        }
-        recursive_searchTree(element, tag_name);
-        return match;
-    }
-
-    function normalize_netlist(netlist) {
-        try {
-            let norm_netlist = netlist;
-            let modules = netlist.modules;
-            // Obteniendo todas las claves del JSON
-            for (let module in modules) {
-                let cells_module = modules[module].cells;
-                for (let cell in cells_module) {
-                    let cell_i = cells_module[cell];
-                    if (cell_i.type === '$dff') {
-                        cell_i.type = 'D-Flip Flop';
-                    }
-                    else if (cell_i.type === '$adff') {
-                        cell_i.type = 'D-Flip Flop areset';
-                    }
-                    else if (cell_i.type === '$eq') {
-                        cell_i.type = 'equal';
-                    }
-                    else {
-                        cell_i.type = cell_i.type.replace('$', '');
-                    }
-                    if (cell_i.port_directions === undefined) {
-                        let tt = cell_i.connections;
-                        cell_i.port_directions = {};
-                        for (let port in cell_i.connections) {
-                            cell_i.port_directions[port] = 'input';
-                        }
-                    }
-                }
-            }
-            norm_netlist.modules = modules;
-            return norm_netlist;
-        }
-        catch (e) {
-            return netlist;
-        }
-    }
-
-    function refreshModel(code) {
-        let netlist = synthSimple(code);
-        let netlist_container = document.getElementById('netlist_container');
-        netlist = JSON.parse(netlist);
-        netlist = normalize_netlist(netlist);
-        netlistsvg.render(0, netlist, function (e, svg) {
-            //Create SVG element
-            let embed_svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-            embed_svg.setAttribute('style', 'width: 100%; height: 100%');
-            embed_svg.setAttribute('type', 'image/svg+xml');
-            embed_svg.id = "svg_synth";
-            last_svg = svg;
-            //Add to container
-            netlist_container = document.getElementById('netlist_container');
-            netlist_container.innerHTML = '';
-            netlist_container.appendChild(embed_svg);
-
-            embed_svg.innerHTML = svg;
-            set_svg_click(embed_svg);
-
-            last_embed_svg = embed_svg;
-            set_line_width();
-
-            let pan_config = {
-                zoomEnabled: true,
-                controlIconsEnabled: true,
-                maxZoom: 50,
-                fit: true,
-                center: true
-            };
-            pan_zoom = svgPanZoom(embed_svg, pan_config);
-            pan_zoom.center();
-            pan_zoom.resize();
-        });
-    }
-
-    // Handle the message inside the webview
-    window.addEventListener('message', event => {
-        const message = event.data;
-        console.log("get the message");
-        switch (message.command) {
-            case 'update': refreshModel(message.code); break;
-        }
-    });
-
-    document.getElementById("export-as-svg").onclick = function () {
-        export_message("svg");
-    };
+    // document.getElementById("export-as-svg").onclick = function () {
+    //     export_message("svg");
+    // };
+    refreshModel(test);
+    Run.onclick = run;
+    Clean.onclick = clean;
 
 </script>

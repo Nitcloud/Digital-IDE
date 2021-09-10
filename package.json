@@ -552,6 +552,14 @@
                 "category": "TOOL"
             },
             {
+                "command": "TOOL.netlist.viewer",
+				"title": "Netlist viewer",
+				"icon": {
+					"light": "images/svg/light/list-tree.svg",
+					"dark": "images/svg/dark/list-tree.svg"
+				}
+            },
+            {
                 "command": "TOOL.instance",
                 "title": "Instance",
                 "category": "TOOL"
@@ -721,6 +729,13 @@
                     "when": "view == TOOL.file_tree && viewItem == file"
                 }
             ],
+            "editor/title": [
+                {
+					"when": "resourceLangId == verilog || resourceLangId == systemverilog",
+					"command": "TOOL.netlist.viewer",
+					"group": "navigation"
+				}
+            ],
             "editor/context": [
                 {
                     "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
@@ -746,6 +761,11 @@
                     "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
                     "command": "TOOL.simulate",
                     "group": "navigation@5"
+                },
+                {
+                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+                    "command": "TOOL.netlist",
+                    "group": "navigation@6"
                 }
             ],
             "explorer/context": [
@@ -768,6 +788,11 @@
                     "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
                     "command": "TOOL.simulate",
                     "group": "navigation@8"
+                },
+                {
+                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+                    "command": "TOOL.netlist",
+                    "group": "navigation@9"
                 }
             ]
         }
