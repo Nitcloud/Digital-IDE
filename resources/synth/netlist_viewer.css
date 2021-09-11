@@ -8,12 +8,13 @@ body {
     background: beige;
     font-family: sans-serif;
     font-size :large;
-    padding-left: 20px;
-    padding-top: 40px;
+    width: 1640;
+    padding-left: 5px;
+    padding-top: 20px;
 }
 
 html {
-    width: 100%;
+    width: 1640;
     height: 100%;
 }
 
@@ -21,77 +22,29 @@ html {
     display: flex;
 }
 
-/* textarea {
-    width:500px;
-    height:620px;
+.output {
+    width:400px;
+    height:560px;
+    padding: 10px;
+    font-size: 16px;
     font-weight: bold;
     font-family: "Consolas";
-    color: rgb(35, 206, 137);
-    background-color: rgb(30, 30, 30);
-} */
-
-.terminal::-webkit-scrollbar {
-    display: none;
-}
-
-.terminal {
-    width:500px;
-    height:620px;
-    left: 40px;
-    top: 40px;
-    padding: 10px;
     color: rgb(35, 206, 137);
     background-color: rgb(30, 30, 30);
     overflow: hidden;
     overflow-y: auto;
-}
-
-.output::before {
-    content: "synth@DIDE~$ ";
-}
-
-.output {
-    font-weight: bold;
-    font-family: "Consolas";
-    padding: 0;
-    margin: 0;
-}
-
-.input-span::before {
-    content: "synth@DIDE~$ ";
-    font-weight: bold;
-    font-family: "Consolas";
-}
-
-.input-span::after {
-    content: '';
-    display: inline-block;
-    font-weight: bold;
-}
-
-.input {
-    font-weight: 250;
-    word-wrap: break-word;
-    word-break: break-all;
-    overflow: hidden;
-    overflow-y: scroll;
-    font-size: 1em;
-    min-width: 1px;
-    height: inherit;
-    border: none;
-    outline: none;
-    color: rgb(35, 206, 137);
-    background-color: rgb(30, 30, 30);
+    word-break:break-all;
 }
 
 .container {
-    width: 1200px;
-    height: 650px;
+    padding: 5px;
+    width: 1240px;
+    height: 600px;
 }
 
 .toolbar {
     overflow: visible;
-    width: 100%;
+    width: 98%;
     top: 0;
     position: absolute;
     background: gray;
@@ -132,7 +85,7 @@ html {
     padding: 0.5em;
     text-align: center;
     text-decoration: none !important;
-    transition: background ease-out 125ms, color ease-out 125ms;
+    transition: ease-out 125ms, color ease-out 125ms;
     user-select: none;
     width: 10em;
 }

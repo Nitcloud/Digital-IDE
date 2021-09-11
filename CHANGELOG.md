@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.18] - 2021-09-12
+
+- delete generate tb file 
+
+- add function netlist show
+
+- Fix issue [#25](https://github.com/Bestduan/fpga_support_plug/issues/25)
+
+- Fix issue [#24](https://github.com/Bestduan/fpga_support_plug/issues/24)
+
 ## [0.1.17] - 2021-09-04
 
 - Fix issue [#22](https://github.com/Bestduan/fpga_support_plug/issues/22)

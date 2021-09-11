@@ -5,7 +5,7 @@
     "publisher": "sterben",
     "homepage": "https://github.com/Bestduan/fpga_support_plug",
     "version": "0.1.18",
-    "main": "./src/extension",
+    "main": "./out/extension",
     "icon": "images/FPGAs.png",
     "keywords": [
         "FPGA",
@@ -722,16 +722,10 @@
                     "command": "TOOL.netlist",
                     "group": "inline",
                     "when": "view == TOOL.file_tree && viewItem == file"
-                },
-                {
-                    "command": "TOOL.test",
-                    "group": "inline",
-                    "when": "view == TOOL.file_tree && viewItem == file"
                 }
             ],
             "editor/title": [
                 {
-					"when": "resourceLangId == verilog || resourceLangId == systemverilog",
 					"command": "TOOL.netlist.viewer",
 					"group": "navigation"
 				}

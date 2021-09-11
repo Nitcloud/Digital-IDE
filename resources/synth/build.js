@@ -4,6 +4,10 @@ let last_embed_svg;
 let pan_zoom;
 let last_svg = '';
 
+function print(msg) {
+    document.getElementById("output").innerHTML=msg;
+}
+
 function synthRun(command) {
     ccall('run', '', ['string'], [command]);
 }
@@ -13,7 +17,7 @@ function synthSystemReadFile(path) {
         let content = FS.readFile(`/${path}`, { encoding: 'utf8' });
         return content;
     } else {
-        textarea.value = textarea.value + `ERROR: The ${path} is not at this synth system.`;
+        print(`ERROR: The ${path} is not at this synth system.`);
     }
 }
 
@@ -52,12 +56,45 @@ function synthSystemWriteFile(content, path) {
     }
 }
 
+function synthSystemRemoveDir(path){
+    let files = [];
+    if(FS.findObject(`/${path}`) != null) {  
+        files = FS.readdir(`/${path}`);
+        for (let index = 2; index < files.length; index++) {
+            const element = files[index];
+            let curPath = PATH.join(`/${path}`,element).replace(/\\/g,"\/");
+            let value = FS.isDir(FS.stat(curPath).mode);
+            if(value) { 
+                synthSystemRemoveDir(curPath);
+            } else {    
+                FS.unlink(curPath);    
+            }
+        }   
+        FS.rmdir(`/${path}`); //清除文件夹
+    }
+}
+
 function synthSystemRemoveFile(path) {
     FS.unlink(`/${path}`);
 }
 
-function handleLog(Log) {
-    let newLog = Log.replace(/(\d+?\.)+?\s/, "[INFO]> ");
+function handleLog(Log, type) {
+    let newLog = '';
+    if (type == "message") {
+        newLog = Log.replace(/(\d+?\.)+?\s/, "<font color=#3884D9>[INFO]> </font> ") + "<br>";
+    }
+    else if (type == "error") {
+        let index = Log.indexOf("ERROR:");
+        newLog = "<font color=#D15036>[ERROR]> </font>" + 
+                Log.substring(0, index) + 
+                "<font color=#FFF594>ERROR:" + 
+                "<font color=#A074C4>" + 
+                Log.substring(index + 6, Log.length) + 
+                "</font>" +
+                "<br>";
+        let output = document.getElementById("output").innerText + newLog;
+        print(output);
+    }
     return newLog;
 }
 
@@ -65,7 +102,7 @@ function synthLoad(path) {
     ccall('run', '', ['string'], [`read_verilog /${path}`]);
 }
 
-function synth(cmd_select, textarea) {
+function synth(cmd_select) {
     let cmd = [
         // Before Behavioral Synth
         "proc; write_json /output.json",
@@ -77,7 +114,7 @@ function synth(cmd_select, textarea) {
         "synth -noalumacc -run coarse; write_json /output.json",
     ]
     synthRun(cmd[cmd_select]);
-    textarea.value = TTY.message;
+    print(TTY.message);
     let netlist = synthSystemReadFile("output.json");
     return netlist;
 }
@@ -205,13 +242,14 @@ function normalize_netlist(netlist) {
 }
 
 function refreshModel(synthPrjInfo) {
-    let textarea = document.getElementById('synthTerminal');
     let synthStyle = document.getElementById('synthStyle');
     TTY.callback = handleLog;
     TTY.message = '';
     
     let instFiles = synthPrjInfo.instInfo;
     let includeFiles = synthPrjInfo.includeInfo;
+    synthRun("design -reset");
+    synthSystemRemoveDir("prj");
     synthSystemWriteFile(synthPrjInfo.module.text, synthPrjInfo.module.path);
     for (let index = 0; index < includeFiles.length; index++) {
         const element = includeFiles[index];
@@ -222,13 +260,13 @@ function refreshModel(synthPrjInfo) {
         const element = instFiles[index];
         synthSystemWriteFile(element.text, element.path);
         synthLoad(element.path);
-        textarea.value = TTY.message;
+        print(TTY.message);
     }
 
     synthLoad(synthPrjInfo.module.path);
-    textarea.value = TTY.message;
+    print(TTY.message);
 
-    let netlist = synth(synthStyle.value, textarea);
+    let netlist = synth(synthStyle.value);
     showNetlist(netlist);
 }
 

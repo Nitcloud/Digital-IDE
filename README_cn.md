@@ -1,5 +1,5 @@
 #! https://zhuanlan.zhihu.com/p/365805011
-# FPGA Develop Support
+# FPGA Develop Support 使用手册-version 0.1.18
 
 在vscode上的FPGA开发插件
 
@@ -14,7 +14,21 @@
 
 - 邮箱： sterben.661214@gmail.com  。
 
+## 关于反馈
+
+首先感谢您的使用与反馈，首先如果您有关于此插件更好的想法在知乎和github下均可发表，但如果是使用中出现的问题请移步至[github](https://github.com/Bestduan/fpga_support_plug/issues)发表，请勿在知乎下发表，感谢您的配合。
+
+此外在发表issue的时候，请详细说明您所遇到的问题，重点包含以下部分
+- 运行环境
+- 使用版本
+- 报错信息 (来源：vscode本身以及Toggle Developer Tool)
+- 具体问题，以及出现的原因
+- 如果是特殊情况请粘贴源码
+- 请尽量截图展示
+
 ## TODO LIST
+
+关于后期开发主要是前端辅助设计，以及陆续兼容三方设计平台，同时搭建属于自己的全套开源工具链，最终从辅助型向设计型转变。
 
 - [ ] 前端开发辅助功能 
   - [x] 语言支持
@@ -33,6 +47,7 @@
     - [x] iverilog快速仿真
     - [ ] modelsim快速仿真
     - [ ] Verilator快速仿真
+  - [x] 综合功能
   - [x] 常见功能库
 - [ ] 后端开发辅助功能
   - [x] vivado开发辅助
@@ -155,6 +170,8 @@
 
 ![工程结构](https://i.loli.net/2021/09/05/5RUmrpCl7sSuQ12.png)
 
+`【注】`: 在工程文件夹下含有 `sim` 或者 `testbench` 这两个关键词的均认为是仿真文件在工程结构中会被归类为sim。
+
 #### 自动格式化
 <!-- [返回目录](#目录) -->
 
@@ -187,19 +204,19 @@
 ### 仿真功能
 <!-- [返回目录](#目录) -->
 
-#### 自动生成tb文件
+#### 生成tb并例化
 <!-- [返回目录](#目录) -->
-![tb_gen.gif](https://i.loli.net/2021/07/27/TRAL6nYmH34ufdF.gif)
+
 步骤如下:
-1. 使用快捷键`F1`启动命令框，输入 generate, 选择TOOL : generate testbench file
-2. 选择仿真文件的类型。
+1. 使用快捷键`F1`启动命令框，输入 Testbench, 选择TOOL : Testbench, 或者在需要生成并例化的文件下右击选择Testbench。
+2. 选择仿真文件的类型以及需要存储的位置，如果存在直接替换即可。
 
 `【注】`：
-1. 在标准工程结构下testbench file会被放置到user目录下的sim目录中。
-2. 在非标准工程结构下，即自定义工程结构下则会被放置到user目录下的sim目录中。
-3. 当时使用*Set as Testbench Top* 时该工程的仿真文件路径会被更改不再是生成的仿真文件。
+如果想要更改初始的testbench file的内容则使用快捷键`F1`启动命令框，选择TOOL : Overwrite the template of testbench，选择要更改的仿真文件的类型，这时会打开testbench file的初始化文件在此基础上更改保存即可。此外请保留 `//Instance` 标志，该标志是用于识别需要例化的位置。
 
-如果想要更改初始的testbench file的内容则使用快捷键`F1`启动命令框，选择TOOL : Overwrite the template of testbench，选择要更改的仿真文件的类型，这时会打开testbench file的初始化文件在此基础上更改保存即可。
+该功能不是很建议使用，直接在tb文件中使用instance指令生成更方便。
+
+后期会考虑tb文件与例化模块间的智能连线。
 
 #### 自动例化
 <!-- [返回目录](#目录) -->
@@ -219,6 +236,8 @@
 
 #### iverilog快速仿真
 <!-- [返回目录](#目录) -->
+在0.1.18版本之后优化设计支持 `include` 设计
+
 ![iverilog快速仿真](https://i.loli.net/2021/05/02/bfJ1lFGWTjXkeRq.png)
 
 1. 自带多文件仿真，无需 *`include*
@@ -236,8 +255,24 @@
 #### Verilator快速仿真
 <!-- [返回目录](#目录) -->
 
+### 综合功能
+<!-- [返回目录](#目录) -->
+
+插件使用yosys 0.9版本的内核(开源的yosysjs为0.5版本)进行指定工程的综合(可全平台运行)，并展示综合后的网络图
+![netlist](https://i.loli.net/2021/09/10/Wue9vYgMCkSNzqx.png)
+
+该功能目前处于测试阶段，理论上支持 `include` 以及多文件工程，但由于是web版不建议执行较大的工程，建议对工程或者单个文件进行测试使用。后面会根据使用情况反馈进行本地版的扩展。
+
+使用方式
+1. 点击右上角的图标进行面板的创建
+2. 在project structure中选择需要显示的模块，或者在文件中右击选择 `show netlist`
+
+`【注】`: 如果在console中出现ERROR请关闭该web，重新创建一个新的。
+
 ### 常见功能库
 <!-- [返回目录](#目录) -->
+
+`【注】`: 该插件自带ADI的IP库取自[adi2019_r1](https://github.com/analogdevicesinc/hdl/releases/tag/2019_r1) 该库已编译完成并将其中所有的绝对路径改为相对路径，使得在任何环境下能直接使用。
 
 该插件自带HDL功能库链接功能，在后端调用时，会自动加HDL库文件添加到后端工程中使用方式如下
 
@@ -376,6 +411,7 @@
 <!-- [返回目录](#目录) -->
 
 * [VHDL](https://github.com/puorc/awesome-vhdl)
+* [yosys](http://www.clifford.at/yosys)
 * [TerosHDL](https://github.com/TerosTechnology/vscode-terosHDL)
 * [TCL Language Support](https://github.com/go2sh/tcl-language-support)
 * [Verilog HDL/SystemVerilog](https://github.com/mshr-h/vscode-verilog-hdl-support)

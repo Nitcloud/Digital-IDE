@@ -10,7 +10,7 @@
     <script type="text/javascript" src="netlistsvg.bundle.js"></script>
     <script type="text/javascript" src="build.js"></script>
     <script type="text/javascript" src="synth.js"></script>
-    <script type="text/javascript" src="test.js"></script>
+    <!-- <script type="text/javascript" src="test.js"></script> -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>netlist view</title>
@@ -18,12 +18,12 @@
 </head>
 
 <body>
-    <p> Terminal of synth</p>
+    <p> Console of synth</p>
+    <button id=Display style=width:50px;>Hide</button>
     <div class="main">
-        <div>
+        <div id="component">
             <div style=display:flex;justify-content:space-between>
                 <button id=Clean>Clean </button>
-                <!-- <button id=Display>Hide </button> -->
                 <div>
                     <label for=synthStyle>Synth Style:</label>
                     <select id=synthStyle>
@@ -34,13 +34,7 @@
                     <button id=Run>RUN</button>
                 </div>
             </div>
-            <!-- <textarea id="synthTerminal" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off"></textarea> -->
-            <div class="terminal">
-                <div class="input-box">
-                    <span  class="input-span"></span>
-                    <input type="text" class="input">
-                </div>
-            </div>
+            <div class="output" id="output"></div>
         </div>
         <div class="container" id="netlist_container"></div>
     </div>
@@ -58,48 +52,57 @@
 
 <script>
     function run() {
-        let textarea = document.getElementById('synthTerminal');
         let synthStyle = document.getElementById('synthStyle');
-        let netlist = synth(synthStyle.value, textarea);
+        let netlist = synth(synthStyle.value);
         showNetlist(netlist);
     }
     function clean() {
-        let textarea = document.getElementById('synthTerminal');
-        textarea.value = '';
+        document.getElementById("output").innerHTML = '';
         TTY.message = '';
     }
-    terminal.on('click', () => {
-        input.focus();
-    })
-    input.on('keypress', function (e) {
-        if (e.keyCode == 13) {
-            print(input.val());
+    function display() {
+        let value = document.getElementById("Display").innerHTML;
+        if (value == "Hide") {
+            document.getElementById('component').style.visibility = 'hidden';
+            document.getElementById('component').style.width = "0px";
+            document.getElementById('netlist_container').style.width = "1640px";
+            document.getElementById("Display").innerHTML = "Show";
         }
-    })
-    // const vscode = acquireVsCodeApi();
+        else if (value == "Show") {
+            document.getElementById('component').style.width = "500px";
+            document.getElementById('component').style.visibility = 'visible';
+            document.getElementById('netlist_container').style.width = "1240px";
+            document.getElementById("Display").innerHTML = "Hide";
+        }
+    }
 
-    // function export_message(type) {
-    //     vscode.postMessage({
-    //         command: 'export',
-    //         type: type,
-    //         svg: last_svg
-    //     });
-    // }
+    const vscode = acquireVsCodeApi();
 
-    // // Handle the message inside the webview
-    // window.addEventListener('message', event => {
-    //     const message = event.data;
-    //     console.log("get the message");
-    //     switch (message.command) {
-    //         case 'update': refreshModel(message.synthPrjInfo); break;
-    //     }
-    // });
+    function export_message(type) {
+        vscode.postMessage({
+            command: 'export',
+            type: type,
+            svg: last_svg
+        });
+    }
 
-    // document.getElementById("export-as-svg").onclick = function () {
-    //     export_message("svg");
-    // };
-    refreshModel(test);
+    // Handle the message inside the webview
+    window.addEventListener('message', event => {
+        const message = event.data;
+        console.log("get the message");
+        switch (message.command) {
+            case 'update': refreshModel(message.synthPrjInfo); break;
+        }
+    });
+
+    document.getElementById("export-as-svg").onclick = function () {
+        export_message("svg");
+    };
+
+    // refreshModel(test);
+
     Run.onclick = run;
     Clean.onclick = clean;
+    Display.onclick = display;
 
 </script>

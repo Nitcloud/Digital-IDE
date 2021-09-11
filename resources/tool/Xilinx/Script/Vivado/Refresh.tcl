@@ -5,6 +5,7 @@ set_param general.maxThreads 8
 set current_Location [file normalize [info script]]
 set xilinx_path [file dirname [file dirname [file dirname $current_Location]]]
 set root_path   [file dirname $xilinx_path]
+set lib_path    [file dirname [file dirname $root_path]]
 
 set soc           none
 set bd_file       none
@@ -116,6 +117,7 @@ if {[string equal -length 4 $soc none] == 1} {
     if {$xip_repo_path != ""} {
         lappend ip_lib_paths $xip_repo_path
     }
+    lappend ip_lib_paths $lib_path/lib/ADI_IP_repo
     set_property ip_repo_paths $ip_lib_paths [current_project] -quiet
     update_ip_catalog -quiet
     # add file list
@@ -132,6 +134,7 @@ if {[string equal -length 4 $soc none] == 1} {
     if {$xip_repo_path != ""} {
         lappend ip_lib_paths $xip_repo_path
     }
+    lappend ip_lib_paths $lib_path/lib/ADI_IP_repo
     set_property ip_repo_paths $ip_lib_paths [current_project] -quiet
     update_ip_catalog -quiet
     # add BD Design

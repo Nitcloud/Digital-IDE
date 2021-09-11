@@ -153,19 +153,15 @@ Or use the shortcut key `Alt + I` to start, and then enter the keyword of the mo
 
 ## Automatically generates TB files
 
-![tb_gen.gif](https://i.loli.net/2021/07/27/TRAL6nYmH34ufdF.gif)
-
 The steps are as follows:
 
-1. Use the 'F1' shortcut to start the command box, enter generate, and select TOOL: generate testbench file
-2. Select the type of the simulation file.
+1. Use the shortcut key 'F1' to launch the command box, type Testbench, select TOOL: Testbench, or right-click from the file you want to generate and instantiate and select Testbench.
+2. Select the type and location of the simulation file. If the simulation file exists, replace it.
 
 
 `[Note]` :
-1. Under standard engineering structure, testbench file will be placed in sim directory under user directory.
-2. In a non-standard engineering structure, that is, in a custom engineering structure, it is placed in the SIM directory under the user directory.
-3. *Set as Testbench Top* will change the path of the project's simulation files from the generated simulation files.
-If you want to change the contents of the initial Testbench file, use the shortcut `F1` to start the command box and select TOOL:Overwrite the template of Testbench, select the type of mock file you want to change, and open the initialization file of the Testbench file.
+If you want to change the contents of the original Testbench file, use the shortcut 'F1' to launch the command box and select TOOL:Overwrite the template of Testbench, select the type of the simulation file you want to change, and then open the testbench file initialization file.Also keep the `//Instance` flag, which is used to identify places that need to be instantiated.
+This feature is not recommended and it is more convenient to generate the instance directive directly in the TB file.
 
 ## Iverilog quick simulation
 
@@ -179,6 +175,10 @@ If you want to change the contents of the initial Testbench file, use the shortc
 If you need to support xilinx simulation library, you need to set the installation path of Xilinx in the setting *sim.xilinx.lib. path*
 
 Example: `{xilinx installation path}/Vivado/<Version number, for example 18.3>/data/verilog/src`
+
+## Netlist
+
+![netlist](https://i.loli.net/2021/09/10/Wue9vYgMCkSNzqx.png)
 
 ## General function instructions
 
