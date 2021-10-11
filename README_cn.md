@@ -342,9 +342,9 @@
 ### 通用功能使用说明
 <!-- [返回目录](#目录) -->
 
-1. Launch 功能，开启后端功能以 **property.json** 文件中配置的 *FPGA_VERSION* 属性为准。目前只支持vivado。launch之后会根据 **property.json** 文件信息生成相应的工程。如果已经有工程的会直接打开。launch之后在HDL文件中右键选择 *Set as Top* 时会将该文件设置为设计的顶层头文件。
+1. Launch 功能，开启后端功能以 **property.json** 文件中配置的 *TOOL_CHAIN* 属性为准。目前只支持vivado。launch之后会根据 **property.json** 文件信息生成相应的工程。如果已经有工程的会直接打开。launch之后在HDL文件中右键选择 *Set as Top* 时会将该文件设置为设计的顶层头文件。
 
-2. Simulate 功能，与在HDL文件中右键显示的simulate不同，该功能使用的是 **property.json** 文件中配置的 *FPGA_VERSION* 属性所对应的仿真功能即使用的是vivado仿真，而在HDL文件中右键显示的simulate则使用的是iverilog仿真，用于对单个文件或者少量文件进行实时快速仿真。在HDL文件中右键选择 *Set as Testbench Top* 时会将该文件设置为仿真的顶层头文件。
+2. Simulate 功能，与在HDL文件中右键显示的simulate不同，该功能使用的是 **property.json** 文件中配置的 *TOOL_CHAIN* 属性所对应的仿真功能即使用的是vivado仿真，而在HDL文件中右键显示的simulate则使用的是iverilog仿真，用于对单个文件或者少量文件进行实时快速仿真。在HDL文件中右键选择 *Set as Testbench Top* 时会将该文件设置为仿真的顶层头文件。
 
 3. Refresh 功能，更新xilinx工程下所包含的文件，因为包含的形式是全包含，所有在./user/src和./user/sim下都会包含进去，所以你在src，data，sim下的文件就是你的工程已经包含的文件。更新机制是先全删除再全包含，所以你在文件夹里增删文件，选择 **`Refresh`** 后，工程里也会一起更新。此外如果你已经开启`StartFPGA`的终端再向 *代码文件夹* 中添加HDL文件时，终端会自动将该文件添加到工程中去。
 

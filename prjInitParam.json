@@ -1,5 +1,5 @@
 {
-    "FPGA_VERSION": "xilinx",
+    "TOOL_CHAIN": "xilinx",
     "PRJ_NAME": {
         "FPGA": "template"
     },

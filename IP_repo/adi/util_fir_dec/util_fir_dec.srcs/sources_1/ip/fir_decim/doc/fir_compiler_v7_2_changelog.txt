@@ -1,0 +1,201 @@
+2018.3:
+ * Version 7.2 (Rev. 11)
+ * No changes
+
+2018.2:
+ * Version 7.2 (Rev. 11)
+ * No changes
+
+2018.1:
+ * Version 7.2 (Rev. 11)
+ * Revision change in one or more subcores
+
+2017.4:
+ * Version 7.2 (Rev. 10)
+ * Feature Enhancement: Add option to remove shift register inference attributes; SHREG_EXTRACT and SRL_STYLE
+
+2017.3:
+ * Version 7.2 (Rev. 9)
+ * Feature Enhancement: Increase the maximum number of parallel inputs from 64 to 256
+ * Revision change in one or more subcores
+
+2017.2:
+ * Version 7.2 (Rev. 8)
+ * No changes
+
+2017.1:
+ * Version 7.2 (Rev. 8)
+ * Bug Fix: Output Rounding Mode parameter validation corrected to produce an error during design validation (IP Integrator/System Generator) rather than silently updating to a legal value.
+ * Bug Fix: Correction to Convergent Rounding when multiple DSP slices are required to implement the filter multiply operations.
+
+2016.4:
+ * Version 7.2 (Rev. 7)
+ * No changes
+
+2016.3:
+ * Version 7.2 (Rev. 7)
+ * General: Support for Spartan7 devices
+ * Revision change in one or more subcores
+
+2016.2:
+ * Version 7.2 (Rev. 6)
+ * No changes
+
+2016.1:
+ * Version 7.2 (Rev. 6)
+ * Fix for error in Sysgen parameter propagation.
+ * Enabled DSP48 ADREG/DREG but gate CEAD/CED to address power DRC.
+ * Fix in common c model utilities package for handling of arrays of real types in Matlab
+ * Revision change in one or more subcores
+
+2015.4.2:
+ * Version 7.2 (Rev. 5)
+ * No changes
+
+2015.4.1:
+ * Version 7.2 (Rev. 5)
+ * No changes
+
+2015.4:
+ * Version 7.2 (Rev. 5)
+ * Correction to GUI reported Calculated Coefficients for Transpose Interpolation filters.
+ * Revision change in one or more subcores
+
+2015.3:
+ * Version 7.2 (Rev. 4)
+ * Add constraints file to suppress expected memory collision warnings during post-synthesis simulation.
+ * IP revision number added to HDL module, library, and include file names, to support designs with both locked and upgraded IP instances
+ * Correction to GUI reported latency estimate for polyphase interpolation configurations.
+ * Revision change in one or more subcores
+
+2015.2.1:
+ * Version 7.2 (Rev. 3)
+ * No changes
+
+2015.2:
+ * Version 7.2 (Rev. 3)
+ * Correction to the GUI reported startup latency for polyphase interpolation configurations.
+ * Correction for Halfband Decimation with Symmetric rounding on Ultrascale parts.
+ * Correction for Polyphase Interpolation with Convergent rounding where multiple DSP columns are required to support the data and/or coefficient width.
+
+2015.1:
+ * Version 7.2 (Rev. 2)
+ * Warning reduction.
+ * Correction to single rate half-band control for data vector reset, an oversample rate of 2, utilizing a single multiply add unit.
+ * Added the SRL_STYLE attribute to the delay component to ensure an efficient implementation.
+ * Fix to Sample Period propagation to avoid false Column Configuration errors.
+ * GUI filter coefficient processing speed up for bit widths greater than DSP48 input width.
+ * Addition of Beta support for future devices
+ * Correction to fractional interpolation configurations utilizing Maximium Possible hardware oversampling specification in System Generator.
+ * Update to C model to match GUI behaviour. Add support for quantization/truncation of integer only coefficients when XIP_FIR_QUANTIZED_ONLY has been specified.
+ * Supported devices and production status are now determined automatically, to simplify support for future devices
+ * C models are no longer provided for 32-bit operating systems as Vivado has deprecated 32-bit OS support
+
+2014.4.1:
+ * Version 7.2 (Rev. 1)
+ * No changes
+
+2014.4:
+ * Version 7.2 (Rev. 1)
+ * Fix for UltraScale Halfband Interpolation optimization with Convergent Rounding and multiple parallel paths.
+ * C Model maximum data and coefficient widths updated for UltraScale.
+ * Correction to GUI latency calculation.
+ * Encrypted source files are concatenated together to reduce the number of files and to reduce simulator compile time
+ * Add 1 x fs Advanced Channel Sequence to sequence length 24.
+ * Enabled out-of-context clock frequency setting by adding FREQ_HZ parameter to clock interface aclk_intf
+
+2014.3:
+ * Version 7.2
+ * Optimized Halfband filter support for UltraScale devices.
+ * Super sample rate support.
+ * Enhanced Hardware Oversampling specification methods. Now supports input and output sample period specification.
+ * CONFIG channel behavior has been updated for the Packet Synchronization method (On Packet) following power up or reset.
+
+2014.2:
+ * Version 7.1 (Rev. 4)
+ * Removed component statement for DSP48E2, no functional changes
+
+2014.1:
+ * Version 7.1 (Rev. 3)
+ * C models for Windows are compiled using Microsoft Visual Studio 2012
+ * Internal device family name change, no functional changes
+ * Netlists created by write_verilog and write_vhdl are IEEE P1735 encrypted, with keys for supported simulators so that netlist simulation can still be done
+ * Enable third party synthesis tools to read encrypted netlists (but not source HDL)
+ * Fixed AR58946, COE file coefficient specification now working correctly in IP Integrator.
+ * Support for Virtex Ultrascale devices at Pre-Production Status
+
+2013.4:
+ * Version 7.1 (Rev. 2)
+ * Added workaround to the GUI for AR57785
+ * Support for Kintex Ultrascale devices at Pre-Production Status
+
+2013.3:
+ * Version 7.1 (Rev. 1)
+ * Behavioral VHDL model replaced by Encrypted RTL. For more information on this change please refer to the Migrating and Upgrading section in the Product Guide
+ * Internal standardization in source file delivery, does not change behavior
+ * Support for Automotive Artix-7, Automotive Zynq, Defense Grade Artix-7, Defense Grade Zynq and Lower Power Artix-7 devices at Production Status
+ * Added default constraints for out of context flow
+ * Optimized support for UltraScale devices
+ * Added support for Cadence IES and Synopsys VCS simulators
+ * Removed C model dependency on stlport (STL Portability) library; C model now uses STL built into the compiler
+ * Windows C model DLLs are statically linked to the Windows C run-time (CRT) library, to remove the runtime dependency on MSVCRT90.dll, which can cause problems when using the C model in a Windows compiler other than Visual Studio 2008
+ * C model updated to use third-party library MPIR version 2.6.0 (previously was version 2.2.1); the Windows MPIR DLLs are also statically linked to the Windows CRT library, to remove the dependency on MSVCRT90.dll
+
+2013.2:
+ * Version 7.1
+ * Support for Series 7 devices at Production status
+ * Beta support for future devices
+ * Enhanced Optimization specification including optional use of Block RAM READ-FIRST mode
+ * Maximum interleaved channels increased to 1024
+ * Bug Fixes
+
+2013.1:
+ * Version 7.0
+ * Native Vivado Release
+ * There have been no functional or interface changes to this IP.  The version number has changed to support unique versioning in Vivado starting with 2013.1.
+
+(c) Copyright 2002 - 2018 Xilinx, Inc. All rights reserved.
+
+This file contains confidential and proprietary information
+of Xilinx, Inc. and is protected under U.S. and
+international copyright and other intellectual property
+laws.
+
+DISCLAIMER
+This disclaimer is not a license and does not grant any
+rights to the materials distributed herewith. Except as
+otherwise provided in a valid license issued to you by
+Xilinx, and to the maximum extent permitted by applicable
+law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+(2) Xilinx shall not be liable (whether in contract or tort,
+including negligence, or under any other theory of
+liability) for any loss or damage of any kind or nature
+related to, arising under or in connection with these
+materials, including for any direct, or any indirect,
+special, incidental, or consequential loss or damage
+(including loss of data, profits, goodwill, or any type of
+loss or damage suffered as a result of any action brought
+by a third party) even if such damage or loss was
+reasonably foreseeable or Xilinx had been advised of the
+possibility of the same.
+
+CRITICAL APPLICATIONS
+Xilinx products are not designed or intended to be fail-
+safe, or for use in any application requiring fail-safe
+performance, such as life-support or safety devices or
+systems, Class III medical devices, nuclear facilities,
+applications related to the deployment of airbags, or any
+other applications that could lead to death, personal
+injury, or severe property or environmental damage
+(individually and collectively, "Critical
+Applications"). Customer assumes the sole risk and
+liability of any use of Xilinx products in Critical
+Applications, subject only to applicable laws and
+regulations governing limitations on product liability.
+
+THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+PART OF THIS FILE AT ALL TIMES.

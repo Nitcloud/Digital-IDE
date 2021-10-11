@@ -1,0 +1,2 @@
+# This file is automatically written.  Do not modify.
+proc gen_USERPARAMETER_WIC_LINES_ENABLEMENT {WIC_PRESENT } {expr $WIC_PRESENT == true}

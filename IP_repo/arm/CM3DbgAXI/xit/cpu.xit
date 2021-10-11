@@ -1,0 +1,36 @@
+set cpu [::ipx::add_cpu CORTEX_M3 [current_ipbom]]
+set_property instance_path  ""      $cpu
+set_property bootloop_file  ""      $cpu
+set_property processor_type ARM     $cpu
+set_property is_visible     true    $cpu
+
+set instance [current_instname]
+set ipfile [add_ipfile -usedIn {synthesis implementation} ${instance}.xdc]
+
+puts_ipfile $ipfile {# DAP synchronisers.  Block is DAPDpEnSync and DAPDpSync}
+puts_ipfile $ipfile {# Note : Some cells in nvic with the name sync_reg, and also sync2_reg[x]}
+puts_ipfile $ipfile {set_property ASYNC_REG TRUE [get_cells -hierarchical -regexp .*uDAPSWJDP.*sync_reg_reg]}
+puts_ipfile $ipfile {set_property ASYNC_REG TRUE [get_cells -hierarchical -regexp .*uDAPSWJDP.*sync2_reg_reg]}
+
+puts_ipfile $ipfile {# cm3_dap_ahb_ap_sync has the flops named d_sync1 and q.}
+puts_ipfile $ipfile {set_property ASYNC_REG TRUE [get_cells -hierarchical -regexp .*u_CORTEXM3INTEGRATION.*d_sync1_reg]}
+puts_ipfile $ipfile {set_property ASYNC_REG TRUE [get_cells -hierarchical -regexp .*u_CORTEXM3INTEGRATION.*sync.*\/q_reg]}
+
+puts_ipfile $ipfile {# *****************************************************************************}
+puts_ipfile $ipfile {# DAP state machines must have correct encoding.}
+
+puts_ipfile $ipfile {# set_property FSM_ENCODING sequential [get_cells -hierarchical -regexp .*cm3_dap_ahb_ap_slv.*slv_state_reg.*]}
+puts_ipfile $ipfile {# set_property FSM_ENCODING sequential [get_cells -hierarchical -regexp .*cm3_dap_ahb_ap_mst.*mst_state_reg.*]}
+
+puts_ipfile $ipfile {# Currently coding as one_hot}
+puts_ipfile $ipfile {# set_property FSM_ENCODING sequential [get_cells -hierarchical -regexp .*DAPSwjWatcher.*State_cdc_check_reg.*]}
+
+puts_ipfile $ipfile {# In working build, this got encoded as one_hot}
+puts_ipfile $ipfile {# set_property FSM_ENCODING auto [get_cells -hierarchical -regexp .*DAPSwDpProtocol.*State_reg.*]}
+puts_ipfile $ipfile {# In working build, this got encoded as sequential}
+puts_ipfile $ipfile {# set_property FSM_ENCODING auto [get_cells -hierarchical -regexp .*DAPJtagDpProtocol.*JTAGcurr_reg.*]}
+puts_ipfile $ipfile {# In working build, this got encoded as sequential}
+puts_ipfile $ipfile {# Naming convention broken, the module is DAPSwDpApbIf, but the instance is just DAPDpApbIf}
+puts_ipfile $ipfile {# set_property FSM_ENCODING auto [get_cells -hierarchical -regexp .*DAPDpApbIf.*APBcurr_reg.*]}
+
+close_ipfile $ipfile

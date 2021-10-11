@@ -1,14 +1,15 @@
 {
 	"title": "property",
 	"$schema": "http://json-schema.org/draft-04/schema#",
-	"description": "A property file for project of FPGA",
+	"description": "A property file for project of DIDE",
 	"type": "object",
 	"properties": {
-		"FPGA_VERSION": {
+		"TOOL_CHAIN": {
 			"type": "string",
-			"description": "Supported vendors for FPGA",
+			"description": "The tool chain you need",
 			"enum": [
-				"xilinx"
+				"xilinx",
+                "default"
 			]
 		},
         "PRJ_STRUCTURE" : {
@@ -186,7 +187,7 @@
 		}
 	},
 	"required": [
-		"FPGA_VERSION",
+		"TOOL_CHAIN",
 		"SOC_MODE",
 		"Device"
 	]

@@ -1,0 +1,2 @@
+# This file is automatically written.  Do not modify.
+proc gen_USERPARAMETER_DATA_PATH_WIDTH_VALUE {LINK_MODE } {expr $LINK_MODE*4}

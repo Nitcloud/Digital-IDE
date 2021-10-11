@@ -1,6 +1,6 @@
 xip_repo_path
 
-FPGA_VERSION
+TOOL_CHAIN
 xilinx
 PRJ_NAME.FPGA
 test

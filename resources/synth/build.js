@@ -203,44 +203,6 @@ function set_line_width() {
     return match;
 }
 
-function normalize_netlist(netlist) {
-    try {
-        let norm_netlist = netlist;
-        let modules = netlist.modules;
-        // Obteniendo todas las claves del JSON
-        for (let module in modules) {
-            let cells_module = modules[module].cells;
-            for (let cell in cells_module) {
-                let cell_i = cells_module[cell];
-                if (cell_i.type === '$dff') {
-                    cell_i.type = 'D-Flip Flop';
-                }
-                else if (cell_i.type === '$adff') {
-                    cell_i.type = 'D-Flip Flop areset';
-                }
-                else if (cell_i.type === '$eq') {
-                    cell_i.type = 'equal';
-                }
-                else {
-                    cell_i.type = cell_i.type.replace('$', '');
-                }
-                if (cell_i.port_directions === undefined) {
-                    let tt = cell_i.connections;
-                    cell_i.port_directions = {};
-                    for (let port in cell_i.connections) {
-                        cell_i.port_directions[port] = 'input';
-                    }
-                }
-            }
-        }
-        norm_netlist.modules = modules;
-        return norm_netlist;
-    }
-    catch (e) {
-        return netlist;
-    }
-}
-
 function refreshModel(synthPrjInfo) {
     let synthStyle = document.getElementById('synthStyle');
     TTY.callback = handleLog;
@@ -273,7 +235,6 @@ function refreshModel(synthPrjInfo) {
 function showNetlist(netlist) {
     let netlist_container = document.getElementById('netlist_container');
     netlist = JSON.parse(netlist);
-    netlist = normalize_netlist(netlist);
     netlistsvg.render(0, netlist, function (e, svg) {
         //Create SVG element
         let embed_svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");

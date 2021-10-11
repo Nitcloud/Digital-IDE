@@ -1,0 +1,10 @@
+# This file is automatically written.  Do not modify.
+proc gen_USERPARAMETER_PPF0_CFG_VALUE {XCVR_TYPE } {expr [format "0x%x" [expr {$XCVR_TYPE == 9} ? 0x800 : 0x600]]}
+proc gen_USERPARAMETER_QPLL_LPF_VALUE {XCVR_TYPE } {expr [format "0x%x" [expr {$XCVR_TYPE == 9} ? 0x37f : 0x137]]}
+proc gen_USERPARAMETER_CH_HSPMUX_VALUE {XCVR_TYPE } {expr [format "0x%x" [expr {$XCVR_TYPE == 8} ? 0x2424 :  {$XCVR_TYPE == 9} ? 0x2020 : 0x0]]}
+proc gen_USERPARAMETER_RXPI_CFG0_VALUE {XCVR_TYPE } {expr [format "0x%x" [expr {$XCVR_TYPE == 8} ? 0x2 :  {$XCVR_TYPE == 9} ? 0x100 : 0x0]]}
+proc gen_USERPARAMETER_RXPI_CFG1_VALUE {XCVR_TYPE } {expr [format "0x%x" [expr {$XCVR_TYPE == 8} ? 0x15 : 0x0]]}
+proc gen_USERPARAMETER_RTX_BUF_CML_CTRL_VALUE {XCVR_TYPE } {expr [format "0x%x" [expr {$XCVR_TYPE == 9} ? 0x3 : 0x0]]}
+proc gen_USERPARAMETER_TX_PI_BIASSET_VALUE {XCVR_TYPE } {expr {$XCVR_TYPE == 9} ? 0 : 1}
+proc gen_USERPARAMETER_RXCDR_CFG3_GEN2_VALUE {XCVR_TYPE } {expr [format "0x%x" [expr {$XCVR_TYPE == 9} ? 0x12 : 0x1a ]]}
+proc gen_USERPARAMETER_RXCDR_CFG3_GEN4_VALUE {XCVR_TYPE } {expr [format "0x%x" [expr {$XCVR_TYPE == 9} ? 0x12 : 0x24 ]]}
