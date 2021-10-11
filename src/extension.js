@@ -16,6 +16,9 @@ const linter  = require("HDLlinter");
 const parser  = require("HDLparser");
 const filesys = require("HDLfilesys");
 
+const synth = require("./yosys");
+exports.synth = synth;
+
 function activate(context) {
     var HDLparam = [];
     let HDLFileList = [];
@@ -44,7 +47,7 @@ function activate(context) {
         var outputChannel = vscode.window.createOutputChannel("HDL");
         
         tool.registerXilinxServer(opeParam);
-        tool.registerDebugServer(opeParam);
+        tool.registerDebugServer(context, opeParam);
         tool.registerTreeServer(opeParam);
         tool.registerToolServer(opeParam);
         tool.registerSocServer(opeParam);
