@@ -1,9 +1,7 @@
-module DDS_Gen #
-(
+module DDS_Gen #(
 	parameter OUTPUT_WIDTH = 12,
 	parameter PHASE_WIDTH  = 32
-)
-(
+) (
     input                         clk_in,
     input  [PHASE_WIDTH  - 1 : 0] Fre_word,
     input  [PHASE_WIDTH  - 1 : 0] Pha_word,

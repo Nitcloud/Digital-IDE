@@ -69,8 +69,8 @@ module Cordic #(
 	output  signed [XY_BITS-1:0] y_o,
 	output  signed [PH_BITS-1:0] phase_out,
 
-	input          valid_in, 
-	output         valid_out
+	input   valid_in, 
+	output  valid_out
 );
 
 localparam [XY_BITS-1:0] K_COS = (0.607252935 * 2**(XY_BITS-1))-2;

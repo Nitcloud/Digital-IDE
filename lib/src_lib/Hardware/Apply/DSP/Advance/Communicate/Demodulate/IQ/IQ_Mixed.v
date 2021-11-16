@@ -3,6 +3,7 @@ module IQ_MIXED #(
     parameter LO_WIDTH     = 12,
 	parameter PHASE_WIDTH  = 32,
 	//CIC_Filter_parameter
+    parameter FACTOR       = 10,
 	parameter Fiter_WIDTH  = 38,
 	//IQ_MIXED_parameter
     parameter INPUT_WIDTH  = 12,
@@ -12,7 +13,6 @@ module IQ_MIXED #(
     output                        clk_out,  
     input                         RST,
 
-	input  [15:0]                 FACTOR,
     input  [PHASE_WIDTH - 1 : 0]  Fre_word,
 
     input  [INPUT_WIDTH - 1 : 0]  wave_in,
@@ -20,13 +20,16 @@ module IQ_MIXED #(
     output [OUTPUT_WIDTH - 1 : 0] Q_OUT
 );
 
+/*
+Orthogonal signal generator, using rotation mode, enabling phase accumulator
+*/
 wire  [LO_WIDTH-1:0]    cos_wave;
 wire  [LO_WIDTH-1:0]    sin_wave;
 wire  [PHASE_WIDTH-1:0] pha_diff;
 Cordic # (
     .XY_BITS(LO_WIDTH),               
     .PH_BITS(PHASE_WIDTH),      //1~32     
-    .ITERATIONS(16),     //1~32
+    .ITERATIONS(16),            //1~32
     .CORDIC_STYLE("ROTATE"),    //ROTATE  //VECTOR
     .PHASE_ACC("ON")            //ON      //OFF
 ) IQ_Gen_u (
@@ -61,28 +64,28 @@ assign Q_SIG = Q_SIG_r[INPUT_WIDTH + LO_WIDTH - 1 : INPUT_WIDTH + LO_WIDTH - 12]
 
 
 wire        [Fiter_WIDTH-1:0] Fiter_wave_I;
-CIC_DOWN_S3#(
+CIC_DOWN_S3 #(
+    .FACTOR(FACTOR),
 	.INPUT_WIDTH(12),
 	.OUTPUT_WIDTH(Fiter_WIDTH)
 ) Fiter_I (
     .clk(clk_in),
     .clk_enable(1'd1),
     .reset(RST),
-	.FACTOR(FACTOR),
     .filter_in(I_SIG),
     .filter_out(Fiter_wave_I)
 );
 assign I_OUT = Fiter_wave_I[Fiter_WIDTH - 1 : Fiter_WIDTH - OUTPUT_WIDTH];
 
 wire        [Fiter_WIDTH-1:0] Fiter_wave_Q;
-CIC_DOWN_S3#(
+CIC_DOWN_S3 #(
+    .FACTOR(FACTOR),
 	.INPUT_WIDTH(12),
 	.OUTPUT_WIDTH(Fiter_WIDTH)
 ) Fiter_Q(
     .clk(clk_in),
     .clk_enable(1'd1),
     .reset(RST),
-	.FACTOR(FACTOR),
     .filter_in(Q_SIG),
     .filter_out(Fiter_wave_Q),
 	.ce_out(clk_out)

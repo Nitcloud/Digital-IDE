@@ -1,10 +1,25 @@
 {
 	"title": "property",
-	"$schema": "http://json-schema.org/draft-04/schema#",
 	"description": "A property file for project of DIDE",
 	"type": "object",
 	"properties": {
 		"TOOL_CHAIN": {
+			"type": "string",
+			"description": "The tool chain you need",
+			"enum": [
+				"xilinx",
+                "default"
+			]
+		},
+        "SIMULATION": {
+			"type": "string",
+			"description": "The tool chain you need",
+			"enum": [
+				"xilinx",
+                "default"
+			]
+		},
+        "FAST_SIMULATION": {
 			"type": "string",
 			"description": "The tool chain you need",
 			"enum": [

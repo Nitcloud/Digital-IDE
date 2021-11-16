@@ -8,8 +8,10 @@
     "main": "./src/extension",
     "icon": "images/DIDE.png",
     "keywords": [
+        "FPGA Develop Support",
         "FPGA",
         "IC",
+        "ASIC",
         "Digital",
         "HDL",
         "Systemverilog",
@@ -309,7 +311,7 @@
             "activitybar": [
                 {
                     "id": "TOOL",
-                    "title": "FPGA Tool",
+                    "title": "DIDE Tool",
                     "icon": "images/svg/DIDE.svg"
                 }
             ]

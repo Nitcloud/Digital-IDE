@@ -7,7 +7,6 @@ module Demodule #(
     input                     clk_in,
     input                     RST,
 
-	input  [15:0]             FACTOR,
     input  [PHASE_WIDTH-1:0]  Fre_word,
 
     input  [INPUT_WIDTH-1:0]  wave_in,
@@ -17,6 +16,22 @@ module Demodule #(
     output [OUTPUT_WIDTH-1:0] AM_Demodule_OUT
 );
 
+/*
+10.7MHz 带通滤波器100M的采样率, 1M的通带
+*/
+wire [22:0] 	filter_out;
+FIR_100M_10_7M_BPF u_FIR_100M_10_7M_BPF(
+	//ports
+	.clk        		( clk_in        	),
+	.clk_enable 		( 1'b1       		),
+	.reset      		( RST         		),
+	.filter_in  		( wave_in     		),
+	.filter_out 		( filter_out 		)
+);
+
+/*
+数字下变频处理模块
+*/
 // IQ_MIXED Outputs
 wire  clk_out;
 wire  [OUTPUT_WIDTH - 1 : 0]  I_OUT;
@@ -27,18 +42,18 @@ IQ_MIXED #(
     .PHASE_WIDTH  ( PHASE_WIDTH  ),
     .Fiter_WIDTH  ( Fiter_WIDTH  ),
     .INPUT_WIDTH  ( INPUT_WIDTH  ),
-    .OUTPUT_WIDTH ( OUTPUT_WIDTH )
-) u_IQ_MIXED (
-    .clk_in                  ( clk_in     ),
-    .clk_out                 ( clk_out    ),
-    .RST                     ( RST        ),
+    .OUTPUT_WIDTH ( OUTPUT_WIDTH )) 
+u_IQ_MIXED (
+    .clk_in                  ( clk_in            ),
+    .clk_out                 ( clk_out           ),
+    .RST                     ( RST               ),
 	
-	.FACTOR                  ( FACTOR     ),
-    .Fre_word                ( Fre_word   ),
+	.FACTOR                  ( FACTOR            ),
+    .Fre_word                ( Fre_word          ),
 
-    .wave_in                 ( wave_in    ),
-    .I_OUT                   ( I_OUT      ),
-    .Q_OUT                   ( Q_OUT      )
+    .wave_in                 ( filter_out[22:11] ),
+    .I_OUT                   ( I_OUT             ),
+    .Q_OUT                   ( Q_OUT             )
 );
 
 wire  [OUTPUT_WIDTH-1:0] Y_diff;
@@ -46,8 +61,8 @@ Cordic # (
     .XY_BITS(OUTPUT_WIDTH),               
     .PH_BITS(OUTPUT_WIDTH),      //1~32
     .ITERATIONS(16),             //1~32
-    .CORDIC_STYLE("VECTOR")      //ROTATE  //VECTOR
-) Demodule_Gen_u (
+    .CORDIC_STYLE("VECTOR"))     //ROTATE  //VECTOR
+Demodule_Gen_u (
     .clk_in(clk_out),
     .RST(RST),
     .x_i(I_OUT), 

@@ -1,6 +1,5 @@
 `timescale 1ns / 1ps
-module CLK_Global #
-(
+module CLK_Global #(
     parameter Mult         = 20,
     parameter DIVCLK_DIV   = 1,
     parameter CLKIN_PERIOD = 20.000,
@@ -13,8 +12,7 @@ module CLK_Global #
     parameter CLK2_PHASE  = 0.0,
     parameter CLKOUT3_DIV = 10,
     parameter CLK3_PHASE  = 0.0
-)
-(
+) (
     input     clk_in,
     input     rst_n,
 
@@ -46,18 +44,18 @@ wire        locked_int;
 wire        clkfbout_clk_gen;
 wire        clkfbout_buf_clk_gen;
 wire        clkfboutb_unused;
-wire 		clkout0b_unused;
-wire 		clkout1b_unused;
-wire 		clkout2b_unused;
-wire 		clkout3b_unused;
-wire 		clkout4_unused;
+wire 		    clkout0b_unused;
+wire 		    clkout1b_unused;
+wire 		    clkout2b_unused;
+wire 		    clkout3b_unused;
+wire 		    clkout4_unused;
 wire        clkout5_unused;
 wire        clkout6_unused;
 wire        clkfbstopped_unused;
 wire        clkinstopped_unused;
 
-  MMCME2_ADV #
-  (.BANDWIDTH            ("LOW"),
+MMCME2_ADV # (
+    .BANDWIDTH            ("LOW"),
     .CLKOUT4_CASCADE      ("FALSE"),
     .COMPENSATION         ("ZHOLD"),
     .STARTUP_WAIT         ("FALSE"),
@@ -87,9 +85,7 @@ wire        clkinstopped_unused;
     .CLKOUT3_USE_FINE_PS  ("FALSE"),
 
     .CLKIN1_PERIOD        (CLKIN_PERIOD))
-  mmcm_adv_inst
-    // Output clocks
-   (
+mmcm_adv_inst (
     .CLKFBOUT            (clkfbout_clk_gen),
     .CLKFBOUTB           (clkfboutb_unused),
 
@@ -108,11 +104,11 @@ wire        clkinstopped_unused;
     .CLKOUT4             (clkout4_unused),
     .CLKOUT5             (clkout5_unused),
     .CLKOUT6             (clkout6_unused),
-     // Input clock control
+    // Input clock control
     .CLKFBIN             (clkfbout_buf_clk_gen),
     .CLKIN1              (clk_in_clk_gen),
     .CLKIN2              (1'b0),
-     // Tied to always select the primary input clock
+    // Tied to always select the primary input clock
     .CLKINSEL            (1'b1),
     // Ports for dynamic reconfiguration
     .DADDR               (7'h0),
@@ -132,12 +128,13 @@ wire        clkinstopped_unused;
     .CLKINSTOPPED        (clkinstopped_unused),
     .CLKFBSTOPPED        (clkfbstopped_unused),
     .PWRDWN              (1'b0),
-    .RST                 (~rst_n));
+    .RST                 (~rst_n)
+);
 
 // Clock Monitor clock assigning
 //--------------------------------------
- // Output buffering
-  //-----------------------------------
+// Output buffering
+//-----------------------------------
 
   BUFG clkf_buf
    (.O (clkfbout_buf_clk_gen),

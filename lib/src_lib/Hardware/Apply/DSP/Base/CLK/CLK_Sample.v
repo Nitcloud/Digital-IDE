@@ -1,8 +1,6 @@
-module CLK_Sample #
-(
+module CLK_Sample # (
 	parameter PHASE_WIDTH = 32
-)
-(
+) (
     input                    clk_in,
     input                    RST,
     input  [PHASE_WIDTH-1:0] sample_fre,

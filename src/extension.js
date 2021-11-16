@@ -16,6 +16,10 @@ const linter  = require("HDLlinter");
 const parser  = require("HDLparser");
 const filesys = require("HDLfilesys");
 
+const darwinSerialport = require("../resources/serialport/darwin.bindings.node");
+const linuxSerialport  = require("../resources/serialport/linux.bindings.node");
+const win32Serialport  = require("../resources/serialport/win32.bindings.node");
+
 function activate(context) {
     var HDLparam = [];
     let HDLFileList = [];
@@ -44,7 +48,6 @@ function activate(context) {
         var outputChannel = vscode.window.createOutputChannel("HDL");
         
         tool.registerXilinxServer(opeParam);
-        // tool.registerDebugServer(context, opeParam);
         tool.registerTreeServer(opeParam);
         tool.registerToolServer(opeParam);
         tool.registerSocServer(opeParam);
