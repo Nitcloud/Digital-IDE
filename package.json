@@ -559,6 +559,15 @@
                 "category": "TOOL"
             },
             {
+                "command": "TOOL.vhdl2vlog",
+                "title": "translate vhdl to vlog",
+                "icon": {
+                    "light": "images/svg/light/translate.svg",
+                    "dark": "images/svg/dark/translate.svg"
+                },
+                "category": "TOOL"
+            },
+            {
                 "command": "TOOL.netlist.viewer",
                 "title": "Netlist viewer",
                 "icon": {
@@ -597,109 +606,109 @@
                 "category": "TOOL"
             },
             {
-                "command": "FPGA.Launch",
+                "command": "HARD.Launch",
                 "title": "Launch",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.srcTop",
+                "command": "HARD.srcTop",
                 "title": "Set as TOP",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.simTop",
+                "command": "HARD.simTop",
                 "title": "Set as Testbench TOP",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Refresh",
+                "command": "HARD.Refresh",
                 "title": "refresh designed file",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Simulate",
+                "command": "HARD.Simulate",
                 "title": "Run the Simulation",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Build",
+                "command": "HARD.Build",
                 "title": "Build the current fpga project",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Synth",
+                "command": "HARD.Synth",
                 "title": "Synth the current fpga project",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Impl",
+                "command": "HARD.Impl",
                 "title": "Impl the current fpga project",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Gen_Bit",
+                "command": "HARD.Gen_Bit",
                 "title": "Generate the bit file",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Program",
+                "command": "HARD.Program",
                 "title": "Download the bit file into the device",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.GUI",
+                "command": "HARD.GUI",
                 "title": "Open the GUI",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Exit",
+                "command": "HARD.Exit",
                 "title": "Exit the current project",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Overwrite_bd",
-                "title": "Overwrite the bd_file",
-                "category": "FPGA"
-            },
-            {
-                "command": "FPGA.Add_dev",
+                "command": "HARD.Add_dev",
                 "title": "Add devices to the database",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Delete_dev",
+                "command": "HARD.Delete_dev",
                 "title": "Remove the device from the database",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Add_bd",
-                "title": "Add a bd_file",
-                "category": "FPGA"
-            },
-            {
-                "command": "FPGA.Delete_bd",
-                "title": "Delete the bd_file",
-                "category": "FPGA"
-            },
-            {
-                "command": "SDK.Launch",
+                "command": "SOFT.Launch",
                 "title": "Launch",
                 "category": "SDK"
             },
             {
-                "command": "SDK.Build",
+                "command": "SOFT.Build",
                 "title": "Build",
                 "category": "SDK"
             },
             {
-                "command": "SDK.Download",
+                "command": "SOFT.Download",
                 "title": "Download",
                 "category": "SDK"
+            },
+            {
+                "command": "xilinx.Overwrite_bd",
+                "title": "Overwrite the bd_file",
+                "category": "FPGA"
+            },
+            {
+                "command": "xilinx.Add_bd",
+                "title": "Add a bd_file",
+                "category": "FPGA"
+            },
+            {
+                "command": "xilinx.Delete_bd",
+                "title": "Delete the bd_file",
+                "category": "FPGA"
             }
         ],
         "keybindings": [
             {
-                "command": "FPGA.Launch",
+                "command": "HARD.Launch",
                 "key": "Alt+z",
                 "mac": "Alt+z",
                 "when": "editorTextFocus"
@@ -740,12 +749,12 @@
             "editor/context": [
                 {
                     "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-                    "command": "FPGA.srcTop",
+                    "command": "HARD.srcTop",
                     "group": "navigation@1"
                 },
                 {
                     "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-                    "command": "FPGA.simTop",
+                    "command": "HARD.simTop",
                     "group": "navigation@2"
                 },
                 {
@@ -772,12 +781,12 @@
             "explorer/context": [
                 {
                     "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
-                    "command": "FPGA.srcTop",
+                    "command": "HARD.srcTop",
                     "group": "navigation@5"
                 },
                 {
                     "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
-                    "command": "FPGA.simTop",
+                    "command": "HARD.simTop",
                     "group": "navigation@6"
                 },
                 {

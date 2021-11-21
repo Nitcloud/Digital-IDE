@@ -16,9 +16,9 @@ const linter  = require("HDLlinter");
 const parser  = require("HDLparser");
 const filesys = require("HDLfilesys");
 
-const darwinSerialport = require("../resources/serialport/darwin.bindings.node");
-const linuxSerialport  = require("../resources/serialport/linux.bindings.node");
-const win32Serialport  = require("../resources/serialport/win32.bindings.node");
+// const darwinSerialport = require("../resources/serialport/bindings/darwin.bindings.node");
+// const linuxSerialport  = require("../resources/serialport/bindings/linux.bindings.node");
+// const win32Serialport  = require("../resources/serialport/bindings/win32.bindings.node");
 
 function activate(context) {
     var HDLparam = [];
@@ -50,7 +50,7 @@ function activate(context) {
         tool.registerXilinxServer(opeParam);
         tool.registerTreeServer(opeParam);
         tool.registerToolServer(opeParam);
-        tool.registerSocServer(opeParam);
+        tool.registerSoftServer(opeParam);
 
         // project Server
         filesys.registerPrjsServer(context, opeParam);
@@ -84,7 +84,7 @@ function activate(context) {
                 // tool Server
                 tool.registerSimServer(indexer, opeParam);
                 tool.registerLspServer(context, indexer);
-                tool.registerBuildServer(context, indexer, opeParam, fileExplorer);
+                tool.registerHardServer(context, indexer, opeParam, fileExplorer);
                 vscode.window.showInformationMessage("Init Finished.");
             });
         } catch (error) {
