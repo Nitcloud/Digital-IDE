@@ -559,6 +559,14 @@
                 "category": "TOOL"
             },
             {
+                "command": "TOOL.netlist.viewer",
+                "title": "Netlist viewer",
+                "icon": {
+                    "light": "images/svg/light/list-tree.svg",
+                    "dark": "images/svg/dark/list-tree.svg"
+                }
+            },
+            {
                 "command": "TOOL.vhdl2vlog",
                 "title": "translate vhdl to vlog",
                 "icon": {
@@ -566,14 +574,6 @@
                     "dark": "images/svg/dark/translate.svg"
                 },
                 "category": "TOOL"
-            },
-            {
-                "command": "TOOL.netlist.viewer",
-                "title": "Netlist viewer",
-                "icon": {
-                    "light": "images/svg/light/list-tree.svg",
-                    "dark": "images/svg/dark/list-tree.svg"
-                }
             },
             {
                 "command": "TOOL.instance",
@@ -743,6 +743,10 @@
             "editor/title": [
                 {
                     "command": "TOOL.netlist.viewer",
+                    "group": "navigation"
+                },
+                {
+                    "command": "TOOL.vhdl2vlog",
                     "group": "navigation"
                 }
             ],

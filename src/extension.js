@@ -16,10 +16,6 @@ const linter  = require("HDLlinter");
 const parser  = require("HDLparser");
 const filesys = require("HDLfilesys");
 
-// const darwinSerialport = require("../resources/serialport/bindings/darwin.bindings.node");
-// const linuxSerialport  = require("../resources/serialport/bindings/linux.bindings.node");
-// const win32Serialport  = require("../resources/serialport/bindings/win32.bindings.node");
-
 function activate(context) {
     var HDLparam = [];
     let HDLFileList = [];
@@ -36,6 +32,12 @@ function activate(context) {
             name: '',
             path: ''
         },
+        "PrjStrcture" : {
+            "prjPath" : '',
+            "HardwareSrc"  : '',
+            "HardwareSim"  : '',
+            "HardwareData" : ''
+        },
         "currentHDLPath" : [],
         "tbFilePath"     : "",
         "prjInitParam"   : "",
@@ -44,12 +46,18 @@ function activate(context) {
     if(filesys.prjs.getOpeParam(`${__dirname}`,opeParam) != null) {
         filesys.prjs.getPrjFiles(opeParam, HDLFileList);
     
+        var serialportBinding = null;
+        switch (opeParam.os) {
+            // case "win32":  serialportBinding = require("../resources/serialport/bindings/win32.bindings.node");  break;
+            // case "linux":  serialportBinding = require("../resources/serialport/bindings/linux.bindings.node");  break;
+            // case "darwin": serialportBinding = require("../resources/serialport/bindings/darwin.bindings.node"); break;
+            default: break;
+        }
         // Output Channel
         var outputChannel = vscode.window.createOutputChannel("HDL");
         
         tool.registerXilinxServer(opeParam);
         tool.registerTreeServer(opeParam);
-        tool.registerToolServer(opeParam);
         tool.registerSoftServer(opeParam);
 
         // project Server
@@ -84,6 +92,7 @@ function activate(context) {
                 // tool Server
                 tool.registerSimServer(indexer, opeParam);
                 tool.registerLspServer(context, indexer);
+                tool.registerToolServer(context, indexer, opeParam);
                 tool.registerHardServer(context, indexer, opeParam, fileExplorer);
                 vscode.window.showInformationMessage("Init Finished.");
             });

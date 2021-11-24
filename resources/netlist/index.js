@@ -1,9 +1,9 @@
 "use strict";
 
 class render{
-    constructor(netlist) {
-        this.netlist = netlist;
-        this.currNetList = netlist;
+    constructor() {
+        this.netlist = null;
+        this.currNetList = null;
 
         this.container = document.getElementById('netlist_container');
         //Create SVG element
@@ -14,9 +14,11 @@ class render{
         
     }
 
-    async showNetlist() {
+    async showNetlist(netlist) {
         this.embed_svg.innerHTML = null;
-        let svg = await netlistsvg.render(netlistsvg.digitalSkin, this.currNetList);
+        this.netlist = netlist;
+        this.currNetList = netlist;
+        let svg = await netlistsvg.render(netlistsvg.digitalSkin, netlist);
         //Add to container
         this.embed_svg.innerHTML = svg;
 

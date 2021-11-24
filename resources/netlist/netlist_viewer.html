@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="text/javascript" src="../web/elk.bundled.js"></script>
+    <script type="text/javascript" src="../web/jquery-2.2.4.min.js"></script>
+    <script type="text/javascript" src="../web/svg-pan-zoom.min.js"></script>
+    <script type="text/javascript" src="../web/viz.js"></script>
+    <script type="text/javascript" src="../web/full.render.js"></script>
+    <script type="text/javascript" src="netlist_view.js"></script>
+    <script type="text/javascript" src="index.js"></script>
+    <!-- <script type="text/javascript" src="test.js"></script> -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>netlist view</title>
+    <link rel="stylesheet" href="netlist_viewer.css" type="text/css" />
+</head>
+
+<body>
+    <div class="toolbar">
+        <div class="center-panel">
+            <label class="fancy-checkbox">
+                <input id="export-as-svg" name="zoom-mode" type="radio" value="fit" />
+                <div class="button">Save as SVG</div>
+            </label>
+        </div>
+    </div>
+    <div class="container" id="netlist_container"></div>
+</body>
+
+</html>
+
+<script>
+    const vscode = acquireVsCodeApi();
+
+    function export_message(type) {
+        vscode.postMessage({
+            command: 'export',
+            type: type,
+            svg: last_svg
+        });
+    };
+
+    var netListRender = new render();
+
+    // Handle the message inside the webview
+    window.addEventListener('message', event => {
+        const message = event.data;
+        console.log("get the message");
+        console.log(message.command);
+        switch (message.command) {
+            case 'netlist' : 
+                netListRender.showNetlist(message.netlist); 
+                console.log('get!!!');
+            break;
+        }
+    });
+
+    document.getElementById("export-as-svg").onclick = function () {
+        export_message("svg");
+    };
+</script>

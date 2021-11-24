@@ -18,24 +18,6 @@ html {
     height: 100%;
 }
 
-.main {
-    display: flex;
-}
-
-.output {
-    width:400px;
-    height:560px;
-    padding: 10px;
-    font-size: 16px;
-    font-weight: bold;
-    font-family: "Consolas";
-    color: rgb(35, 206, 137);
-    background-color: rgb(30, 30, 30);
-    overflow: hidden;
-    overflow-y: auto;
-    word-break:break-all;
-}
-
 .container {
     padding: 5px;
     width: 1240px;

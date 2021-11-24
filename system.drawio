@@ -1,6 +1,6 @@
-<mxfile>
+<mxfile host="65bd71144e">
     <diagram id="Uvtx_EFygcFVrGt_DP7c" name="当前框架">
-        <mxGraphModel dx="1115" dy="958" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
+        <mxGraphModel dx="990" dy="575" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -241,7 +241,7 @@
         </mxGraphModel>
     </diagram>
     <diagram id="HQ9xZqRZMTou116-Q7MH" name="理想框架">
-        <mxGraphModel dx="669" dy="575" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
+        <mxGraphModel dx="990" dy="575" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
             <root>
                 <mxCell id="qOImLRfctZHwxg6qMuq2-0"/>
                 <mxCell id="qOImLRfctZHwxg6qMuq2-1" parent="qOImLRfctZHwxg6qMuq2-0"/>
@@ -360,132 +360,68 @@
         </mxGraphModel>
     </diagram>
     <diagram id="l50Op9LjmLVcln9YL1NZ" name="IC设计流程">
-        &#xa;
         <mxGraphModel dx="825" dy="479" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
-            &#xa;
             <root>
-                &#xa;
                 <mxCell id="8WYIxfV6xZUhr8BQMb0D-0"/>
-                &#xa;
                 <mxCell id="8WYIxfV6xZUhr8BQMb0D-1" parent="8WYIxfV6xZUhr8BQMb0D-0"/>
-                &#xa;
                 <mxCell id="-YLL8AaoLSVC0dxfMeJJ-1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="8WYIxfV6xZUhr8BQMb0D-1" source="8WYIxfV6xZUhr8BQMb0D-2" target="-YLL8AaoLSVC0dxfMeJJ-0">
-                    &#xa;
                     <mxGeometry relative="1" as="geometry"/>
-                    &#xa;
                 </mxCell>
-                &#xa;
                 <mxCell id="8WYIxfV6xZUhr8BQMb0D-2" value="&lt;font style=&quot;font-size: 16px&quot;&gt;Logic Design&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" parent="8WYIxfV6xZUhr8BQMb0D-1" vertex="1">
-                    &#xa;
                     <mxGeometry x="580" y="200" width="120" height="60" as="geometry"/>
-                    &#xa;
                 </mxCell>
-                &#xa;
                 <mxCell id="-YLL8AaoLSVC0dxfMeJJ-3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="8WYIxfV6xZUhr8BQMb0D-1" source="-YLL8AaoLSVC0dxfMeJJ-0" target="-YLL8AaoLSVC0dxfMeJJ-2">
-                    &#xa;
                     <mxGeometry relative="1" as="geometry"/>
-                    &#xa;
                 </mxCell>
-                &#xa;
                 <mxCell id="-YLL8AaoLSVC0dxfMeJJ-0" value="&lt;font style=&quot;font-size: 16px&quot;&gt;Logic Synthesis&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="8WYIxfV6xZUhr8BQMb0D-1">
-                    &#xa;
                     <mxGeometry x="580" y="320" width="120" height="60" as="geometry"/>
-                    &#xa;
                 </mxCell>
-                &#xa;
                 <mxCell id="-YLL8AaoLSVC0dxfMeJJ-5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="8WYIxfV6xZUhr8BQMb0D-1" source="-YLL8AaoLSVC0dxfMeJJ-2" target="-YLL8AaoLSVC0dxfMeJJ-4">
-                    &#xa;
                     <mxGeometry relative="1" as="geometry"/>
-                    &#xa;
                 </mxCell>
-                &#xa;
                 <mxCell id="-YLL8AaoLSVC0dxfMeJJ-2" value="&lt;font style=&quot;font-size: 16px&quot;&gt;Floor&amp;nbsp; &amp;nbsp;Plan&lt;br&gt;Power Plan&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="8WYIxfV6xZUhr8BQMb0D-1">
-                    &#xa;
                     <mxGeometry x="580" y="440" width="120" height="60" as="geometry"/>
-                    &#xa;
                 </mxCell>
-                &#xa;
                 <mxCell id="-YLL8AaoLSVC0dxfMeJJ-7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="8WYIxfV6xZUhr8BQMb0D-1" source="-YLL8AaoLSVC0dxfMeJJ-4" target="-YLL8AaoLSVC0dxfMeJJ-6">
-                    &#xa;
                     <mxGeometry relative="1" as="geometry"/>
-                    &#xa;
                 </mxCell>
-                &#xa;
                 <mxCell id="-YLL8AaoLSVC0dxfMeJJ-4" value="&lt;font style=&quot;font-size: 16px&quot;&gt;STD CELL&lt;br&gt;PLACE EMEENT&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="8WYIxfV6xZUhr8BQMb0D-1">
-                    &#xa;
                     <mxGeometry x="580" y="560" width="120" height="60" as="geometry"/>
-                    &#xa;
                 </mxCell>
-                &#xa;
                 <mxCell id="-YLL8AaoLSVC0dxfMeJJ-9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="8WYIxfV6xZUhr8BQMb0D-1" source="-YLL8AaoLSVC0dxfMeJJ-6" target="-YLL8AaoLSVC0dxfMeJJ-8">
-                    &#xa;
                     <mxGeometry relative="1" as="geometry"/>
-                    &#xa;
                 </mxCell>
-                &#xa;
                 <mxCell id="-YLL8AaoLSVC0dxfMeJJ-6" value="&lt;font style=&quot;font-size: 16px&quot;&gt;Clock Tree&lt;br&gt;Synthesis&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="8WYIxfV6xZUhr8BQMb0D-1">
-                    &#xa;
                     <mxGeometry x="580" y="690" width="120" height="60" as="geometry"/>
-                    &#xa;
                 </mxCell>
-                &#xa;
                 <mxCell id="-YLL8AaoLSVC0dxfMeJJ-11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="8WYIxfV6xZUhr8BQMb0D-1" source="-YLL8AaoLSVC0dxfMeJJ-8" target="-YLL8AaoLSVC0dxfMeJJ-10">
-                    &#xa;
                     <mxGeometry relative="1" as="geometry"/>
-                    &#xa;
                 </mxCell>
-                &#xa;
                 <mxCell id="-YLL8AaoLSVC0dxfMeJJ-8" value="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;font style=&quot;font-size: 16px&quot;&gt;Globa&lt;/font&gt;l Router&lt;/font&gt;" style="whiteSpace=wrap;html=1;rounded=0;fillColor=none;" vertex="1" parent="8WYIxfV6xZUhr8BQMb0D-1">
-                    &#xa;
                     <mxGeometry x="580" y="827" width="120" height="60" as="geometry"/>
-                    &#xa;
                 </mxCell>
-                &#xa;
                 <mxCell id="-YLL8AaoLSVC0dxfMeJJ-13" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="8WYIxfV6xZUhr8BQMb0D-1" source="-YLL8AaoLSVC0dxfMeJJ-10" target="-YLL8AaoLSVC0dxfMeJJ-12">
-                    &#xa;
                     <mxGeometry relative="1" as="geometry"/>
-                    &#xa;
                 </mxCell>
-                &#xa;
                 <mxCell id="-YLL8AaoLSVC0dxfMeJJ-10" value="&lt;font style=&quot;font-size: 16px&quot;&gt;Detailed Router&lt;/font&gt;" style="whiteSpace=wrap;html=1;rounded=0;fillColor=none;" vertex="1" parent="8WYIxfV6xZUhr8BQMb0D-1">
-                    &#xa;
                     <mxGeometry x="580" y="960" width="120" height="60" as="geometry"/>
-                    &#xa;
                 </mxCell>
-                &#xa;
                 <mxCell id="-YLL8AaoLSVC0dxfMeJJ-15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="8WYIxfV6xZUhr8BQMb0D-1" source="-YLL8AaoLSVC0dxfMeJJ-12" target="-YLL8AaoLSVC0dxfMeJJ-14">
-                    &#xa;
                     <mxGeometry relative="1" as="geometry"/>
-                    &#xa;
                 </mxCell>
-                &#xa;
                 <mxCell id="-YLL8AaoLSVC0dxfMeJJ-12" value="&lt;font style=&quot;font-size: 16px&quot;&gt;Layout&lt;br&gt;Finishing&lt;/font&gt;" style="whiteSpace=wrap;html=1;rounded=0;fillColor=none;strokeColor=#FF9933;" vertex="1" parent="8WYIxfV6xZUhr8BQMb0D-1">
-                    &#xa;
                     <mxGeometry x="580" y="1090" width="120" height="60" as="geometry"/>
-                    &#xa;
                 </mxCell>
-                &#xa;
                 <mxCell id="-YLL8AaoLSVC0dxfMeJJ-17" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="8WYIxfV6xZUhr8BQMb0D-1" source="-YLL8AaoLSVC0dxfMeJJ-14" target="-YLL8AaoLSVC0dxfMeJJ-16">
-                    &#xa;
                     <mxGeometry relative="1" as="geometry"/>
-                    &#xa;
                 </mxCell>
-                &#xa;
                 <mxCell id="-YLL8AaoLSVC0dxfMeJJ-14" value="&lt;font style=&quot;font-size: 16px&quot;&gt;Parasitic&lt;br&gt;Extraction/SI&lt;/font&gt;" style="whiteSpace=wrap;html=1;rounded=0;fillColor=none;strokeColor=#FFFFFF;" vertex="1" parent="8WYIxfV6xZUhr8BQMb0D-1">
-                    &#xa;
                     <mxGeometry x="580" y="1220" width="120" height="60" as="geometry"/>
-                    &#xa;
                 </mxCell>
-                &#xa;
                 <mxCell id="-YLL8AaoLSVC0dxfMeJJ-16" value="&lt;font style=&quot;font-size: 16px&quot;&gt;Static &lt;br&gt;Timing &lt;br&gt;Analysis&lt;/font&gt;" style="whiteSpace=wrap;html=1;rounded=0;strokeColor=#FFFFFF;fillColor=none;" vertex="1" parent="8WYIxfV6xZUhr8BQMb0D-1">
-                    &#xa;
                     <mxGeometry x="580" y="1350" width="120" height="60" as="geometry"/>
-                    &#xa;
                 </mxCell>
-                &#xa;
             </root>
-            &#xa;
         </mxGraphModel>
-        &#xa;
     </diagram>
 </mxfile>
