@@ -16,6 +16,8 @@ const linter  = require("HDLlinter");
 const parser  = require("HDLparser");
 const filesys = require("HDLfilesys");
 
+require("./tree-sitter");
+
 function activate(context) {
     var HDLparam = [];
     let HDLFileList = [];

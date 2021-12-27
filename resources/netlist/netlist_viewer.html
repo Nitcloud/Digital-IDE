@@ -9,6 +9,7 @@
     <script type="text/javascript" src="../web/full.render.js"></script>
     <script type="text/javascript" src="netlist_view.js"></script>
     <script type="text/javascript" src="index.js"></script>
+
     <!-- <script type="text/javascript" src="test.js"></script> -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,14 +18,6 @@
 </head>
 
 <body>
-    <div class="toolbar">
-        <div class="center-panel">
-            <label class="fancy-checkbox">
-                <input id="export-as-svg" name="zoom-mode" type="radio" value="fit" />
-                <div class="button">Save as SVG</div>
-            </label>
-        </div>
-    </div>
     <div class="container" id="netlist_container"></div>
 </body>
 
@@ -49,14 +42,14 @@
         console.log("get the message");
         console.log(message.command);
         switch (message.command) {
-            case 'netlist' : 
-                netListRender.showNetlist(message.netlist); 
+            case 'netlist':
+                netListRender.showNetlist(message.netlist);
                 console.log('get!!!');
-            break;
+                break;
         }
     });
 
-    document.getElementById("export-as-svg").onclick = function () {
+    document.getElementById("export-as-svg").onclick = function() {
         export_message("svg");
     };
 </script>

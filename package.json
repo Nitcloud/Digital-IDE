@@ -559,14 +559,6 @@
                 "category": "TOOL"
             },
             {
-                "command": "TOOL.netlist.viewer",
-                "title": "Netlist viewer",
-                "icon": {
-                    "light": "images/svg/light/list-tree.svg",
-                    "dark": "images/svg/dark/list-tree.svg"
-                }
-            },
-            {
                 "command": "TOOL.vhdl2vlog",
                 "title": "translate vhdl to vlog",
                 "icon": {
@@ -742,7 +734,7 @@
             ],
             "editor/title": [
                 {
-                    "command": "TOOL.netlist.viewer",
+                    "command": "TOOL.netlist",
                     "group": "navigation"
                 },
                 {

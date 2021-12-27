@@ -1,7 +1,7 @@
 #! https://zhuanlan.zhihu.com/p/365805011
-# FPGA Develop Support 使用手册-version 0.1.18
+# Digital IDE 使用手册-version 0.1.18
 
-在vscode上的FPGA开发插件
+Vscode 平台上的 ASIC & FPGA 开发插件
 
 如有问题的话欢迎在[issues](https://github.com/Bestduan/fpga_support_plug/issues)上发表。
 另外喜欢的话请给个[star](https://github.com/Bestduan/fpga_support_plug)吧
