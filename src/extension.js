@@ -16,8 +16,6 @@ const linter  = require("HDLlinter");
 const parser  = require("HDLparser");
 const filesys = require("HDLfilesys");
 
-require("./tree-sitter");
-
 function activate(context) {
     var HDLparam = [];
     let HDLFileList = [];
@@ -77,10 +75,8 @@ function activate(context) {
         }
     
         try {
-            console.time('timer');
             const indexer = new parser.indexer(HDLparam);
             indexer.build_index(HDLFileList).then(() => {
-                console.timeEnd('timer');
                 console.log(indexer.HDLparam);
                 console.log(indexer.symbols);
                 

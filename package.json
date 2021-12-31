@@ -10,8 +10,8 @@
     "keywords": [
         "FPGA Develop Support",
         "FPGA",
-        "IC",
         "ASIC",
+        "IC",
         "Digital",
         "HDL",
         "Systemverilog",
@@ -559,6 +559,15 @@
                 "category": "TOOL"
             },
             {
+                "command": "TOOL.FSMGraph",
+                "title": "show FSMGraph",
+                "icon": {
+                    "light": "images/svg/light/fsm.svg",
+                    "dark": "images/svg/dark/fsm.svg"
+                },
+                "category": "TOOL"
+            },
+            {
                 "command": "TOOL.vhdl2vlog",
                 "title": "translate vhdl to vlog",
                 "icon": {
@@ -738,6 +747,10 @@
                     "group": "navigation"
                 },
                 {
+                    "command": "TOOL.FSMGraph",
+                    "group": "navigation"
+                },
+                {
                     "command": "TOOL.vhdl2vlog",
                     "group": "navigation"
                 }
@@ -772,6 +785,16 @@
                     "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
                     "command": "TOOL.netlist",
                     "group": "navigation@6"
+                },
+                {
+                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+                    "command": "TOOL.FSMGraph",
+                    "group": "navigation@7"
+                },
+                {
+                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+                    "command": "TOOL.vhdl2vlog",
+                    "group": "navigation@8"
                 }
             ],
             "explorer/context": [
@@ -799,6 +822,16 @@
                     "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
                     "command": "TOOL.netlist",
                     "group": "navigation@9"
+                },
+                {
+                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+                    "command": "TOOL.FSMGraph",
+                    "group": "navigation@10"
+                },
+                {
+                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+                    "command": "TOOL.vhdl2vlog",
+                    "group": "navigation@11"
                 }
             ]
         }

@@ -7,49 +7,87 @@
     <script type="text/javascript" src="../web/svg-pan-zoom.min.js"></script>
     <script type="text/javascript" src="../web/viz.js"></script>
     <script type="text/javascript" src="../web/full.render.js"></script>
+    <script type="text/javascript" src="../web/jquery.ztree.core.min.js"></script>
     <script type="text/javascript" src="netlist_view.js"></script>
     <script type="text/javascript" src="index.js"></script>
-
+    
+    
     <!-- <script type="text/javascript" src="test.js"></script> -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>netlist view</title>
-    <link rel="stylesheet" href="netlist_viewer.css" type="text/css" />
+    <link rel="stylesheet" href="zTreeStyle.css" type="text/css">
+    <link rel="stylesheet" href="demo.css" type="text/css">
+    <!-- <link rel="stylesheet" href="netlist_viewer.css" type="text/css" /> -->
 </head>
 
 <body>
-    <div class="container" id="netlist_container"></div>
+    <!-- <div class="container" id="netlist_container"></div> -->
+    <div> <ul id="treeDemo" class="ztree"></ul> </div>
 </body>
 
 </html>
 
 <script>
-    const vscode = acquireVsCodeApi();
+    // const vscode = acquireVsCodeApi();
 
-    function export_message(type) {
-        vscode.postMessage({
-            command: 'export',
-            type: type,
-            svg: last_svg
-        });
-    };
+    // function export_message(type) {
+    //     vscode.postMessage({
+    //         command: 'export',
+    //         type: type,
+    //         svg: last_svg
+    //     });
+    // };
+
+    // document.getElementById("export-as-svg").onclick = function() {
+    //     export_message("svg");
+    // };
 
     var netListRender = new render();
 
-    // Handle the message inside the webview
-    window.addEventListener('message', event => {
-        const message = event.data;
-        console.log("get the message");
-        console.log(message.command);
-        switch (message.command) {
-            case 'netlist':
-                netListRender.showNetlist(message.netlist);
-                console.log('get!!!');
-                break;
-        }
-    });
+    // // Handle the message inside the webview
+    // window.addEventListener('message', event => {
+    //     const message = event.data;
+    //     console.log("get the message");
+    //     console.log(message.command);
+    //     switch (message.command) {
+    //         case 'netlist':
+    //             netListRender.showNetlist(message.netlist);
+    //             console.log('get!!!');
+    //             break;
+    //     }
+    // });
 
-    document.getElementById("export-as-svg").onclick = function() {
-        export_message("svg");
-    };
+    var zTreeObj;
+    // zTree 的参数配置，深入使用请参考 API 文档（setting 配置详解）
+    var setting = {};
+    // zTree 的数据属性，深入使用请参考 API 文档（zTreeNode 节点数据详解）
+    var zNodes = [
+        {
+            name: "test1", 
+            open: true, 
+            children: [
+                { name: "test1_1" }, 
+                { name: "test1_2" }
+            ]
+        },
+        {
+            name: "test2", 
+            open: true, 
+            children: [
+                { 
+                    name: "test2_1" ,
+                    open: true, 
+                    children: [
+                        { name: "test1_1" }, 
+                        { name: "test1_2" }
+                    ]
+                }, 
+                { name: "test2_2" }
+            ]
+        }
+    ];
+    $(document).ready(function () {
+        zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+    });
 </script>
