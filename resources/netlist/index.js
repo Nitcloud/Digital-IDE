@@ -1,11 +1,14 @@
 "use strict";
+const vscode = acquireVsCodeApi();
 
-class render {
+// Handle the message inside the webview
+
+
+class render{
     constructor() {
-        this.netlist = null;
-        this.currNetList = null;
-
-        this.container = document.getElementById('netlist_container');
+        this.netLists = [];
+        this.curNetIndex = 0;
+        this.container = document.getElementById('netlist_canvas');
         //Create SVG element
         this.embed_svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         this.embed_svg.setAttribute('style', 'width: 100%; height: 100%');
@@ -13,15 +16,40 @@ class render {
         this.embed_svg.id = "svg_synth";
     }
 
-    async showNetlist(netlist) {
-        this.embed_svg.innerHTML = null;
+    init(netlist) {
         this.netlist = netlist;
-        this.currNetList = netlist;
-        let svg = await netlistsvg.render(netlistsvg.digitalSkin, netlist);
+        this.netLists.push(netlist);
+
+        var _this = this;
+        document.getElementById("last").onclick = function () {
+            if (_this.curNetIndex > 0) {
+                _this.curNetIndex--;
+                _this.showNetlist(_this.netLists[_this.curNetIndex]);        
+            }
+        };
+        document.getElementById("next").onclick = function () {
+            if (_this.curNetIndex < _this.netLists.length-1) {
+                _this.curNetIndex++;
+                _this.showNetlist(_this.netLists[_this.curNetIndex]);
+            }
+        }
+    }
+
+    async showNetlist(netList) {
+
+        let netnode = this.showTreelist(netList);
+        var setting = {};
+        $(document).ready(function () {
+            this.zTreeObj = $.fn.zTree.init($("#netTree"), setting, netnode);
+        });
+
+        // remove embed
+        svgPanZoom(this.embed_svg).destroy();
+
+        let svg = await netlistsvg.render(netlistsvg.digitalSkin, netList);
         //Add to container
         this.embed_svg.innerHTML = svg;
-
-        this.container.innerHTML = null;
+        
         this.container.appendChild(this.embed_svg);
 
         // 重新注册事件
@@ -29,16 +57,52 @@ class render {
 
         this.set_line_width();
 
+        
         let pan_config = {
             zoomEnabled: true,
             controlIconsEnabled: true,
-            maxZoom: 50,
-            fit: true,
+            minZoom: 0.01,
+            maxZoom: 100,
+            fit: false,
             center: true
         };
         let pan_zoom = svgPanZoom(this.embed_svg, pan_config);
+        pan_zoom.zoom(2);
         pan_zoom.center();
         pan_zoom.resize();
+    }
+
+    showTreelist(netlist) {
+        let flatModule = netlistsvg.parser(netlistsvg.digitalSkin, netlist);
+        let netnode = [
+            {
+                name: flatModule.moduleName, 
+                icon: `./img/icon/TOP.png`,
+                open: true, 
+                children: []
+            }
+        ];
+        for (let index = 0; index < flatModule.nodes.length; index++) {
+            const element = flatModule.nodes[index];
+            let cells = {
+                name: element.key,
+                icon: `./img/icon/cells.png`
+            }
+            if(element.type == "$_inputExt_") {
+                cells.name += "  (input)";
+                cells.icon = `./img/icon/port.png`;
+            }
+            if(element.type == "$_outputExt_") {
+                cells.name += "  (output)";
+                cells.icon = `./img/icon/port.png`;
+            }
+            netnode[0].children.push(cells);
+        }
+        return netnode;
+    }
+
+    run() {
+
     }
 
     removeClickEvent() {
@@ -69,7 +133,6 @@ class render {
                 if (element.tagName === 'path') {
                     let class_name = element.getAttribute("class");
                     class_name = class_name.replace("cell_", '');
-
                 }
             });
         }
@@ -79,13 +142,13 @@ class render {
         let tag_name = 'line';
         let width = 2;
         let match = undefined;
-
         function recursive_searchTree(element, tag_name) {
             let type = element.tagName;
             if (type === tag_name) {
                 element.style = `stroke:#000000;stroke-width:${width}`;
                 match = element;
-            } else if (element !== null) {
+            }
+            else if (element !== null) {
                 let i;
                 let result = null;
                 let childs = element.childNodes;
@@ -105,22 +168,24 @@ class render {
 
     handleLineEvent(class_name) {
         let match = undefined;
-
         function recursive_searchLine(element, tag_name) {
             let type = element.tagName;
             let class_name_i = undefined;
             try {
                 class_name_i = element.getAttribute("class");
-            } catch {
+            }
+            catch {
                 class_name_i = '';
             }
-
+    
             if (type === tag_name && class_name_i === class_name) {
                 element.style = "stroke:#84da00;stroke-width:3";
                 match = element;
-            } else if (type === tag_name && class_name_i !== class_name) {
+            }
+            else if (type === tag_name && class_name_i !== class_name) {
                 element.style = "stroke:#000000;stroke-width:2";
-            } else if (element !== null) {
+            }
+            else if (element !== null) {
                 let i;
                 let result = null;
                 let childs = element.childNodes;
@@ -140,7 +205,7 @@ class render {
 
     handleGenericEvent(class_name) {
         let newNetList = {
-            "modules": {}
+            "modules" : {}
         }
         for (const module in this.netlist.modules) {
             if (module.toLowerCase() === class_name.toLowerCase()) {
@@ -148,7 +213,9 @@ class render {
                 break;
             }
         }
-        this.currNetList = newNetList;
-        this.showNetlist();
+        this.curNetIndex++;
+        this.netLists = this.netLists.slice(0,this.curNetIndex);
+        this.netLists.push(newNetList);
+        this.showNetlist(this.netLists[this.curNetIndex]);
     }
 }
