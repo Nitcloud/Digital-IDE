@@ -12,7 +12,7 @@ website:	http://code.google.com/p/jquerytree/
     padding:0;
     margin:0;
     font-size:12px;
-    font-family: Verdana, Arial, Helvetica, AppleGothic, sans-serif
+    font-family: Verdana, Arial, Helvetica, AppleGothic, sans-serif;
 }
 
 .ztree {
@@ -108,8 +108,8 @@ website:	http://code.google.com/p/jquerytree/
     background-repeat:no-repeat;
     background-attachment: scroll;
 
-    background-image:url("./img/zTreeStandard.png");
-    *background-image:url("./img/zTreeStandard.gif")
+    background-image:url("./img/standard.png");
+    *background-image:url("./img/standard.gif")
 }
 
 .ztree li span.button.chk {
@@ -218,8 +218,26 @@ span.tmpzTreeMove_arrow {
     background-attachment: scroll;
  
     background-position:-110px -80px;
-    background-image:url("./img/zTreeStandard.png");
-    *background-image:url("./img/zTreeStandard.gif")
+    background-image:url("./img/standard.png");
+    *background-image:url("./img/standard.gif")
+}
+
+.ztree li span.button.cells_ico_docu{
+    margin-right:2px; 
+    background: url(./img/icon/cells.png) no-repeat scroll 0 0 transparent; 
+    vertical-align:top; *vertical-align:middle
+}
+
+.ztree li span.button.port_ico_docu{
+    margin-right:2px; 
+    background: url(./img/icon/port.png) no-repeat scroll 0 0 transparent; 
+    vertical-align:top; *vertical-align:middle
+}
+
+.ztree li span.button.main_ico_docu{
+    margin-right:2px; 
+    background: url(./img/icon/main.png) no-repeat scroll 0 0 transparent; 
+    vertical-align:top; *vertical-align:middle
 }
 
 ul.ztree.zTreeDragUL {
@@ -246,11 +264,14 @@ ul.ztree {
     margin-top: 0px;
     border: 1px solid #617775;
     background: #f0f6e4;
-    width:220px;
-    height:650px;
-    overflow-y:scroll;
-    overflow-x:auto;
+    width: 240px;
+    height: 650px;
+    position: relative;
+    float: left;
+    resize: horizontal;
+    overflow: scroll; 
 }
+
 ul.log {
     border: 1px solid #617775;
     background: #f0f6e4;

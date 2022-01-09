@@ -1,9 +1,4 @@
 "use strict";
-const vscode = acquireVsCodeApi();
-
-// Handle the message inside the webview
-
-
 class render{
     constructor() {
         this.netLists = [];
@@ -46,9 +41,9 @@ class render{
         // remove embed
         svgPanZoom(this.embed_svg).destroy();
 
-        let svg = await netlistsvg.render(netlistsvg.digitalSkin, netList);
+        this.svg = await netlistsvg.render(netlistsvg.digitalSkin, netList);
         //Add to container
-        this.embed_svg.innerHTML = svg;
+        this.embed_svg.innerHTML = this.svg;
         
         this.container.appendChild(this.embed_svg);
 
@@ -67,7 +62,7 @@ class render{
             center: true
         };
         let pan_zoom = svgPanZoom(this.embed_svg, pan_config);
-        pan_zoom.zoom(2);
+        // pan_zoom.zoom(2);
         pan_zoom.center();
         pan_zoom.resize();
     }
@@ -77,32 +72,41 @@ class render{
         let netnode = [
             {
                 name: flatModule.moduleName, 
-                icon: `./img/icon/TOP.png`,
+                // iconSkin: "main",
                 open: true, 
-                children: []
+                children: [
+                    {
+                        name: "cells",
+                        open: true, 
+                        children: []
+                    },
+                    {
+                        name: "ports",
+                        open: true, 
+                        children: []
+                    }
+                ]
             }
         ];
         for (let index = 0; index < flatModule.nodes.length; index++) {
             const element = flatModule.nodes[index];
-            let cells = {
+            let child = {
                 name: element.key,
-                icon: `./img/icon/cells.png`
+                iconSkin: "cells"
             }
             if(element.type == "$_inputExt_") {
-                cells.name += "  (input)";
-                cells.icon = `./img/icon/port.png`;
+                child.name += "  (input)";
+                child.iconSkin = "port";
+                netnode[0].children[1].children.push(child);
+            } else if(element.type == "$_outputExt_") {
+                child.name += "  (output)";
+                child.iconSkin = "port";
+                netnode[0].children[1].children.push(child);
+            } else {
+                netnode[0].children[0].children.push(child);
             }
-            if(element.type == "$_outputExt_") {
-                cells.name += "  (output)";
-                cells.icon = `./img/icon/port.png`;
-            }
-            netnode[0].children.push(cells);
         }
         return netnode;
-    }
-
-    run() {
-
     }
 
     removeClickEvent() {

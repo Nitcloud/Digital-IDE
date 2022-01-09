@@ -13,3 +13,4 @@ webpack.config.js
 resources/iverilog
 system.drawio
 toolchain-flow.svg
+docs/**

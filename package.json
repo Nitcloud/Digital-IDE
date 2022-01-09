@@ -3,8 +3,8 @@
     "displayName": "Digital IDE",
     "description": "Design For Digital Development",
     "publisher": "sterben",
-    "homepage": "https://github.com/Bestduan/DIDE",
-    "version": "0.2.0",
+    "homepage": "https://github.com/Bestduan/Digital-IDE",
+    "version": "0.1.20",
     "main": "./src/extension",
     "icon": "images/DIDE.png",
     "keywords": [
@@ -22,10 +22,10 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/Bestduan/DIDE.git"
+        "url": "https://github.com/Bestduan/Digital-IDE"
     },
     "bugs": {
-        "url": "https://github.com/Bestduan/DIDE/issues"
+        "url": "https://github.com/Bestduan/Digital-IDE/issues"
     },
     "engines": {
         "vscode": "^1.42.1"
@@ -327,11 +327,11 @@
                     "name": "Tool"
                 },
                 {
-                    "id": "TOOL.fpga_tree",
+                    "id": "TOOL.hard_tree",
                     "name": "FPGA Options"
                 },
                 {
-                    "id": "TOOL.sdk_tree",
+                    "id": "TOOL.soft_tree",
                     "name": "SDK Options"
                 }
             ]
@@ -431,8 +431,8 @@
         ],
         "jsonValidation": [
             {
-                "fileMatch": "**/propertySch.json",
-                "url": "./propertySch.json"
+                "fileMatch": "property.json",
+                "url": "./property-schema.json"
             }
         ],
         "grammars": [
@@ -743,14 +743,17 @@
             ],
             "editor/title": [
                 {
+                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
                     "command": "TOOL.netlist",
                     "group": "navigation"
                 },
                 {
+                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
                     "command": "TOOL.FSMGraph",
                     "group": "navigation"
                 },
                 {
+                    "when": "resourceLangId == vhdl",
                     "command": "TOOL.vhdl2vlog",
                     "group": "navigation"
                 }
@@ -792,7 +795,7 @@
                     "group": "navigation@7"
                 },
                 {
-                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+                    "when": "resourceLangId == vhdl",
                     "command": "TOOL.vhdl2vlog",
                     "group": "navigation@8"
                 }
@@ -829,7 +832,7 @@
                     "group": "navigation@10"
                 },
                 {
-                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+                    "when": "resourceLangId == vhdl",
                     "command": "TOOL.vhdl2vlog",
                     "group": "navigation@11"
                 }

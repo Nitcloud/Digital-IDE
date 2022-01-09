@@ -34,12 +34,13 @@ function activate(context) {
         },
         "PrjStrcture" : {
             "prjPath" : '',
-            "HardwareSrc"  : '',
-            "HardwareSim"  : '',
-            "HardwareData" : ''
+            "HardwareSim"  : [],
+            "HardwareSrc"  : [],
+            "HardwareData" : [],
+            "SoftwareSrc"  : [],
+            "SoftwareData" : []
         },
         "currentHDLPath" : [],
-        "tbFilePath"     : "",
         "prjInitParam"   : "",
         "propertyPath"   : ""
     }
@@ -88,8 +89,8 @@ function activate(context) {
                 // linter Server
                 linter.registerLinterServer();
                 // tool Server
-                tool.registerSimServer(indexer, opeParam);
                 tool.registerLspServer(context, indexer);
+                tool.registerSimServer(indexer, opeParam, outputChannel);
                 tool.registerToolServer(context, indexer, opeParam);
                 tool.registerHardServer(context, indexer, opeParam, fileExplorer);
                 vscode.window.showInformationMessage("Init Finished.");

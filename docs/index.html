@@ -17,10 +17,7 @@
             name: '',
             repo: ''
         }
-    </script>
-    <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
-    <!-- 添加全文搜索的配置  -->
-    <script>
+        // 添加全文搜索的配置
         window.$docsify = {
             search: {
                 placeholder: '搜索',
@@ -28,12 +25,18 @@
                 depth: 3
             },
         }
+        // 添加封面
+        window.$docsify = {
+            onlyCover: false,
+            coverpage: true
+        }
     </script>
+    <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
     <script src="//unpkg.com/docsify/lib/plugins/search.js"></script>
     <!-- 添加代码高亮的配置  -->
-    <script src="//unpkg.com/prismjs/components/prism-bash.js"></script>
-    <script src="//unpkg.com/prismjs/components/prism-java.js"></script>
-    <script src="//unpkg.com/prismjs/components/prism-sql.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-json.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-vhdl.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-verilog.min.js"></script>
     <!-- 添加一键拷贝代码的配置 -->
     <script src="//unpkg.com/docsify-copy-code"></script>
 </body>

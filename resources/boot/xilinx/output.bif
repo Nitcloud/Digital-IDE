@@ -1,6 +1,0 @@
-//arch = zynq; split = false; format = BIN
-the_ROM_image:
-{
-	[bootloader]d:/project/Code/Plug/My_Plug/FPGA_Support/src/.TOOL/Xilinx/BOOT/fsbl.elf
-	d:/project/Code/Plug/My_Plug/FPGA_Support/src/.TOOL/Xilinx/BOOT/ps_test.elf
-}

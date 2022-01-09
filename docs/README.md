@@ -1,15 +1,9 @@
-# Digital IDE 开发手册-version 0.1.18
-
-Vscode 平台上的 ASIC & FPGA 开发插件
-
-如有问题的话欢迎在[issues](https://github.com/Bestduan/fpga_support_plug/issues)上发表。
-另外喜欢的话请给个[star](https://github.com/Bestduan/fpga_support_plug)吧
-
-在2022年1月前发布的版本均为bug修复版本，新特性将在1月后发布。
+# Digital IDE 开发手册-version 0.1.20
 
 ## 前言
 
-该插件为个人开发一开始只是兴趣，仅为开源出一份力，但是随着后期开发的深入遇到了瓶颈以及越来越多自己无法解决的问题，在此期待有感兴趣的人能和我一起开发。
+如有问题的话欢迎在[issues](https://github.com/Bestduan/fpga_support_plug/issues)上发表。
+另外喜欢的话请给个[star](https://github.com/Bestduan/fpga_support_plug)吧。
 
 - 邮箱： sterben.661214@gmail.com  。
 
@@ -46,39 +40,69 @@ Vscode 平台上的 ASIC & FPGA 开发插件
     - [x] iverilog快速仿真
     - [ ] modelsim快速仿真
     - [ ] Verilator快速仿真
-  - [x] 综合功能
   - [x] 常见功能库
 - [ ] 后端开发辅助功能
   - [x] vivado开发辅助
   - [ ] quartus开发辅助
-  - [ ] icestorm开发辅助
+  - [ ] SymbiFlow开发辅助
 - [ ] soc开发辅助
   - [x] ZYNQ开发辅助
   - [ ] RISC开发辅助
   - [ ] Cortex-M开发辅助
 
-# START GIF
+## 关于未来
+
+前端辅助设计特性到目前为止应该就只剩下代码转文档和注释的自动提示，代码转文档估计会套用terosHDL插件的，因为实在是改不动，设计的很不错，改动也是小改，后期主要目标就是hardware和software的联合开发，一方面应对soc的趋势，另一方面基于eclipse的xilinx软件开发平台实在是太卡了。此外还有HDL开源库的搭建，总之内容还是挺多的，而且个人开发也算是到达极限了，毕竟要学的东西太多了，接到的反馈和帮助也不足，所以后期的更新可能会有点慢，希望见谅。
+
+# START-GIF
 
 * Start interface
 ![START GIF.gif](https://i.loli.net/2021/04/18/jVU4kwGf83zWFY1.gif)
 
-使用 *TOOL:generate property file* 可以生成初始 `property.json` 文件。
-使用 *TOOL:Overwrite the InitPropertyParam* 可以自定义初始 `property.json` 文件。
+- 使用 *TOOL:generate property file* 可以生成初始 `property.json` 文件。
+- 使用 *TOOL:Overwrite the InitPropertyParam* 可以自定义初始 `property.json` 文件。
 
 保存 `property.json` 文件后都会更新一次文件结构，这种文件结构在说明文档中统一定义为标准文件结构。
 如果不使用标准文件结构则默认全局解析，这将可能会导致较大的CPU占用。
 
-`【注】`：目前 property.json 的自动提示失效，原因未知，如有了解的烦请给予指教。
+标准文件结构如下：
+```
+.vscode
+  └── property.json   -- 工程配置文件 用户自定义
+prj                   -- 用于存放工程文件
+  ├── intel           -- 用于存放xilinx的工程文件
+  ├── simulation      -- 用于存放第三方仿真工具运行时的中间文件
+  └── xilinx          -- 用于存放xilinx的工程文件
+user                  -- 用于存放用户设计的源文件 用户自定义
+  ├── data            -- 主要存放数据文件，以及约束文件
+  ├── sim             -- 用于存放用户仿真代码
+  └── src             -- 用于存放用户的工程源码   
+       ├── ip         -- 用于存放用户ip代码
+       └── bd         -- 用于存放用户block designer源码   
+```
 
-# 开发目的
-<!-- [返回目录](#目录) -->
+当 `property.json` 文件中 SOC_MODE.soc 设置不为 "none" 后保存配置文件，文件结构会自动更改为混合设计结构主要是user文件夹会改变，变为如下结构：
 
-本插件的开发目的首先在于为数字前端设计提供友好便捷的开发工具，在此之后，再在对FPGA的开发过程中进行去平台化，同时规范文件结构，完成完整统一友好的数字前后端设计链。紧接着兼容多家FPGA原厂后端设计，完成一条完整的数字设计链。最后，提供在FPGA上的soc设计方案，兼容soc调试工具
+```
+user               -- 用于存放用户设计的源文件 用户自定义
+  Hardware         -- 主要存放硬件逻辑设计
+     └── data      -- 主要存放数据文件，以及约束文件
+     └── sim       -- 用于存放用户仿真代码
+     └── src       -- 用于存放用户的工程源码  (依旧含有ip与bd文件夹) 
+  Software         -- 主要存放软件驱动设计
+     └── data      -- 主要存放数据文件，以及约束文件
+     └── src       -- 用于存放用户的工程源码   
+```
+
+当 `property.json` 文件中 SOC_MODE.soc 重新设置为 "none" 后保存配置文件，文件结构会自动更改为原单一设计文件结构，Software下的所有文件均会被删除，请慎重。但删除前会有提示，提示默认开启。
+
+最后目前暂不支持重新自定义文件结构，后期有时间会补上，如果对现在的标准文件结构有想法的话欢迎在issue上发表。
 
 # 前期配置
-<!-- [返回目录](#目录) -->
 
-1. 如果你需要自带串口调试工具请安装 **python3** 并将其添加到系统环境变量
+该扩展的大部分功能是不依赖第三方环境的本人深受环境配置之苦，后续会陆续将主流开源三方软件转成wasm打造无需配置环境的开发平台。目前已经成功将yosys嵌入扩展中故无需安装yosys的相关环境，但遗憾的是暂时并不支持yosys扩展。
+
+1. 如果你需要 **自带串口调试工具** 请安装 **python3** 并将其添加到系统环境变量
 
 2. 如果你需要兼容vivado相关功能（包括语法检查、工程搭建、功能仿真等）请将如下路径添加至环境变量
    
@@ -93,17 +117,16 @@ Vscode 平台上的 ASIC & FPGA 开发插件
 - **python**
 均能执行即为成功
 
-`【注】`：目前暂时支持vivado开发，后期会兼容其他厂商的开发环境
+`【注】`：目前暂时支持vivado开发，后期会兼容其他厂商的开发环境，此外需要三方仿真器的如iverilog需要将其添加到环境变量中去。
 
 # 功能介绍
-<!-- [返回目录](#目录) -->
+
 ## 前端开发辅助功能
-<!-- [返回目录](#目录) -->
+
 ### 语言支持
-<!-- [返回目录](#目录) -->
+
 提供前端代码设计所需的基本语言服务
 #### 语言高亮
-<!-- [返回目录](#目录) -->
 
 ![语言高亮.png](https://i.loli.net/2021/03/19/3qzOwZkIMay5rvD.png)
 现支持以下语言的高亮
@@ -114,7 +137,6 @@ Vscode 平台上的 ASIC & FPGA 开发插件
 - TCL (包括xdc、sdc、fdc约束文件)
 
 #### 语法诊断
-<!-- [返回目录](#目录) -->
 
 ![语法诊断.png](https://i.loli.net/2021/03/19/bSQFuNgZzaTknwD.png)
 语法诊断使用的是外部编译器，因此在setting中配置对应的诊断设置之前请配置好相应的环境。
@@ -140,30 +162,25 @@ Vscode 平台上的 ASIC & FPGA 开发插件
     3. ghdl 
 
 #### 文件标志
-<!-- [返回目录](#目录) -->
 
 ![文件标志.png](https://i.loli.net/2021/03/19/42KuR8l5brX1Hz7.png)
 
 #### 悬停提示
-<!-- [返回目录](#目录) -->
 
 主要提示的内容为当前文件内定义的数据类型以及例化模块的相关信息。
 ![悬停提示.png](https://i.loli.net/2021/03/19/PXdTfWU7MkLYcSF.png)
 `【注】`：悬停提示使用的是内置的vlog和vhdl解析器，目前暂时只支持简单的悬停提示
 
 #### 自动补全
-<!-- [返回目录](#目录) -->
 
 ![自动补全.png](https://i.loli.net/2021/03/19/gMWw3bBpycFDjmP.png)
 `【注】`：目前自动补全只支持在verilog和systemverilog中例化模块里进行端口参数例化时的补全
 
 #### 定义跳转
-<!-- [返回目录](#目录) -->
 
 ![定义跳转.gif](https://i.loli.net/2021/04/18/dgNytkS5r6Gqap1.gif)
 
 #### 工程结构
-<!-- [返回目录](#目录) -->
 
 工程结构，以层级关系显示出HDL文件之间包含与被包含关系，单击后可打开对应的文件。
 
@@ -172,7 +189,6 @@ Vscode 平台上的 ASIC & FPGA 开发插件
 `【注】`: 在工程文件夹下含有 `sim` 或者 `testbench` 这两个关键词的均认为是仿真文件在工程结构中会被归类为sim。
 
 #### 自动格式化
-<!-- [返回目录](#目录) -->
 
 可以对选中的字符或者全文进行文档的格式化 vscode自带快捷键打开方式：`shift + alt + f`
 ![自动格式化.gif](https://i.loli.net/2021/07/27/NszfSg8Zbiad36P.gif)
@@ -200,11 +216,15 @@ Vscode 平台上的 ASIC & FPGA 开发插件
 
     tab所对应的空格数量
 
+#### vhdl转Verilog翻译
+
+目前只支持vhdl转Verilog的翻译功能具体使用办法见如下gif：
+
+![vhdl转Verilog翻译](https://s2.loli.net/2022/01/07/prTk2VjoYIv7wZm.gif)
+
 ### 仿真功能
-<!-- [返回目录](#目录) -->
 
 #### 生成tb并例化
-<!-- [返回目录](#目录) -->
 
 步骤如下:
 1. 使用快捷键`F1`启动命令框，输入 Testbench, 选择TOOL : Testbench, 或者在需要生成并例化的文件下右击选择Testbench。
@@ -218,7 +238,7 @@ Vscode 平台上的 ASIC & FPGA 开发插件
 后期会考虑tb文件与例化模块间的智能连线。
 
 #### 自动例化
-<!-- [返回目录](#目录) -->
+
 
 ![自动例化.gif](https://i.loli.net/2021/05/01/gCxJud91GhIWAmL.gif)
 
@@ -234,42 +254,27 @@ Vscode 平台上的 ASIC & FPGA 开发插件
 `【注】`：在使用快捷键时其检查是否快捷键键冲突。
 
 #### iverilog快速仿真
-<!-- [返回目录](#目录) -->
+
 在0.1.18版本之后优化设计支持 `include` 设计
 
 ![iverilog快速仿真](https://i.loli.net/2021/05/02/bfJ1lFGWTjXkeRq.png)
 
 1. 自带多文件仿真，无需 *`include*
+   
 2. 支持xilinx仿真库
+    - 在setting中的 *SIM.Xilinx.LIB.path* 设置xilinx的安装路径
+    - 例：{xilinx安装路径}/Vivado/<版本号，例如18.3>/data/verilog/src
 
 `【注】`：此功能需要iverilog和gtkwave均加入系统环境变量
 
-如果需要支持xilinx仿真库需要在setting中的 *SIM.Xilinx.LIB.path* 设置xilinx的安装路径
-
-例：{xilinx安装路径}/Vivado/<版本号，例如18.3>/data/verilog/src
 
 #### modelsim快速仿真
-<!-- [返回目录](#目录) -->
+
 
 #### Verilator快速仿真
-<!-- [返回目录](#目录) -->
 
-### 综合功能
-<!-- [返回目录](#目录) -->
-
-插件使用yosys 0.9版本的内核(开源的yosysjs为0.5版本)进行指定工程的综合(可全平台运行)，并展示综合后的网络图
-![netlist](https://i.loli.net/2021/09/10/Wue9vYgMCkSNzqx.png)
-
-该功能目前处于测试阶段，理论上支持 `include` 以及多文件工程，但由于是web版不建议执行较大的工程，建议对工程或者单个文件进行测试使用。后面会根据使用情况反馈进行本地版的扩展。
-
-使用方式
-1. 点击右上角的图标进行面板的创建
-2. 在project structure中选择需要显示的模块，或者在文件中右击选择 `show netlist`
-
-`【注】`: 如果在console中出现ERROR请关闭该web，重新创建一个新的。
 
 ### 常见功能库
-<!-- [返回目录](#目录) -->
 
 `【注】`: 该插件自带ADI的IP库取自[adi2019_r1](https://github.com/analogdevicesinc/hdl/releases/tag/2019_r1) 该库已编译完成并将其中所有的绝对路径改为相对路径，使得在任何环境下能直接使用。
 
@@ -312,12 +317,10 @@ Vscode 平台上的 ASIC & FPGA 开发插件
 *Customer* 属性代表用户自定义HDL功能库。当输入的是文件夹时则包含该文件夹下所有的文件。该属性的使用需要对*setting*下的*PRJ.customer.Lib.repo.path*进行配置用户自定义库的根目录，在配置完成之后再在*Customer* 属性下配置相对路径，要求 *`PRJ.customer.Lib.repo.path`*`/`*`Customer`* 能够组成该文件(夹)的绝对路径。
 
 ## 后端开发辅助功能
-<!-- [返回目录](#目录) -->
 
 `【注】`：目前只支持在标准文件结构下的工程搭建。
 
 ### 启动方式
-<!-- [返回目录](#目录) -->
 
 数字前端辅助功能是安装后即可使用，内置 Verilog 和 vhdl 的简单解析器，vhdl的支持后续有时间会完善。
 
@@ -337,9 +340,7 @@ Vscode 平台上的 ASIC & FPGA 开发插件
 
 `【注】`：在设置Soc为非none时，文件结构会被更改，**在文件结构更改的时候如果从有soc结构改回none，文件夹Software会被强制删除，如有重要文件请妥善保存！！！！！**。
 
-
 ### 通用功能使用说明
-<!-- [返回目录](#目录) -->
 
 1. Launch 功能，开启后端功能以 **property.json** 文件中配置的 *TOOL_CHAIN* 属性为准。目前只支持vivado。launch之后会根据 **property.json** 文件信息生成相应的工程。如果已经有工程的会直接打开。launch之后在HDL文件中右键选择 *Set as Top* 时会将该文件设置为设计的顶层头文件。
 
@@ -360,7 +361,6 @@ Vscode 平台上的 ASIC & FPGA 开发插件
 【注】：SDK相关功能还不完善后续准备开放，用于替代xilinx的SDK，彻底解决xilinx SDK使用卡顿问题。
 
 ### vivado开发辅助
-<!-- [返回目录](#目录) -->
 
 由于目前只支持vivado的相关功能，因此对于vivado开发辅助见通用功能使用说明即可。
 `【注】`：对于property.json文件中的 *`Device`* 属性目前已有的如下：
@@ -374,16 +374,16 @@ Vscode 平台上的 ASIC & FPGA 开发插件
 但支持的器件并不仅限于此，理论上可以支持vivado所能支持的所有器件，你可以直接将你的器件直接写在 *`Device`* 属性下，也可以将你的器件通过 *FPGA:Add devices to the database* 命令将其添加到数据库中，也可以通过 *FPGA:Remove the device from the database* 将其从数据库中删除。
 
 ### quartus开发辅助
-<!-- [返回目录](#目录) -->
+
 
 ### icestorm开发辅助
-<!-- [返回目录](#目录) -->
+
 
 ## soc开发辅助
-<!-- [返回目录](#目录) -->
+
 
 ### ZYNQ开发辅助
-<!-- [返回目录](#目录) -->
+
 
 针对 *`Zynq`* 器件在新建工程时可以通过配置bd file来快速搭建想要的Zynq平台。具体 property.json 配置如下
 
@@ -395,19 +395,33 @@ Vscode 平台上的 ASIC & FPGA 开发插件
 ```
 
 ### RISC开发辅助
-<!-- [返回目录](#目录) -->
 
 ### Cortex-M开发辅助
-<!-- [返回目录](#目录) -->
 
-## 调试开发辅助功能
-<!-- [返回目录](#目录) -->
+## 调试开发辅助
+
+### Schematic Viewer
+
+插件使用 `yosys 0.10` 版本的内核(开源的yosysjs为0.5版本)进行指定工程的综合(可全平台运行)，并展示综合后的网络图
+
+![netlist](https://s2.loli.net/2022/01/07/YR2UHVpM3PK5sut.png)
+
+该功能目前处于测试阶段，支持 `include` 以及多文件工程。
+
+使用方式
+1. 点击右上角的图标进行面板的创建
+2. 或者在project structure中选择需要显示的模块，或者在文件中右击选择 `show netlist`
+
+`【注】`: 如果在 output 中出现 ERROR 请关闭该web，重新创建一个新的。
 
 # 配置说明
-<!-- [返回目录](#目录) -->
+
+```json
+
+```
 
 # 鸣谢
-<!-- [返回目录](#目录) -->
+
 
 * [VHDL](https://github.com/puorc/awesome-vhdl)
 * [yosys](http://www.clifford.at/yosys)

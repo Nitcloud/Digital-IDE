@@ -1,7 +1,7 @@
 xip_repo_path
 
 FPGA_VERSION
-xilinx
+undefined
 PRJ_NAME.FPGA
 test
 PRJ_NAME.SOC

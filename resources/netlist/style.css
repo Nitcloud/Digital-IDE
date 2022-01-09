@@ -238,12 +238,19 @@
     font-size: 26px;
     font-weight: 600;
 }
+
+.main {
+    height: 650px;
+    width: 1280px;
+}
+
 .container {
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
     padding: 0px;
-    width: 1200px;
-    height: 650px;
+    width: 100%;
+    height: 100%;
     margin: 0px;
 }
 .component {
@@ -253,8 +260,8 @@
 }
 .canvas {
     padding: 0px;
-    width: 1200px;
-    height: 650px;
+    width: 100%;
+    height: 100%;
     margin: 0px;
 
     border-width: 3px;

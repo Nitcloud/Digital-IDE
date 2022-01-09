@@ -78,7 +78,9 @@
                             <button id=next>next </button>
                         </div>
                         <div>
-                            <label for=synthStyle>Synth Style:</label>
+                            <label for=synthStyle >
+                                <font size="3" color="black">Synth Style:</font>
+                            </label>
                             <select id=synthStyle>
                                 <option value=0>Before Behavioral Synth</option>
                                 <option value=1>After Behavioral Synth</option>
@@ -119,11 +121,12 @@
 
     var Render = new render();
 
+    const vscode = acquireVsCodeApi();
     function export_message(type) {
         vscode.postMessage({
             command: 'export',
             type: type,
-            svg: Render.netLists[Render.curNetIndex]
+            svg: Render.svg
         });
     };
 
@@ -133,6 +136,8 @@
             mode: style.value,
         });
     }
+
+    exec(document.getElementById('synthStyle'));
 
     document.getElementById("exec").onclick = function() {
         exec(document.getElementById('synthStyle'));
