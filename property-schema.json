@@ -7,16 +7,14 @@
 			"type": "string",
 			"description": "The tool chain you need",
 			"enum": [
-				"xilinx",
-                "default"
+				"xilinx"
 			]
 		},
         "SIMULATION": {
 			"type": "string",
 			"description": "The tool chain you need",
 			"enum": [
-				"xilinx",
-                "default"
+				"xilinx"
 			]
 		},
         "FAST_SIMULATION": {
@@ -24,7 +22,7 @@
 			"description": "The tool chain you need",
 			"enum": [
 				"xilinx",
-                "default"
+                "iverilog"
 			]
 		},
         "PRJ_STRUCTURE" : {
@@ -38,14 +36,20 @@
         "PRJ_Path": {
 			"type": "string"
 		},
-        "HardwareData": {
-			"type": "array"
+        "SoftwareSrc": {
+            "type": "string"
+        },
+        "SoftwareData": {
+			"type": "string"
 		},
-		"HardwareSrc": {
-			"type": "array"
-		},
+        "HardwareSrc": {
+            "type": "string"
+        },
         "HardwareSim": {
-			"type": "array"
+            "type": "string"
+        },
+        "HardwareData": {
+			"type": "string"
 		},
 		"HardwareLIB": {
 			"type": "object",
@@ -71,6 +75,19 @@
 				}
 			}
 		},
+        "IP_REPO" : {
+            "type" :"array",
+            "enum" :[
+                "arm",
+                "adi"
+            ]
+        },
+        "INSIDE_BOOT_TYPE" : {
+            "type" :"string",
+            "enum" :[
+                "microphase"
+            ]
+        },
 		"PRJ_NAME": {
 			"type": "object",
 			"default": {
@@ -112,7 +129,6 @@
 					"type": "string",
 					"description": "The bd_file for FPGA Designed",
 					"enum": [
-						"none",
 						"zynq_default",
 						"m3_xIP_default",
 						"MicroBlaze_default",

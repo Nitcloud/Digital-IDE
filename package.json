@@ -332,7 +332,7 @@
                 },
                 {
                     "id": "TOOL.soft_tree",
-                    "name": "SDK Options"
+                    "name": "SOFT Options"
                 }
             ]
         },
@@ -353,13 +353,9 @@
                 "configuration": "./config/tcl.configuration.json"
             },
             {
-                "id": "json",
+                "id": "bd",
                 "extensions": [
-                    ".json",
                     ".bd"
-                ],
-                "aliases": [
-                    "Json"
                 ]
             },
             {
@@ -508,6 +504,11 @@
                 "command": "FILE.openFile",
                 "title": "Open this File",
                 "category": "FILE"
+            },
+            {
+                "command": "TOOL.Launch",
+                "title": "launch extension",
+                "category": "TOOL"
             },
             {
                 "command": "TOOL.Gen_Property",
@@ -679,17 +680,17 @@
             {
                 "command": "SOFT.Launch",
                 "title": "Launch",
-                "category": "SDK"
+                "category": "SOFT"
             },
             {
                 "command": "SOFT.Build",
                 "title": "Build",
-                "category": "SDK"
+                "category": "SOFT"
             },
             {
                 "command": "SOFT.Download",
                 "title": "Download",
-                "category": "SDK"
+                "category": "SOFT"
             },
             {
                 "command": "xilinx.Overwrite_bd",
@@ -738,6 +739,21 @@
                 {
                     "command": "TOOL.netlist",
                     "group": "inline",
+                    "when": "view == TOOL.file_tree && viewItem == file"
+                },
+                {
+                    "command": "HARD.srcTop",
+                    "group": "navigation@1",
+                    "when": "view == TOOL.file_tree && viewItem == file"
+                },
+                {
+                    "command": "HARD.simTop",
+                    "group": "navigation@2",
+                    "when": "view == TOOL.file_tree && viewItem == file"
+                },
+                {
+                    "command": "TOOL.simulate",
+                    "group": "navigation@3",
                     "when": "view == TOOL.file_tree && viewItem == file"
                 }
             ],
@@ -798,6 +814,11 @@
                     "when": "resourceLangId == vhdl",
                     "command": "TOOL.vhdl2vlog",
                     "group": "navigation@8"
+                },
+                {
+                    "when": "editorLangId == bd",
+                    "command": "xilinx.Overwrite_bd",
+                    "group": "navigation@9"
                 }
             ],
             "explorer/context": [

@@ -19,7 +19,7 @@ The plug-in for personal development is only interested in at the beginning, onl
 
 -----
 
-* Contains support for languages ​​required during FPGA development 
+* Contains support for languages required during FPGA development 
 - **VHDL**
 - **Verilog**
 - **SystemVerilog**

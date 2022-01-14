@@ -1,15 +1,16 @@
+#! https://zhuanlan.zhihu.com/p/365805011
 # Digital IDE 开发手册-version 0.1.20
 
 ## 前言
 
-如有问题的话欢迎在[issues](https://github.com/Bestduan/fpga_support_plug/issues)上发表。
-另外喜欢的话请给个[star](https://github.com/Bestduan/fpga_support_plug)吧。
+如有问题的话欢迎在[issues](https://github.com/Bestduan/Digital-IDE/issues)上发表。
+另外喜欢的话请给个[star](https://github.com/Bestduan/Digital-IDE)吧。
 
 - 邮箱： sterben.661214@gmail.com  。
 
 ## 关于反馈
 
-首先感谢您的使用与反馈，首先如果您有关于此插件更好的想法在知乎和github下均可发表，但如果是使用中出现的问题请移步至[github](https://github.com/Bestduan/fpga_support_plug/issues)发表，请勿在知乎下发表，感谢您的配合。
+首先感谢您的使用与反馈，首先如果您有关于此插件更好的想法在知乎和github下均可发表，但如果是使用中出现的问题请移步至[github](https://github.com/Bestduan/Digital-IDE/issues)发表，请勿在知乎下发表，感谢您的配合。
 
 此外在发表issue的时候，请详细说明您所遇到的问题，重点包含以下部分
 - 运行环境
@@ -33,6 +34,8 @@
     - [x] 语法诊断
     - [x] 自动对齐
     - [x] 自动补全
+    - [x] 语言翻译
+    - [x] 状态预览
   - [ ] 仿真功能
     - [x] 自动生成tb
     - [x] 快速例化
@@ -68,17 +71,18 @@
 标准文件结构如下：
 ```
 .vscode
-  └── property.json   -- 工程配置文件 用户自定义
+  └── property.json   -- 工程配置文件 用户自定义 (或者存放于工作区的根目录也可)
 prj                   -- 用于存放工程文件
   ├── intel           -- 用于存放xilinx的工程文件
   ├── simulation      -- 用于存放第三方仿真工具运行时的中间文件
   └── xilinx          -- 用于存放xilinx的工程文件
 user                  -- 用于存放用户设计的源文件 用户自定义
+  ├── ip              -- 用于存放工程ip代码 (厂商工具管理，但由扩展搬移至src同级目录)
+  ├── bd              -- 用于存放工程block designer源码 (厂商工具管理，但由扩展搬移至src同级目录)
   ├── data            -- 主要存放数据文件，以及约束文件
   ├── sim             -- 用于存放用户仿真代码
-  └── src             -- 用于存放用户的工程源码   
-       ├── ip         -- 用于存放用户ip代码
-       └── bd         -- 用于存放用户block designer源码   
+  └── src             -- 用于存放用户的设计源码   
+       └─ lib         -- 用于存放用户的硬件库源码   
 ```
 
 当 `property.json` 文件中 SOC_MODE.soc 设置不为 "none" 后保存配置文件，文件结构会自动更改为混合设计结构主要是user文件夹会改变，变为如下结构：
@@ -86,11 +90,14 @@ user                  -- 用于存放用户设计的源文件 用户自定义
 ```
 user               -- 用于存放用户设计的源文件 用户自定义
   Hardware         -- 主要存放硬件逻辑设计
-     └── data      -- 主要存放数据文件，以及约束文件
-     └── sim       -- 用于存放用户仿真代码
-     └── src       -- 用于存放用户的工程源码  (依旧含有ip与bd文件夹) 
+     ├── ip        -- 用于存放工程ip代码 (厂商工具管理，但由扩展搬移至src同级目录)
+     ├── bd        -- 用于存放工程block designer源码 (厂商工具管理，但由扩展搬移至src同级目录) 
+     ├── data      -- 主要存放数据文件，以及约束文件
+     ├── sim       -- 用于存放用户仿真代码
+     └── src       -- 用于存放用户的设计源码  
+          └─ lib   -- 用于存放用户的硬件库源码   
   Software         -- 主要存放软件驱动设计
-     └── data      -- 主要存放数据文件，以及约束文件
+     ├── data      -- 主要存放数据文件，以及约束文件
      └── src       -- 用于存放用户的工程源码   
 ```
 
@@ -221,6 +228,10 @@ user               -- 用于存放用户设计的源文件 用户自定义
 目前只支持vhdl转Verilog的翻译功能具体使用办法见如下gif：
 
 ![vhdl转Verilog翻译](https://s2.loli.net/2022/01/07/prTk2VjoYIv7wZm.gif)
+
+#### 状态机预览
+
+![状态机预览](https://s2.loli.net/2022/01/10/4JroaIAju3wtgTR.png)
 
 ### 仿真功能
 
@@ -412,13 +423,6 @@ user               -- 用于存放用户设计的源文件 用户自定义
 1. 点击右上角的图标进行面板的创建
 2. 或者在project structure中选择需要显示的模块，或者在文件中右击选择 `show netlist`
 
-`【注】`: 如果在 output 中出现 ERROR 请关闭该web，重新创建一个新的。
-
-# 配置说明
-
-```json
-
-```
 
 # 鸣谢
 

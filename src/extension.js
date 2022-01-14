@@ -9,6 +9,7 @@
  */
 'use strict';
 
+const fspath  = require("path");
 const vscode  = require("vscode");
 
 const tool    = require("HDLtool");
@@ -16,90 +17,52 @@ const linter  = require("HDLlinter");
 const parser  = require("HDLparser");
 const filesys = require("HDLfilesys");
 
-function activate(context) {
-    var HDLparam = [];
-    let HDLFileList = [];
-    let opeParam = {
-        "os"             : "",
-        "rootPath"       : "",
-        "workspacePath"  : "",
-        "prjInfo"        : null,
-        "srcTopModule"   : {
-            name: '',
-            path: ''
-        },
-        "simTopModule"   : {
-            name: '',
-            path: ''
-        },
-        "PrjStrcture" : {
-            "prjPath" : '',
-            "HardwareSim"  : [],
-            "HardwareSrc"  : [],
-            "HardwareData" : [],
-            "SoftwareSrc"  : [],
-            "SoftwareData" : []
-        },
-        "currentHDLPath" : [],
-        "prjInitParam"   : "",
-        "propertyPath"   : ""
-    }
-    if(filesys.prjs.getOpeParam(`${__dirname}`,opeParam) != null) {
-        filesys.prjs.getPrjFiles(opeParam, HDLFileList);
-    
-        var serialportBinding = null;
-        switch (opeParam.os) {
-            // case "win32":  serialportBinding = require("../resources/serialport/bindings/win32.bindings.node");  break;
-            // case "linux":  serialportBinding = require("../resources/serialport/bindings/linux.bindings.node");  break;
-            // case "darwin": serialportBinding = require("../resources/serialport/bindings/darwin.bindings.node"); break;
-            default: break;
-        }
-        // Output Channel
-        var outputChannel = vscode.window.createOutputChannel("HDL");
-        
-        tool.registerXilinxServer(opeParam);
-        tool.registerTreeServer(opeParam);
-        tool.registerSoftServer(opeParam);
+async function launch(process, indexer, context) {
+    // Output Channel
+    var outputChannel = vscode.window.createOutputChannel("HDL");
 
-        // project Server
-        filesys.registerPrjsServer(context, opeParam);
-        let limitNum = vscode.workspace.getConfiguration("PRJ.file.limit").get("number");
-        if (HDLFileList.length > limitNum) {
-            vscode.window.showWarningMessage(`The project has exceeded the limit of ${HDLFileList.length} HDL files, \
-            so parsing and parse-related functions will be stopped directly.`);
-            return null;
-        }
-        if (HDLFileList.length >= 250) {
-            vscode.window.showInformationMessage(`The project contains ${HDLFileList.length} HDL files, \
-            which will result in a long parsing time.\n \
-            It is recommended that you specify the folder to parse in the property.json file.`);
-        }
+    // linter Server
+    linter.registerLinterServer();
     
-        try {
-            const indexer = new parser.indexer(HDLparam);
-            indexer.build_index(HDLFileList).then(() => {
-                console.log(indexer.HDLparam);
-                console.log(indexer.symbols);
-                
-                var fileExplorer = new tool.tree.FileExplorer(indexer.HDLparam, opeParam, context);
-                filesys.monitor.monitor(opeParam.workspacePath, opeParam, indexer, outputChannel, () => {
-                    fileExplorer.treeDataProvider.HDLparam = indexer.HDLparam;
-                    fileExplorer.treeDataProvider.refresh();
-                });
-                // linter Server
-                linter.registerLinterServer();
-                // tool Server
-                tool.registerLspServer(context, indexer);
-                tool.registerSimServer(indexer, opeParam, outputChannel);
-                tool.registerToolServer(context, indexer, opeParam);
-                tool.registerHardServer(context, indexer, opeParam, fileExplorer);
-                vscode.window.showInformationMessage("Init Finished.");
-            });
-        } catch (error) {
-            console.log(error);
-        }
+    // project Server
+    filesys.registerPrjsServer(process.opeParam);
+    
+    var fileExplorer = new tool.tree.FileExplorer(indexer, process);
+
+    tool.registerTreeServer(process);
+    tool.registerSoftServer(process);
+    tool.registerLspServer(context,  indexer);
+    tool.registerSimServer(context,  indexer, process, outputChannel);
+    tool.registerToolServer(context, indexer, process);
+    tool.registerHardServer(context, indexer, process, fileExplorer);
+    vscode.window.showInformationMessage("Init Finished.");
+}
+
+async function activate(context) {
+    var HDLparam = [];
+    const indexer = new parser.indexer(HDLparam);
+    const process = new filesys.processPrj(indexer);
+
+    if (!process.getOpeParam(fspath.dirname(__dirname))) {
+        return null;
     }
+
+    process.monitorHDL();
+    process.monitorProperty();
+
+    let result = await process.processPrjFiles(false);
+    if (!result) {
+        vscode.commands.registerCommand('TOOL.Launch', async () => {
+            await process.processPrjFiles(true);
+            launch(process, indexer, context);
+        });
+        return null;
+    }
+
+    launch(process, indexer, context);
 }
 exports.activate = activate;
+
+
 function deactivate() {}
 exports.deactivate = deactivate;
