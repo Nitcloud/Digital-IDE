@@ -18,36 +18,33 @@ const parser  = require("HDLparser");
 const filesys = require("HDLfilesys");
 
 async function launch(process, indexer, context) {
-    // Output Channel
-    var outputChannel = vscode.window.createOutputChannel("HDL");
-
     // linter Server
     linter.registerLinterServer();
     
     // project Server
     filesys.registerPrjsServer(process.opeParam);
     
-    var fileExplorer = new tool.tree.FileExplorer(indexer, process);
+    new tool.tree.FileExplorer(indexer, process);
 
     tool.registerTreeServer(process);
     tool.registerSoftServer(process);
+    tool.registerHardServer(process);
     tool.registerLspServer(context,  indexer);
-    tool.registerSimServer(context,  indexer, process, outputChannel);
+    tool.registerSimServer(context,  indexer, process);
     tool.registerToolServer(context, indexer, process);
-    tool.registerHardServer(context, indexer, process, fileExplorer);
     vscode.window.showInformationMessage("Init Finished.");
 }
 
 async function activate(context) {
-    var HDLparam = [];
-    const indexer = new parser.indexer(HDLparam);
-    const process = new filesys.processPrj(indexer);
+    const indexer = new parser.indexer();
+    const process = new filesys.processPrjFiles(indexer);
 
     if (!process.getOpeParam(fspath.dirname(__dirname))) {
         return null;
     }
 
     process.monitorHDL();
+    process.monitorPrjLog();
     process.monitorProperty();
 
     let result = await process.processPrjFiles(false);

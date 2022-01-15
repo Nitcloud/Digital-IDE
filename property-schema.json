@@ -76,11 +76,7 @@
 			}
 		},
         "IP_REPO" : {
-            "type" :"array",
-            "enum" :[
-                "arm",
-                "adi"
-            ]
+            "type" :"array"
         },
         "INSIDE_BOOT_TYPE" : {
             "type" :"string",

@@ -42,6 +42,16 @@
         "configuration": {
             "title": "DIDE",
             "properties": {
+                "HDL.linting.mode": {
+                    "scope": "window",
+                    "type": "string",
+                    "enum": [
+                        "auto",
+                        "manual"
+                    ],
+                    "default": "auto",
+                    "description": "Select the trigger mode for syntax checking."
+                },
                 "HDL.linting.vlog.linter": {
                     "scope": "window",
                     "type": "string",
@@ -506,6 +516,11 @@
                 "category": "FILE"
             },
             {
+                "command": "TOOL.Lint",
+                "title": "syntax check",
+                "category": "TOOL"
+            },
+            {
                 "command": "TOOL.Launch",
                 "title": "launch extension",
                 "category": "TOOL"
@@ -521,8 +536,8 @@
                 "category": "TOOL"
             },
             {
-                "command": "TOOL.Gen_BOOT",
-                "title": "Gen_BOOT",
+                "command": "TOOL.BOOT",
+                "title": "BOOT",
                 "category": "TOOL"
             },
             {
@@ -542,12 +557,6 @@
                     "light": "images/svg/light/debug.svg",
                     "dark": "images/svg/dark/debug.svg"
                 },
-                "category": "TOOL"
-            },
-            {
-                "command": "TOOL.test",
-                "title": "test",
-                "icon": "$(beaker)",
                 "category": "TOOL"
             },
             {
@@ -648,7 +657,7 @@
                 "category": "FPGA"
             },
             {
-                "command": "HARD.Gen_Bit",
+                "command": "HARD.Bit",
                 "title": "Generate the bit file",
                 "category": "FPGA"
             },
@@ -819,6 +828,11 @@
                     "when": "editorLangId == bd",
                     "command": "xilinx.Overwrite_bd",
                     "group": "navigation@9"
+                },
+                {
+                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+                    "command": "TOOL.Lint",
+                    "group": "navigation@10"
                 }
             ],
             "explorer/context": [
@@ -856,6 +870,11 @@
                     "when": "resourceLangId == vhdl",
                     "command": "TOOL.vhdl2vlog",
                     "group": "navigation@11"
+                },
+                {
+                    "when": "editorLangId == bd",
+                    "command": "xilinx.Overwrite_bd",
+                    "group": "navigation@12"
                 }
             ]
         }
