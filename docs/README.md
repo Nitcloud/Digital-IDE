@@ -103,7 +103,23 @@ user               -- 用于存放用户设计的源文件 用户自定义
 
 当 `property.json` 文件中 SOC_MODE.soc 重新设置为 "none" 后保存配置文件，文件结构会自动更改为原单一设计文件结构，Software下的所有文件均会被删除，请慎重。但删除前会有提示，提示默认开启。
 
-最后目前暂不支持重新自定义文件结构，后期有时间会补上，如果对现在的标准文件结构有想法的话欢迎在issue上发表。
+重新自定义文件结构，property.json文件配置如下:
+```json
+{
+    "PRJ_STRUCTURE": "customer",  // 一定要声明，不声明即使设置了以下参数也没效果
+    "PRJ_Path": "${workspace}/<your project path>",          // 请勿缺省
+    "HardwareSrc": "${workspace}/<your hardware src path>",  // 请勿缺省
+    "HardwareSim": "${workspace}/<your hardware sim path>",  // 请勿缺省
+    "HardwareData": "${workspace}/<your hardware data path>",// 请勿缺省
+    "SoftwareSrc": "${workspace}/<your software src path>",
+    "SoftwareData": "${workspace}/<your software data path>",
+}
+```
+1. `${workspace}`代表当前工作区的路径，所有路径请使用斜杆`/`而非反斜杠`\\`。
+2. 在自定义工程结构下lib放在 `HardwareSrc` 路径下，而ip和bd文件夹则放置在其同级目录下
+
+【注】： 在设置中 `PRJ.file.limit.number` 也非常重要，默认为600，当该工作区下的HDL文件超出这个数时，扩展功能将不会启动，优先等其他扩展启动完成之后请手动启动。
+   - 启动方式：`F1` 呼出命令栏，输入launch，选择 `launch extension` 即可启动。
 
 # 前期配置
 
@@ -194,8 +210,6 @@ user               -- 用于存放用户设计的源文件 用户自定义
 工程结构，以层级关系显示出HDL文件之间包含与被包含关系，单击后可打开对应的文件。
 
 ![工程结构](https://i.loli.net/2021/09/05/5RUmrpCl7sSuQ12.png)
-
-`【注】`: 在工程文件夹下含有 `sim` 或者 `testbench` 这两个关键词的均认为是仿真文件在工程结构中会被归类为sim。
 
 #### 自动格式化
 
@@ -365,7 +379,9 @@ property.json文件中配置如下：
 * 步骤一：如果是新建工程则需要生成property文件，注明工程的相关配置
     `使用快捷键 ctrl+shfit+p/F1 打开命令框，输入 **generate property file** 来自动生成`
 
-`【注】`：生成后进行配置，只有在保存后才会自动生成对应的文件结构。通过使用快捷键 ctrl+shfit+p/F1 打开命令框，输入 overwrite 选择 **Overwrite the InitPropertyParam** 来改写默认工程配置
+    `【注】`：
+        - 生成后进行配置，只有在保存后才会自动生成对应的文件结构。
+        - 通过使用快捷键 ctrl+shfit+p/F1 打开命令框，输入 overwrite 选择 **Overwrite the InitPropertyParam** 来改写默认的工程配置
 
 * 步骤二：启动方式如下：
     1. `使用快捷键 ctrl+shfit+p/F1 打开命令框，输入 launch 选择 **FPGA:Launch** 来启动`
@@ -377,21 +393,36 @@ property.json文件中配置如下：
 
 ### 通用功能使用说明
 
-1. Launch 功能，开启后端功能以 **property.json** 文件中配置的 *TOOL_CHAIN* 属性为准。目前只支持vivado。launch之后会根据 **property.json** 文件信息生成相应的工程。如果已经有工程的会直接打开。launch之后在HDL文件中右键选择 *Set as Top* 时会将该文件设置为设计的顶层头文件。
+1. Launch 功能，开启后端功能以 *property.json* 文件中配置的 *TOOL_CHAIN* 属性为准。目前只支持vivado。launch之后会根据 *property.json* 文件信息生成相应的工程。如果已经有工程的会直接打开vivado的gui界面。
+   1. launch之后在HDL文件中右键选择 *Set as Top* 时会将该文件在vivado中设置为设计的顶层头文件。
+   2. launch之后其他功能才会有效。
 
-2. Simulate 功能，与在HDL文件中右键显示的simulate不同，该功能使用的是 **property.json** 文件中配置的 *TOOL_CHAIN* 属性所对应的仿真功能即使用的是vivado仿真，而在HDL文件中右键显示的simulate则使用的是iverilog仿真，用于对单个文件或者少量文件进行实时快速仿真。在HDL文件中右键选择 *Set as Testbench Top* 时会将该文件设置为仿真的顶层头文件。
+2. Simulate 功能，与在HDL文件中右键显示的simulate不同，该功能使用的是 *property.json* 文件中配置的 *TOOL_CHAIN* 属性所对应的仿真功能，即vivado自带仿真，而在其他地方打开的simulate则使用的是第三方仿真工具，用于对单个文件或者少量文件进行实时快速仿真。(目前仅iverilog)
+   1. 在HDL文件中右键选择 *Set as Testbench Top* 时会将该文件设置为仿真的顶层头文件。
+   2. 若仿真成功则会直接打开vivado的gui界面，显示仿真数据与波形。
+   3. 若仿真失败则会在output栏输出错误日志。
 
-3. Refresh 功能，更新xilinx工程下所包含的文件，因为包含的形式是全包含，所有在./user/src和./user/sim下都会包含进去，所以你在src，data，sim下的文件就是你的工程已经包含的文件。更新机制是先全删除再全包含，所以你在文件夹里增删文件，选择 **`Refresh`** 后，工程里也会一起更新。此外如果你已经开启`HardWare`的终端再向 *代码文件夹* 中添加HDL文件时，终端会自动将该文件添加到工程中去。
+3. Refresh 功能，更新xilinx工程下所包含的文件，因为包含的形式是全包含
+   1. 包含的内容如下：
+      1. 刷新 `ip_repo_paths`
+      2. `HardwareSrc` 与 `HardwareSim` 下的所有HDL文件
+      3. `HardwareSrc` 同级目录下bd和ip文件夹以及 `PRJ_Path` 中的所有 bd/ip 设计文件
+      4. lib远程链接的文件，即 `HardwareLIB` 下配置的文件 (当HardwareLIB.State = "virtual")
+      5. `HardwareData` 下的约束文件
+   2. 若单个增删某个文件只要将其在工作区下增删，扩展会自动添加到vivado中无需重新refresh
 
-`【注】`：这里所说的代码文件夹指的是 **property.json** 文件中配置的 *HardwareSrc* 属性，该属性为数组类型，一旦配置即会覆盖，即使是在标准工程文件结构下，均以配置为准。如果不配置该属性且不使用标准工程文件结构则默认整个工作区均为代码文件夹，如果配置了**property.json**使用标准文件结构则默认代码文件夹为user下的 *(Hardware)/src* 和 *(Hardware)/sim* 。 
+4. Build 功能，完成综合，布局布线，你可以在 property.json 下的 *enableShowlog* 里选择是否将日志在终端中输出。
+   1. `enableShowlog` 为true时只有当出现 `CRITICAL WARNING` & `ERROR` 时才会弹出output栏，并只输出错误与严重警告日志。
+   2. Build 功能下还细分 synth、impl、bitstream 这三个小阶段的功能。
 
-4. Build功能，完成综合，布局布线，你可以在 property.json 下的 **enableShowlog** 里选择实时显示综合布线的日志。当出错的时候会自动跳出错误日志，在设置时如果出现`[CRITICAL WARNING]`时也会跳出，如果正常生成bit和bin文件则可以忽略。
+5. Program 功能，一键下载。只是下载暂时不支持固化。
 
-5. Program功能，一键下载，只是下载，固化功能后续补上，不过有zynq的bin文件直接下载到SD卡上插入即可固化。
-
-6. GUI功能，如果需要IP设计，功能时序仿真或者bd设计时选择 **`GUI`** ,之后就会自动打开图形界面。
+6. GUI 功能，如果需要IP设计，功能时序仿真或者bd设计时选择 *`GUI`* ,之后就会自动打开图形界面。
     
-    `【注】`：打开GUI后，打开对应工程的vscode，以及对应的 **`HardWare`** 运行终端不能关闭，关闭后GUI会自动退出。如果直接关闭GUI或者vscode退出则不会对工程中的IP和bd设计文件进行移动到user文件夹下，建议使用功能栏 *FPGA OPTIONS* 中的 *Exit* 进行退出，此外在功能栏 *TOOL* 中选择 *Clean* 时也会将工程中的IP和bd设计文件进行移动到user下，同时将整个工程进行删除。
+    `【注】`：
+    1. 打开GUI后，打开对应工程的vscode，以及对应的 *`HardWare`* 运行终端不能人为删除，删除后整个vivado的gui界面会自动关闭，若不保存则可能会导致设计丢失。
+    2. 如果直接关闭vivado的gui界面或者删除*`HardWare`* 运行终端则不会将 `PRJ_Path` 文件夹下的IP和bd设计文件移动`HardwareSrc` 的同级目录下。虽然不会产生什么影响但分散的设计不方便管理，所以建议使用功能栏 *FPGA OPTIONS* 中的 *Exit* 进行退出。
+    3. 功能栏 *TOOL* 中选择 *Clean* 时也会将工程中的IP和bd设计文件进行移动到`HardwareSrc` 的同级目录下，同时将整个工程进行删除。
 
 【注】：SDK相关功能还不完善后续准备开放，用于替代xilinx的SDK，彻底解决xilinx SDK使用卡顿问题。
 

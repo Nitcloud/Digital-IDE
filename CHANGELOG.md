@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.18] - 2022-01-12
+
+- Fix issue [#32](https://github.com/Bestduan/Digital-IDE/issues/32)
+
 ## [0.1.18] - 2021-09-12
 
 - delete generate tb file 

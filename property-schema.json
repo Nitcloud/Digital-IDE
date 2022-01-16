@@ -10,21 +10,6 @@
 				"xilinx"
 			]
 		},
-        "SIMULATION": {
-			"type": "string",
-			"description": "The tool chain you need",
-			"enum": [
-				"xilinx"
-			]
-		},
-        "FAST_SIMULATION": {
-			"type": "string",
-			"description": "The tool chain you need",
-			"enum": [
-				"xilinx",
-                "iverilog"
-			]
-		},
         "PRJ_STRUCTURE" : {
             "type": "string",
 			"description": "the project structure",
