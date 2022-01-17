@@ -3,15 +3,15 @@
     "displayName": "Digital IDE",
     "description": "Design For Digital Development",
     "publisher": "sterben",
-    "homepage": "https://github.com/Bestduan/DIDE",
-    "version": "0.2.0",
+    "homepage": "https://github.com/Bestduan/Digital-IDE",
+    "version": "0.1.20",
     "main": "./src/extension",
     "icon": "images/DIDE.png",
     "keywords": [
         "FPGA Develop Support",
         "FPGA",
-        "IC",
         "ASIC",
+        "IC",
         "Digital",
         "HDL",
         "Systemverilog",
@@ -22,10 +22,10 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/Bestduan/DIDE.git"
+        "url": "https://github.com/Bestduan/Digital-IDE"
     },
     "bugs": {
-        "url": "https://github.com/Bestduan/DIDE/issues"
+        "url": "https://github.com/Bestduan/Digital-IDE/issues"
     },
     "engines": {
         "vscode": "^1.42.1"
@@ -42,6 +42,16 @@
         "configuration": {
             "title": "DIDE",
             "properties": {
+                "HDL.linting.mode": {
+                    "scope": "window",
+                    "type": "string",
+                    "enum": [
+                        "auto",
+                        "manual"
+                    ],
+                    "default": "auto",
+                    "description": "Select the trigger mode for syntax checking."
+                },
                 "HDL.linting.vlog.linter": {
                     "scope": "window",
                     "type": "string",
@@ -327,12 +337,12 @@
                     "name": "Tool"
                 },
                 {
-                    "id": "TOOL.fpga_tree",
+                    "id": "TOOL.hard_tree",
                     "name": "FPGA Options"
                 },
                 {
-                    "id": "TOOL.sdk_tree",
-                    "name": "SDK Options"
+                    "id": "TOOL.soft_tree",
+                    "name": "SOFT Options"
                 }
             ]
         },
@@ -353,13 +363,9 @@
                 "configuration": "./config/tcl.configuration.json"
             },
             {
-                "id": "json",
+                "id": "bd",
                 "extensions": [
-                    ".json",
                     ".bd"
-                ],
-                "aliases": [
-                    "Json"
                 ]
             },
             {
@@ -431,8 +437,8 @@
         ],
         "jsonValidation": [
             {
-                "fileMatch": "**/propertySch.json",
-                "url": "./propertySch.json"
+                "fileMatch": "property.json",
+                "url": "./property-schema.json"
             }
         ],
         "grammars": [
@@ -510,6 +516,16 @@
                 "category": "FILE"
             },
             {
+                "command": "TOOL.Lint",
+                "title": "syntax check",
+                "category": "TOOL"
+            },
+            {
+                "command": "TOOL.Launch",
+                "title": "launch extension",
+                "category": "TOOL"
+            },
+            {
                 "command": "TOOL.Gen_Property",
                 "title": "generate property file",
                 "category": "TOOL"
@@ -520,8 +536,8 @@
                 "category": "TOOL"
             },
             {
-                "command": "TOOL.Gen_BOOT",
-                "title": "Gen_BOOT",
+                "command": "TOOL.BOOT",
+                "title": "BOOT",
                 "category": "TOOL"
             },
             {
@@ -544,12 +560,6 @@
                 "category": "TOOL"
             },
             {
-                "command": "TOOL.test",
-                "title": "test",
-                "icon": "$(beaker)",
-                "category": "TOOL"
-            },
-            {
                 "command": "TOOL.netlist",
                 "title": "show netlist",
                 "icon": {
@@ -559,12 +569,22 @@
                 "category": "TOOL"
             },
             {
-                "command": "TOOL.netlist.viewer",
-                "title": "Netlist viewer",
+                "command": "TOOL.FSMGraph",
+                "title": "show FSMGraph",
                 "icon": {
-                    "light": "images/svg/light/list-tree.svg",
-                    "dark": "images/svg/dark/list-tree.svg"
-                }
+                    "light": "images/svg/light/fsm.svg",
+                    "dark": "images/svg/dark/fsm.svg"
+                },
+                "category": "TOOL"
+            },
+            {
+                "command": "TOOL.vhdl2vlog",
+                "title": "translate vhdl to vlog",
+                "icon": {
+                    "light": "images/svg/light/translate.svg",
+                    "dark": "images/svg/dark/translate.svg"
+                },
+                "category": "TOOL"
             },
             {
                 "command": "TOOL.instance",
@@ -597,109 +617,109 @@
                 "category": "TOOL"
             },
             {
-                "command": "FPGA.Launch",
+                "command": "HARD.Launch",
                 "title": "Launch",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.srcTop",
+                "command": "HARD.srcTop",
                 "title": "Set as TOP",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.simTop",
+                "command": "HARD.simTop",
                 "title": "Set as Testbench TOP",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Refresh",
+                "command": "HARD.Refresh",
                 "title": "refresh designed file",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Simulate",
+                "command": "HARD.Simulate",
                 "title": "Run the Simulation",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Build",
+                "command": "HARD.Build",
                 "title": "Build the current fpga project",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Synth",
+                "command": "HARD.Synth",
                 "title": "Synth the current fpga project",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Impl",
+                "command": "HARD.Impl",
                 "title": "Impl the current fpga project",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Gen_Bit",
+                "command": "HARD.Bit",
                 "title": "Generate the bit file",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Program",
+                "command": "HARD.Program",
                 "title": "Download the bit file into the device",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.GUI",
+                "command": "HARD.GUI",
                 "title": "Open the GUI",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Exit",
+                "command": "HARD.Exit",
                 "title": "Exit the current project",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Overwrite_bd",
-                "title": "Overwrite the bd_file",
-                "category": "FPGA"
-            },
-            {
-                "command": "FPGA.Add_dev",
+                "command": "HARD.Add_dev",
                 "title": "Add devices to the database",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Delete_dev",
+                "command": "HARD.Delete_dev",
                 "title": "Remove the device from the database",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Add_bd",
+                "command": "SOFT.Launch",
+                "title": "Launch",
+                "category": "SOFT"
+            },
+            {
+                "command": "SOFT.Build",
+                "title": "Build",
+                "category": "SOFT"
+            },
+            {
+                "command": "SOFT.Download",
+                "title": "Download",
+                "category": "SOFT"
+            },
+            {
+                "command": "xilinx.Overwrite_bd",
+                "title": "Overwrite the bd_file",
+                "category": "FPGA"
+            },
+            {
+                "command": "xilinx.Add_bd",
                 "title": "Add a bd_file",
                 "category": "FPGA"
             },
             {
-                "command": "FPGA.Delete_bd",
+                "command": "xilinx.Delete_bd",
                 "title": "Delete the bd_file",
                 "category": "FPGA"
-            },
-            {
-                "command": "SDK.Launch",
-                "title": "Launch",
-                "category": "SDK"
-            },
-            {
-                "command": "SDK.Build",
-                "title": "Build",
-                "category": "SDK"
-            },
-            {
-                "command": "SDK.Download",
-                "title": "Download",
-                "category": "SDK"
             }
         ],
         "keybindings": [
             {
-                "command": "FPGA.Launch",
+                "command": "HARD.Launch",
                 "key": "Alt+z",
                 "mac": "Alt+z",
                 "when": "editorTextFocus"
@@ -729,23 +749,49 @@
                     "command": "TOOL.netlist",
                     "group": "inline",
                     "when": "view == TOOL.file_tree && viewItem == file"
+                },
+                {
+                    "command": "HARD.srcTop",
+                    "group": "navigation@1",
+                    "when": "view == TOOL.file_tree && viewItem == file"
+                },
+                {
+                    "command": "HARD.simTop",
+                    "group": "navigation@2",
+                    "when": "view == TOOL.file_tree && viewItem == file"
+                },
+                {
+                    "command": "TOOL.simulate",
+                    "group": "navigation@3",
+                    "when": "view == TOOL.file_tree && viewItem == file"
                 }
             ],
             "editor/title": [
                 {
-                    "command": "TOOL.netlist.viewer",
+                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+                    "command": "TOOL.netlist",
+                    "group": "navigation"
+                },
+                {
+                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+                    "command": "TOOL.FSMGraph",
+                    "group": "navigation"
+                },
+                {
+                    "when": "resourceLangId == vhdl",
+                    "command": "TOOL.vhdl2vlog",
                     "group": "navigation"
                 }
             ],
             "editor/context": [
                 {
                     "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-                    "command": "FPGA.srcTop",
+                    "command": "HARD.srcTop",
                     "group": "navigation@1"
                 },
                 {
                     "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-                    "command": "FPGA.simTop",
+                    "command": "HARD.simTop",
                     "group": "navigation@2"
                 },
                 {
@@ -767,17 +813,37 @@
                     "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
                     "command": "TOOL.netlist",
                     "group": "navigation@6"
+                },
+                {
+                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+                    "command": "TOOL.FSMGraph",
+                    "group": "navigation@7"
+                },
+                {
+                    "when": "resourceLangId == vhdl",
+                    "command": "TOOL.vhdl2vlog",
+                    "group": "navigation@8"
+                },
+                {
+                    "when": "editorLangId == bd",
+                    "command": "xilinx.Overwrite_bd",
+                    "group": "navigation@9"
+                },
+                {
+                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+                    "command": "TOOL.Lint",
+                    "group": "navigation@10"
                 }
             ],
             "explorer/context": [
                 {
                     "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
-                    "command": "FPGA.srcTop",
+                    "command": "HARD.srcTop",
                     "group": "navigation@5"
                 },
                 {
                     "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
-                    "command": "FPGA.simTop",
+                    "command": "HARD.simTop",
                     "group": "navigation@6"
                 },
                 {
@@ -794,6 +860,21 @@
                     "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
                     "command": "TOOL.netlist",
                     "group": "navigation@9"
+                },
+                {
+                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+                    "command": "TOOL.FSMGraph",
+                    "group": "navigation@10"
+                },
+                {
+                    "when": "resourceLangId == vhdl",
+                    "command": "TOOL.vhdl2vlog",
+                    "group": "navigation@11"
+                },
+                {
+                    "when": "editorLangId == bd",
+                    "command": "xilinx.Overwrite_bd",
+                    "group": "navigation@12"
                 }
             ]
         }

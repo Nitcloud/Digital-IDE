@@ -9,6 +9,7 @@
  */
 'use strict';
 
+const fspath  = require("path");
 const vscode  = require("vscode");
 
 const tool    = require("HDLtool");
@@ -16,82 +17,49 @@ const linter  = require("HDLlinter");
 const parser  = require("HDLparser");
 const filesys = require("HDLfilesys");
 
-const darwinSerialport = require("../resources/serialport/darwin.bindings.node");
-const linuxSerialport  = require("../resources/serialport/linux.bindings.node");
-const win32Serialport  = require("../resources/serialport/win32.bindings.node");
-
-function activate(context) {
-    var HDLparam = [];
-    let HDLFileList = [];
-    let opeParam = {
-        "os"             : "",
-        "rootPath"       : "",
-        "workspacePath"  : "",
-        "prjInfo"        : null,
-        "srcTopModule"   : {
-            name: '',
-            path: ''
-        },
-        "simTopModule"   : {
-            name: '',
-            path: ''
-        },
-        "currentHDLPath" : [],
-        "tbFilePath"     : "",
-        "prjInitParam"   : "",
-        "propertyPath"   : ""
-    }
-    if(filesys.prjs.getOpeParam(`${__dirname}`,opeParam) != null) {
-        filesys.prjs.getPrjFiles(opeParam, HDLFileList);
+async function launch(process, indexer, context) {
+    // linter Server
+    linter.registerLinterServer();
     
-        // Output Channel
-        var outputChannel = vscode.window.createOutputChannel("HDL");
-        
-        tool.registerXilinxServer(opeParam);
-        tool.registerTreeServer(opeParam);
-        tool.registerToolServer(opeParam);
-        tool.registerSocServer(opeParam);
-
-        // project Server
-        filesys.registerPrjsServer(context, opeParam);
-        let limitNum = vscode.workspace.getConfiguration("PRJ.file.limit").get("number");
-        if (HDLFileList.length > limitNum) {
-            vscode.window.showWarningMessage(`The project has exceeded the limit of ${HDLFileList.length} HDL files, \
-            so parsing and parse-related functions will be stopped directly.`);
-            return null;
-        }
-        if (HDLFileList.length >= 250) {
-            vscode.window.showInformationMessage(`The project contains ${HDLFileList.length} HDL files, \
-            which will result in a long parsing time.\n \
-            It is recommended that you specify the folder to parse in the property.json file.`);
-        }
+    // project Server
+    filesys.registerPrjsServer(process.opeParam);
     
-        try {
-            console.time('timer');
-            const indexer = new parser.indexer(HDLparam);
-            indexer.build_index(HDLFileList).then(() => {
-                console.timeEnd('timer');
-                console.log(indexer.HDLparam);
-                console.log(indexer.symbols);
-                
-                var fileExplorer = new tool.tree.FileExplorer(indexer.HDLparam, opeParam, context);
-                filesys.monitor.monitor(opeParam.workspacePath, opeParam, indexer, outputChannel, () => {
-                    fileExplorer.treeDataProvider.HDLparam = indexer.HDLparam;
-                    fileExplorer.treeDataProvider.refresh();
-                });
-                // linter Server
-                linter.registerLinterServer();
-                // tool Server
-                tool.registerSimServer(indexer, opeParam);
-                tool.registerLspServer(context, indexer);
-                tool.registerBuildServer(context, indexer, opeParam, fileExplorer);
-                vscode.window.showInformationMessage("Init Finished.");
-            });
-        } catch (error) {
-            console.log(error);
-        }
+    new tool.tree.FileExplorer(indexer, process);
+
+    tool.registerTreeServer(process);
+    tool.registerSoftServer(process);
+    tool.registerHardServer(process);
+    tool.registerLspServer(context,  indexer);
+    tool.registerSimServer(context,  indexer, process);
+    tool.registerToolServer(context, indexer, process);
+    vscode.window.showInformationMessage("Init Finished.");
+}
+
+async function activate(context) {
+    const indexer = new parser.indexer();
+    const process = new filesys.processPrjFiles(indexer);
+
+    if (!process.getOpeParam(fspath.dirname(__dirname))) {
+        return null;
     }
+
+    process.monitorHDL();
+    process.monitorPrjLog();
+    process.monitorProperty();
+
+    let result = await process.processPrjFiles(false);
+    if (!result) {
+        vscode.commands.registerCommand('TOOL.Launch', async () => {
+            await process.processPrjFiles(true);
+            launch(process, indexer, context);
+        });
+        return null;
+    }
+
+    launch(process, indexer, context);
 }
 exports.activate = activate;
+
+
 function deactivate() {}
 exports.deactivate = deactivate;

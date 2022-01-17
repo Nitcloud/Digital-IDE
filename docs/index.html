@@ -17,37 +17,7 @@
             name: '',
             repo: ''
         }
-    </script>
-    <!-- 添加侧边栏的配置  -->
-    <!-- 添加_sidebar.md文件来配置侧边栏  -->
-    <script>
-        window.$docsify = {
-            loadSidebar: true,
-            maxLevel: 2,
-            subMaxLevel: 4,
-            alias: {
-                '/.*/_sidebar.md': '/_sidebar.md'//防止意外回退
-            }
-        }
-    </script>
-    <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
-    <!-- 导航栏的配置 -->
-    <script>
-        window.$docsify = {
-            loadNavbar: true,
-            alias: {
-                '/.*/_navbar.md': '/_navbar.md'//防止意外回退
-            }
-        }
-    </script>
-    <!-- 添加封面页的配置 -->
-    <script>
-        window.$docsify = {
-            coverpage: true
-        }
-    </script>
-    <!-- 添加全文搜索的配置  -->
-    <script>
+        // 添加全文搜索的配置
         window.$docsify = {
             search: {
                 placeholder: '搜索',
@@ -55,19 +25,20 @@
                 depth: 3
             },
         }
+        // 添加封面
+        window.$docsify = {
+            onlyCover: false,
+            coverpage: true
+        }
     </script>
-     
+    <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
     <script src="//unpkg.com/docsify/lib/plugins/search.js"></script>
     <!-- 添加代码高亮的配置  -->
-    <script src="//unpkg.com/prismjs/components/prism-bash.js"></script>
-     
-    <script src="//unpkg.com/prismjs/components/prism-java.js"></script>
-     
-    <script src="//unpkg.com/prismjs/components/prism-sql.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-json.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-vhdl.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-verilog.min.js"></script>
     <!-- 添加一键拷贝代码的配置 -->
     <script src="//unpkg.com/docsify-copy-code"></script>
-    <!-- Docsify v4 -->
-    <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
 </body>
 
 </html>

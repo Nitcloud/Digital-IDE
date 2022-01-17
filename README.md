@@ -19,7 +19,7 @@ The plug-in for personal development is only interested in at the beginning, onl
 
 -----
 
-* Contains support for languages ​​required during FPGA development 
+* Contains support for languages required during FPGA development 
 - **VHDL**
 - **Verilog**
 - **SystemVerilog**
@@ -186,7 +186,7 @@ Example: `{xilinx installation path}/Vivado/<Version number, for example 18.3>/d
 
 2. Simulate. The function of "Simulate" is different from that of "Simulate" displayed in the RIGHT click of the HDL file, this function uses the simulation function corresponding to the *TOOL_CHAIN* property configured in the **property.json** file, which uses vivado simulation. While simulate displayed in THE RIGHT click of THE HDL file uses iverilog simulation, which is used to simulate a single file or a small number of files in real time.Right-click on the HDL file and select *Set as Testbench Top* to Set the file as the top-level header for the simulation.
 
-3. Refresh. All files under./user/src and./user/sim will be included, so your files under src, data, sim are the files already included in your project.The update mechanism is to delete all and then include all, so you add or delete files in the folder, select `Refresh`, the project will also be updated. In addition, if you add an HDL file to *Code folder* after you have started 'StartFPGA' terminal, the terminal will automatically add the file to the project.
+3. Refresh. All files under./user/src and./user/sim will be included, so your files under src, data, sim are the files already included in your project.The update mechanism is to delete all and then include all, so you add or delete files in the folder, select `Refresh`, the project will also be updated. In addition, if you add an HDL file to *Code folder* after you have started 'HardWare' terminal, the terminal will automatically add the file to the project.
    
 '[Note]' : The *Code folder* refers to the *HardwareSrc* property configured in the **property.json** file. This property is an array type and will be overwritten once configured, even under the standard engineering file structure. If you do not configure this property and do not use the standard project file structure, the entire workspace will be the *Code folder* by default. If you configure **property.json** and use the standard file structure, the default *Code folder* is user *(Hardware)/src* and *(Hardware)/sim*.
 
@@ -196,7 +196,7 @@ Example: `{xilinx installation path}/Vivado/<Version number, for example 18.3>/d
    
 6. GUI. if you need IP design, function timing simulation or BD design select **`GUI`**, after which will automatically open the graphical interface.
     
-[Note] ': After opening the GUI, open the VSCode of the corresponding project, and the corresponding **`StartFPGA`** running terminal can not be closed, after closing the GUI will automatically exit.If you directly close the GUI or vscode to Exit, the IP and BD design files in the project will not be moved to the user folder. You are advised to use *Exit* in the function bar *FPGA OPTIONS* to Exit.In addition, when you select *Clean* in the function bar *TOOL*, the IP and BD design files in the project will be moved to user and the whole project will be deleted.
+[Note] ': After opening the GUI, open the VSCode of the corresponding project, and the corresponding **`HardWare`** running terminal can not be closed, after closing the GUI will automatically exit.If you directly close the GUI or vscode to Exit, the IP and BD design files in the project will not be moved to the user folder. You are advised to use *Exit* in the function bar *FPGA OPTIONS* to Exit.In addition, when you select *Clean* in the function bar *TOOL*, the IP and BD design files in the project will be moved to user and the whole project will be deleted.
 
 [Note] : Relevant functions of SDK are not perfect and are ready to be opened later, which is used to replace Xilinx SDK and completely solve the problem of Using Xilinx SDK.
 

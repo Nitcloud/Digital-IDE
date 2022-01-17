@@ -1,0 +1,7 @@
+//arch = zynq; split = false; format = BIN
+the_ROM_image:
+{
+	[bootloader]d:/project/Code/.prj/Extension/Owner/DIDE/resources/boot/xilinx/microphase/fsbl.elf
+	d:/project/FPGA/FPGA_Design/TCL_project/Test/LED_zynq_testtemplate.bit
+	d:/project/Code/.prj/Extension/Owner/DIDE/resources/boot/xilinx/microphaseps_test.elf
+}

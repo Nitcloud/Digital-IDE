@@ -4,7 +4,6 @@
 <head>
     <link rel="stylesheet" href="../xterm/xterm.css" />
     <script src="../xterm/xterm.js"></script>
-    <!-- <script src="./term.js"></script> -->
 </head>
 
 <body>
@@ -12,45 +11,40 @@
 </body>
 
 <script>
-    const vscode = acquireVsCodeApi();
+    // const vscode = acquireVsCodeApi();
 
-    function sendMessage(text) {
-        vscode.postMessage({
-            command: 'send',
-            content: text
-        });
-    }
+    // function sendMessage(text) {
+    //     vscode.postMessage({
+    //         command: 'send',
+    //         content: text
+    //     });
+    // }
 
-    function sendCommand(cmd) {
-        vscode.postMessage({
-            command: 'command',
-            content: cmd
-        });
-    }
-
-    var head =
-        "   _____           _       _                  _        \r\n" +
-        "  / ____|         (_)     | |                | |       \r\n" +
-        " | (___   ___ _ __ _  __ _| |_ __   ___  _ __| |_      \r\n" +
-        "  \\___ \\ / _ \\ '__| |/ _` | | '_ \\ / _ \\| '__| __|\r\n" +
-        "  ____) |  __/ |  | | (_| | | |_) | (_) | |  | |_      \r\n" +
-        " |_____/ \\___|_|  |_|\\__,_|_| .__/ \\___/|_|   \\__| \r\n" +
-        "                            | |                        \r\n" +
-        "                            |_|                        \r\n";
-
-    var head_backup =
-        "   _____           _       __                 __       \r\n" +
-        "  / ___/___  _____(_)___ _/ /___  ____  _____/ /_      \r\n" +
-        "  \\__ \\/ _ \\/ ___/ / __ `/ / __ \\/ __ \\/ ___/ __/ \r\n" +
-        " ___/ /  __/ /  / / /_/ / / /_/ / /_/ / /  / /_        \r\n" +
-        "/____/\\___/_/  /_/\\__,_/_/ .___/\\____/_/   \\__/    \r\n" +
-        "                        /_/                            \r\n";
+    // function sendCommand(cmd) {
+    //     vscode.postMessage({
+    //         command: 'command',
+    //         content: cmd
+    //     });
+    // }
 
     var content = '';
 
-    var currentState = 'termianl';
+    var currentState = 'terminal';
 
+    var termianl_commands  = [];
+    var serialport_command = [];
+
+    var head =
+        "\x1B[1;91m   _____           _       __                 __       \r\n" +
+        "\x1B[1;92m  / ___/___  _____(_)___ _/ /___  ____  _____/ /_      \r\n" +
+        "\x1B[1;93m  \\__ \\/ _ \\/ ___/ / __ `/ / __ \\/ __ \\/ ___/ __/ \r\n" +
+        "\x1B[1;94m ___/ /  __/ /  / / /_/ / / /_/ / /_/ / /  / /_        \r\n" +
+        "\x1B[1;95m/____/\\___/_/  /_/\\__,_/_/ .___/\\____/_/   \\__/    \r\n" +
+        "\x1B[1;96m                        /_/                            \r\n";
+
+    var content = '';
     let term = new Terminal({
+        rows: 36,
         rendererType: "canvas",         //渲染类型
         convertEol: true,               //启用时，光标将设置为下一行的开头
         // scrollback: 50,              //终端中的回滚量
@@ -58,6 +52,7 @@
         // cursorStyle: "underline",    //光标样式
         cursorBlink: true,              //光标闪烁
         theme: {
+            fontFamily: "Consolas",
             foreground: "#ECECEC",      //字体
             background: "#000000",      //背景色
             cursor: "help",             //设置光标
@@ -65,20 +60,29 @@
         }
     });
 
-    let label = 'Digital-IDE @\x1B[1;3;31mserialport\x1B[0m $ ';
+    let userColour = '\x1B[1;7;38;2;35;209;139m';
+    let funcColour = '\x1B[1;38;2;57;136;224m';
+
+    let userLaber = 'tool@Digital-IDE';
+    let funcLaber = 'terminal';
+    let label = userColour + userLaber + '\x1B[0m:' +
+                funcColour + funcLaber + '$\x1B[0m';
+
+    let labelLen = userLaber.length + funcLaber.length + 2;
     term.prompt = () => {
-        if(currentState == 'terminal') {
-            sendCommand(content);
+        if (currentState == "terminal") {
+            termianl_commands.push(content);
         }
-        if (currentState == 'serialport') {
-            sendMessage(content);
+        else if (currentState == "serialport") {
+            serialport_command.push(content);
         }
+        term.write('\r\n' + label);
         content = '';
     }
 
     // 创建terminal实例
     term.open(document.getElementById('terminal'));
-    term.write(head_backup);
+    term.write(head);
     term.write(label);
 
     // \33[2K 删除整行但是光标不到行首
@@ -91,9 +95,24 @@
         if (ev.keyCode === 13) { // 回车键
             term.prompt()
         }
+        else if (ev.keyCode === 9) { // TAB键
+            return null;
+        }
+        else if (ev.keyCode === 27) { // ESC键
+            return null;
+        }
+        else if (ev.keyCode === 37) { // 向左方向键
+            return null;
+        }
+        else if (ev.keyCode === 38) { // 向上方向键
+            return null;
+        }
+        else if (ev.keyCode === 40) { // 向下方向键
+            return null;
+        }
         else if (ev.keyCode === 8) { // 删除键
             // Do not delete the prompt
-            if (term._core.buffer.x > label.length) {
+            if (term._core.buffer.x > labelLen) {
                 term.write('\b \b')
             }
         }
@@ -104,15 +123,15 @@
     })
 
     // Handle the message inside the webview
-    window.addEventListener('message', event => {
-        const message = event.data;
-        console.log("get the message");
-        switch (message.command) {
-            case 'curState': currentState = message.content; break;
-            case 'receive' : term.write(message.content + '\r\n' + label); break;
-            case 'cmdback' : term.write(message.content + '\r\n' + label); break;
-        }
-    });
+    // window.addEventListener('message', event => {
+    //     const message = event.data;
+    //     console.log("get the message");
+    //     switch (message.command) {
+    //         case 'curState': currentState = message.content; break;
+    //         case 'receive' : term.write(message.content + '\r\n' + label); break;
+    //         case 'cmdback' : term.write(message.content + '\r\n' + label); break;
+    //     }
+    // });
 </script>
 
 </html>
