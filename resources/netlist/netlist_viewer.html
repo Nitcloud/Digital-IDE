@@ -120,6 +120,7 @@
     initSidebar();
 
     var Render = new render();
+    Render.init();
 
     const vscode = acquireVsCodeApi();
     function export_message(type) {
@@ -156,8 +157,7 @@
         console.log(message.command);
         switch (message.command) {
             case 'netlist' : 
-                Render.init(message.netlist);
-                Render.showNetlist(Render.netLists[Render.curNetIndex]);
+                Render.showNetlist(message.netlist, true);
             break;
         }
     });

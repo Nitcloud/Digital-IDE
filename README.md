@@ -1,67 +1,85 @@
-# FPGA Develop Support
+# Digital IDE -version 0.1.20
 
-FPGA development plugin for VS Code
+ASIC & FPGA design extension in VS Code (All in one)
 
-If you have any questions, please post them under [issues](https://github.com/Bestduan/fpga_support_plug/issues).
-Development is not easy, please [star](https://github.com/Bestduan/fpga_support_plug) if you like it.
+- If you have any questions, please post them under [issues](https://github.com/Bestduan/fpga_support_plug/issues).
+- If you like it, please [star](https://github.com/Bestduan/fpga_support_plug).
 
 Versions released before January 2022 are bug-fixed, and new features will be released after January.
 
-[中文教程](https://bestduan.github.io/2020/03/03/FPGA-Develop-Support%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/)
+[中文教程](https://bestduan.github.io/Digital-IDE-doc/#/)
 
 [知乎教程](https://zhuanlan.zhihu.com/p/365805011)
 
-`Note`:I'm really sorry that I will stop updating this Extension for half a year, because I need to prepare for the Unified National Graduate Entrance Examination. In the meantime, if there is a simple bug, I'll fix it quickly, but I won't consider any new features for now.
-
-The plug-in for personal development is only interested in at the beginning, only to open out a force, but with the deepening of the late development encountered bottlenecks, and more and more unable to solve the problem, at the same time the exam of postgraduate in oneself still faces again, half a year may not be able to continue to further behind, because too many plug-in content system, tutorial cannot continue to supplement, the apology, You are free to use it. Finally, if you like this plugin and like digital development, please connact with me.
+You are free to use it. Finally, if you like this extension and have some great idea, please connact with me. I am look foward to your joining.
 
 - Email: sterben.661214@gmail.com.
 
------
-
-* Contains support for languages required during FPGA development 
-- **VHDL**
-- **Verilog**
-- **SystemVerilog**
-* others
-- **TCL**, **XDC**, **SDC**
-- **ld**
-* Supports automatic testbench generation (and **save as file**).
-* Supports rapid development with Vivado, `one-key create new project`, `one-key synthesis`, `one-key simulation` and `one-key download`.
+--------------------------------------------------------------------------------------------
 
 ## START GIF
 
 * Start interface
 ![START GIF.gif](https://i.loli.net/2021/04/18/jVU4kwGf83zWFY1.gif)
 
-Use *TOOL:generate property file* to generate an initial 'property.json' file.
+- Use *TOOL:generate property file* to generate an initial `property.json` file.
+- Use *TOOL:Overwrite the InitPropertyParam* to customize the initial `property.json` file.
 
-Use *TOOL:Overwrite the InitPropertyParam* to customize the initial property.json file.
+[Note]: Once the `SOC_MODE.soc` in the `property.json` file is changed from `none` to another, or turn back, file structure in this workspace will be updated, but only in standard file structure.
 
-The file structure is updated once the 'property.json' file is saved. This file structure is defined as the standard file structure in the documentation.
+The standard file structure is defined as follow:
 
-Default global resolution if the standard file structure is not used, which can result in a large CPU footprint.
+```
+.vscode
+  └── property.json   -- Project profile user - defined (or root directory stored in the workspace)
+prj                   -- Used to store project files
+  ├── intel           -- Used to store Intel engineering files
+  ├── simulation      -- Used to store the intermediate files of the third party simulation tool
+  └── xilinx          -- Used to store Xilinx engineering files
+user                  -- Used to store source files designed by users User-defined
+  ├── ip              -- Store the project IP code (vendor tool management, but moved to src equivalent directory by extension)
+  ├── bd              -- Store project Block Designer source code (vendor tool management, but moved to src equivalent directory by extension)
+  ├── data            -- Store data files, and constraint files
+  ├── sim             -- Store user emulation code
+  └── src             -- Store user design source code
+       └─ lib         -- Store the user's hardware library source
+```
 
-`Note` : The current property.json automatic prompt is invalid, the reason is unknown, if you know something, please advise.
+`SOC_MODE.soc` in the `property.json` file is not setted as `none` (only user/** be changed):
+
+```
+user               -- Store source files designed by users User-defined
+  Hardware         -- Store hardware logic design
+     ├── ip        -- Store the project IP code (vendor tool management, but moved to src equivalent directory by extension)
+     ├── bd        -- Store project Block Designer source code (vendor tool management, but moved to src equivalent directory by extension)
+     ├── data      -- Store data files, and constraint files
+     ├── sim       -- Store user emulation code
+     └── src       -- Store user design source code
+          └─ lib   -- Store the user's hardware library source
+  Software         -- Store software driver design
+     ├── data      -- Store data files
+     └── src       -- Store the user's project source code
+```
 
 ## Requirements
 
-1. If you need to bring the Extension own serial debugging tool, install **python3** and add it to the system environment variable
+1. If you need to bring the Extension own serial debugging tool, install *python3* and add it to the system environment variable
 
 2. If you need compatibility with Vivado features (including syntax checking, engineering, feature emulation, etc.) please add the following variables
    
 * `./Vivado/2018.3/bin`
 * `./Vitis/2019.2/bin` or `./SDK/2018.3/bin`
 
-Ways to detect successful configuration: enter 
-- **xsct**
-- **vivado -version**
-- **python**
-in the shell, and check that all can be executed successfully.
+Ways to detect successful configuration: 
+
+Enter 
+  - **xsct**
+  - **vivado -version**
+  - **python**
+
+Check that all can be executed successfully.
 
 [Note] : Currently support Vivado development, later will be compatible with other manufacturers development environment
-
------
 
 ## Language highlight
 
@@ -167,7 +185,7 @@ This feature is not recommended and it is more convenient to generate the instan
 
 ![iverilog fast simulation](https://i.loli.net/2021/05/02/bfJ1lFGWTjXkeRq.png)
 
-1. Build-in multi-file emulation without 'include'
+1. Build-in multi-file emulation without *`include*
 2. Support Xilinx simulation library
 
 [Note] : This feature requires both iVerilog and Gtkwave to add system environment variables
@@ -176,9 +194,17 @@ If you need to support xilinx simulation library, you need to set the installati
 
 Example: `{xilinx installation path}/Vivado/<Version number, for example 18.3>/data/verilog/src`
 
-## Netlist
+## Netlist-View
 
-![netlist](https://i.loli.net/2021/09/10/Wue9vYgMCkSNzqx.png)
+![netlist](https://s2.loli.net/2022/01/07/YR2UHVpM3PK5sut.png)
+
+## Translate vhdl-to-verilog
+
+![vhdl-to-verilog](https://s2.loli.net/2022/01/07/prTk2VjoYIv7wZm.gif)
+
+## State-Machine-View
+
+![State-Machine](https://s2.loli.net/2022/01/10/4JroaIAju3wtgTR.png)
 
 ## General function instructions
 

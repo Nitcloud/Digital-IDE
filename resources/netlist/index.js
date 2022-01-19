@@ -11,10 +11,7 @@ class render{
         this.embed_svg.id = "svg_synth";
     }
 
-    init(netlist) {
-        this.netlist = netlist;
-        this.netLists.push(netlist);
-
+    init() {
         var _this = this;
         document.getElementById("last").onclick = function () {
             if (_this.curNetIndex > 0) {
@@ -30,8 +27,13 @@ class render{
         }
     }
 
-    async showNetlist(netList) {
-
+    async showNetlist(netList, isClear) {
+        if (isClear) {
+            this.netLists = [];
+            this.netlist = netList;
+            this.netLists.push(netList);
+        }
+        console.log(this.netLists);
         let netnode = this.showTreelist(netList);
         var setting = {};
         $(document).ready(function () {
