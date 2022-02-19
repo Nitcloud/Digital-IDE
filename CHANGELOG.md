@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.22] - 2022-01-20
+
+- Fix lib files do not display in tree view
+
+## [0.1.21] - 2022-01-20
+
+- Fix issue [#26](https://github.com/Bestduan/Digital-IDE/issues/26)
+- Rename as Digital-IDE
+- Fix generate property.json file
+
 ## [0.1.20] - 2022-01-12
 
 - Fix issue [#32](https://github.com/Bestduan/Digital-IDE/issues/32)
@@ -14,28 +24,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.18] - 2021-09-12
 
 - delete generate tb file 
-
 - add function netlist show
-
 - Fix issue [#25](https://github.com/Bestduan/fpga_support_plug/issues/25)
-
 - Fix issue [#24](https://github.com/Bestduan/fpga_support_plug/issues/24)
 
 ## [0.1.17] - 2021-09-04
 
 - Fix issue [#22](https://github.com/Bestduan/fpga_support_plug/issues/22)
-
 - Fix issue [#21](https://github.com/Bestduan/fpga_support_plug/issues/21)
-
 - Fix issue [#20](https://github.com/Bestduan/fpga_support_plug/issues/20)
 
 
 ## [0.1.16] - 2021-07-26
 
 - Optimization of the kernel, fix High CPU usage
-
 - Fix some other known bugs
-
 - Add Formatter function
 
 ## [0.1.15] - 2021-05-02

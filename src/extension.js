@@ -17,7 +17,7 @@ const linter  = require("HDLlinter");
 const parser  = require("HDLparser");
 const filesys = require("HDLfilesys");
 
-var synth = require("./yosys");
+// var synth = require("./yosys");
 
 async function launch(process, indexer, context) {
     // linter Server
@@ -38,13 +38,13 @@ async function launch(process, indexer, context) {
 }
 
 async function activate(context) {
-    let module = await synth();
-    console.log(module);
-    module.FS.mkdir('/working');
-    module.FS.mount(module.NODEFS, { root: 'D:/project/FPGA/FPGA_Design/TCL_project/Test/Extension_test' }, '/working');
-    console.log(module.FS.readdir("/working"));
-    console.log(module.FS.readdir("/working/user/src"));
-    module.ccall('run', '', ['string'], ["help"]);
+    // let module = await synth();
+    // console.log(module);
+    // module.FS.mkdir('/working');
+    // module.FS.mount(module.NODEFS, { root: 'D:/project/FPGA/FPGA_Design/TCL_project/Test/Extension_test' }, '/working');
+    // console.log(module.FS.readdir("/working"));
+    // console.log(module.FS.readdir("/working/user/src"));
+    // module.ccall('run', '', ['string'], ["help"]);
     const indexer = new parser.indexer();
     const process = new filesys.processPrjFiles(indexer);
 
