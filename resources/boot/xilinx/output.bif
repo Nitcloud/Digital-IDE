@@ -2,6 +2,6 @@
 the_ROM_image:
 {
 	[bootloader]d:/project/Code/.prj/Extension/Owner/DIDE/resources/boot/xilinx/microphase/fsbl.elf
-	d:/project/FPGA/FPGA_Design/TCL_project/Test/LED_zynq_testtemplate.bit
-	d:/project/Code/.prj/Extension/Owner/DIDE/resources/boot/xilinx/microphaseps_test.elf
+	d:/project/Code/.prj/Extension/Owner/DIDE/resources/boot/xilinx/HDMI_Output_Top.bit
+	d:/project/Code/.prj/Extension/Owner/DIDE/resources/boot/xilinx/microphase/ps_test.elf
 }

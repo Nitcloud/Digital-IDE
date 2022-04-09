@@ -34,17 +34,9 @@ async function launch(process, indexer, context) {
     tool.registerLspServer(context,  indexer);
     tool.registerSimServer(context,  indexer, process);
     tool.registerToolServer(context, indexer, process);
-    vscode.window.showInformationMessage("Init Finished.");
 }
 
 async function activate(context) {
-    // let module = await synth();
-    // console.log(module);
-    // module.FS.mkdir('/working');
-    // module.FS.mount(module.NODEFS, { root: 'D:/project/FPGA/FPGA_Design/TCL_project/Test/Extension_test' }, '/working');
-    // console.log(module.FS.readdir("/working"));
-    // console.log(module.FS.readdir("/working/user/src"));
-    // module.ccall('run', '', ['string'], ["help"]);
     const indexer = new parser.indexer();
     const process = new filesys.processPrjFiles(indexer);
 
@@ -56,7 +48,7 @@ async function activate(context) {
     process.monitorPrjLog();
     process.monitorProperty();
 
-    let result = await process.processPrjFiles(false);
+    let result = await process.processPrjFiles(true);
     if (!result) {
         vscode.commands.registerCommand('TOOL.Launch', async () => {
             await process.processPrjFiles(true);

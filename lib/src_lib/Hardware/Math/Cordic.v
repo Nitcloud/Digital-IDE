@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 /*  file:        Cordic.v
     author:      Sterben(Duan)
     release:     05/12/2019
@@ -46,12 +47,11 @@
 */
 // `define VALID_FLAG
  
- 
 //====================   DO NOT EDIT BELOW THIS LINE ======================
 /*                 
 CORDIC
 */
-`timescale 1ns / 1ps
+
 module Cordic #(
 	parameter XY_BITS      = 12,
 	parameter PH_BITS      = 32,

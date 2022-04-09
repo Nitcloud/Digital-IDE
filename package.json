@@ -4,7 +4,7 @@
     "description": "Design For Digital Development",
     "publisher": "sterben",
     "homepage": "https://github.com/Bestduan/Digital-IDE",
-    "version": "0.1.21",
+    "version": "0.1.22",
     "main": "./src/extension",
     "icon": "images/DIDE.png",
     "keywords": [
@@ -42,6 +42,15 @@
         "configuration": {
             "title": "DIDE",
             "properties": {
+                "HDL.parse.mode" : {
+                    "scope": "window",
+                    "type": "string",
+                    "enum": [
+                        "preProcess",
+                        "none"
+                    ],
+                    "default": "preProcess"
+                },
                 "HDL.linting.mode": {
                     "scope": "window",
                     "type": "string",
