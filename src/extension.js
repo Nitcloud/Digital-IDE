@@ -13,21 +13,13 @@ const fspath  = require("path");
 const vscode  = require("vscode");
 
 const tool    = require("HDLtool");
-const linter  = require("HDLlinter");
 const parser  = require("HDLparser");
 const filesys = require("HDLfilesys");
 
 // var synth = require("./yosys");
 
 async function launch(process, indexer, context) {
-    // linter Server
-    linter.registerLinterServer();
-    
-    // project Server
-    filesys.registerPrjsServer(process.opeParam);
-    
     new tool.tree.FileExplorer(indexer, process);
-
     tool.registerTreeServer(process);
     tool.registerSoftServer(process);
     tool.registerHardServer(process);
@@ -48,7 +40,7 @@ async function activate(context) {
     process.monitorPrjLog();
     process.monitorProperty();
 
-    let result = await process.processPrjFiles(true);
+    let result = await process.processPrjFiles(false);
     if (!result) {
         vscode.commands.registerCommand('TOOL.Launch', async () => {
             await process.processPrjFiles(true);

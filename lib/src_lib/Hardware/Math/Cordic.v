@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+// `timescale 1ns / 1ps
 /*  file:        Cordic.v
     author:      Sterben(Duan)
     release:     05/12/2019

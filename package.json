@@ -4,7 +4,7 @@
     "description": "Design For Digital Development",
     "publisher": "sterben",
     "homepage": "https://github.com/Bestduan/Digital-IDE",
-    "version": "0.1.22",
+    "version": "0.2.0",
     "main": "./src/extension",
     "icon": "images/DIDE.png",
     "keywords": [
@@ -485,19 +485,19 @@
         "snippets": [
             {
                 "language": "tcl",
-                "path": "./snippets/tcl.json"
+                "path": "snippets/tcl.json"
             },
             {
                 "language": "vhdl",
-                "path": "./snippets/vhdl.json"
+                "path": "snippets/vhdl.json"
             },
             {
                 "language": "verilog",
-                "path": "./snippets/verilog.json"
+                "path": "snippets/verilog.json"
             },
             {
                 "language": "systemverilog",
-                "path": "./snippets/systemverilog.json"
+                "path": "snippets/systemverilog.json"
             }
         ],
         "commands": [

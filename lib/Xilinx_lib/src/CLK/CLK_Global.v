@@ -14,7 +14,7 @@ module CLK_Global #(
     parameter CLK3_PHASE  = 0.0
 ) (
     input     clk_in,
-    input     rst_n,
+    input     RST,
 
     output    clk_out1,
     output    clk_out2,
@@ -44,11 +44,11 @@ wire        locked_int;
 wire        clkfbout_clk_gen;
 wire        clkfbout_buf_clk_gen;
 wire        clkfboutb_unused;
-wire 		    clkout0b_unused;
-wire 		    clkout1b_unused;
-wire 		    clkout2b_unused;
-wire 		    clkout3b_unused;
-wire 		    clkout4_unused;
+wire 		clkout0b_unused;
+wire 		clkout1b_unused;
+wire 		clkout2b_unused;
+wire 		clkout3b_unused;
+wire 		clkout4_unused;
 wire        clkout5_unused;
 wire        clkout6_unused;
 wire        clkfbstopped_unused;
@@ -128,7 +128,7 @@ mmcm_adv_inst (
     .CLKINSTOPPED        (clkinstopped_unused),
     .CLKFBSTOPPED        (clkfbstopped_unused),
     .PWRDWN              (1'b0),
-    .RST                 (~rst_n)
+    .RST                 (RST)
 );
 
 // Clock Monitor clock assigning

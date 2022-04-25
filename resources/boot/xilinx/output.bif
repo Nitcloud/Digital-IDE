@@ -1,7 +1,6 @@
 //arch = zynq; split = false; format = BIN
 the_ROM_image:
 {
-	[bootloader]d:/project/Code/.prj/Extension/Owner/DIDE/resources/boot/xilinx/microphase/fsbl.elf
-	d:/project/Code/.prj/Extension/Owner/DIDE/resources/boot/xilinx/HDMI_Output_Top.bit
-	d:/project/Code/.prj/Extension/Owner/DIDE/resources/boot/xilinx/microphase/ps_test.elf
+	[bootloader]d:/project/FPGA/FPGA_Design/TCL_project/Test/Soc_A9_test/boot/fsbl.elf
+	d:/project/FPGA/FPGA_Design/TCL_project/Test/Soc_A9_test/boot/u-boot.elf
 }
