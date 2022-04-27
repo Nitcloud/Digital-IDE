@@ -40,7 +40,7 @@ async function activate(context) {
     process.monitorPrjLog();
     process.monitorProperty();
 
-    let result = await process.processPrjFiles(false);
+    let result = await process.processPrjFiles(true);
     if (!result) {
         vscode.commands.registerCommand('TOOL.Launch', async () => {
             await process.processPrjFiles(true);
