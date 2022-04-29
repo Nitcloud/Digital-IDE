@@ -222,7 +222,11 @@ let pan_config = {
     center: true,
 };
 
-document.getElementById("export-as-svg").onclick = function () { export_message("svg"); };
+document.getElementById("export-as-svg").onclick = () => { 
+    console.log("click");
+    export_message("svg"); 
+};
+
 function export_message(message) {
     vscode.postMessage({
         command: 'export',
