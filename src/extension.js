@@ -15,9 +15,6 @@ const vscode  = require("vscode");
 const tool    = require("HDLtool");
 const parser  = require("HDLparser");
 const filesys = require("HDLfilesys");
- 
-var kernel = require("./kernel");
-
 async function launch(process, indexer, context) {
     new tool.tree.FileExplorer(indexer, process);
     tool.registerTreeServer(process);
