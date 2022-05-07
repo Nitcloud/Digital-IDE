@@ -159,7 +159,7 @@
 	"body": [
         "module ${1:name} #(",
         "    parameter    INPUT_WIDTH  = ${2:12},",
-        "    parameter    OUTPUT_WIDTH = $2$",
+        "    parameter    OUTPUT_WIDTH = $2",
         ") (",
         "    input                           clk,",
         "    input                           rst_n,",

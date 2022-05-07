@@ -15,8 +15,8 @@ const vscode  = require("vscode");
 const tool    = require("HDLtool");
 const parser  = require("HDLparser");
 const filesys = require("HDLfilesys");
-
-// var synth = require("./yosys");
+ 
+var kernel = require("./kernel");
 
 async function launch(process, indexer, context) {
     new tool.tree.FileExplorer(indexer, process);
@@ -40,7 +40,7 @@ async function activate(context) {
     process.monitorPrjLog();
     process.monitorProperty();
 
-    let result = await process.processPrjFiles(true);
+    let result = await process.processPrjFiles(false);
     if (!result) {
         vscode.commands.registerCommand('TOOL.Launch', async () => {
             await process.processPrjFiles(true);

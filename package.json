@@ -4,7 +4,7 @@
     "description": "Design For Digital Development",
     "publisher": "sterben",
     "homepage": "https://github.com/Bestduan/Digital-IDE",
-    "version": "0.2.0",
+    "version": "0.2.2",
     "main": "./src/extension",
     "icon": "images/DIDE.png",
     "keywords": [
@@ -42,7 +42,7 @@
         "configuration": {
             "title": "DIDE",
             "properties": {
-                "HDL.parse.mode" : {
+                "HDL.parse.mode": {
                     "scope": "window",
                     "type": "string",
                     "enum": [
