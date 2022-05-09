@@ -11,7 +11,6 @@
 
 const fspath  = require("path");
 const vscode  = require("vscode");
-
 const tool    = require("HDLtool");
 const parser  = require("HDLparser");
 const filesys = require("HDLfilesys");

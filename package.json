@@ -4,8 +4,8 @@
     "description": "Design For Digital Development",
     "publisher": "sterben",
     "homepage": "https://github.com/Bestduan/Digital-IDE",
-    "version": "0.2.2",
-    "main": "./src/extension",
+    "version": "0.2.3",
+    "main": "./out/extension",
     "icon": "images/DIDE.png",
     "keywords": [
         "FPGA Develop Support",
