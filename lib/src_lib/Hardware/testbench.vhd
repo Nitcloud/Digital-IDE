@@ -57,12 +57,5 @@ begin
     end if;
   end process;
   
-  -- Generated from initial process in testbench (testbench.v:42)
-  process is
-  begin
-    null;  -- Unsupported system task $dumpfile omitted here (testbench.v:43)
-    null;  -- Unsupported system task $dumpvars omitted here (testbench.v:44)
-    wait;
-  end process;
 end architecture;
 

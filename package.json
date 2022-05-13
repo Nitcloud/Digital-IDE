@@ -4,8 +4,8 @@
     "description": "Design For Digital Development",
     "publisher": "sterben",
     "homepage": "https://github.com/Bestduan/Digital-IDE",
-    "version": "0.2.3",
-    "main": "./out/extension",
+    "version": "0.2.4",
+    "main": "./src/extension",
     "icon": "images/DIDE.png",
     "keywords": [
         "FPGA Develop Support",
@@ -42,25 +42,6 @@
         "configuration": {
             "title": "DIDE",
             "properties": {
-                "HDL.parse.mode": {
-                    "scope": "window",
-                    "type": "string",
-                    "enum": [
-                        "preProcess",
-                        "none"
-                    ],
-                    "default": "preProcess"
-                },
-                "HDL.linting.mode": {
-                    "scope": "window",
-                    "type": "string",
-                    "enum": [
-                        "auto",
-                        "manual"
-                    ],
-                    "default": "auto",
-                    "description": "Select the trigger mode for syntax checking."
-                },
                 "HDL.linting.vlog.linter": {
                     "scope": "window",
                     "type": "string",
@@ -73,7 +54,7 @@
                         "default"
                     ],
                     "default": "vivado",
-                    "description": "Select the verilog or systemverilog linter. default means none"
+                    "description": "Select the verilog or systemverilog linter."
                 },
                 "HDL.linting.vhdl.linter": {
                     "scope": "window",
@@ -85,7 +66,7 @@
                         "default"
                     ],
                     "default": "vivado",
-                    "description": "Select the vhdl linter. default means none"
+                    "description": "Select the vhdl linter."
                 },
                 "HDL.linting.runFilePath": {
                     "scope": "window",
@@ -263,66 +244,6 @@
                     "type": "string",
                     "default": "",
                     "description": "set the gtkwave install path. \n e.g. : D:/APP/iverilog/gtkwave/bin/"
-                },
-                "TOOL.SerialPortMonitor.BaudRate": {
-                    "type": "integer",
-                    "scope": "resource",
-                    "markdownDescription": "SerialPort Baud Rate",
-                    "default": "115200",
-                    "enum": [
-                        "1382400",
-                        "921600",
-                        "460800",
-                        "256000",
-                        "230400",
-                        "128000",
-                        "115200",
-                        "9600",
-                        "4800",
-                        "2400",
-                        "1200"
-                    ]
-                },
-                "TOOL.SerialPortMonitor.DataBits": {
-                    "type": "string",
-                    "scope": "resource",
-                    "markdownDescription": "SerialPort Data Bits width",
-                    "default": "8",
-                    "enum": [
-                        "5",
-                        "6",
-                        "7",
-                        "8"
-                    ]
-                },
-                "TOOL.SerialPortMonitor.Parity": {
-                    "type": "string",
-                    "scope": "resource",
-                    "markdownDescription": "SerialPort Parity bit",
-                    "default": "None",
-                    "enum": [
-                        "None",
-                        "Odd",
-                        "Even",
-                        "Mark",
-                        "Space"
-                    ]
-                },
-                "TOOL.SerialPortMonitor.StopBits": {
-                    "type": "string",
-                    "scope": "resource",
-                    "markdownDescription": "SerialPort Stop Bits",
-                    "default": "1",
-                    "enum": [
-                        "1",
-                        "1.5",
-                        "2"
-                    ],
-                    "enumDescriptions": [
-                        "One",
-                        "Two",
-                        "OnePointFive"
-                    ]
                 }
             }
         },
@@ -493,11 +414,11 @@
             },
             {
                 "language": "verilog",
-                "path": "snippets/verilog.json"
+                "path": "snippets/svlog.json"
             },
             {
                 "language": "systemverilog",
-                "path": "snippets/systemverilog.json"
+                "path": "snippets/svlog.json"
             }
         ],
         "commands": [
