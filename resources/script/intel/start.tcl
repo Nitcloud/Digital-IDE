@@ -1,10 +1,5 @@
 variable current_Location [file normalize [info script]]
 set intel_path [file dirname [file dirname [file dirname [file dirname $current_Location]]]]
-# unset ::env(PYTHONPATH)
-# unset ::env(PYTHONHOME)
-
-# set ::env(PYTHONPATH) "C:/Program Files/Python38/python38.zip:C:/Program Files/Python38/DLLs:C:/Program Files/Python38/lib:C:/Program Files/Python38:C:/Program Files/Python38/lib/site-packages"
-# set ::env(PYTHONHOME) "C:/Program Files/Python38"
 
 set device_num      0
 set add_param       1
