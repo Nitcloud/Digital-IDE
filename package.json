@@ -490,6 +490,15 @@
                 "category": "TOOL"
             },
             {
+                "command": "TOOL.libPick",
+                "title": "import library",
+                "icon": {
+                    "light": "images/svg/light/library.svg",
+                    "dark": "images/svg/dark/library.svg"
+                },
+                "category": "TOOL"
+            },
+            {
                 "command": "TOOL.netlist",
                 "title": "show netlist",
                 "icon": {
@@ -663,6 +672,11 @@
         ],
         "menus": {
             "view/title": [
+                {
+                    "command": "TOOL.libPick",
+                    "group": "navigation",
+                    "when": "view == TOOL.file_tree"
+                },
                 {
                     "command": "FILE.refresh",
                     "group": "navigation",
