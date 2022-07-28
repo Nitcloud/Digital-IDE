@@ -489,8 +489,8 @@
         "description": "Insert a module without parameter"
     },
 
-    "generate_if": {
-        "prefix": "genif",
+    "generate_for": {
+        "prefix": "genfor",
         "body": [
             "genvar ${1:i};",
             "generate for($1 = 0 ; $1 < $2; $1 = $1 + 1) begin : ${3:U}",
@@ -500,8 +500,8 @@
         ]
     },
     
-    "generate_for": {
-        "prefix": "genfor",
+    "generate_if": {
+        "prefix": "genif",
         "body": [
             "generate if(${1:conditional}) begin : ${2:U}",
             "    ${3:}",

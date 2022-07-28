@@ -4,8 +4,8 @@
     "description": "Design For Digital Development",
     "publisher": "sterben",
     "homepage": "https://github.com/Bestduan/Digital-IDE",
-    "version": "0.2.4",
-    "main": "./src/extension",
+    "version": "0.2.5",
+    "main": "./out/extension",
     "icon": "images/DIDE.png",
     "keywords": [
         "FPGA Develop Support",
@@ -324,7 +324,7 @@
                     ".vh",
                     ".vl"
                 ],
-                "configuration": "./config/verilog.configuration.json"
+                "configuration": "./config/vlog.configuration.json"
             },
             {
                 "id": "systemverilog",
@@ -336,7 +336,7 @@
                     ".sv",
                     ".SV"
                 ],
-                "configuration": "./config/systemverilog.configuration.json"
+                "configuration": "./config/svlog.configuration.json"
             },
             {
                 "id": "arm",
@@ -395,12 +395,12 @@
             {
                 "language": "verilog",
                 "scopeName": "source.verilog",
-                "path": "./syntaxes/verilog.json"
+                "path": "./syntaxes/vlog.json"
             },
             {
                 "language": "systemverilog",
                 "scopeName": "source.systemverilog",
-                "path": "./syntaxes/systemverilog.json"
+                "path": "./syntaxes/svlog.json"
             }
         ],
         "snippets": [
