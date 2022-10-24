@@ -6,6 +6,60 @@
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
+
+.home-section .home-content{
+    height: 60px;
+    display: flex;
+    align-items: center;
+}
+.home-section .home-content .bx-menu,
+.home-section .home-content .text{
+    color: #11101d;
+    font-size: 35px;
+}
+.home-section .home-content .bx-menu{
+    margin: 0 15px;
+    cursor: pointer;
+}
+.home-section .home-content .text{
+    font-size: 26px;
+    font-weight: 600;
+}
+
+.home-section .main {
+    height: 91%;
+    width: 100%;
+}
+
+.main .container {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    padding: 0px;
+    height: 100%;
+    width: 100%;
+    margin: 0px;
+}
+
+.canvas {
+    padding: 0px;
+    height: 100%;
+    width: 100%;
+    margin: 0px;
+
+    border-width: 3px;
+    border: inset;
+    box-shadow: inset 0 -1px 0 rgba( 255, 255, 250, 0.6), 
+                inset 0 -2px 0 rgba( 0, 0, 0, 0.1);
+}
+
+.component {
+    border-width: 3px;
+    border: inset;
+    box-shadow: inset 0 -1px 0 rgba( 255, 255, 250, 0.6), 
+                inset 0 -2px 0 rgba( 0, 0, 0, 0.1);
+}
+
 .sidebar{
     position: fixed;
     top: 0;
@@ -220,321 +274,4 @@
     left: 78px;
     width: calc(100% - 78px);
 }
-.home-section .home-content{
-    height: 60px;
-    display: flex;
-    align-items: center;
-}
-.home-section .home-content .bx-menu,
-.home-section .home-content .text{
-    color: #11101d;
-    font-size: 35px;
-}
-.home-section .home-content .bx-menu{
-    margin: 0 15px;
-    cursor: pointer;
-}
-.home-section .home-content .text{
-    font-size: 26px;
-    font-weight: 600;
-}
 
-.main {
-    height: 650px;
-    width: 1280px;
-}
-
-.container {
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-    padding: 0px;
-    width: 100%;
-    height: 100%;
-    margin: 0px;
-}
-.component {
-    border-width: 3px;
-    border: inset;
-    box-shadow: inset 0 -1px 0 rgba( 255, 255, 250, 0.6), inset 0 -2px 0 rgba( 0, 0, 0, 0.1);
-}
-.canvas {
-    padding: 0px;
-    width: 100%;
-    height: 100%;
-    margin: 0px;
-
-    border-width: 3px;
-    border: inset;
-    box-shadow: inset 0 -1px 0 rgba( 255, 255, 250, 0.6), inset 0 -2px 0 rgba( 0, 0, 0, 0.1);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*    */

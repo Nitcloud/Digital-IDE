@@ -556,7 +556,9 @@
             return node;
         },
         ChainExpression: function(M) {
-            return from_moz(M.expression);
+            var node = from_moz(M.expression);
+            node.terminal = true;
+            return node;
         },
     };
 
@@ -868,7 +870,7 @@
 
     def_to_moz(AST_PropAccess, function To_Moz_MemberExpression(M) {
         var computed = M instanceof AST_Sub;
-        return {
+        var expr = {
             type: "MemberExpression",
             object: to_moz(M.expression),
             computed: computed,
@@ -878,6 +880,10 @@
                 name: M.property,
             },
         };
+        return M.terminal ? {
+            type: "ChainExpression",
+            expression: expr,
+        } : expr;
     });
 
     def_to_moz(AST_Unary, function To_Moz_Unary(M) {
@@ -999,7 +1005,7 @@
     });
 
     def_to_moz(AST_RegExp, function To_Moz_RegExpLiteral(M) {
-        var flags = M.value.toString().match(/[gimuy]*$/)[0];
+        var flags = M.value.toString().match(/\/([gimuy]*)$/)[1];
         var value = "/" + M.value.raw_source + "/" + flags;
         return {
             type: "Literal",
@@ -1007,8 +1013,8 @@
             raw: value,
             regex: {
                 pattern: M.value.raw_source,
-                flags: flags
-            }
+                flags: flags,
+            },
         };
     });
 

@@ -101,10 +101,18 @@ function OutputStream(options) {
         }
     }
 
+    function make_indent(value) {
+        if (typeof value == "number") return new Array(value + 1).join(" ");
+        if (!value) return "";
+        if (!/^\s*$/.test(value)) throw new Error("unsupported indentation: " + JSON.stringify("" + value));
+        return value;
+    }
+
     var current_col = 0;
     var current_line = 1;
-    var current_pos = 0;
-    var indentation = options.indent_start;
+    var current_indent = make_indent(options.indent_start);
+    var full_indent = make_indent(options.indent_level);
+    var half_indent = full_indent.length + 1 >> 1;
     var last;
     var line_end = 0;
     var line_fixed = true;
@@ -115,17 +123,17 @@ function OutputStream(options) {
     var might_need_semicolon;
     var need_newline_indented = false;
     var need_space = false;
-    var newline_insert = -1;
+    var output;
     var stack;
-    var OUTPUT;
+    var stored = "";
 
     function reset() {
         last = "";
         might_need_space = false;
         might_need_semicolon = false;
         stack = [];
-        var str = OUTPUT;
-        OUTPUT = "";
+        var str = output;
+        output = "";
         return str;
     }
 
@@ -227,32 +235,30 @@ function OutputStream(options) {
     } : noop;
 
     function insert_newlines(count) {
-        var index = OUTPUT.lastIndexOf("\n");
-        if (line_end < index) line_end = index;
-        var left = OUTPUT.slice(0, line_end);
-        var right = OUTPUT.slice(line_end);
-        adjust_mappings(count, right.length - current_col);
+        stored += output.slice(0, line_end);
+        output = output.slice(line_end);
+        var new_col = output.length;
+        adjust_mappings(count, new_col - current_col);
         current_line += count;
-        current_pos += count;
-        current_col = right.length;
-        OUTPUT = left;
-        while (count--) OUTPUT += "\n";
-        OUTPUT += right;
+        current_col = new_col;
+        while (count--) stored += "\n";
     }
 
-    var fix_line = options.max_line_len ? function() {
+    var fix_line = options.max_line_len ? function(flush) {
         if (line_fixed) {
             if (current_col > options.max_line_len) {
                 AST_Node.warn("Output exceeds {max_line_len} characters", options);
             }
             return;
         }
-        if (current_col > options.max_line_len) insert_newlines(1);
-        line_fixed = true;
-        flush_mappings();
+        if (current_col > options.max_line_len) {
+            insert_newlines(1);
+            line_fixed = true;
+        }
+        if (line_fixed || flush) flush_mappings();
     } : noop;
 
-    var requireSemicolonChars = makePredicate("( [ + * / - , .");
+    var require_semicolon = makePredicate("( [ + * / - , .");
 
     var print = options.beautify
         || options.comments
@@ -276,32 +282,32 @@ function OutputStream(options) {
                 space();
             }
         }
-        newline_insert = -1;
         var prev = last.slice(-1);
         if (might_need_semicolon) {
             might_need_semicolon = false;
-
-            if (prev == ":" && ch == "}" || (!ch || ";}".indexOf(ch) < 0) && prev != ";") {
-                if (options.semicolons || requireSemicolonChars[ch]) {
-                    OUTPUT += ";";
+            if (prev == ":" && ch == "}" || prev != ";" && (!ch || ";}".indexOf(ch) < 0)) {
+                var need_semicolon = require_semicolon[ch];
+                if (need_semicolon || options.semicolons) {
+                    output += ";";
                     current_col++;
-                    current_pos++;
+                    if (!line_fixed) {
+                        fix_line();
+                        if (line_fixed && !need_semicolon && output == ";") {
+                            output = "";
+                            current_col = 0;
+                        }
+                    }
+                    if (line_end == output.length - 1) line_end++;
                 } else {
                     fix_line();
-                    OUTPUT += "\n";
-                    current_pos++;
+                    output += "\n";
                     current_line++;
                     current_col = 0;
-
-                    if (/^\s+$/.test(str)) {
-                        // reset the semicolon flag, since we didn't print one
-                        // now and might still have to later
-                        might_need_semicolon = true;
-                    }
+                    // reset the semicolon flag, since we didn't print one
+                    // now and might still have to later
+                    if (/^\s+$/.test(str)) might_need_semicolon = true;
                 }
-
-                if (!options.beautify)
-                    might_need_space = false;
+                if (!options.beautify) might_need_space = false;
             }
         }
 
@@ -312,9 +318,8 @@ function OutputStream(options) {
                 || str == "--" && last == "!"
                 || str == "in" && prev == "/"
                 || last == "--" && ch == ">") {
-                OUTPUT += " ";
+                output += " ";
                 current_col++;
-                current_pos++;
             }
             if (prev != "<" || str != "!") might_need_space = false;
         }
@@ -324,14 +329,13 @@ function OutputStream(options) {
                 token: mapping_token,
                 name: mapping_name,
                 line: current_line,
-                col: current_col
+                col: current_col,
             });
             mapping_token = false;
             if (line_fixed) flush_mappings();
         }
 
-        OUTPUT += str;
-        current_pos += str.length;
+        output += str;
         var a = str.split(/\r?\n/), n = a.length - 1;
         current_line += n;
         current_col += a[0].length;
@@ -346,7 +350,7 @@ function OutputStream(options) {
         if (might_need_semicolon) {
             might_need_semicolon = false;
             if (prev == ":" && ch == "}" || (!ch || ";}".indexOf(ch) < 0) && prev != ";") {
-                OUTPUT += ";";
+                output += ";";
                 might_need_space = false;
             }
         }
@@ -357,11 +361,11 @@ function OutputStream(options) {
                 || str == "--" && last == "!"
                 || str == "in" && prev == "/"
                 || last == "--" && ch == ">") {
-                OUTPUT += " ";
+                output += " ";
             }
             if (prev != "<" || str != "!") might_need_space = false;
         }
-        OUTPUT += str;
+        output += str;
         last = str;
     };
 
@@ -373,30 +377,25 @@ function OutputStream(options) {
 
     var indent = options.beautify ? function(half) {
         if (need_newline_indented) print("\n");
-        print(repeat_string(" ", half ? indentation - (options.indent_level >> 1) : indentation));
+        print(half ? current_indent.slice(0, -half_indent) : current_indent);
     } : noop;
 
     var with_indent = options.beautify ? function(cont) {
-        var save_indentation = indentation;
-        indentation += options.indent_level;
+        var save_indentation = current_indent;
+        current_indent += full_indent;
         cont();
-        indentation = save_indentation;
+        current_indent = save_indentation;
     } : function(cont) { cont() };
 
     var may_add_newline = options.max_line_len || options.preserve_line ? function() {
         fix_line();
-        line_end = OUTPUT.length;
+        line_end = output.length;
         line_fixed = false;
     } : noop;
 
     var newline = options.beautify ? function() {
-        if (newline_insert < 0) return print("\n");
-        if (OUTPUT[newline_insert] != "\n") {
-            OUTPUT = OUTPUT.slice(0, newline_insert) + "\n" + OUTPUT.slice(newline_insert);
-            current_pos++;
-            current_line++;
-        }
-        newline_insert++;
+        print("\n");
+        line_end = output.length;
     } : may_add_newline;
 
     var semicolon = options.beautify ? function() {
@@ -452,13 +451,12 @@ function OutputStream(options) {
     } : noop;
 
     function get() {
-        if (!line_fixed) fix_line();
-        return OUTPUT;
+        if (!line_fixed) fix_line(true);
+        return stored + output;
     }
 
     function has_nlb() {
-        var index = OUTPUT.lastIndexOf("\n");
-        return /^ *$/.test(OUTPUT.slice(index + 1));
+        return /(^|\n) *$/.test(output);
     }
 
     function pad_comment(token, force) {
@@ -515,15 +513,13 @@ function OutputStream(options) {
             scan.walk(tw);
         }
 
-        if (current_pos == 0) {
+        if (current_line == 1 && current_col == 0) {
             if (comments.length > 0 && options.shebang && comments[0].type == "comment5") {
                 print("#!" + comments.shift().value + "\n");
                 indent();
             }
             var preamble = options.preamble;
-            if (preamble) {
-                print(preamble.replace(/\r\n?|[\n\u2028\u2029]|\s*$/g, "\n"));
-            }
+            if (preamble) print(preamble.replace(/\r\n?|\u2028|\u2029|(^|\S)\s*$/g, "$1\n"));
         }
 
         comments = comments.filter(comment_filter, node);
@@ -561,20 +557,18 @@ function OutputStream(options) {
             return !/comment[134]/.test(c.type);
         }))) return;
         comments._dumped = self;
-        var insert = OUTPUT.length;
         comments.filter(comment_filter, node).forEach(function(comment, index) {
             pad_comment(comment, index || !tail);
             print_comment(comment);
         });
-        if (OUTPUT.length > insert) newline_insert = insert;
     }
 
     return {
         get             : get,
         reset           : reset,
         indent          : indent,
-        should_break    : options.width ? function() {
-            return current_col - indentation >= options.width;
+        should_break    : options.beautify && options.width ? function() {
+            return current_col >= options.width;
         } : return_false,
         has_parens      : function() { return last.slice(-1) == "(" },
         newline         : newline,
@@ -790,35 +784,26 @@ function OutputStream(options) {
         if (p instanceof AST_Unary) return true;
     });
 
-    function lhs_has_optional(node, output) {
-        var p = output.parent();
-        if (p instanceof AST_PropAccess && p.expression === node && is_lhs(p, output.parent(1))) {
-            // ++(foo?.bar).baz
-            // (foo?.()).bar = baz
-            do {
-                if (node.optional) return true;
-                node = node.expression;
-            } while (node.TYPE == "Call" || node instanceof AST_PropAccess);
-        }
+    function need_chain_parens(node, parent) {
+        if (!node.terminal) return false;
+        if (!(parent instanceof AST_Call || parent instanceof AST_PropAccess)) return false;
+        return parent.expression === node;
     }
 
     PARENS(AST_PropAccess, function(output) {
         var node = this;
         var p = output.parent();
-        if (p instanceof AST_New) {
-            if (p.expression !== node) return false;
-            // i.e. new (foo().bar)
-            //
-            // if there's one call into this subtree, then we need
-            // parens around it too, otherwise the call will be
-            // interpreted as passing the arguments to the upper New
-            // expression.
-            do {
-                node = node.expression;
-            } while (node instanceof AST_PropAccess);
-            return node.TYPE == "Call";
-        }
-        return lhs_has_optional(node, output);
+        // i.e. new (foo().bar)
+        //
+        // if there's one call into this subtree, then we need
+        // parens around it too, otherwise the call will be
+        // interpreted as passing the arguments to the upper New
+        // expression.
+        if (p instanceof AST_New && p.expression === node && root_expr(node).TYPE == "Call") return true;
+        // (foo?.bar)()
+        // (foo?.bar).baz
+        // new (foo?.bar)()
+        return need_chain_parens(node, p);
     });
 
     PARENS(AST_Call, function(output) {
@@ -833,7 +818,10 @@ function OutputStream(options) {
             var g = output.parent(1);
             if (g instanceof AST_Assign && g.left === p) return true;
         }
-        return lhs_has_optional(node, output);
+        // (foo?.())()
+        // (foo?.()).bar
+        // new (foo?.())()
+        return need_chain_parens(node, p);
     });
 
     PARENS(AST_New, function(output) {
@@ -1158,8 +1146,9 @@ function OutputStream(options) {
         });
     }
     function print_arrow(self, output) {
-        if (self.argnames.length == 1 && self.argnames[0] instanceof AST_SymbolFunarg && !self.rest) {
-            self.argnames[0].print(output);
+        var argname = self.argnames.length == 1 && !self.rest && self.argnames[0];
+        if (argname instanceof AST_SymbolFunarg && argname.name != "yield") {
+            argname.print(output);
         } else {
             print_funargs(self, output);
         }
@@ -1470,7 +1459,7 @@ function OutputStream(options) {
             parent = output.parent(level++);
             if (parent instanceof AST_Call && parent.expression === node) return;
         } while (parent instanceof AST_PropAccess && parent.expression === node);
-        output.print(typeof self.pure == "string" ? "/*" + self.pure + "*/" : "/*@__PURE__*/");
+        output.print("/*@__PURE__*/");
     }
     function print_call_args(self, output) {
         if (self.expression instanceof AST_Call || self.expression instanceof AST_Lambda) {
@@ -1875,8 +1864,8 @@ function OutputStream(options) {
             len = match[0].length;
             digits = str.slice(len);
             candidates.push(digits + "e-" + (digits.length + len - 1));
-        } else if (match = /0+$/.exec(str)) {
-            len = match[0].length;
+        } else if (match = /[^0]0+$/.exec(str)) {
+            len = match[0].length - 1;
             candidates.push(str.slice(0, -len) + "e" + len);
         } else if (match = /^(\d)\.(\d+)e(-?\d+)$/.exec(str)) {
             candidates.push(match[1] + match[2] + "e" + (match[3] - match[2].length));

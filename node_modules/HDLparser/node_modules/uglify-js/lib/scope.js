@@ -44,9 +44,9 @@
 "use strict";
 
 function SymbolDef(id, scope, orig, init) {
+    this._bits = 0;
+    this.defun = undefined;
     this.eliminated = 0;
-    this.exported = false;
-    this.global = false;
     this.id = id;
     this.init = init;
     this.mangled_name = null;
@@ -54,8 +54,8 @@ function SymbolDef(id, scope, orig, init) {
     this.orig = [ orig ];
     this.references = [];
     this.replaced = 0;
+    this.safe_ids = undefined;
     this.scope = scope;
-    this.undeclared = false;
 }
 
 SymbolDef.prototype = {
@@ -92,17 +92,34 @@ SymbolDef.prototype = {
         if (def && def !== self) return def.redefined() || def;
     },
     unmangleable: function(options) {
-        return this.global && !options.toplevel
-            || this.exported
-            || this.undeclared
-            || !options.eval && this.scope.pinned()
-            || options.keep_fnames
-                && (this.orig[0] instanceof AST_SymbolClass
-                    || this.orig[0] instanceof AST_SymbolDefClass
-                    || this.orig[0] instanceof AST_SymbolDefun
-                    || this.orig[0] instanceof AST_SymbolLambda);
+        if (this.exported) return true;
+        if (this.undeclared) return true;
+        if (!options.eval && this.scope.pinned()) return true;
+        if (options.keep_fargs && is_funarg(this)) return true;
+        if (options.keep_fnames) {
+            var sym = this.orig[0];
+            if (sym instanceof AST_SymbolClass) return true;
+            if (sym instanceof AST_SymbolDefClass) return true;
+            if (sym instanceof AST_SymbolDefun) return true;
+            if (sym instanceof AST_SymbolLambda) return true;
+        }
+        if (!options.toplevel && this.global) return true;
+        return false;
     },
 };
+
+DEF_BITPROPS(SymbolDef, [
+    "const_redefs",
+    "cross_loop",
+    "direct_access",
+    "exported",
+    "global",
+    "undeclared",
+]);
+
+function is_funarg(def) {
+    return def.orig[0] instanceof AST_SymbolFunarg || def.orig[1] instanceof AST_SymbolFunarg;
+}
 
 var unary_side_effects = makePredicate("delete ++ --");
 
@@ -205,20 +222,17 @@ AST_Toplevel.DEFMETHOD("figure_out_scope", function(options) {
         } else if (node instanceof AST_SymbolDefun) {
             var def = defun.def_function(node, tw.parent());
             if (exported) def.exported = true;
-            entangle(defun, scope);
         } else if (node instanceof AST_SymbolFunarg) {
             defun.def_variable(node);
-            entangle(defun, scope);
         } else if (node instanceof AST_SymbolLambda) {
             var def = defun.def_function(node, node.name == "arguments" ? undefined : defun);
-            if (options.ie) def.defun = defun.parent_scope.resolve();
+            if (options.ie && node.name != "arguments") def.defun = defun.parent_scope.resolve();
         } else if (node instanceof AST_SymbolLet) {
             var def = scope.def_variable(node);
             if (exported) def.exported = true;
         } else if (node instanceof AST_SymbolVar) {
             var def = defun.def_variable(node, node instanceof AST_SymbolImport ? undefined : null);
             if (exported) def.exported = true;
-            entangle(defun, scope);
         }
 
         function walk_scope(descend) {
@@ -230,16 +244,6 @@ AST_Toplevel.DEFMETHOD("figure_out_scope", function(options) {
             descend();
             scope = save_scope;
             defun = save_defun;
-        }
-
-        function entangle(defun, scope) {
-            if (defun === scope) return;
-            node.mark_enclosed(options);
-            var def = scope.find_variable(node.name);
-            if (node.thedef === def) return;
-            node.thedef = def;
-            def.orig.push(node);
-            node.mark_enclosed(options);
         }
     });
     self.make_def = function(orig, init) {
@@ -261,6 +265,7 @@ AST_Toplevel.DEFMETHOD("figure_out_scope", function(options) {
         }
         if (node instanceof AST_Lambda) {
             in_arg.push(node);
+            if (node.name) node.name.walk(tw);
             node.argnames.forEach(function(argname) {
                 argname.walk(tw);
             });
@@ -287,6 +292,16 @@ AST_Toplevel.DEFMETHOD("figure_out_scope", function(options) {
                 // ensure compression works if `const` reuses a scope variable
                 var redef = def.redefined();
                 if (redef) redef.const_redefs = true;
+            } else if (def.scope !== node.scope && (node instanceof AST_SymbolDefun
+                || node instanceof AST_SymbolFunarg
+                || node instanceof AST_SymbolVar)) {
+                node.mark_enclosed(options);
+                var redef = node.scope.find_variable(node.name);
+                if (node.thedef !== redef) {
+                    node.thedef = redef;
+                    redef.orig.push(node);
+                    node.mark_enclosed(options);
+                }
             }
             if (node.name != "arguments") return true;
             var parent = node instanceof AST_SymbolVar && tw.parent();
@@ -363,7 +378,7 @@ AST_Toplevel.DEFMETHOD("figure_out_scope", function(options) {
         if (node instanceof AST_SymbolLambda) {
             var def = node.thedef;
             if (!redefine(node, node.scope.parent_scope.resolve())) {
-                delete def.defun;
+                def.defun = undefined;
             } else if (typeof node.thedef.init !== "undefined") {
                 node.thedef.init = false;
             } else if (def.init) {
@@ -465,9 +480,12 @@ AST_Symbol.DEFMETHOD("mark_enclosed", function(options) {
     for (var s = this.scope; s; s = s.parent_scope) {
         push_uniq(s.enclosed, def);
         if (!options) {
-            delete s._var_names;
-        } else if (options.keep_fnames) {
-            s.functions.each(function(d) {
+            s._var_names = undefined;
+        } else {
+            if (options.keep_fargs && s instanceof AST_Lambda) s.each_argname(function(arg) {
+                push_uniq(def.scope.enclosed, arg.definition());
+            });
+            if (options.keep_fnames) s.functions.each(function(d) {
                 push_uniq(def.scope.enclosed, d);
             });
         }
@@ -510,12 +528,12 @@ function names_in_use(scope, options) {
     if (!names) {
         scope.cname = -1;
         scope.cname_holes = [];
-        scope.names_in_use = names = Object.create(null);
+        scope.names_in_use = names = new Dictionary();
         var cache = options.cache && options.cache.props;
         scope.enclosed.forEach(function(def) {
-            if (def.unmangleable(options)) names[def.name] = true;
+            if (def.unmangleable(options)) names.set(def.name, true);
             if (def.global && cache && cache.has(def.name)) {
-                names[cache.get(def.name)] = true;
+                names.set(cache.get(def.name), true);
             }
         });
     }
@@ -526,34 +544,33 @@ function next_mangled_name(def, options) {
     var scope = def.scope;
     var in_use = names_in_use(scope, options);
     var holes = scope.cname_holes;
-    var names = Object.create(null);
+    var names = new Dictionary();
     var scopes = [ scope ];
     def.forEach(function(sym) {
         var scope = sym.scope;
         do {
-            if (scopes.indexOf(scope) < 0) {
-                for (var name in names_in_use(scope, options)) {
-                    names[name] = true;
-                }
-                scopes.push(scope);
-            } else break;
+            if (member(scope, scopes)) break;
+            names_in_use(scope, options).each(function(marker, name) {
+                names.set(name, marker);
+            });
+            scopes.push(scope);
         } while (scope = scope.parent_scope);
     });
     var name;
     for (var i = 0; i < holes.length; i++) {
         name = base54(holes[i]);
-        if (names[name]) continue;
+        if (names.has(name)) continue;
         holes.splice(i, 1);
-        in_use[name] = true;
+        in_use.set(name, true);
         return name;
     }
     while (true) {
         name = base54(++scope.cname);
-        if (in_use[name] || RESERVED_WORDS[name] || options.reserved.has[name]) continue;
-        if (!names[name]) break;
+        if (in_use.has(name) || RESERVED_WORDS[name] || options.reserved.has[name]) continue;
+        if (!names.has(name)) break;
         holes.push(scope.cname);
     }
-    in_use[name] = true;
+    in_use.set(name, true);
     return name;
 }
 
@@ -573,6 +590,7 @@ function _default_mangler_options(options) {
     options = defaults(options, {
         eval        : false,
         ie          : false,
+        keep_fargs  : false,
         keep_fnames : false,
         reserved    : [],
         toplevel    : false,
@@ -580,32 +598,30 @@ function _default_mangler_options(options) {
         webkit      : false,
     });
     if (!Array.isArray(options.reserved)) options.reserved = [];
-    // Never mangle arguments
+    // Never mangle `arguments`
     push_uniq(options.reserved, "arguments");
     options.reserved.has = makePredicate(options.reserved);
     return options;
 }
 
+// We only need to mangle declaration nodes. Special logic wired into the code
+// generator will display the mangled name if it is present (and for
+// `AST_SymbolRef`s it will use the mangled name of the `AST_SymbolDeclaration`
+// that it points to).
 AST_Toplevel.DEFMETHOD("mangle_names", function(options) {
     options = _default_mangler_options(options);
-
-    // We only need to mangle declaration nodes.  Special logic wired
-    // into the code generator will display the mangled name if it's
-    // present (and for AST_SymbolRef-s it'll use the mangled name of
-    // the AST_SymbolDeclaration that it points to).
-    var lname = -1;
-
     if (options.cache && options.cache.props) {
         var mangled_names = names_in_use(this, options);
         options.cache.props.each(function(mangled_name) {
-            mangled_names[mangled_name] = true;
+            mangled_names.set(mangled_name, true);
         });
     }
-
+    var cutoff = 36;
+    var lname = -1;
     var redefined = [];
     var tw = new TreeWalker(function(node, descend) {
         if (node instanceof AST_LabeledStatement) {
-            // lname is incremented when we get to the AST_Label
+            // `lname` is incremented when we get to the `AST_Label`
             var save_nesting = lname;
             descend();
             if (!options.v8 || !in_label(tw)) lname = save_nesting;
@@ -627,9 +643,9 @@ AST_Toplevel.DEFMETHOD("mangle_names", function(options) {
                     });
                 }, true);
             }
-            node.to_mangle = [];
+            var to_mangle = node.to_mangle = [];
             node.variables.each(function(def) {
-                if (!defer_redef(def)) node.to_mangle.push(def);
+                if (!defer_redef(def)) to_mangle.push(def);
             });
             descend();
             if (options.cache && node instanceof AST_Toplevel) {
@@ -640,7 +656,23 @@ AST_Toplevel.DEFMETHOD("mangle_names", function(options) {
                 sym.scope = node;
                 sym.reference(options);
             }
-            node.to_mangle.forEach(mangle);
+            if (to_mangle.length > cutoff) {
+                var indices = to_mangle.map(function(def, index) {
+                    return index;
+                }).sort(function(i, j) {
+                    return to_mangle[j].references.length - to_mangle[i].references.length || i - j;
+                });
+                to_mangle = indices.slice(0, cutoff).sort(function(i, j) {
+                    return i - j;
+                }).map(function(index) {
+                    return to_mangle[index];
+                }).concat(indices.slice(cutoff).sort(function(i, j) {
+                    return i - j;
+                }).map(function(index) {
+                    return to_mangle[index];
+                }));
+            }
+            to_mangle.forEach(mangle);
             return true;
         }
         if (node instanceof AST_Label) {

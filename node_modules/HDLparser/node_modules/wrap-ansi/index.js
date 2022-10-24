@@ -4,7 +4,7 @@ import ansiStyles from 'ansi-styles';
 
 const ESCAPES = new Set([
 	'\u001B',
-	'\u009B'
+	'\u009B',
 ]);
 
 const END_CODE = 39;

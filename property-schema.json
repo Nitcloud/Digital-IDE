@@ -39,23 +39,23 @@
 		"HardwareLIB": {
 			"type": "object",
 			"properties": {
-				"State": {
+				"state": {
 					"type": "string",
 					"enum": [
 						"virtual",
 						"real"
 					]
 				},
-				"Common": {
+				"common": {
 					"type": "array"
 				},
-				"Customer": {
+				"customer": {
 					"type": "array"
 				},
-				"Xilinx_lib": {
+				"xilinx": {
 					"type": "array"
 				},
-				"Intel_lib": {
+				"intel": {
 					"type": "array"
 				}
 			}

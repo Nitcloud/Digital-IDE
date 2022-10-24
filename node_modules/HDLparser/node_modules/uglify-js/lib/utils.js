@@ -55,14 +55,6 @@ function find_if(func, array) {
     for (var i = array.length; --i >= 0;) if (func(array[i])) return array[i];
 }
 
-function repeat_string(str, i) {
-    if (i <= 0) return "";
-    if (i == 1) return str;
-    var d = repeat_string(str, i >> 1);
-    d += d;
-    return i & 1 ? d + str : d;
-}
-
 function configure_error_stack(fn) {
     Object.defineProperty(fn.prototype, "stack", {
         get: function() {
@@ -94,15 +86,6 @@ function defaults(args, defs, croak) {
         if (HOP(args, i)) defs[i] = args[i];
     }
     return defs;
-}
-
-function merge(obj, ext) {
-    var count = 0;
-    for (var i in ext) if (HOP(ext, i)) {
-        obj[i] = ext[i];
-        count++;
-    }
-    return count;
 }
 
 function noop() {}
@@ -143,7 +126,7 @@ function push_uniq(array, el) {
 }
 
 function string_template(text, props) {
-    return text.replace(/\{([^}]+)\}/g, function(str, p) {
+    return text.replace(/\{([^{}]+)\}/g, function(str, p) {
         var value = props[p];
         return value instanceof AST_Node ? value.print_to_string() : value;
     });
@@ -171,63 +154,80 @@ function all(array, predicate) {
 }
 
 function Dictionary() {
-    this._values = Object.create(null);
-    this._size = 0;
+    this.values = Object.create(null);
 }
 Dictionary.prototype = {
     set: function(key, val) {
-        if (!this.has(key)) ++this._size;
-        this._values["$" + key] = val;
+        if (key == "__proto__") {
+            this.proto_value = val;
+        } else {
+            this.values[key] = val;
+        }
         return this;
     },
     add: function(key, val) {
-        if (this.has(key)) {
-            this.get(key).push(val);
+        var list = this.get(key);
+        if (list) {
+            list.push(val);
         } else {
             this.set(key, [ val ]);
         }
         return this;
     },
-    get: function(key) { return this._values["$" + key] },
+    get: function(key) {
+        return key == "__proto__" ? this.proto_value : this.values[key];
+    },
     del: function(key) {
-        if (this.has(key)) {
-            --this._size;
-            delete this._values["$" + key];
+        if (key == "__proto__") {
+            delete this.proto_value;
+        } else {
+            delete this.values[key];
         }
         return this;
     },
-    has: function(key) { return ("$" + key) in this._values },
+    has: function(key) {
+        return key == "__proto__" ? "proto_value" in this : key in this.values;
+    },
     all: function(predicate) {
-        for (var i in this._values)
-            if (!predicate(this._values[i], i.substr(1)))
-                return false;
+        for (var i in this.values)
+            if (!predicate(this.values[i], i)) return false;
+        if ("proto_value" in this && !predicate(this.proto_value, "__proto__")) return false;
         return true;
     },
     each: function(f) {
-        for (var i in this._values)
-            f(this._values[i], i.substr(1));
+        for (var i in this.values)
+            f(this.values[i], i);
+        if ("proto_value" in this) f(this.proto_value, "__proto__");
     },
     size: function() {
-        return this._size;
+        return Object.keys(this.values).length + ("proto_value" in this);
     },
     map: function(f) {
         var ret = [];
-        for (var i in this._values)
-            ret.push(f(this._values[i], i.substr(1)));
+        for (var i in this.values)
+            ret.push(f(this.values[i], i));
+        if ("proto_value" in this) ret.push(f(this.proto_value, "__proto__"));
         return ret;
     },
     clone: function() {
         var ret = new Dictionary();
-        for (var i in this._values)
-            ret._values[i] = this._values[i];
-        ret._size = this._size;
+        this.each(function(value, i) {
+            ret.set(i, value);
+        });
         return ret;
     },
-    toObject: function() { return this._values }
+    toObject: function() {
+        var obj = {};
+        this.each(function(value, i) {
+            obj["$" + i] = value;
+        });
+        return obj;
+    },
 };
 Dictionary.fromObject = function(obj) {
     var dict = new Dictionary();
-    dict._size = merge(dict._values, obj);
+    for (var i in obj)
+        if (HOP(obj, i)) dict.set(i.slice(1), obj[i]);
     return dict;
 };
 
@@ -264,4 +264,22 @@ function first_in_statement(stack, arrow, export_default) {
         }
         return false;
     }
+}
+
+function DEF_BITPROPS(ctor, props) {
+    if (props.length > 31) throw new Error("Too many properties: " + props.length + "\n" + props.join(", "));
+    props.forEach(function(name, pos) {
+        var mask = 1 << pos;
+        Object.defineProperty(ctor.prototype, name, {
+            get: function() {
+                return !!(this._bits & mask);
+            },
+            set: function(val) {
+                if (val)
+                    this._bits |= mask;
+                else
+                    this._bits &= ~mask;
+            },
+        });
+    });
 }

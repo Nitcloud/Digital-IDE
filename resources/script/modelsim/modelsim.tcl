@@ -9,7 +9,7 @@ add wave/*
 # 添加vcd文件
 vcd file 1.vcd			        
 # 添加vcd观测节点
-vcd add /*			            
+vcd add /*			   
 # 运行
 run -all				        
 # 退出仿真

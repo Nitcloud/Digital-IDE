@@ -1,11 +1,11 @@
 {
-    "name": "dide",
+    "name": "fpga-support",
     "displayName": "Digital IDE",
     "description": "Design For Digital Development",
     "publisher": "sterben",
     "homepage": "https://github.com/Bestduan/Digital-IDE",
-    "version": "0.1.20",
-    "main": "./src/extension",
+    "version": "0.2.5",
+    "main": "./out/extension",
     "icon": "images/DIDE.png",
     "keywords": [
         "FPGA Develop Support",
@@ -42,16 +42,6 @@
         "configuration": {
             "title": "DIDE",
             "properties": {
-                "HDL.linting.mode": {
-                    "scope": "window",
-                    "type": "string",
-                    "enum": [
-                        "auto",
-                        "manual"
-                    ],
-                    "default": "auto",
-                    "description": "Select the trigger mode for syntax checking."
-                },
                 "HDL.linting.vlog.linter": {
                     "scope": "window",
                     "type": "string",
@@ -64,7 +54,7 @@
                         "default"
                     ],
                     "default": "vivado",
-                    "description": "Select the verilog or systemverilog linter. default means none"
+                    "description": "Select the verilog or systemverilog linter."
                 },
                 "HDL.linting.vhdl.linter": {
                     "scope": "window",
@@ -76,7 +66,7 @@
                         "default"
                     ],
                     "default": "vivado",
-                    "description": "Select the vhdl linter. default means none"
+                    "description": "Select the vhdl linter."
                 },
                 "HDL.linting.runFilePath": {
                     "scope": "window",
@@ -254,66 +244,6 @@
                     "type": "string",
                     "default": "",
                     "description": "set the gtkwave install path. \n e.g. : D:/APP/iverilog/gtkwave/bin/"
-                },
-                "TOOL.SerialPortMonitor.BaudRate": {
-                    "type": "integer",
-                    "scope": "resource",
-                    "markdownDescription": "SerialPort Baud Rate",
-                    "default": "115200",
-                    "enum": [
-                        "1382400",
-                        "921600",
-                        "460800",
-                        "256000",
-                        "230400",
-                        "128000",
-                        "115200",
-                        "9600",
-                        "4800",
-                        "2400",
-                        "1200"
-                    ]
-                },
-                "TOOL.SerialPortMonitor.DataBits": {
-                    "type": "string",
-                    "scope": "resource",
-                    "markdownDescription": "SerialPort Data Bits width",
-                    "default": "8",
-                    "enum": [
-                        "5",
-                        "6",
-                        "7",
-                        "8"
-                    ]
-                },
-                "TOOL.SerialPortMonitor.Parity": {
-                    "type": "string",
-                    "scope": "resource",
-                    "markdownDescription": "SerialPort Parity bit",
-                    "default": "None",
-                    "enum": [
-                        "None",
-                        "Odd",
-                        "Even",
-                        "Mark",
-                        "Space"
-                    ]
-                },
-                "TOOL.SerialPortMonitor.StopBits": {
-                    "type": "string",
-                    "scope": "resource",
-                    "markdownDescription": "SerialPort Stop Bits",
-                    "default": "1",
-                    "enum": [
-                        "1",
-                        "1.5",
-                        "2"
-                    ],
-                    "enumDescriptions": [
-                        "One",
-                        "Two",
-                        "OnePointFive"
-                    ]
                 }
             }
         },
@@ -394,7 +324,7 @@
                     ".vh",
                     ".vl"
                 ],
-                "configuration": "./config/verilog.configuration.json"
+                "configuration": "./config/vlog.configuration.json"
             },
             {
                 "id": "systemverilog",
@@ -406,7 +336,7 @@
                     ".sv",
                     ".SV"
                 ],
-                "configuration": "./config/systemverilog.configuration.json"
+                "configuration": "./config/svlog.configuration.json"
             },
             {
                 "id": "arm",
@@ -465,30 +395,30 @@
             {
                 "language": "verilog",
                 "scopeName": "source.verilog",
-                "path": "./syntaxes/verilog.json"
+                "path": "./syntaxes/vlog.json"
             },
             {
                 "language": "systemverilog",
                 "scopeName": "source.systemverilog",
-                "path": "./syntaxes/systemverilog.json"
+                "path": "./syntaxes/svlog.json"
             }
         ],
         "snippets": [
             {
                 "language": "tcl",
-                "path": "./snippets/tcl.json"
+                "path": "snippets/tcl.json"
             },
             {
                 "language": "vhdl",
-                "path": "./snippets/vhdl.json"
+                "path": "snippets/vhdl.json"
             },
             {
                 "language": "verilog",
-                "path": "./snippets/verilog.json"
+                "path": "snippets/svlog.json"
             },
             {
                 "language": "systemverilog",
-                "path": "./snippets/systemverilog.json"
+                "path": "snippets/svlog.json"
             }
         ],
         "commands": [
@@ -556,6 +486,15 @@
                 "icon": {
                     "light": "images/svg/light/debug.svg",
                     "dark": "images/svg/dark/debug.svg"
+                },
+                "category": "TOOL"
+            },
+            {
+                "command": "TOOL.libPick",
+                "title": "import library",
+                "icon": {
+                    "light": "images/svg/light/library.svg",
+                    "dark": "images/svg/dark/library.svg"
                 },
                 "category": "TOOL"
             },
@@ -733,6 +672,11 @@
         ],
         "menus": {
             "view/title": [
+                {
+                    "command": "TOOL.libPick",
+                    "group": "navigation",
+                    "when": "view == TOOL.file_tree"
+                },
                 {
                     "command": "FILE.refresh",
                     "group": "navigation",

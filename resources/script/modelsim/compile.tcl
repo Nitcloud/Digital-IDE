@@ -8,16 +8,16 @@ puts {
 # modify the rest of the script.
 
 set library_file_list {
-                           design_library {counter.vhd}
-                           test_library   {countertb.vhd
-                                           countercf.vhd}
+    design_library {counter.vhd}
+    test_library   {
+        countertb.vhd
+        countercf.vhd
+    }
 }
 set top_level              test_library.Cfg_CounterTB
-set wave_patterns {
-                           /*
-}
+set wave_patterns { /* }
 set wave_radices {
-                           hexadecimal {data q}
+    hexadecimal {data q}
 }
 
 
