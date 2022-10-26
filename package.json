@@ -4,7 +4,7 @@
     "description": "Design For Digital Development",
     "publisher": "sterben",
     "homepage": "https://github.com/Bestduan/Digital-IDE",
-    "version": "0.2.5",
+    "version": "0.2.4",
     "main": "./out/extension",
     "icon": "images/DIDE.png",
     "keywords": [
@@ -324,7 +324,7 @@
                     ".vh",
                     ".vl"
                 ],
-                "configuration": "./config/vlog.configuration.json"
+                "configuration": "./config/verilog.configuration.json"
             },
             {
                 "id": "systemverilog",
@@ -336,7 +336,7 @@
                     ".sv",
                     ".SV"
                 ],
-                "configuration": "./config/svlog.configuration.json"
+                "configuration": "./config/systemverilog.configuration.json"
             },
             {
                 "id": "arm",
@@ -395,12 +395,12 @@
             {
                 "language": "verilog",
                 "scopeName": "source.verilog",
-                "path": "./syntaxes/vlog.json"
+                "path": "./syntaxes/verilog.json"
             },
             {
                 "language": "systemverilog",
                 "scopeName": "source.systemverilog",
-                "path": "./syntaxes/svlog.json"
+                "path": "./syntaxes/systemverilog.json"
             }
         ],
         "snippets": [
@@ -827,5 +827,9 @@
         "vscode:prepublish": "webpack --mode production"
     },
     "devDependencies": {},
-    "dependencies": {}
+    "dependencies": {
+        "chokidar": "^3.5.3",
+        "antlr4": "^4.8.0",
+        "state-machine-cat": "^9.2.5"
+    }
 }

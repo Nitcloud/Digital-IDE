@@ -9,8 +9,7 @@
  */
 //============================================================================================
 
-module CLK_GEN #
-(
+module CLK_GEN #(
     parameter Mult        = 20,
     parameter DIVCLK_DIV  = 1,
 
@@ -20,8 +19,7 @@ module CLK_GEN #
     parameter CLKOUT3_DIV = 10,
     parameter CLKOUT4_DIV = 20,
     parameter CLKOUT5_DIV = 1
-)
-(
+) (
     input       clk_in,
 
     output      clk_out0,
@@ -253,7 +251,7 @@ pll_inst
     .DI       ( din   ),
     .DO       ( dout  ),
     .DRDY     ( drdy  ),
-    .DWE      (  dwe  ),
+    .DWE      ( dwe   ),
 
     .LOCKED   ( locked ),
     .PWRDWN   ( 1'b0),

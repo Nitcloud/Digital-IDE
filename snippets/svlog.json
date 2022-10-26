@@ -1,6 +1,6 @@
 {
     "IDDR": {
-        "prefix": "ddr",
+        "prefix": "iddr",
         "body" : [
             "IDDR #(",
             "    // \"OPPOSITE_EDGE\", \"SAME_EDGE\" or \"SAME_EDGE_PIPELINED\" ",
@@ -22,7 +22,7 @@
     },
 
     "ODDR": {
-        "prefix": "ddr",
+        "prefix": "oddr",
         "body" : [
             "ODDR #(",
             "    .DDR_CLK_EDGE(\"SAME_EDGE\"), // \"OPPOSITE_EDGE\" or \"SAME_EDGE\" ",
@@ -70,7 +70,7 @@
     },
 
     "OSERDESE2": {
-        "prefix": "serd",
+        "prefix": "oserd",
         "body" : [
         "OSERDESE2 #(",
         "    .DATA_RATE_OQ(\"DDR\"),   // DDR, SDR",
@@ -122,7 +122,7 @@
     },
 
     "ISERDESE2": {
-        "prefix": "serd",
+        "prefix": "iserd",
         "body" : [
         "ISERDESE2 #(",
         "    .DATA_RATE(\"DDR\"),           // DDR, SDR",
@@ -211,7 +211,7 @@
         ]
     },
 
-    "clk_div": {
+    "divclk": {
         "prefix": "div",
         "body": [
             "reg [${1:3}:0]      cnt$2 = 0;",
@@ -764,7 +764,7 @@
 	},
 
 	"display":{
-		"prefix":"display",
+		"prefix":"$display",
 		"body":[
 			"$$display(\"${1}\"$2);$0"
 		],
@@ -843,5 +843,45 @@
 			"end"
 		],
 		"description": "forever begin ... end"
+	},
+
+    "write":{
+		"prefix": "$write",
+		"body": [
+			"\\$write($1)"
+		],
+		"description": ""
+	},
+
+    "clog2":{
+		"prefix": "$clog2",
+		"body": [
+			"\\$clog2($1)"
+		],
+		"description": ""
+	},
+
+    "signed":{
+		"prefix": "$signed",
+		"body": [
+			"\\$signed($1)"
+		],
+		"description": ""
+	},
+
+    "unsigned":{
+		"prefix": "$unsigned",
+		"body": [
+			"\\$unsigned($1)"
+		],
+		"description": ""
+	},
+
+    "random":{
+		"prefix": "$random",
+		"body": [
+			"\\$random($1)"
+		],
+		"description": ""
 	}
 }

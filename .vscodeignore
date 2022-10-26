@@ -1,10 +1,8 @@
+.gitignore
 .vscode/**
+docs/**
 node_modules/**
 src/**
-.vscode-test/**
-test/**
-.gitignore
-README_cn.md
 **/jsconfig.json
 **/*.map
 **/.eslintrc.json
@@ -13,4 +11,4 @@ webpack.config.js
 resources/iverilog
 system.drawio
 toolchain-flow.svg
-docs/**
+README_cn.md
