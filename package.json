@@ -5,7 +5,7 @@
     "publisher": "sterben",
     "homepage": "https://github.com/Bestduan/Digital-IDE",
     "version": "0.2.5",
-    "main": "./out/extension",
+    "main": "./src/extension",
     "icon": "images/DIDE.png",
     "keywords": [
         "FPGA Develop Support",

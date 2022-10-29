@@ -26,7 +26,7 @@ var symbol = {
         let symbolInfo = vscode.SymbolInformation(
             symbol.name,
             this.getSymbolKind(symbol.type),
-            symbol.parent,
+            null,
             location
         );
 
