@@ -279,7 +279,14 @@ class hardTreeDataProvider {
                     { "name" : "Impl"      },
                     { "name" : "BitStream" }
                 ];
-            } else {
+            } 
+            else if (element.name === "Simulate") {
+                return [
+                    { "name" : "no GUI"   },
+                    { "name" : "GUI"      }
+                ];
+            }
+            else {
                 return [];
             }
         }
@@ -314,6 +321,7 @@ class hardTreeDataProvider {
         treeItem.iconPath = this.getIconPath(element.name);
         return treeItem;
     }
+
     getCommand(name){
         let cuurentCommand = { 
             title:     name, 
@@ -336,6 +344,7 @@ class hardTreeDataProvider {
         }
         return cuurentCommand;
     }
+
     getIconPath(name){
         let iconPath = ""
         switch (name) {
@@ -359,6 +368,7 @@ class hardTreeDataProvider {
         };
         return currentIconPath;
     }
+    
     getToolTip(name){
         let currentToolTip = ""
         switch (name) {

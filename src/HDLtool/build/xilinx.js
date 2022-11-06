@@ -1,6 +1,6 @@
 "use strict";
 
-const fs     = require("../../HDLfs");
+const fs     = require("../../HDLfilesys");
 const vscode = require("vscode");
 const child  = require("child_process");
 

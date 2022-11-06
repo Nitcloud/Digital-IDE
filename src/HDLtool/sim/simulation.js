@@ -1,233 +1,170 @@
 "use strict";
 
-const fspath  = require("path");
+const fs      = require("../../HDLfilesys");
+
 const child   = require("child_process");
 const vscode  = require("vscode");
-const parser  = require("HDLparser");
-const kernel  = require("HDLkernel");
-const filesys = require("HDLfilesys");
 
 class simulate {
     constructor() {
-        this.mod_regExp  = /\/\/ @ sim.module : (?<module>\w+)/;
-        this.clk_regExp  = /\/\/ @ sim.clk : (?<clk>\w+)/;
-        this.rst_regExp  = /\/\/ @ sim.rst : (?<rst>\w+)/;
-        this.end_regExp  = /#(?<rst>[0-9+])\s+\$(finish|stop)/;
-        this.wave_regExp = /\$dumpfile\s*\(\s*\"(?<path>.+)\"\s*\);/;
-        this.outputCH = vscode.window.createOutputChannel("kernel-sim");
-    }
-
-    simulate(uri) {
-        this.docPath = uri.fsPath.replace(/\\/g,"\/");
-        let text = filesys.files.readFile(this.docPath);
-        if (!text) {
-            return null;
+        this.regExp = {
+            "mod"  : /\/\/ @ sim.module : (?<mod>\w+)/,
+            "clk"  : /\/\/ @ sim.clk : (?<clk>\w+)/,
+            "rst"  : /\/\/ @ sim.rst : (?<rst>\w+)/,
+            "end"  : /#(?<end>[0-9+])\s+\$(finish|stop)/,
+            "wave" : /\$dumpfile\s*\(\s*\"(?<wave>.+)\"\s*\);/,
         }
 
-        let config = this.getConfig();
+        this.xilinxLib = [
+            "xeclib", "unisims" ,"unimacro" ,"unifast" ,"retarget"
+        ]
 
-    }
+        this.err = vscode.showErrorMessage;
+        this.warn = vscode.showWarningMessage;
+        this.info = vscode.showInformationMessage;
 
-    async execSimulation(config) {
-        // 获取工程依赖
-        let module = {
-            name : config.mod,
-            path : this.docPath,
-        }
-        let dependences = parser.utils.getModuleDependence(this.HDLparam, module);
+        this.terminal = vscode.window.createTerminal;
 
-        // 向内核中导入工程
-        this.synth = await kernel.launch();
-
-        // 将执行过程中的日志输出到webview
-        var _this = this;
-        this.synth.ope.setMessageCallback((message, type) => {
-            if (message != '') {
-                // console.log(`[${type}]: ${message}`);
-                _this.outputCH.append(`[${type}]: ${message}\n`);
-            }
-            if (type == "error") {
-                vscode.window.showErrorMessage(`${type} : ${message}`);
-            }
-        });
-
-        // 将需要综合的文件进行导入内核 (kernel直接支持include)
-        this.synth.ope.loadFile(dependences.inst);
-        this.synth.ope.loadFile(this.docPath);
-    }
-
-    getConfig() {
-        let mod = text.match(this.mod_regExp);
-        mod = mod.groups.module;
-
-        let clk = text.match(this.clk_regExp);
-        clk = clk.groups.module;
-
-        let rst = text.match(this.rst_regExp);
-        rst = rst.groups.module;
-
-        let end = text.match(this.end_regExp);
-        end = end.groups.module;
-
-        return {
-            mod : mod,
-            clk : clk,
-            rst : rst,
-            end : end,
-        }
+        this.outputCH = vscode.window.createOutputChannel("simulate");
+        this.setting  = vscode.workspace.getConfiguration();
     }
 
     /**
-     * @state finish - tested
-     * @descriptionCn 获取波形镜像文件
-     * @param {String} text 代码文本
-     * @returns {String} 波形镜像文件地址
+     * @descriptionCn 获取仿真的配置
+     * @param {String} path 代码路径
+     * @param {String} tool 仿真工具名
+     * @returns 仿真的配置
      */
-    getWaveImagePath(text) {
-        let waveImagePath = text.match(wavePath);
-        waveImagePath = waveImagePath.groups.path;
-        if (!waveImagePath) {
-            waveImagePath = "";
+    getConfig(path, tool) {
+        let simConfig = {};
+        let code = fs.files.readFile(path);
+        if (!code) {
+            this.err(`${path} read faile`);
+            return null;
         }
-        return waveImagePath;
+
+        for (const element in this.regExp) {
+            simConfig[element] = code.match(this.regExp[element]);
+            simConfig[element] = simConfig[element].groups[element];
+        }
+
+        simConfig["runPath"] = this.setting.get('HDL.linting.runPath');
+
+        // 确保安装路径有效
+        simConfig["installPath"] = this.setting.get(`TOOL.${tool}.install.path`);
+        if (simConfig.installPath !== '' && fs.dirs.isillegal(simConfig.installPath)) {
+            this.err(`${tool} install path is illegal`);
+            return null;
+        }
+
+        return simConfig
     }
-    
+
+    /**
+     * @descriptionCn 获取自带仿真库的路径
+     * @param {String} toolchain 
+     * @returns {Array} 所有第三方仿真库的路径数组
+     */
+    getLibArr(toolchain) {
+        let libPath = [];
+
+        // 获取xilinx的自带仿真库的路径
+        if (toolchain === "xilinx") {
+            let rootPaths = this.setting.get('SIM.Xilinx.LIB.path');
+
+            if (rootPaths != "") {
+                return [];
+            }
+            libPath.push(`${rootPaths}/glbl.v`);
+            for (let i = 0; i < this.xilinxLib.length; i++) {
+                const element = this.xilinxLib[i];
+                libPath.push(`${rootPaths}/${element}`);
+            }
+
+            return libPath;
+        }
+    }
 }
 
 
-class icarus {
+class icarus extends simulate {
     
-    constructor(process) {
-        this.process = process;
-        this.simLibRootPath = "";
-        this.LibPath  = "";
-        this.GlblPath = "";
-        this.setting  = vscode.workspace.getConfiguration();
-        this.outputCH = vscode.window.createOutputChannel("iverilog");
-        this.getConfig();
-        var _this = this;
-        vscode.workspace.onDidChangeConfiguration(function () {
-            _this.getConfig();
-        });
+    constructor(param) {
+        this.os = param.opeParam.os;
+        this.prjPath = param.opeParam.prjStructure.prjPath;
+        this.toolchain = param.opeParam.prjInfo.TOOL_CHAIN;
     }
 
-    getConfig() {
-        this.installPath = this.setting.get('TOOL.iverilog.install.path');
-        this.runFilePath = this.setting.get('HDL.linting.runFilePath');
-    }
-
-    simulate(uri) {
-        let HDLparam = this.process.indexer.HDLparam;
-        this.getConfig();
-
-        let docPath = uri.fsPath.replace(/\\/g,"\/");
-        if (filesys.files.isHasAttr(uri, "name")) {
-            if (uri.name) {
-                this.execSimulation(
-                    docPath, 
-                    {
-                        name : uri.name, 
-                        path : docPath
-                    }, 
-                    HDLparam
-                );
-            }
-        } else {
-            // 获取当前文件的模块名和模块数 选择要仿真的模块
-            parser.utils.selectCurrentFileModule(HDLparam, docPath)
-            .then((selectModule) => {
-                if (selectModule != null) {
-                    this.execSimulation(
-                        docPath, 
-                        {
-                            name : selectModule.moduleName,
-                            path : selectModule.modulePath
-                        }, 
-                        HDLparam
-                    );
-                }
-            });      
-        }
-    }
-
-    execSimulation(docPath, module, HDLparam) {
-        let rtlFilePath  = "";    
-        // 获取运行时的路径
-        if (this.runFilePath == "") {
-            this.runFilePath = `${this.process.opeParam.workspacePath}/prj/simulation/iVerilog`
-            filesys.dirs.mkdir(this.runFilePath);
+    getCommand() {
+        this.simConfig = this.getConfig(this.param.path, 'iverilog');
+        if (!this.simConfig) {
+            return null;
         }
 
-        // 获取运行工具的路径
-        let vvpPath      = "vvp";
-        let gtkwavePath  = "gtkwave";
-        let iVerilogPath = "iverilog";
-        if (this.installPath != "") {
-            if (this.process.opeParam.os == "win32") {
-                vvpPath = this.installPath + "vvp.exe";
-                iVerilogPath = this.installPath + "iverilog.exe";
-            } else if (this.process.opeParam.os == "linux") {
-                vvpPath = this.installPath + "vvp";
-                iVerilogPath = this.installPath + "iverilog";
-            }
+        // 获取并保证工具执行路径的有效
+        let icarusPath = 'iverilog';
+        let vvpPath = 'vvp';
+        if (this.os === 'win32') {
+            vvpPath += '.exe'
+            icarusPath += '.exe';
         }
-        let gtkwaveInstallPath = vscode.workspace.getConfiguration().get('TOOL.gtkwave.install.path');
-        if (gtkwaveInstallPath != "") {
-            if (this.process.opeParam.os == "win32") {
-                gtkwavePath = gtkwaveInstallPath + "gtkwave.exe";
-            } else if (this.process.opeParam.os == "linux") {
-                gtkwavePath = gtkwaveInstallPath + "gtkwave";
-            }
-        }
-
-        // 获取对应厂商的仿真库路径
-        if (filesys.files.isHasAttr(this.process.opeParam.prjInfo, "TOOL_CHAIN")) {
-            if (this.process.opeParam.prjInfo.TOOL_CHAIN == "xilinx") {
-                this.xilinxLibPath();
-            }				
-        }         
-
-        // 获取该模块仿真时所需要的依赖
-        let dependenceFilePathList = parser.utils.getModuleDependence(HDLparam, module);
         
-        // CN: 只需要添加例化模块的依赖文件， include文件iverilog会自动寻找添加。
-        this.outputCH.clear();
-        this.outputCH.appendLine("//********** iverilog log **********//\n");
-        this.outputCH.appendLine("The DependenceFilePathList (only instance) :\n");
-        dependenceFilePathList.inst.forEach(element => {
+        if (this.simConfig.installPath !== '') {
+            vvpPath = `${this.simConfig.installPath}/${vvpPath}`;
+            icarusPath = `${this.simConfig.installPath}/${icarusPath}`;
+        }
+
+        // 获取并保证运行路径的有效
+        if (fs.dirs.isillegal(this.simConfig.runPath)) {
+            if (this.simConfig.runPath === '') {
+                this.simConfig.runPath =  `${this.prjPath}/simulation/icarus`;
+            }
+            if (!fs.dirs.mkdir(this.simConfig.runPath)) {
+                this.err(`icarus runPath mkdir faile`);
+                return null;
+            }
+        }
+
+        // 获取 dependence path 
+        let dependencePath = ' ';
+        this.param.dependence.forEach(element => {
             this.outputCH.appendLine(`${element} \n`);
-            rtlFilePath = rtlFilePath + element + " ";
+            dependencePath += element + " ";
         });
-        rtlFilePath = rtlFilePath.replace(/\\/g,"\/").replace("//","/");
-        let command = `${iVerilogPath} \n` +
-        `-g2012 \n` + 
-        `-o ${this.runFilePath}/out.vvp \n` + 
-        `-s ${module.name} \n` + 
-        `${docPath} \n` + 
-        `${rtlFilePath} \n` + 
-        `${this.GlblPath} \n` + 
-        `${this.LibPath}`;
 
-        this.outputCH.appendLine(`The commande is : \n\n${command}\n`);
-        command = command.replace(/\n/g, '');
+        // 获取 third lib path
+        let thirdLibPath = ' ';
+        this.getLibArr(this.toolchain).forEach(element => {
+            if(fs.dirs.isillegal(element)) {
+                thirdLibPath += element + " ";
+            } else {
+                thirdLibPath += `-y ${element}`;
+            }
+        })
 
-        let currentRunFilePath = fspath.dirname(docPath);
-        let currentOutFilePath = this.runFilePath;
+        let argu = '-g2012'
+
+        return `${icarusPath} ${argu} -o ${this.simConfig.runPath}/out.vvp -s ${this.param.name} ${this.param.path} ${dependencePath} ${thirdLibPath}`
+    }
+
+    exec() {
         var _this = this;
-        child.exec(command, { cwd: currentRunFilePath }, function (error, stdout, stderr) {
-            vscode.window.showInformationMessage(stdout);
+        child.exec(this.getCommand, { cwd: this.simConfig.runPath }, function (error, stdout, stderr) {
+            _this.info(stdout);
             if (error !== null) {
                 stderr = "ERROR From iverilog : \n\n" + stderr;
                 _this.outputCH.appendLine(`${stderr}`);
                 _this.outputCH.appendLine("//********** iverilog log **********//\n");
                 _this.outputCH.show(true);
-                vscode.window.showErrorMessage(stderr);
+                _this.err(stderr);
             } else {
                 _this.outputCH.appendLine("iVerilog simulates successfully!!!\n");
                 _this.outputCH.appendLine("//********** iverilog log **********//\n\n");
-                vscode.window.showInformationMessage("iVerilog simulates successfully!!!");
+                _this.info("iVerilog simulates successfully!!!");
+
                 let Exists_flag = false;
                 var vvp = null;
+
                 vscode.window.terminals.forEach(element => {
                     if (element.name == "vvp") {
                         vvp = element;
@@ -235,15 +172,11 @@ class icarus {
                         return;
                     }
                 });
+
                 if (!Exists_flag) {
                     vvp = vscode.window.createTerminal({ name: 'vvp' });
                 }
-                let cmd = "";
-                let waveImagePath = '';
-                let code = filesys.files.readFile(docPath);
-                if (code) {
-                    waveImagePath = getWaveImagePath(code);
-                }
+                
                 if (waveImagePath != '') {
                     let waveImageExtname = waveImagePath.split('.');
                     cmd = `${vvpPath} ${currentOutFilePath}/out.vvp -${waveImageExtname[waveImageExtname.length-1]}`;
@@ -260,22 +193,7 @@ class icarus {
             }
         });
     }
-
-    xilinxLibPath() {
-        this.simLibRootPath = this.setting.get('SIM.Xilinx.LIB.path');
-        if (this.simLibRootPath != "") {
-            this.GlblPath = this.simLibRootPath + "/glbl.v ";
-            this.LibPath  = "-y " + this.simLibRootPath + "/xeclib ";
-            this.LibPath  = this.LibPath + "-y " + this.simLibRootPath + "/unisims ";
-            this.LibPath  = this.LibPath + "-y " + this.simLibRootPath + "/unimacro ";
-            this.LibPath  = this.LibPath + "-y " + this.simLibRootPath + "/unifast ";
-            this.LibPath  = this.LibPath + "-y " + this.simLibRootPath + "/retarget ";
-        }
-    }
 }
 exports.icarus = icarus;
 
-class vcs {
-    
-}
 

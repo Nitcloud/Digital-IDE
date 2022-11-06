@@ -8,7 +8,7 @@ const instance = require("./instance");
 
 class testbench {
     constructor() {
-
+        this.inst = new instance();
     }
 
     

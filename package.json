@@ -68,7 +68,7 @@
                     "default": "vivado",
                     "description": "Select the vhdl linter."
                 },
-                "HDL.linting.runFilePath": {
+                "HDL.linting.runPath": {
                     "scope": "window",
                     "type": "string",
                     "default": "",
