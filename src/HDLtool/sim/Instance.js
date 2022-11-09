@@ -2,6 +2,11 @@
 
 class instance {
 
+    /**
+     * @descriptionCn verilog模式下生成整个例化的内容
+     * @param {Object} module 模块信息
+     * @returns {String} 整个例化的内容
+     */
     vlog(module) {
         let port = this.vlogPort(module.ports);
         let param = this.vlogParam(module.params);
@@ -21,6 +26,11 @@ class instance {
         return instContent;
     }
 
+    /**
+     * @descriptionCn vhdl模式下生成整个例化的内容
+     * @param {Object} module 模块信息
+     * @returns {String} 整个例化的内容
+     */
     vhdl(module) {
         // module 2001 style
         let port = this.vhdlPort(module.ports);
@@ -38,8 +48,12 @@ class instance {
     }
     
     /**
-     * 
-     * @param {Array} ports 
+     * @descriptionCn verilog模式下对端口信息生成要例化的内容
+     * @param {Array} ports 端口信息列表
+     * @returns {Object} {
+     *      "wireStr" : wireStr, // output wire 声明
+     *      "portStr" : portStr, // 端口例化
+     *  }
      */
     vlogPort(ports) {
         let nmax = this.getlmax(ports, 'name');
@@ -75,6 +89,11 @@ class instance {
 
     }
 
+    /**
+     * @descriptionCn verilog模式下对参数信息生成要例化的内容
+     * @param {Array} params 参数信息列表
+     * @returns {String} 对参数信息生成要例化的内容
+     */
     vlogParam(params) {
         let paramStr = '';
         let nmax = this.getlmax(params, 'name');
@@ -101,6 +120,11 @@ class instance {
         return paramStr;
     }
 
+    /**
+     * @descriptionCn vhdl模式下对端口信息生成要例化的内容
+     * @param {Array} ports 端口信息列表
+     * @returns {String} 对端口信息生成要例化的内容
+     */
     vhdlPort(ports) {
         let nmax = this.getlmax(ports, 'name');
         
@@ -119,6 +143,11 @@ class instance {
         return portStr;
     }
 
+    /**
+     * @descriptionCn vhdl模式下对参数信息生成要例化的内容
+     * @param {Array} params 参数信息列表
+     * @returns {String} 对参数信息生成要例化的内容
+     */
     vhdlParam(params) {
         let paramStr = '';
         let nmax = this.getlmax(params, 'name');
@@ -171,6 +200,7 @@ class instance {
         let selections = editor.selections;
         editor.edit((editBuilder) => {
             selections.forEach((selection) => {
+                // position, content
                 editBuilder.insert(selection.active, content);
             });
         });

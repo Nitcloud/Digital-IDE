@@ -6,7 +6,17 @@ let prjStructure = {
     SoftwareSrc  : "",
     SoftwareData : ""
 };
+let x = parseInt('11111111', 2);
+function eval_signed(str, num, opt) {
+    let pow = Math.pow(opt, str.length);
+    let x1 = num;
+    if (num >= pow >> 1) {
+        x1 = num - pow;
+    }
+    return x1;
+}
 
+eval_signed('11111111', x, 2);
 var HDLparam = {
     "/home/project/top.v" : {
         "languageId" : "verilog",

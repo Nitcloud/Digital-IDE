@@ -302,6 +302,8 @@ var fileOperation = {
      * @descriptionCn 获取文件夹下的所有HDL文件，已经进行了文件存在性的检查，并且同时支持文件和文件夹
      * @param {String} path 所指定的文件夹路径
      * @param {Array} HDLFiles 最后输出的HDL文件列表
+     * @param {Array} ignores  获取过程中需要忽略的文件所在的文件夹(绝对路径)
+     * @returns {Array} 返回文件数组
      */
      getHDLFiles(path, HDLFiles, ignores) {
         let options = {
@@ -449,6 +451,132 @@ var fileOperation = {
             }
         }
         return true;
+    },
+
+    /**
+     * @state finish-test
+     * @descriptionCn 将position格式下的范围转化为index范围格式
+     * @param {String} text  文本内容
+     * @param {Object} position position格式的范围 {line, character}
+     * @returns {Number} index
+     */
+    position_to_index : function (text, position) {
+        let index = 0;
+        let lines = text.split('\n');
+        for (let i = 0; i < position.line; ++i) {
+            index += lines[i].length + 1;
+        }
+        index += position.character;
+        return index;
+    },
+
+    /**
+     * @state finish-test
+     * @descriptionCn 将range格式下的范围转化为index范围格式
+     * @param {String} text  文本内容
+     * @param {Object} range range格式的范围 {start:{line, character}, end:{line, character}}
+     * @returns {Object} index = {
+     *      "startIndex" : startIndex,
+     *      "lastIndex"  : lastIndex,
+     *  }
+     */
+    range_to_index : function (text, range) {
+        return {
+            "startIndex" : this.position_to_index(text, range.start),
+            "lastIndex"  : this.position_to_index(text, range.end),
+        }
+    },
+    
+    /**
+     * @state finish-test
+     * @descriptionCn 将index格式下的范围转化为range范围格式
+     * @param {String} text  文本内容
+     * @param {Object} index index格式的范围{
+     *     "startIndex" : startIndex,
+     *     "lastIndex"  : lastIndex,
+     * }
+     * @returns {Object} range = {
+     *     "start" : {"line":line, "character":character},
+     *     "end"   : {"line":line, "character":character},
+     * }
+     */
+    index_to_range : function (text, index) {
+        let lines = text.split('\n');
+        let line = 0;
+        let offset = 0;
+        let range = {
+            "start" : {line:0, character:0},
+            "end"  : {line:0, character:0},
+        };
+        while (1) {
+            offset += lines[line].length + 1; 
+            if (offset > index.startIndex) {
+                break;
+            }
+            line++;
+        }
+        range.start.line = line;
+        range.start.character = index.startIndex + lines[line].length - offset + 1;
+
+        while (1) {
+            if (offset > index.lastIndex) {
+                break;
+            }
+            line++;
+            offset += lines[line].length + 1; 
+        }
+        range.end.line = line;
+        range.end.character = index.lastIndex + lines[line].length - offset + 1;
+
+        return range;
+    },
+
+    /**
+     * @state finish-test
+     * @descriptionCn 确认是否是被包含的关系
+     * @param {Object} parent 父级 range
+     * @param {Object} child  子级 range
+     * @returns (true:被包含 | false:不被包含)
+     */
+    ensureInclude : function (parent, child) {
+        if (parent.start.line < child.start.line) {
+            if (parent.end.line > child.end.line) {
+                return true;
+            }
+            if (parent.end.line == child.end.line) {
+                if (parent.end.character >= child.end.character) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        if (parent.start.line == child.start.line) {
+            if (parent.start.character <= child.start.character) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    },
+
+    /**
+     * @descriptionCn 排查出A中不属于B的元素
+     * @param {Array} A 待排查的数组
+     * @param {Array} B 对比数组
+     * @returns {Array} 返回A中不属于B的元素
+     */
+    diffElement : function (A, B) {
+        let res = [];
+        const len = A.length;
+        for (let i = 0; i < len; i++) {
+            const element = A[i];
+            if (!B.includes(element)) {
+                res.push(element);
+            }
+        }
+        return res;
     }
 }
 module.exports = fileOperation;

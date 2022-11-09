@@ -323,26 +323,26 @@ class hardTreeDataProvider {
     }
 
     getCommand(name){
-        let cuurentCommand = { 
+        let curCmd = { 
             title:     name, 
             command:   ""
         };
         switch (name) {
-            case "Launch"    : cuurentCommand.command = "HARD.Launch";   break;
-            case "Simulate"  : cuurentCommand.command = "HARD.Simulate"; break;
-            case "Refresh"   : cuurentCommand.command = "HARD.Refresh";  break;
-            case "Build"     : cuurentCommand.command = "HARD.Build";    break;
-            case "Program"   : cuurentCommand.command = "HARD.Program";  break;
-            case "GUI"       : cuurentCommand.command = "HARD.GUI";      break;
-            case "Exit"      : cuurentCommand.command = "HARD.Exit";     break;
+            case "Launch"    : curCmd.command = "HARD.Launch";   break;
+            case "Simulate"  : curCmd.command = "HARD.Simulate"; break;
+            case "Refresh"   : curCmd.command = "HARD.Refresh";  break;
+            case "Build"     : curCmd.command = "HARD.Build";    break;
+            case "Program"   : curCmd.command = "HARD.Program";  break;
+            case "GUI"       : curCmd.command = "HARD.GUI";      break;
+            case "Exit"      : curCmd.command = "HARD.Exit";     break;
  
-            case "Synth"     : cuurentCommand.command = "HARD.Synth";    break;
-            case "Impl"      : cuurentCommand.command = "HARD.Impl";     break;
-            case "BitStream" : cuurentCommand.command = "HARD.Bit";  break;
+            case "Synth"     : curCmd.command = "HARD.Synth";    break;
+            case "Impl"      : curCmd.command = "HARD.Impl";     break;
+            case "BitStream" : curCmd.command = "HARD.Bit";  break;
             
             default: break;
         }
-        return cuurentCommand;
+        return curCmd;
     }
 
     getIconPath(name){
@@ -370,23 +370,23 @@ class hardTreeDataProvider {
     }
     
     getToolTip(name){
-        let currentToolTip = ""
+        let curToolTip = ""
         switch (name) {
-            case "Launch"    : currentToolTip = "Launch FPGA development assist function"; break;
-            case "Simulate"  : currentToolTip = "Launch the manufacturer Simulation"; break;
-            case "Refresh"   : currentToolTip = "Refresh the current project file"; break;
-            case "Build"     : currentToolTip = "Build the current fpga project"; break;
-            case "Program"   : currentToolTip = "Download the bit file into the device"; break;
-            case "GUI"       : currentToolTip = "Open the GUI"; break;
-            case "Exit"      : currentToolTip = "Exit the current project"; break;
+            case "Launch"    : curToolTip = "Launch FPGA development assist function"; break;
+            case "Simulate"  : curToolTip = "Launch the manufacturer Simulation"; break;
+            case "Refresh"   : curToolTip = "Refresh the current project file"; break;
+            case "Build"     : curToolTip = "Build the current fpga project"; break;
+            case "Program"   : curToolTip = "Download the bit file into the device"; break;
+            case "GUI"       : curToolTip = "Open the GUI"; break;
+            case "Exit"      : curToolTip = "Exit the current project"; break;
  
-            case "Synth"     : currentToolTip = "Synth the current project"; break;
-            case "Impl"      : currentToolTip = "Impl  the current project"; break;
-            case "BitStream" : currentToolTip = "Generate the BIT File"; break;
+            case "Synth"     : curToolTip = "Synth the current project"; break;
+            case "Impl"      : curToolTip = "Impl  the current project"; break;
+            case "BitStream" : curToolTip = "Generate the BIT File"; break;
             
             default: break;
         }
-        return currentToolTip;
+        return curToolTip;
     }
 }
 exports.hardTreeDataProvider = hardTreeDataProvider;
@@ -415,18 +415,18 @@ class softTreeDataProvider {
         return treeItem;
     }
     getCommand(name){
-        let cuurentCommand = { 
+        let curCmd = { 
             title:     name, 
             command:   ""
         };
         switch (name) {
-            case "Launch"   : cuurentCommand.command = "SOFT.Launch";   break;
-            case "Build"    : cuurentCommand.command = "SOFT.Build";    break;
-            case "Download" : cuurentCommand.command = "SOFT.Download"; break;
+            case "Launch"   : curCmd.command = "SOFT.Launch";   break;
+            case "Build"    : curCmd.command = "SOFT.Build";    break;
+            case "Download" : curCmd.command = "SOFT.Download"; break;
             
             default: break;
         }
-        return cuurentCommand;
+        return curCmd;
     }
     getIconPath(name){
         let iconPath = ""
@@ -444,15 +444,15 @@ class softTreeDataProvider {
         return currentIconPath;
     }
     getToolTip(name){
-        let currentToolTip = ""
+        let curToolTip = ""
         switch (name) {
-            case "Launch"   : currentToolTip = "Launch SDK development assist function"; break;
-            case "Build"    : currentToolTip = "Build the current SDK project"; break;
-            case "Download" : currentToolTip = "Download the boot file into the device"; break;
+            case "Launch"   : curToolTip = "Launch SDK development assist function"; break;
+            case "Build"    : curToolTip = "Build the current SDK project"; break;
+            case "Download" : curToolTip = "Download the boot file into the device"; break;
 
             default: break;
         }
-        return currentToolTip;
+        return curToolTip;
     }
 }
 exports.softTreeDataProvider = softTreeDataProvider;
@@ -481,18 +481,18 @@ class toolTreeDataProvider {
         return treeItem;
     }
     getCommand(name){
-        let cuurentCommand = { 
+        let curCmd = { 
             title:     name, 
             command:   ""
         };
         switch (name) {
-            case "BOOT"       : cuurentCommand.command = "TOOL.BOOT";   break;
-            case "Clean"      : cuurentCommand.command = "TOOL.Clean";      break;
-            case "SerialPort" : cuurentCommand.command = "TOOL.SerialPort"; break;
+            case "BOOT"       : curCmd.command = "TOOL.BOOT";   break;
+            case "Clean"      : curCmd.command = "TOOL.Clean";      break;
+            case "SerialPort" : curCmd.command = "TOOL.SerialPort"; break;
             
             default: break;
         }
-        return cuurentCommand;
+        return curCmd;
     }
     getIconPath(name){
         let iconPath = ""
@@ -510,15 +510,15 @@ class toolTreeDataProvider {
         return currentIconPath;
     }
     getToolTip(name){
-        let currentToolTip = ""
+        let curToolTip = ""
         switch (name) {
-            case "BOOT"       : currentToolTip = "Launch SDK development assist function"; break;
-            case "Clean"      : currentToolTip = "Clean the current project"; break;
-            case "SerialPort" : currentToolTip = "Launch Serial monitor"; break;
+            case "BOOT"       : curToolTip = "Launch SDK development assist function"; break;
+            case "Clean"      : curToolTip = "Clean the current project"; break;
+            case "SerialPort" : curToolTip = "Launch Serial monitor"; break;
 
             default: break;
         }
-        return currentToolTip;
+        return curToolTip;
     }
 }
 exports.toolTreeDataProvider = toolTreeDataProvider;

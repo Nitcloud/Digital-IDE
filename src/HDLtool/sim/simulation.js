@@ -89,12 +89,26 @@ class simulate {
 
 class icarus extends simulate {
     
+    /**
+     * @descriptionCn icarus 仿真类
+     * @param {Object} param 
+     * {
+     *      "name" : "moduleName", // 顶层模块名
+     *      "path" : "modulePath", // 顶层仿真文件所在的绝对路径(斜杠分割)
+     *      "dependence" : [],           // 顶层文件仿真时所需要的依赖
+     *      "opeParam" : null      // 全局操作参数
+     *  }
+     */
     constructor(param) {
         this.os = param.opeParam.os;
         this.prjPath = param.opeParam.prjStructure.prjPath;
         this.toolchain = param.opeParam.prjInfo.TOOL_CHAIN;
     }
 
+    /**
+     * @descriptionCn 根据要求生成 icarus 的仿真命令
+     * @returns 
+     */
     getCommand() {
         this.simConfig = this.getConfig(this.param.path, 'iverilog');
         if (!this.simConfig) {

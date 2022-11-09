@@ -28,7 +28,34 @@ class processPrjFiles {
         });
     }
 
+    /**
+     * @state finish-test
+     * @descriptionCn 重写prpoerty.json文件
+     */
+    overwrite(opeParam) {
+        const options = {
+            preview: false,
+            viewColumn: vscode.ViewColumn.Active
+        };
+        const uri = vscode.Uri.file(opeParam.prjInitParam)
+        vscode.window.showTextDocument(uri, options);
+    }
 
+    /**
+     * @state finish-test
+     * @descriptionCn 生成prpoerty.json文件
+     * @returns true : success | false : failed
+     */
+     generatePropertyFile(opeParam) {
+        if (fs.files.isExist(opeParam.propertyPath)) {
+            this.warn("property file already exists !!!");
+            return false;
+        }
+
+        const temp = fs.files.pullJsonInfo(opeParam.prjInitParam);
+        fs.files.pushJsonInfo(opeParam.propertyPath, temp);
+        return true;
+    }
 
     /**
      * @state finish-test
@@ -36,7 +63,7 @@ class processPrjFiles {
      * @descriptionEn preprocess get global run parameters of this extension
      * @param {Object} opeParam 全局操作参数
      * @returns {Boolean} (true : 获取成功 | false : 获取失败)
-     * note 失败说明没有打开工作区 且所有路径都是斜杠，且最后不带斜杠
+     * note: 失败说明没有打开工作区 且所有路径都是斜杠，且最后不带斜杠
      * TODO: 处理在其他工作区下只打开一个HDL文件的情况
      */
     getOpeParam(opeParam) {
@@ -259,27 +286,6 @@ class processPrjFiles {
             const libFileElement = filePaths[i];
             this.terminal.sendText(`${command} ${libFileElement}`);
         }
-    }
- 
-    /**
-     * @state finish-test
-     * @descriptionCn 生成prpoerty.json文件
-     * @returns 
-     */
-    generatePropertyFile(opeParam) {
-        if (opeParam.prjInfo) {
-            vscode.window.showWarningMessage("property file already exists !!!");
-            return null;
-        }
-        fs.files.pushJsonInfo(opeParam.propertyPath, files.pullJsonInfo(opeParam.prjInitParam));
-    }
-
-    overwriteInitProperty() {
-        const options = {
-            preview: false,
-            viewColumn: vscode.ViewColumn.Active
-        };
-        vscode.window.showTextDocument(vscode.Uri.file(opeParam.prjInitParam), options);
     }
 }
 exports.processPrjFiles = processPrjFiles;

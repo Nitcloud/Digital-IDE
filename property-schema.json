@@ -42,8 +42,8 @@
 				"state": {
 					"type": "string",
 					"enum": [
-						"virtual",
-						"real"
+						"local",
+						"remote"
 					]
 				},
 				"common": {

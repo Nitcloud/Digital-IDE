@@ -1,101 +1,49 @@
 "use strict";
 
-const fs       = require("fs");
 const vscode   = require("vscode");
-const parser   = require("HDLparser");
-const filesys  = require("HDLfilesys");
 const instance = require("./instance");
 
+const fs = require("../../HDLfilesys");
+
 class testbench {
-    constructor() {
+    constructor(param) {
+        this.param = param;
         this.inst = new instance();
+        this.rootPath = param.opeParam.rootPath;
+        this.simuPath = param.opeParam.prjStructure.HardwareSim;
+        this.tbSrcPath = `${this.this.rootPath}/lib/testbench.v`;
+        this.tbDisPath = `${this.this.simuPath}/testbench.v`;
     }
 
-    
-}
-
-function Overwrite_tb(opeParam) {
-    let tbSourcePath = "";
-    vscode.window.showQuickPick(['vlog','vhdl'],{placeHolder:"Which type you want to Overwrite?"}).then(select => {
-        if (select == "vlog") {
-            tbSourcePath = `${opeParam.rootPath}/lib/src_lib/Hardware/testbench.v`;
-        } else if (select == "vhdl") {
-            tbSourcePath = `${opeParam.rootPath}/lib/src_lib/Hardware/testbench.vhd`;
-        }
+    overwrite() {
         const options = {
             preview: false,
             viewColumn: vscode.ViewColumn.Active
         };
-        vscode.window.showTextDocument(vscode.Uri.file(tbSourcePath), options);
-    });
-}
-exports.Overwrite_tb = Overwrite_tb;
+        const uri = vscode.Uri.file(this.tbSrcPath)
+        vscode.window.showTextDocument(uri, options);
+    }
 
-function genInstancetoTbFile(indexer, opeParam, uri) {
-    vscode.window.showSaveDialog({ 
-        filters: {
-            verilog: ["v", "V", "vh", "vl"], // 文件类型过滤
-            vhdl: ["vhd", "vhdl", "vho", "vht"], // 文件类型过滤
-        },
-    }).then(fileInfos => {
-        let path_full = fileInfos === null || fileInfos === void 0 ? void 0 : fileInfos.path;
-        if (path_full !== undefined) {
-            if (path_full[0] === '/' && require('os').platform() === 'win32') {
-                path_full = path_full.substring(1);
+    generate(module) {
+        let temp = fs.files.readFile(this.tbSrcPath);
+        if (!temp) {
+            return null;
+        }
+
+        let content = '';
+        const lines = temp.split('\n');
+        const len = lines.length;
+        for (let index = 0; index < len; index++) {
+            const line = lines[index];
+            content += line + '\n';
+            if (line.indexOf("//Instance ") != -1) {
+                // 只写到testbench.v中去 只要例化成verilog形式即可
+                content += this.inst.vlog(module) + '\n';
             }
-            let docPath = uri.fsPath;
-            parser.utils.selectCurrentFileModule(indexer.HDLparam, docPath).then(selectModule => {
-                if (selectModule != null) {
-                    let languageId = parser.utils.getLanguageId(docPath);
-                    if (languageId == "verilog") {
-                        let inst = instance.instantiateVlogModule(selectModule);
-                        insertInstContent(inst, path_full, opeParam.rootPath);
-                    } else if (languageId == "vhdl") {
-                        let inst = instance.instantiateVhdlModule(selectModule);
-                        insertInstContent(inst, path_full, opeParam.rootPath);
-                    }
-                }
-            })
         }
-    });
-}
-exports.genInstancetoTbFile = genInstancetoTbFile;
 
-function insertInstContent(content, tbFilePath, rootPath) {
-    let newContent = "";
-    let oldContent = "";
-    if (fs.existsSync(tbFilePath)) {
-        oldContent = fs.readFileSync(tbFilePath, "utf-8");
-    } else {
-        let tbSource = `${rootPath}/lib/src/Hardware`;
-        let LanguageId = parser.utils.getLanguageId(tbFilePath);
-        if (LanguageId == "verilog") {
-            oldContent = fs.readFileSync(`${tbSource}/testbench.v`, "utf-8");
-        }
-        else if (LanguageId == "vhdl") {
-            oldContent = fs.readFileSync(`${tbSource}/testbench.vhd`, "utf-8");
+        if (!fs.files.writeFile(this.tbDisPath, content)) {
+            return null;
         }
     }
-    let lines = oldContent.split('\n');
-    let len = lines.length;
-    for (let index = 0; index < len; index++) {
-        const line = lines[index];
-        newContent = newContent + line + '\n';
-        if (line.indexOf("//Instance ") != -1) {
-            newContent = newContent + content + '\n';
-        }
-    }
-    fs.writeFileSync(tbFilePath, newContent, "utf-8");
 }
-
-function appiontInsert(position, content) {
-    const editor = vscode.window.activeTextEditor;
-    if (editor === undefined) {
-        return;
-    }
-
-    editor.edit((editBuilder) => {
-        editBuilder.insert(position, content);
-    });
-}
-exports.appiontInsert = appiontInsert;

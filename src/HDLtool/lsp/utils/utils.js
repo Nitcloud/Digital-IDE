@@ -14,7 +14,7 @@ var symbol = {
     /**
      * @state finish - untest
      * @descriptionEn set a symbol information object.
-     * @param  symbol { name & type & parent & startIndex & lastIndex }
+     * @param  symbol { name & type & start & end }
      * @return The object of the SymbolInformation.
      */
     setSymbolInfo : function (symbol){
@@ -26,7 +26,7 @@ var symbol = {
         let symbolInfo = vscode.SymbolInformation(
             symbol.name,
             this.getSymbolKind(symbol.type),
-            symbol.parent,
+            null,
             location
         );
 
@@ -513,109 +513,6 @@ var utils = {
         return new vscode.Hover( { language: languageId, value: comment } );
     },
 
-    getNumHover : function (document, position) {
-        let path = document.uri.fsPath.replace(/\\/g, "\/");
-        let languageId = parser.utils.getLanguageId(path);
-
-        switch (languageId) {
-            case "verilog":
-            case "systemverilog":
-                return this.verilog_num_hover(document, position);
-            case "vhdl":
-                return this.vhdl_num_hover(document, position);
-            default: return null;
-        }
-    },
-
-    vhdl_num_hover : function (document, position) {
-        let wordRange = document.getWordRangeAtPosition(position, /\w[-\w\.\"]*/g);
-        if (wordRange !== undefined) {
-            let leadingText = document.getText(new vscode.Range(wordRange.start, wordRange.end));
-            if (/x"[0-9a-fA-F_]+"/g.test(leadingText)) {
-                const regex = /x"([0-9a-fA-F_]+)"/g;
-                let number = regex.exec(leadingText.replace('_', ''));
-                if (number === null || number[1] === null) {
-                    return;
-                }
-                let x = parseInt(number[1], 16);
-                let x1 = this.eval_signed_hex(number[1], x);
-                if (x === x1) {
-                    return new vscode.Hover(leadingText + ' = ' + x);
-                }
-                else {
-                    return new vscode.Hover(leadingText + ' = ' + x + ' (unsigned)  || ' + x1 + ' (signed)');
-                }
-            }
-            else if (/[0-1_]+"/g.test(leadingText)) {
-                const regex = /([0-1_]+)"/g;
-                let number = regex.exec(leadingText.replace('_', ''));
-                if (number === null || number[1] === null) {
-                    return;
-                }
-                let x = parseInt(number[0], 2);
-                let x1 = this.eval_signed_bin(number[0], x);
-                if (x === x1) {
-                    return new vscode.Hover('"' + leadingText + ' = ' + x);
-                }
-                else {
-                    return new vscode.Hover('"' + leadingText + ' = ' + x + ' (unsigned) || ' + x1 + ' (signed)');
-                }
-            }
-        }
-    },
-    
-    verilog_num_hover : function (document, position) {
-        let wordRange = document.getWordRangeAtPosition(position, /\w[-\w\.\']*/g);
-        if (wordRange !== undefined) {
-            let leadingText = document.getText(new vscode.Range(wordRange.start, wordRange.end));
-            if (/[0-9]+?'h[0-9a-fA-F_]+/g.test(leadingText)) {
-                const regex = /[0-9]+?'h([0-9a-fA-F_]+)/g;
-                let number = regex.exec(leadingText.replace('_', ''));
-                if (number === null || number[1] === null) {
-                    return;
-                }
-                let x = parseInt(number[1], 16);
-                let x1 = this.eval_signed_hex(number[1], x);
-                if (x === x1) {
-                    return new vscode.Hover(leadingText + ' = ' + x);
-                }
-                else {
-                    return new vscode.Hover(leadingText + ' = ' + x + ' (unsigned) || ' + x1 + ' (signed)');
-                }
-            }
-            else if (/[0-9]+?'b[0-1_]+/g.test(leadingText)) {
-                const regex = /[0-9]+?'b([0-1_]+)/g;
-                let number = regex.exec(leadingText.replace('_', ''));
-                if (number === null || number[1] === null) {
-                    return;
-                }
-                let x = parseInt(number[1], 2);
-                let x1 = this.eval_signed_bin(number[1], x);
-                if (x === x1) {
-                    return new vscode.Hover(leadingText + ' = ' + x);
-                }
-                else {
-                    return new vscode.Hover(leadingText + ' = ' + x + ' (unsigned) || ' + x1 + ' (signed)');
-                }
-            }
-            else if (/[0-9]+?'o[0-8_]+/g.test(leadingText)) {
-                const regex = /[0-9]+?'o([0-7_]+)/g;
-                let number = regex.exec(leadingText.replace('_', ''));
-                if (number === null || number[1] === null) {
-                    return;
-                }
-                let x = parseInt(number[1], 8);
-                let x1 = this.eval_signed_oct(number[1], x);
-                if (x === x1) {
-                    return new vscode.Hover(leadingText + ' = ' + x);
-                }
-                else {
-                    return new vscode.Hover(leadingText + ' = ' + x + ' (unsigned) || ' + x1 + ' (signed)');
-                }
-            }
-        }
-    },
-
     /**
      * @state finish - tested
      * @descriptionCn 仅将文本中的块注释全部去掉
@@ -658,150 +555,82 @@ var utils = {
         }
         return newContent;
     },
-
-    /**
-     * @state finish-test
-     * @descriptionCn 确认是否是被包含的关系
-     * @param {Object} parent 父级index范围
-     * @param {Object} child  子级index范围
-     * @returns (true:被包含 | false:不被包含)
-     */
-    ensureInclude : function (parent, child) {
-        if (parent.start.line < child.start.line) {
-            if (parent.end.line > child.end.line) {
-                return true;
-            }
-            if (parent.end.line == child.end.line) {
-                if (parent.end.character >= child.end.character) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        }
-        if (parent.start.line == child.start.line) {
-            if (parent.start.character <= child.start.character) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        return false;
-    },
-
-    /**
-     * @state finish-test
-     * @descriptionCn 将range格式下的范围转化为index范围格式
-     * @param {String} text  文本内容
-     * @param {Object} range range格式的范围 {start:{line, character}, end:{line, character}}
-     * @returns {Object} index = {
-            "startIndex" : startIndex,
-            "lastIndex"  : lastIndex,
-        }
-     */
-    range_to_index : function (text, range) {
-        let startIndex = 0;
-        let lastIndex  = 0;
-        let lines = text.split('\n');
-        for (let i = 0; i < range.start.line; ++i) {
-            startIndex = startIndex + lines[i].length + 1;
-        }
-        startIndex = startIndex + range.start.character;
-        for (let i = 0; i < range.end.line; ++i) {
-            lastIndex = lastIndex + lines[i].length + 1;
-        }
-        lastIndex = lastIndex + range.end.character;
-        return {
-            "startIndex" : startIndex,
-            "lastIndex"  : lastIndex,
-        }
-    },
-
-    /**
-     * @state finish-test
-     * @descriptionCn 将index格式下的范围转化为range范围格式
-     * @param {String} text  文本内容
-     * @param {Object} index index格式的范围{
-            "startIndex" : startIndex,
-            "lastIndex"  : lastIndex,
-        }
-     * @returns {Object} range = {
-            "start" : {"line":line, "character":character},
-            "end"   : {"line":line, "character":character},
-        }
-     */
-    index_to_range : function (text, index) {
-        let lines = text.split('\n');
-        let line = 0;
-        let offset = 0;
-        let range = {
-            "start" : {line:0, character:0},
-            "end"  : {line:0, character:0},
-        };
-        while (1) {
-            offset += lines[line].length + 1; 
-            if (offset > index.startIndex) {
-                break;
-            }
-            line++;
-        }
-        range.start.line = line;
-        range.start.character = index.startIndex + lines[line].length - offset + 1;
-
-        while (1) {
-            if (offset > index.lastIndex) {
-                break;
-            }
-            line++;
-            offset += lines[line].length + 1; 
-        }
-        range.end.line = line;
-        range.end.character = index.lastIndex + lines[line].length - offset + 1;
-
-        return range;
-    },
-
-    position_to_index(text, position) {
-        let text_splice = text.split('\n');
-        let character_index = 0;
-        for (let i = 0; i < position.line; ++i) {
-            character_index += text_splice[i].length + 1;
-        }
-        character_index += position.character;
-        return character_index;
-    },
-
-    /**
-     * 将数字字符转成十六进制
-     * @param {*} number_s 
-     * @param {*} int_number 
-     * @returns 
-     */
-    eval_signed_hex : function (number_s, int_number) {
-        let pow_hex = Math.pow(16, number_s.length);
-        let x1 = int_number;
-        if (int_number >= pow_hex >> 1) {
-            x1 = int_number - pow_hex;
-        }
-        return x1;
-    },
-
-    eval_signed_bin : function (number_s, int_number) {
-        let pow_bin = 1 << number_s.length - 1;
-        let x1 = int_number;
-        if (int_number >= pow_bin >> 1) {
-            x1 = int_number - pow_bin;
-        }
-        return x1;
-    },
-
-    eval_signed_oct : function (number_s, int_number) {
-        let pow_oct = Math.pow(8, number_s.length);
-        let x1 = int_number;
-        if (int_number >= pow_oct >> 1) {
-            x1 = int_number - pow_oct;
-        }
-        return x1;
-    },
 }
 module.exports = utils;
+
+class symbolDefine {
+    constructor() {
+
+    }
+
+    
+}
+
+class numHover {
+    constructor() {
+        this.vhdl = {
+            'hex' : /x"([0-9a-fA-F_]+)"/g,
+            'bin' : /([0-1_]+)"/g,
+        };
+
+        this.vlog = {
+            'hex' : /[0-9]+?'h([0-9a-fA-F_]+)/g,
+            'bin' : /[0-9]+?'b([0-1_]+)/g,
+            'oct' : /[0-9]+?'o([0-7_]+)/g,
+        }
+    }
+
+    numHover(content, languageId) {
+        this.numStr = content.replace('_', '');
+        let regExp = this.vlog;
+        if (languageId == 'vhdl') {
+            regExp = this.vhdl;
+        }
+
+        for (const key in regExp) {
+            const match = regExp[key].exec(this.numStr);
+            if (match === null || match[1] === null) {
+                return;
+            }
+
+            const num = this.str_num(match[1], key);
+            return `${this.numStr} = '${num.unsigned}(unsigned)' || '${num.signed} (signed)'`
+        }
+    }
+
+    /**
+     * @descriptionCn 将数字字符串转数字(包括有符号与无符号)
+     * @param {String} str 数字字符串
+     * @param {String} opt 需要转换的进制 hex | bin | oct
+     * @returns {Object} {
+     *      'unsigned' : unsigned, // 有符号数
+     *      'signed' : signed,     // 无符号数
+     *  }
+     */
+    str_num(str, opt) {
+        switch (opt) {
+            case 'hex':
+                opt = 16;
+            break;
+            case 'bin':
+                opt = 2;
+            break;
+            case 'oct':
+                opt = 8;
+            break;
+            default: break;
+        }
+
+        let unsigned = parseInt(str, opt);
+        let pow = Math.pow(opt, str.length);
+        let signed = unsigned;
+        if (unsigned >= pow >> 1) {
+            signed = unsigned - pow;
+        }
+
+        return {
+            'unsigned' : unsigned,
+            'signed' : signed,
+        };
+    }
+}
