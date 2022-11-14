@@ -189,16 +189,16 @@ var fileOperation = {
 
     /**
      * @state finish-test
-     * @descriptionCn 从指定文件夹下过滤出指定的要求的文件
+     * @descriptionCn 从指定文件夹下过滤出指定的要求的文件，已做合法性检查
      * @param {String}   path 文件夹的绝对地址 ('/'分隔) 同时支持文件夹和单文件
-     * @param {Function} callback 过滤函数传参为(file)单个文件路径
      * @param {Object}   options {
-                type : "once", // once:只一级文件搜索 | all:所有文件搜索
-                ignores : []   // 要忽视的文件所在的文件夹(绝对路径)
-            };
-     * @returns {Array} 返回满足要求的文件数组
+     *     type : "once", // once:只一级文件搜索 | all:所有文件搜索
+     *     ignores : []   // 要忽视的文件所在的文件夹(绝对路径)
+     * };
+     * @param {Function} callback 过滤函数传参为(file)单个文件路径，一定要存在的
+     * @returns {Array} 返回满足要求的文件数组(绝对路径)
      */
-    filter : function (path, callback, options) {
+    filter : function (path, options, callback) {
         // 检查 file path 是否存在
         if (!fs.existsSync(path)) {
             return [];
@@ -253,7 +253,7 @@ var fileOperation = {
             
             if (options.type === "all") {
                 // 默认全是存在的，既然不是文件就是文件夹
-                output.push(...(this.filter(`${path}/${file}`, callback, options)));
+                output.push(...(this.filter(`${path}/${file}`, options, callback)));
             }
         }
         
@@ -262,16 +262,18 @@ var fileOperation = {
 
     /**
      * @state finish-test
-     * @descriptionCn 从指定文件夹下找到指定后缀名的文件
-     * @param {String} path 文件夹的绝对地址 ('/'分隔)
+     * @descriptionCn 从指定文件夹下找到指定后缀名的文件，已做合法性检查
+     * @param {String | Array} paths 文件夹的绝对地址 ('/'分隔)，允许数组输入
      * @param {Object} options {
-                exts : [] | "" // 可以是数组(多个后缀)，也可以是字符串(单个后缀)
-                type : "once", // once:只一级文件搜索 | all:所有文件搜索
-                ignores : []   // 要忽视的文件所在的文件夹(绝对路径)
-            };
-     * @returns {Array} 返回文件数组
+     *     exts : [] | "" // 可以是数组(多个后缀)，也可以是字符串(单个后缀)
+     *     type : "once", // once:只一级文件搜索 | all:所有文件搜索
+     *     list : [],     // 支持继续添加
+     *     ignores : []   // 要忽视的文件所在的文件夹(绝对路径)
+     * };
+     * @param {Function} callback 对检测出的文件进行回调操作，可省缺
+     * @returns {Array} 返回文件数组(绝对路径)且去除重复的元素
      */
-    pickFileFromExt : function (path, options) {
+    pickFileFromExt : function (paths, options, callback) {
         if (!options) {
             return [];
         }
@@ -281,19 +283,48 @@ var fileOperation = {
             return [];
         }
 
-        if (Object.prototype.toString.call(options.exts) == '[object Array]') {
-            return this.filter(path, (file)=> {
-                if(options.exts.includes(paths.extname(file))) {
-                    return file;
-                }
-            }, options);
+        var _this = this;
+        var list = [];
+        if (options.list) {
+              list = options.list;  
+        }
+
+        if (Object.prototype.toString.call(paths) == '[object Array]') {
+            for (let i = 0; i < paths.length; i++) {
+                const path = paths[i];
+                list.push(...[once(path)]);
+            }
+            list = this.removeDuplicates(list);
+            return list;
         }
         else if (Object.prototype.toString.call(options.exts) == '[object String]') {
-            return this.filter(path, (file)=> {
-                if(options.exts === paths.extname(file)) {
-                    return file;
-                }
-            }, options);
+            return list.push(...[once(paths)]);
+        }
+        else {
+            return [];
+        }
+
+        function once(path) {
+            if (Object.prototype.toString.call(options.exts) == '[object Array]') {
+                return _this.filter(path, options, (file)=> {
+                    if(options.exts.includes(paths.extname(file))) {
+                        if (callback) {
+                            callback(file);
+                        }
+                        return file;
+                    }
+                });
+            }
+            else if (Object.prototype.toString.call(options.exts) == '[object String]') {
+                return _this.filter(path, options, (file)=> {
+                    if(options.exts === paths.extname(file)) {
+                        if (callback) {
+                            callback(file);
+                        }
+                        return file;
+                    }
+                });
+            }
         }
     },
 
@@ -305,7 +336,7 @@ var fileOperation = {
      * @param {Array} ignores  获取过程中需要忽略的文件所在的文件夹(绝对路径)
      * @returns {Array} 返回文件数组
      */
-     getHDLFiles(path, HDLFiles, ignores) {
+    getHDLFiles(path, HDLFiles, ignores) {
         let options = {
             exts : [
                 // verilog
@@ -330,7 +361,7 @@ var fileOperation = {
      * @param {String} path 文件的绝对路径
      * @returns {String} 文件的语言类型 (verilog | systemverilog | vhdl)
      */
-     getLanguageId : function(path) {
+    getLanguageId : function(path) {
         let vhdlExtensions = [".vhd",".vhdl",".vho",".vht"];
         let vlogExtensions = [".v",".V",".vh",".vl"];
         let svlogExtensions = [".sv",".SV"];

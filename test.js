@@ -1,22 +1,8 @@
-let prjStructure = {        
-    prjPath : "",
-    HardwareSim  : "",
-    HardwareSrc  : "",
-    HardwareData : "",
-    SoftwareSrc  : "",
-    SoftwareData : ""
-};
-let x = parseInt('11111111', 2);
-function eval_signed(str, num, opt) {
-    let pow = Math.pow(opt, str.length);
-    let x1 = num;
-    if (num >= pow >> 1) {
-        x1 = num - pow;
-    }
-    return x1;
-}
+const fs = require("./src/HDLfilesys");
 
-eval_signed('11111111', x, 2);
+let arr = [1, 2];
+arr.push(2);
+
 var HDLparam = {
     "/home/project/top.v" : {
         "languageId" : "verilog",

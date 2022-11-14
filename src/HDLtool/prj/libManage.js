@@ -1,17 +1,11 @@
+var opeParam = require("../../../param");
+
 const fs     = require("../../HDLfilesys");
 const vscode = require("vscode");
 
 class libManage {
-    constructor(opeParam) {
-        this.opeParam = opeParam;
-        this.srcPath = this.opeParam.prjStructure.HardwareSrc;
-        this.simPath = this.opeParam.prjStructure.HardwareSim;
-        this.prjPath = this.opeParam.prjStructure.prjPath;
-
-        this.localLibPath  = `${this.srcPath}/lib`;
-        this.SourceLibPath = `${this.opeParam.rootPath}/lib`;
-
-        this.err = vscode.showErrorMessage;
+    constructor() {
+        this.err  = vscode.showErrorMessage;
         this.warn = vscode.showWarningMessage;
         this.info = vscode.showInformationMessage;
 
@@ -34,16 +28,32 @@ class libManage {
 
     /**
      * @state finish-test
-     * @descriptionCn 动态的更新属性配置
+     * @descriptionCn 动态的更新属性配置customer.Lib.repo.path
      * @descriptionEn Dynamic update of property configuration
      */
     getConfig() {
         this.customerPath = this.setting.get("PRJ.customer.Lib.repo.path");
+
+        this.srcPath = opeParam.prjInfo.ARCH.Hardware.src;
+        this.simPath = opeParam.prjInfo.ARCH.Hardware.sim;
+        this.prjPath = opeParam.prjInfo.ARCH.prjPath;
+
+        this.localLibPath  = `${this.srcPath}/lib`;
+        this.SourceLibPath = `${opeParam.rootPath}/lib`;
     }
     
+    /**
+     * @descriptionCn 处理library文件信息
+     * @param {Object} library prjInfo中的HardwareLib属性
+     * @returns {Object} {
+     *     'add' : [], // 需要处理的增加文件的数组
+     *     'del' : [], // 需要处理的删除文件的数组
+     * }
+     */
     async processLibFiles(library) {
+        this.getConfig();
         // 在不设置state属性的时候默认为remote
-        this.next.list = this.getLibFiles(library);
+        this.next.list = this.getLibFiles(library.Hardware);
         if (!fs.files.isHasAttr(library, 'state')) {
             this.next.type = 'remote';
         } else {
@@ -196,6 +206,9 @@ class libPick {
         this.quickPick = null;
         this.selectItem = null;
         this.localLibPath = this.process.opeParam.rootPath + "/lib";
+
+        this.quickPick = vscode.window.createQuickPick();
+
     }
 
     getLibInfo() {
@@ -296,7 +309,6 @@ class libPick {
     pickLibItems() {
         // let buttons = new vscode.QuickInputButtons.Back;
         // console.log(buttons);
-        this.quickPick = vscode.window.createQuickPick();
         this.quickPick.items = this.provideLibItem('/');
         // quickPick.canSelectMany = true; // Enable checkboxes
         // Set listeners

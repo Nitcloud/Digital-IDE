@@ -18,8 +18,8 @@ class hardwareRegister {
         this.err  = vscode.window.showErrorMessage;
         this.warn = vscode.window.showWarningMessage;
         this.setting = vscode.workspace.getConfiguration();
+        
         this.getConfig();
-
         var _this = this;
         vscode.workspace.onDidChangeConfiguration(function () {
             _this.getConfig();

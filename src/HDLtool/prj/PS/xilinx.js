@@ -1,5 +1,5 @@
 "use strict";
-const filesys = require("HDLfilesys");
+const fs = require("../../../HDLfilesys");
 
 var xsdkScript = {
 

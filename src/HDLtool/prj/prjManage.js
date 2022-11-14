@@ -7,10 +7,11 @@ const fs = require("../../HDLfilesys");
  * the class of HDL file process
  * 
  */
-class processPrjFiles {
+class PrjManage {
     constructor() {
         
         this.setting = vscode.workspace.getConfiguration();
+        
         this.log  = vscode.window.showInformationMessage;
         this.err  = vscode.window.showErrorMessage;
         this.warn = vscode.window.showWarningMessage;
@@ -288,4 +289,4 @@ class processPrjFiles {
         }
     }
 }
-exports.processPrjFiles = processPrjFiles;
+exports.PrjManage = PrjManage;

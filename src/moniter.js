@@ -4,9 +4,9 @@ class monitor{
     constructor(opeParam) {
         this.opeParam = opeParam;
 
-        this.srcPath = this.opeParam.prjStructure.HardwareSrc;
-        this.simPath = this.opeParam.prjStructure.HardwareSim;
-        this.prjPath = this.opeParam.prjStructure.prjPath;
+        this.srcPath = this.opeParam.prjInfo.ARCH.Hardware.src;
+        this.simPath = this.opeParam.prjInfo.ARCH.Hardware.sim;
+        this.prjPath = this.opeParam.prjInfo.ARCH.PRJ_Path;
 
         // 监视器的公共配置
         this.config = {
@@ -52,6 +52,10 @@ class monitor{
 
         let watcherPath = `${this.prjPath}/**/*.log`;
         return chokidar.watch(watcherPath, logConfig);
+    }
+
+    close() {
+        
     }
 }
 module.exports = monitor;

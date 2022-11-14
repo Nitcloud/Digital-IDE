@@ -1,4 +1,4 @@
-let xilinx_component = [
+let xilinx = [
     "IBUFDS_GTE2", "IBUFDS_GTE3", "OBUFDS_GTE3_ADV", "OBUFDS_GTE3",
     "XADC", "SYSMONE1",
     "DSP48E1", "DSP48E2", 
@@ -41,4 +41,4 @@ let xilinx_component = [
     "SRL16E", "SRLC32E",
     "MASTER_JTAG", "STARTUPE3", "HARD_SYNC"
 ]
-exports.xilinx_component = xilinx_component;
+exports.xilinx = xilinx;

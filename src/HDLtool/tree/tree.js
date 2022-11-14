@@ -266,7 +266,7 @@ class FileSystemProvider {
 }
 exports.FileSystemProvider = FileSystemProvider;
 
-class hardTreeDataProvider {
+class hardwareTreeProvider {
     constructor(process){
         this.process = process;
     }
@@ -389,9 +389,9 @@ class hardTreeDataProvider {
         return curToolTip;
     }
 }
-exports.hardTreeDataProvider = hardTreeDataProvider;
+exports.hardwareTreeProvider = hardwareTreeProvider;
 
-class softTreeDataProvider {
+class softwareTreeProvider {
     constructor(process){
         this.process = process;
     }
@@ -455,9 +455,9 @@ class softTreeDataProvider {
         return curToolTip;
     }
 }
-exports.softTreeDataProvider = softTreeDataProvider;
+exports.softwareTreeProvider = softwareTreeProvider;
 
-class toolTreeDataProvider {
+class toolTreeProvider {
     constructor(process){
         this.process = process;
     }
@@ -521,4 +521,4 @@ class toolTreeDataProvider {
         return curToolTip;
     }
 }
-exports.toolTreeDataProvider = toolTreeDataProvider;
+exports.toolTreeProvider = toolTreeProvider;

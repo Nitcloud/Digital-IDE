@@ -11,15 +11,6 @@ var opeParam = {
         name: '',
         path: ''
     },
-
-    prjStructure : {        // 工程文件结构
-        prjPath : "",
-        HardwareSim  : "",
-        HardwareSrc  : "",
-        HardwareData : "",
-        SoftwareSrc  : "",
-        SoftwareData : ""
-    },
     
     prjInfo        : null,  // 用户配置的参数
     prjInitParam   : "",    // 初始配置文件的路径

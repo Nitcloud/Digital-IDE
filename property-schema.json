@@ -10,54 +10,67 @@
 				"xilinx"
 			]
 		},
-        "PRJ_STRUCTURE" : {
-            "type": "string",
-			"description": "the project structure",
-			"enum": [
-				"standard",
-                "customer"
-			]
-        },
-        "PRJ_Path": {
-			"type": "string"
+        "PRJ_NAME": {
+			"type": "object",
+			"default": {
+				"PL": "template"
+			},
+			"properties": {
+				"PL": {
+					"type": "string",
+					"description": "project name of FPGA",
+					"default": "template"
+				},
+				"PS": {
+					"type": "string",
+					"description": "project name of SOC",
+					"default": "test"
+				}
+			}
 		},
-        "SoftwareSrc": {
-            "type": "string"
+        "ARCH" : {
+            "type" : "object",
+            "properties":{
+                "PRJ_Path": {
+                    "type": "string"
+                },
+                "Hardware" : {
+                    "type" : "object",
+                    "properties":{
+                        "src" : { "type" :"string"},
+                        "sim" : { "type" :"string"},
+                        "data" : { "type" :"string"}
+                    }
+                },
+                "Software" : {
+                    "type" : "object",
+                    "properties":{
+                        "src" : { "type" :"string"},
+                        "sim" : { "type" :"string"},
+                        "data" : { "type" :"string"}
+                    }
+                }
+            }
         },
-        "SoftwareData": {
-			"type": "string"
-		},
-        "HardwareSrc": {
-            "type": "string"
-        },
-        "HardwareSim": {
-            "type": "string"
-        },
-        "HardwareData": {
-			"type": "string"
-		},
-		"HardwareLIB": {
+        "library" : {
 			"type": "object",
 			"properties": {
-				"state": {
-					"type": "string",
-					"enum": [
-						"local",
-						"remote"
-					]
-				},
-				"common": {
-					"type": "array"
-				},
-				"customer": {
-					"type": "array"
-				},
-				"xilinx": {
-					"type": "array"
-				},
-				"intel": {
-					"type": "array"
-				}
+                "state": {
+                    "type": "string",
+                    "enum": [
+                        "local",
+                        "remote"
+                    ]
+                },
+                "Hardware" : {
+                    "type": "object",
+                    "properties": {
+                        "common":   { "type": "array" },
+                        "customer": { "type": "array" },
+                        "xilinx":   { "type": "array" },
+                        "intel":    { "type": "array" }
+                    }
+                }
 			}
 		},
         "IP_REPO" : {
@@ -69,31 +82,13 @@
                 "microphase"
             ]
         },
-		"PRJ_NAME": {
+		"SOC": {
 			"type": "object",
 			"default": {
-				"FPGA": "template"
+				"core": "none"
 			},
 			"properties": {
-				"FPGA": {
-					"type": "string",
-					"description": "project name of FPGA",
-					"default": "template"
-				},
-				"SOC": {
-					"type": "string",
-					"description": "project name of SOC",
-					"default": "test"
-				}
-			}
-		},
-		"SOC_MODE": {
-			"type": "object",
-			"default": {
-				"soc": "none"
-			},
-			"properties": {
-				"soc": {
+				"core": {
 					"type": "string",
 					"description": "Supported CPU for SOC",
 					"enum": [
@@ -106,7 +101,7 @@
 						"psu_cortexa53"
 					]
 				},
-				"bd_file": {
+				"bd": {
 					"type": "string",
 					"description": "The bd_file for FPGA Designed",
 					"enum": [
@@ -168,14 +163,14 @@
 				}
 			},
 			"dependencies": {
-				"bd_file": [
-					"soc"
+				"bd": [
+					"core"
 				],
 				"os": [
-					"soc"
+					"core"
 				],
 				"app": [
-					"soc"
+					"core"
 				]
 			}
 		},

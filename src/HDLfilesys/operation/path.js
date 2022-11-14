@@ -43,6 +43,17 @@ var pathOperation = {
     extname : function (path) {
         return fspath.extname(path).toLowerCase();
     },
+
+    /**
+     * @state finish-test
+     * @descriptionCn 获取文件名(不包含后缀)
+     * @descriptionEn get the basename of path
+     * @param {String} path the path which is included in the current file
+     * @returns the basename of path e.g. : "file.txt" -> "file"
+     */
+     basename : function (path) {
+        return fspath.basename(path, this.extname(path));
+    },
     
     /**
      * @state finish-test

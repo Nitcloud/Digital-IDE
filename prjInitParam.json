@@ -1,10 +1,10 @@
 {
     "TOOL_CHAIN": "xilinx",
     "PRJ_NAME": {
-        "FPGA": "template"
+        "PL": "template"
     },
-    "SOC_MODE": {
-        "soc": "none"
+    "SOC": {
+        "core": "none"
     },
     "enableShowlog": false,
     "Device": "none"
