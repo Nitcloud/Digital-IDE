@@ -269,40 +269,89 @@ exports.FileSystemProvider = FileSystemProvider;
 class hardwareTreeProvider {
     constructor(process){
         this.process = process;
-    }
-    getChildren(element) {
-        // 如果不是根节点
-        if (element) {
-            if (element.name === "Build") {
-                return [
-                    { "name" : "Synth"     },
-                    { "name" : "Impl"      },
-                    { "name" : "BitStream" }
-                ];
-            } 
-            else if (element.name === "Simulate") {
-                return [
-                    { "name" : "no GUI"   },
-                    { "name" : "GUI"      }
-                ];
-            }
-            else {
-                return [];
+        this.config = {
+            "Launch" : {
+                "cmd"  : 'HARD.Launch',
+                "icon" : 'cmd',
+                "tip"  : 'Launch FPGA development assist function'
+            },
+            "Simulate" : {
+                "cmd"  : 'HARD.Simulate',
+                "icon" : 'cmd',
+                "tip"  : 'Launch the manufacturer Simulation',
+                "children" : {
+                    "CLI" : {
+                        "cmd"  : 'HARD.simCLI',
+                        "icon" : 'cmd',
+                        "tip"  : 'Launch the manufacturer Simulation in CLI'
+                    },
+                    "GUI" : {
+                        "cmd"  : 'HARD.simGUI',
+                        "icon" : 'cmd',
+                        "tip"  : 'Launch the manufacturer Simulation in GUI'
+                    },
+                }
+            },
+            "Refresh" : {
+                "cmd"  : 'HARD.Refresh',
+                "icon" : 'cmd',
+                "tip"  : 'Refresh the current project file'
+            },
+            "Build" : {
+                "cmd"  : 'HARD.Build',
+                "icon" : 'cmd',
+                "tip"  : 'Build the current fpga project',
+                "children" : {
+                    "Synth" : {
+                        "cmd"  : 'HARD.Synth',
+                        "icon" : 'cmd',
+                        "tip"  : 'Synth the current project'
+                    },
+                    "Impl" : {
+                        "cmd"  : 'HARD.Impl',
+                        "icon" : 'cmd',
+                        "tip"  : 'Impl  the current project'
+                    },
+                    "BitStream" : {
+                        "cmd"  : 'HARD.Bit',
+                        "icon" : 'cmd',
+                        "tip"  : 'Generate the BIT File'
+                    },
+                }
+            },
+            "Program" : {
+                "cmd"  : 'HARD.Program',
+                "icon" : 'cmd',
+                "tip"  : 'Download the bit file into the device'
+            },
+            "GUI" : {
+                "cmd"  : 'HARD.GUI',
+                "icon" : 'cmd',
+                "tip"  : 'Open the GUI'
+            },
+            "Exit" : {
+                "cmd"  : 'HARD.Exit',
+                "icon" : 'cmd',
+                "tip"  : 'Exit the current project'
             }
         }
-        // 根节点
-        return [
-            { "name" : "Launch"   },
-            { "name" : "Simulate" },
-            { "name" : "Refresh"  },
-            { "name" : "Build"    },
-            { "name" : "Program"  },
-            { "name" : "GUI"      },
-            { "name" : "Exit"     }
-        ];
     }
+
+
+    getChildren(element) {
+        if (element && element.children) {
+            return element.children;
+        } else {
+            const list = [];
+            for (const key in this.config) {
+                list.push(key);
+            }
+            return list;
+        }
+    }
+
     getTreeItem(element) {
-        let childrenList = this.getChildren(element);
+        const list = this.getChildren(element);
         const treeItem = new vscode.TreeItem(
             element.name,
             childrenList.length === 0 ? 
@@ -316,77 +365,10 @@ class hardwareTreeProvider {
         }
         treeItem.contextValue = 'HARD';
         treeItem.children = TreeItemList;
-        treeItem.command  = this.getCommand(element.name);
-        treeItem.tooltip  = this.getToolTip(element.name);
-        treeItem.iconPath = this.getIconPath(element.name);
+        treeItem.command  = this.config[name].cmd;
+        treeItem.tooltip  = this.config[name].tip;
+        treeItem.iconPath = this.config[name].icon;
         return treeItem;
-    }
-
-    getCommand(name){
-        let curCmd = { 
-            title:     name, 
-            command:   ""
-        };
-        switch (name) {
-            case "Launch"    : curCmd.command = "HARD.Launch";   break;
-            case "Simulate"  : curCmd.command = "HARD.Simulate"; break;
-            case "Refresh"   : curCmd.command = "HARD.Refresh";  break;
-            case "Build"     : curCmd.command = "HARD.Build";    break;
-            case "Program"   : curCmd.command = "HARD.Program";  break;
-            case "GUI"       : curCmd.command = "HARD.GUI";      break;
-            case "Exit"      : curCmd.command = "HARD.Exit";     break;
- 
-            case "Synth"     : curCmd.command = "HARD.Synth";    break;
-            case "Impl"      : curCmd.command = "HARD.Impl";     break;
-            case "BitStream" : curCmd.command = "HARD.Bit";  break;
-            
-            default: break;
-        }
-        return curCmd;
-    }
-
-    getIconPath(name){
-        let iconPath = ""
-        switch (name) {
-            case "Launch"    : iconPath = "cmd"; break;
-            case "Simulate"  : iconPath = "cmd"; break;
-            case "Refresh"   : iconPath = "cmd"; break;
-            case "Build"     : iconPath = "cmd"; break;
-            case "Program"   : iconPath = "cmd"; break;
-            case "GUI"       : iconPath = "cmd"; break;
-            case "Exit"      : iconPath = "cmd"; break;
- 
-            case "Synth"     : iconPath = "branch"; break;
-            case "Impl"      : iconPath = "branch"; break;
-            case "BitStream" : iconPath = "branch"; break;
-            
-            default: break;
-        }
-        let currentIconPath = {
-            light : `${this.process.opeParam.rootPath}/images/svg/light/` + iconPath + ".svg",
-            dark  : `${this.process.opeParam.rootPath}/images/svg/dark/`  + iconPath + ".svg"
-        };
-        return currentIconPath;
-    }
-    
-    getToolTip(name){
-        let curToolTip = ""
-        switch (name) {
-            case "Launch"    : curToolTip = "Launch FPGA development assist function"; break;
-            case "Simulate"  : curToolTip = "Launch the manufacturer Simulation"; break;
-            case "Refresh"   : curToolTip = "Refresh the current project file"; break;
-            case "Build"     : curToolTip = "Build the current fpga project"; break;
-            case "Program"   : curToolTip = "Download the bit file into the device"; break;
-            case "GUI"       : curToolTip = "Open the GUI"; break;
-            case "Exit"      : curToolTip = "Exit the current project"; break;
- 
-            case "Synth"     : curToolTip = "Synth the current project"; break;
-            case "Impl"      : curToolTip = "Impl  the current project"; break;
-            case "BitStream" : curToolTip = "Generate the BIT File"; break;
-            
-            default: break;
-        }
-        return curToolTip;
     }
 }
 exports.hardwareTreeProvider = hardwareTreeProvider;

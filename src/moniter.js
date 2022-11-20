@@ -1,4 +1,5 @@
 "use strict";
+// let opeParam = require("./param");
 
 class monitor{
     constructor(opeParam) {
