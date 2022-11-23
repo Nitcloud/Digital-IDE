@@ -10,7 +10,7 @@ class testbench {
         this.param = param;
         this.inst = new instance();
         this.rootPath = param.opeParam.rootPath;
-        this.simuPath = param.opeParam.prjStructure.HardwareSim;
+        this.simuPath = param.opeParam.ARCH.Hardware.sim;
         this.tbSrcPath = `${this.this.rootPath}/lib/testbench.v`;
         this.tbDisPath = `${this.this.simuPath}/testbench.v`;
     }

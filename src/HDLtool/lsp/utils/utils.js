@@ -567,6 +567,7 @@ class symbolDefine {
 }
 
 class numHover {
+    
     constructor() {
         this.vhdl = {
             'hex' : /x"([0-9a-fA-F_]+)"/g,
@@ -632,5 +633,22 @@ class numHover {
             'unsigned' : unsigned,
             'signed' : signed,
         };
+    }
+
+    /**
+     * @descriptionCn 将二进制字符串转浮点数
+     * @param {String} bin 
+     * @param {Number} exp 
+     * @param {Number} fra 
+     * @returns {Number}
+     */
+    bin2float(bin, exp, fra) {
+        if (bin.length < exp + fra +1) {
+            return null;
+        } else {
+            const bais = Math.pow(2, (exp-1))-1;
+            exp = exp - bais;
+            
+        }
     }
 }

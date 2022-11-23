@@ -1,6 +1,6 @@
 "use strict";
 
-const fs      = require("../../HDLfilesys");
+const fs = require("../../HDLfilesys");
 
 const child   = require("child_process");
 const vscode  = require("vscode");
@@ -85,7 +85,6 @@ class simulate {
         }
     }
 }
-
 
 class icarus extends simulate {
     
