@@ -51,7 +51,7 @@ var pathOperation = {
      * @param {String} path the path which is included in the current file
      * @returns the basename of path e.g. : "file.txt" -> "file"
      */
-     basename : function (path) {
+    basename : function (path) {
         return fspath.basename(path, this.extname(path));
     },
     

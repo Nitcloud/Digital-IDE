@@ -3,6 +3,7 @@
 const vscode = require("vscode");
 const fs = require("../../HDLfilesys");
 
+var opeParam = require("../../param");
 /**
  * the class of HDL file process
  * 
@@ -290,3 +291,52 @@ class PrjManage {
     }
 }
 exports.PrjManage = PrjManage;
+
+/**
+ * @descriptionCn PL端工程管理程序
+ * @note 一次实例，一直使用
+ */
+class plMarage extends baseManage {
+    getConfig() {
+        this.config = {};
+        if (fs.files.isHasAttr(opeParam.prjInfo, "TOOL_CHAIN")) {
+            this.config["tool"] = opeParam.prjInfo.TOOL_CHAIN;
+        } else {
+            this.config["tool"] = "default";
+        }
+    }
+}
+
+class baseManage {
+
+    /**
+     * @descriptionCn 创建终端，并返回对应的属性
+     * @param {String} name 终端名
+     * @returns 终端属性
+     */
+    creatTerminal(name) {
+        const terminal = this.getTerminal(name);
+        if (terminal) {
+            return terminal;
+        }
+
+        return vscode.window.createTerminal({ 
+            name: 'name' 
+        });
+    }
+
+    /**
+     * @descriptionCn 获取终端对应的属性
+     * @param {String} name 终端名
+     * @returns 终端属性
+     */
+    getTerminal(name) {
+        for (let i = 0; i < vscode.window.terminals.length; i++) {
+            const terminal = vscode.window.terminals[i];
+            if (terminal.name == name) {
+                return terminal;
+            }
+        }
+        return null;
+    }
+}
