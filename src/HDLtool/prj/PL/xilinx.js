@@ -585,10 +585,9 @@ class xilinxTool {
 
     /**
      * 
-     * @param {*} opeParam 
      */
-    clean(opeParam) {
-        this.move_bd_ip(opeParam);
+    clean() {
+        this.move_bd_ip();
         const prjPath = opeParam.prjInfo.ARCH.prjPath;
         const wkSpace = opeParam.workspacePath;
 
@@ -606,9 +605,8 @@ class xilinxTool {
 
     /**
      * 
-     * @param {*} opeParam 
      */
-    move_bd_ip(opeParam) {
+    move_bd_ip() {
         const prjName = opeParam.prjInfo.PRJ_NAME.PL;
         const srcPath = opeParam.prjInfo.ARCH.Hardware.src;
         const target_path = fs.paths.dirname(srcPath);
@@ -686,14 +684,12 @@ class xilinxBd {
         this.info = vscode.showInformationMessage;
 
         this.setting = vscode.workspace.getConfiguration();
-
-        this.getConfig();
     }
 
     getConfig() {
         this.rootPath = opeParam.rootPath;
 
-        this.xbd_path = `${opeParam.rootPath}/lib/xilinx/bd`;
+        this.xbd_path = `${opeParam.rootPath}/lib/bd/xilinx`;
         this.schemaPath = opeParam.propertySche;
         this.schemaCont = fs.files.pullJsonInfo(this.schemaPath);
         this.bdEnum = this.schemaCont.properties.SOC.properties.bd.enum;
@@ -706,6 +702,7 @@ class xilinxBd {
      * @param {*} uri 
      */
     Owr_bd(uri) {
+        this.getConfig();
         // 获取当前bd file的路径
         vscode.window.showQuickPick(this.bdEnum).then(select => {
             // the user canceled the select
@@ -733,6 +730,7 @@ class xilinxBd {
      * @returns 
      */
     Add_bd(uri) {
+        this.getConfig();
         // 获取当前bd file的路径
         let docPath = fs.paths.toSlash(uri.fsPath);
         let bd_name = fs.paths.basename(docPath); 
@@ -747,7 +745,7 @@ class xilinxBd {
         let storePath = this.setting.get('PRJ.xilinx.BD.repo.path');
         if (!fs.files.isExist(storePath)) {
             this.warn(`This bd file will be added into extension folder.We don't recommend doing this because it will be cleared in the next update.`);
-            storePath = `${this.rootPath}/lib/xilinx/bd`;
+            storePath = this.xbd_path;
         }
 
         // 写入
@@ -762,6 +760,7 @@ class xilinxBd {
      * 
      */
     Del_bd() {
+        this.getConfig();
         vscode.window.showQuickPick(this.bdEnum).then(select => {
             // the user canceled the select
             if (!select) {
@@ -785,6 +784,7 @@ class xilinxBd {
      * 
      */
     load_bd() {
+        this.getConfig();
         fs.files.pickFileFromExt(this.bd_repo, {
             exts : ".bd",
             type : "once",

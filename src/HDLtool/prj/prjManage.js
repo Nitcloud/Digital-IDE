@@ -301,10 +301,6 @@ exports.PrjManage = PrjManage;
 class plMarage extends baseManage {
     constructor() {
         this.set  = vscode.workspace.getConfiguration;
-        this.log  = vscode.window.showInformationMessage;
-        this.err  = vscode.window.showErrorMessage;
-        this.warn = vscode.window.showWarningMessage;
-
         this.config = {
             "tool" : 'default',
             "path" : '',
@@ -339,7 +335,7 @@ class plMarage extends baseManage {
                     }
                 }
 
-                this.config["ope"] = new xilinx();
+                this.config["ope"] = new plXilinx();
             break;
         
             default: this.config["path"] = ""; break;
@@ -445,22 +441,57 @@ class plMarage extends baseManage {
 class psMarage extends baseManage {
     constructor() {
         this.set  = vscode.workspace.getConfiguration;
-        this.log  = vscode.window.showInformationMessage;
-        this.err  = vscode.window.showErrorMessage;
-        this.warn = vscode.window.showWarningMessage;
-
         this.config = {
             "tool" : 'default',
             "path" : '',
-            "ope"  : new xilinx(),
+            "ope"  : new psXilinx(),
             "terminal" : null
         };
-        this.getConfig();
-
-        
     }
 
+    getConfig() {
+        // get tool chain
+        if (fs.files.isHasAttr(opeParam.prjInfo, "TOOL_CHAIN")) {
+            this.config["tool"] = opeParam.prjInfo.TOOL_CHAIN;
+        }
 
+        // get install path & operation object
+        switch (this.config["tool"]) {
+            case "xilinx":
+                this.config["path"] = this.set('TOOL.xsdk.install').get('path');
+                if (fs.dirs.isillegal(this.config["path"])) {
+                    this.config["path"] = 'xsct';
+                } else {
+                    this.config["path"] = fs.paths.toSlash(this.config["path"]);
+                    this.config["path"] += '/xsct';
+                    if (opeParam.os == "win32") {
+                        this.config["path"] += '.bat';
+                    }
+                }
+
+                this.config["ope"] = new psXilinx();
+            break;
+        
+            default: this.config["path"] = ""; break;
+        }
+
+        return this.config;
+    }
+
+    launch() {
+        this.config.terminal = this.creatTerminal('Software');
+        this.config.ope.launch(this.config);
+    }
+
+    build() {
+        this.config.terminal = this.creatTerminal('Software');
+        this.config.ope.build(this.config);
+    }
+
+    program() {
+        this.config.terminal = this.creatTerminal('Software');
+        this.config.ope.program(this.config);
+    }
 }
 
 /**

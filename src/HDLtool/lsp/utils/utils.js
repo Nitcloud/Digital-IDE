@@ -1,110 +1,8 @@
 "use strict";
 
 const vscode = require("vscode");
-const parser = require("HDLparser");
-const filesys = require("HDLfilesys");
-
-/* Symbol */
-var symbol = {
-
-    symbols : [],
-
-    curdoc : null,
-
-    /**
-     * @state finish - untest
-     * @descriptionEn set a symbol information object.
-     * @param  symbol { name & type & start & end }
-     * @return The object of the SymbolInformation.
-     */
-    setSymbolInfo : function (symbol){
-        let location = new vscode.Location(
-            this.curdoc.uri, 
-            new vscode.Range(symbol.start, symbol.end)
-        );
-
-        let symbolInfo = vscode.SymbolInformation(
-            symbol.name,
-            this.getSymbolKind(symbol.type),
-            null,
-            location
-        );
-
-        // 增加冗余部分用于定义识别
-        symbolInfo.item = symbol;
-        symbolInfo.languageId = this.curdoc.languageId;
-        this.symbols.push(symbolInfo);
-    },
-
-    /**
-     * @state finish - untest
-     * @descriptionEn get a symbol Kind.
-     * @param name The name of the symbol.
-     * @return     The SymbolKind of the symbol's name.
-     */
-    getSymbolKind : function (name) {
-        if (name.indexOf('[') != -1) {
-            return vscode.SymbolKind.Array;
-        }
-        switch (name) {
-            case 'module':      return vscode.SymbolKind.Module;
-            case 'program':     return vscode.SymbolKind.Module;
-            case 'package':     return vscode.SymbolKind.Package;
-            case 'import':      return vscode.SymbolKind.Package;
-            case 'always':      return vscode.SymbolKind.Operator;
-            case 'processe':    return vscode.SymbolKind.Operator;
-    
-            case 'task':        return vscode.SymbolKind.Method;
-            case 'function':    return vscode.SymbolKind.Function;
-    
-            case 'assert':      return vscode.SymbolKind.Boolean;
-            case 'event':       return vscode.SymbolKind.Event;
-            case 'instance':    return vscode.SymbolKind.Event;
-    
-            case 'time':        return vscode.SymbolKind.TypeParameter;
-            case 'define':      return vscode.SymbolKind.TypeParameter;
-            case 'typedef':     return vscode.SymbolKind.TypeParameter;
-            case 'generate':    return vscode.SymbolKind.Operator;
-            case 'enum':        return vscode.SymbolKind.Enum;
-            case 'modport':     return vscode.SymbolKind.Boolean;
-            case 'property':    return vscode.SymbolKind.Property;
-
-            // port 
-            case 'interface':   return vscode.SymbolKind.Interface;
-            case 'buffer':      return vscode.SymbolKind.Interface;
-            case 'output':      return vscode.SymbolKind.Interface;
-            case 'input':       return vscode.SymbolKind.Interface;
-            case 'inout':       return vscode.SymbolKind.Interface;
-
-            // synth param    
-            case 'localparam':  return vscode.SymbolKind.Constant;
-            case 'parameter':   return vscode.SymbolKind.Constant;
-            case 'integer':     return vscode.SymbolKind.Number;
-            case 'char':        return vscode.SymbolKind.Number;
-            case 'float':       return vscode.SymbolKind.Number;
-            case 'int':         return vscode.SymbolKind.Number;
-
-            // unsynth param
-            case 'string':      return vscode.SymbolKind.String;
-            case 'struct':      return vscode.SymbolKind.Struct;
-            case 'class':       return vscode.SymbolKind.Class;
-            
-            case 'logic':       return vscode.SymbolKind.Constant;
-            case 'wire':        return vscode.SymbolKind.Constant;
-            case 'reg':         return vscode.SymbolKind.Constant;
-            case 'net':         return vscode.SymbolKind.Constant;
-            case 'bit':         return vscode.SymbolKind.Boolean;
-            default:            return vscode.SymbolKind.Field;
-        }
-        /* Unused/Free SymbolKind icons
-            return SymbolKind.Number;
-            return SymbolKind.Enum;
-            return SymbolKind.EnumMember;
-            return SymbolKind.Operator;
-            return SymbolKind.Array;
-        */
-    },
-}
+const parser = require("../../../HDLparser");
+const fs = require("../../../HDLfilesys");
 
 /**
  * @descriptionCn : 用于定义标识的识别
@@ -120,39 +18,6 @@ var utils = {
     b_comment_begin : /(?<!(\s*\w+\s*))(\/\/.*)/g,
 
     b_comment_end : /(\*\/)/g,
-
-    /**
-     * @state finish-untest
-     * @descriptionCn 获取所有标识符的全部信息
-     * @param {Object} document 当前文本对象
-     * @returns {Array} 所有的标识的全部信息symbol.symbols
-     */
-    getSymbols : function (document) {
-        symbol.curdoc  = document;
-        symbol.symbols = [];
-        let path = document.uri.fsPath.replace(/\\/g, "\/");
-        let option = {
-            text : document.getText() + '\n',
-            path : path,
-            isFast : false,
-            isPreProcess : false, // 冗余检测全匹配
-            symbol : symbol,
-        }
-        
-        let vlogParser = new parser.vlogParser();
-        let vhdlParser = new parser.vhdlParser();
-        switch (document.languageId) {
-            case "verilog":
-            case "systemverilog":
-                vlogParser.getFileParam(option); // 获取所有的标识的全部信息
-            break;
-            case "vhdl":
-                vhdlParser.getFileParam(option); // 获取所有的标识的全部信息
-            break;
-            default: return[];
-        }
-        return symbol.symbols;
-    },
 
     /**
      * @state finish-untest
@@ -557,6 +422,128 @@ var utils = {
     },
 }
 module.exports = utils;
+
+class symbolGenerate {
+    constructor() {
+
+    }
+
+    /**
+     * @state finish-untest
+     * @descriptionCn 获取所有标识符的全部信息
+     * @param {Object} document 当前文本对象
+     * @returns {Array} 所有的标识的全部信息symbol.symbols
+     */
+     getSymbols(document) {
+        const path = fs.paths.toSlash(document.uri.fsPath);
+        const code = fs.files.readFile(path);
+        const languageId = fs.files.getLanguageId(path);
+        switch (languageId) {
+            case "verilog":
+            case "systemverilog":
+                const vlog = new parser.vlog();
+                return this.setSymbolInfo(vlog.symbol(code));
+            case "vhdl":
+                const vhdl = new parser.vhdl();
+                return this.setSymbolInfo(vhdl.symbol(code));
+            default: return[];
+        }
+    }
+
+    /**
+     * @state finish - untest
+     * @descriptionEn set a symbol information object.
+     * @param  symbols { name & type & start & end }
+     * @return The object of the SymbolInformation.
+     */
+     setSymbolInfo(symbols) {
+        let location = new vscode.Location(
+            this.curdoc.uri, 
+            new vscode.Range(symbol.start, symbol.end)
+        );
+
+        let symbolInfo = vscode.SymbolInformation(
+            symbol.name,
+            this.getSymbolKind(symbol.type),
+            null,
+            location
+        );
+
+        // 增加冗余部分用于定义识别
+        symbolInfo.item = symbol;
+        symbolInfo.languageId = this.curdoc.languageId;
+        this.symbols.push(symbolInfo);
+    }
+
+    /**
+     * @state finish - untest
+     * @descriptionEn get a symbol Kind.
+     * @param {String} name The name of the symbol.
+     * @return     The SymbolKind of the symbol's name.
+     */
+    getSymbolKind(name) {
+        if (name.indexOf('[') != -1) {
+            return vscode.SymbolKind.Array;
+        }
+        switch (name) {
+            case 'module':      return vscode.SymbolKind.Module;
+            case 'program':     return vscode.SymbolKind.Module;
+            case 'package':     return vscode.SymbolKind.Package;
+            case 'import':      return vscode.SymbolKind.Package;
+            case 'always':      return vscode.SymbolKind.Operator;
+            case 'processe':    return vscode.SymbolKind.Operator;
+    
+            case 'task':        return vscode.SymbolKind.Method;
+            case 'function':    return vscode.SymbolKind.Function;
+    
+            case 'assert':      return vscode.SymbolKind.Boolean;
+            case 'event':       return vscode.SymbolKind.Event;
+            case 'instance':    return vscode.SymbolKind.Event;
+    
+            case 'time':        return vscode.SymbolKind.TypeParameter;
+            case 'define':      return vscode.SymbolKind.TypeParameter;
+            case 'typedef':     return vscode.SymbolKind.TypeParameter;
+            case 'generate':    return vscode.SymbolKind.Operator;
+            case 'enum':        return vscode.SymbolKind.Enum;
+            case 'modport':     return vscode.SymbolKind.Boolean;
+            case 'property':    return vscode.SymbolKind.Property;
+
+            // port 
+            case 'interface':   return vscode.SymbolKind.Interface;
+            case 'buffer':      return vscode.SymbolKind.Interface;
+            case 'output':      return vscode.SymbolKind.Interface;
+            case 'input':       return vscode.SymbolKind.Interface;
+            case 'inout':       return vscode.SymbolKind.Interface;
+
+            // synth param    
+            case 'localparam':  return vscode.SymbolKind.Constant;
+            case 'parameter':   return vscode.SymbolKind.Constant;
+            case 'integer':     return vscode.SymbolKind.Number;
+            case 'char':        return vscode.SymbolKind.Number;
+            case 'float':       return vscode.SymbolKind.Number;
+            case 'int':         return vscode.SymbolKind.Number;
+
+            // unsynth param
+            case 'string':      return vscode.SymbolKind.String;
+            case 'struct':      return vscode.SymbolKind.Struct;
+            case 'class':       return vscode.SymbolKind.Class;
+            
+            case 'logic':       return vscode.SymbolKind.Constant;
+            case 'wire':        return vscode.SymbolKind.Constant;
+            case 'reg':         return vscode.SymbolKind.Constant;
+            case 'net':         return vscode.SymbolKind.Constant;
+            case 'bit':         return vscode.SymbolKind.Boolean;
+            default:            return vscode.SymbolKind.Field;
+        }
+        /* Unused/Free SymbolKind icons
+            return SymbolKind.Number;
+            return SymbolKind.Enum;
+            return SymbolKind.EnumMember;
+            return SymbolKind.Operator;
+            return SymbolKind.Array;
+        */
+    }
+}
 
 class symbolDefine {
     constructor() {

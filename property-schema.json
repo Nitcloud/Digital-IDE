@@ -65,9 +65,7 @@
                     "type": "object",
                     "properties": {
                         "common":   { "type": "array" },
-                        "customer": { "type": "array" },
-                        "xilinx":   { "type": "array" },
-                        "intel":    { "type": "array" }
+                        "customer": { "type": "array" }
                     }
                 }
 			}

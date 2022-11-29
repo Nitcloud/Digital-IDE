@@ -198,137 +198,70 @@ class libManage {
 }
 
 class libPick {
-    constructor (process) {
-        this.curPath = '';
-        this.curType = '';
-        this.version = '@0.0.1'
-        this.process = process;
-        this.quickPick = null;
-        this.selectItem = null;
-        this.localLibPath = this.process.opeParam.rootPath + "/lib";
-
-        this.quickPick = vscode.window.createQuickPick();
-
+    constructor () {
+        this.set  = vscode.workspace.getConfiguration;
+        this.config = {
+            'common' : `${opeParam.rootPath}/lib/common`,
+            'custom' : this.set("PRJ.customer.Lib.repo").get("path"),
+        };
+        this.curPath = '/';
     }
 
-    getLibInfo() {
-        let description = '';
-        switch (this.curType) {
-            case 'common': description = this.version; break;
-            case 'xilinx': description = `by xilinx ${this.version}`; break;
-            case 'customer': description = `by user`; break;
-            default: break;
-        }
-        let out = filesys.dirs.readdir(this.curPath, false, (element) => {
-            return { label: element, description: `${element} library ${description}` };
-        });
-        out.splice(0, 0, { label: '.', description: `return to parent path` });
-        out.push({ label: 'finish', description: `import all` })
-        return out;
-    }
-
-    provideLibItem(name) {
-        switch (name) {
-            case '/':
-                return [    // 选项列表
-                    { label: "common",   description: `common library ${this.version}` },
-                    { label: "xilinx",   description: `xilinx library ${this.version}` },
-                    { label: "customer", description: "user define library" },
-                ];
-            case '.': 
-                if (this.curPath == this.localLibPath) {
-                    return this.provideLibItem('/');
-                }
-                this.curPath = filesys.paths.dirname(this.curPath);
-                return this.getLibInfo();
-            case 'common': 
-                this.curType = 'common';
-                this.curPath = `${this.localLibPath}/com/Hardware`; 
-                return this.getLibInfo();
-                
-            case 'xilinx': 
-                this.curType = 'xilinx';
-                this.curPath = `${this.localLibPath}/xilinx/src`; 
-                return this.getLibInfo();
-
-            case 'customer': 
-                this.curType = 'customer';
-                this.curPath = this.process.customerlocalLibPath; 
-                return this.getLibInfo();
-            default: 
-                this.curPath = this.curPath + '/' + name;
-                if (filesys.dirs.isillegal(this.curPath)) {
-                    this.processLibPath();
-                    this.quickPick.dispose();
-                    this.quickPick = null;
-                } else {
-                    return this.getLibInfo();
-                }
-        }
-    }
-
-    processLibPath() {
-        let element = '';
-        let prjInfo = this.process.opeParam.prjInfo;
-        if (!prjInfo) {
-            return null;
-        }
-
-        if (!prjInfo.HardwareLIB) {
-            prjInfo.HardwareLIB = {};
-        }
-        switch (this.curType) {
-            case 'common': 
-                element = this.curPath.replace(`${this.localLibPath}/com/Hardware/`, ''); 
-                if (!prjInfo.HardwareLIB.common) {
-                    prjInfo.HardwareLIB.common = [];
-                }
-                prjInfo.HardwareLIB.common.push(element);
-            break;
-            case 'xilinx': 
-                element = this.curPath.replace(`${this.localLibPath}/xilinx/src/`, '');
-                if (!prjInfo.HardwareLIB.xilinx) {
-                    prjInfo.HardwareLIB.xilinx = [];
-                } 
-                prjInfo.HardwareLIB.xilinx.push(element);
-            break;
-            case 'customer': 
-                element = this.curPath.replace(`${this.process.customerlocalLibPath}/`, ''); 
-                if (!prjInfo.HardwareLIB.customer) {
-                    prjInfo.HardwareLIB.customer = [];
-                }
-                prjInfo.HardwareLIB.customer.push(element);
-            break;
-            default: break;
+    provide(item) {
+        if (item == '..') {
+            if ((this.curPath == this.config.common) || (this.curPath == this.config.custom)) {
+                return [
+                    {label: "common", description: fs.files.readFile(this.config.common+'/readme.md')},
+                    {label: "custom", description: `custom library by yourself`}
+                ]
+            } else {
+                this.curPath = fs.paths.dirname(this.curPath);
+                return this.provide(this.curPath);
+            }
         }
         
-        let path = this.process.opeParam.propertyPath;
-        filesys.files.pushJsonInfo(path, prjInfo);
+        if (item == "common") {
+            this.curPath = this.config.common;
+        } else if (item == "custom") {
+            this.curPath = this.config.custom;
+        } else {
+            this.curPath = `${this.curPath}/${item}`;
+        }
+
+        let res = [{
+            label: "..", 
+            description: 'return to last'
+        }];
+        const list = fs.dirs.readdir(this.curPath, false);
+        for (let i = 0; i < list.length; i++) {
+            const element = list[i];
+            const description = fs.files.readFile(`${this.curPath}/${element}/readme.md`);
+            res.push({
+                label : element,
+                description : description ? description : ''
+            })
+        }
+        return res;
     }
 
-    pickLibItems() {
-        // let buttons = new vscode.QuickInputButtons.Back;
-        // console.log(buttons);
-        this.quickPick.items = this.provideLibItem('/');
-        // quickPick.canSelectMany = true; // Enable checkboxes
-        // Set listeners
-        this.quickPick.onDidChangeSelection(items => {
+    pickItems() {
+        this.pick = vscode.window.createQuickPick();
+        this.pick.items = this.provide('/');
+
+        this.pick.onDidChangeSelection(items => {
             // --> Do an important action here <--
             if (items[0]) {
-                this.selectItem = items[0];
+                this.select = items[0];
             }
         });
-        this.quickPick.onDidAccept(() => {
-            if (this.selectItem) {
-                if (this.selectItem.label == 'finish') {
-                    this.processLibPath();
-                    this.quickPick.dispose();
-                    this.quickPick = null;
-                } else {
-                    this.quickPick.items = this.provideLibItem(this.selectItem.label);
-                }
+
+        this.pick.onDidAccept(() => {
+            if (this.select) {
+                this.pick.items = this.provide(this.select.label);
             }
         });
-        this.quickPick.show();
+
+
+        this.pick.show();
     }
 }

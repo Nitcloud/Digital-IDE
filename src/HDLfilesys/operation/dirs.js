@@ -156,8 +156,8 @@ var dirOperation = {
      * @state finish-test
      * @descriptionCn 获取当前文件夹下的文件
      * @param {String} path 当前文件夹地址 
-     * @param {Boolean} withParent 返回路径是否带有父级路径 
-     * @param {Function} callback 单个路径处理的回调函数
+     * @param {Boolean} withParent 返回路径是否带有父级路径 (可以不设置)
+     * @param {Function} callback 单个路径处理的回调函数 (可以不设置)
      * @returns {Array} 返回当前文件夹下的文件的数组
      */
     readdir(path, withParent, callback) {
