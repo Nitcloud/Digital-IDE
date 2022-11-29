@@ -2,6 +2,8 @@
 
 const vscode = require("vscode");
 const fs = require("../../HDLfilesys");
+const plXilinx = require("./PL/xilinx");
+const psXilinx = require("./PS/xilinx");
 
 var opeParam = require("../../param");
 /**
@@ -293,22 +295,207 @@ class PrjManage {
 exports.PrjManage = PrjManage;
 
 /**
- * @descriptionCn PL端工程管理程序
+ * @descriptionCn PL端工程管理类
  * @note 一次实例，一直使用
  */
 class plMarage extends baseManage {
+    constructor() {
+        this.set  = vscode.workspace.getConfiguration;
+        this.log  = vscode.window.showInformationMessage;
+        this.err  = vscode.window.showErrorMessage;
+        this.warn = vscode.window.showWarningMessage;
+
+        this.config = {
+            "tool" : 'default',
+            "path" : '',
+            "ope"  : new plXilinx(),
+            "terminal" : null
+        };
+    }
+
+    /**
+     * @descriptionCn 获取PL工程管理中所需要的配置
+     * @returns 配置信息 {
+     *      "tool" : "default",
+     *      "path" : "path",  // 第三方工具安装路径
+     *      "termianl" : null
+     *  }
+     */
     getConfig() {
-        this.config = {};
         if (fs.files.isHasAttr(opeParam.prjInfo, "TOOL_CHAIN")) {
             this.config["tool"] = opeParam.prjInfo.TOOL_CHAIN;
-        } else {
-            this.config["tool"] = "default";
         }
+
+        switch (this.config["tool"]) {
+            case "xilinx":
+                this.config["path"] = this.set('TOOL.vivado.install').get('path');
+                if (fs.dirs.isillegal(this.config["path"])) {
+                    this.config["path"] = 'vivado';
+                } else {
+                    this.config["path"] = fs.paths.toSlash(this.config["path"]);
+                    this.config["path"] += '/vivado';
+                    if (opeParam.os == "win32") {
+                        this.config["path"] += '.bat';
+                    }
+                }
+
+                this.config["ope"] = new xilinx();
+            break;
+        
+            default: this.config["path"] = ""; break;
+        }
+
+        return this.config;
+    }
+
+    launch() {
+        this.getConfig();
+        this.config["terminal"] = this.creatTerminal("Hardware");
+        this.config.ope.launch(this.config);
+    }
+
+    refresh() {
+        if (!this.config.terminal) {
+            return null;
+        }
+
+        this.config.ope.refresh(this.config);
+    }
+
+    simulate() {
+        if (!this.config.terminal) {
+            return null;
+        }
+
+        this.config.ope.simulate(this.config);
+    }
+
+    build() {
+        if (!this.config.terminal) {
+            return null;
+        }
+
+        this.config.ope.build(this.config);
+    }
+
+    synth() {
+        if (!this.config.terminal) {
+            return null;
+        }
+
+        this.config.ope.synth(this.config);
+    }
+
+    impl() {
+        if (!this.config.terminal) {
+            return null;
+        }
+
+        this.config.ope.impl(this.config);
+    }
+
+    generateBit() {
+        if (!this.config.terminal) {
+            return null;
+        }
+
+        this.config.ope.generateBit(this.config);
+    }
+
+    program() {
+        if (!this.config.terminal) {
+            return null;
+        }
+
+        this.config.ope.program(this.config);
+    }
+
+    gui() {
+        if (!this.config.terminal) {
+            return null;
+        }
+
+        this.config.ope.gui(this.config);
+    }
+
+    exit() {
+        if (!this.config.terminal) {
+            return null;
+        }
+
+        this.config.terminal.show(true);
+        this.config.terminal.sendText(`exit`);
+        this.config.terminal.sendText(`exit`);
+        this.config.terminal = null;
+    }
+
+    setSrcTop(uri) {
+        
+    }
+
+    setSimTop(uri) {
+        
     }
 }
 
-class baseManage {
+/**
+ * @descriptionCn PS端工程管理类
+ * @note 一次实例，一直使用
+ */
+class psMarage extends baseManage {
+    constructor() {
+        this.set  = vscode.workspace.getConfiguration;
+        this.log  = vscode.window.showInformationMessage;
+        this.err  = vscode.window.showErrorMessage;
+        this.warn = vscode.window.showWarningMessage;
 
+        this.config = {
+            "tool" : 'default',
+            "path" : '',
+            "ope"  : new xilinx(),
+            "terminal" : null
+        };
+        this.getConfig();
+
+        
+    }
+
+
+}
+
+/**
+ * @descriptionCn 工程管理基础类
+ */
+class baseManage {
+    constructor() {
+        // vscode.window.onDidCloseTerminal((terminal) => {
+        //     if (terminal.name == "HardWare") {
+        //         _this.process.terminal = null;
+        //         let prjInfo = _this.process.opeParam.prjInfo;
+        //         if (!filesys.files.isHasAttr(prjInfo, "TOOL_CHAIN")) {
+        //             return null;
+        //         }
+        //         switch (prjInfo.TOOL_CHAIN) {
+        //             case "xilinx":
+        //                 _this.xilinxOpe.move_bd_ip();
+        //             break;
+                
+        //             default: break;
+        //         }
+        //     }
+        // });
+
+        // vscode.window.registerTerminalLinkProvider({
+        //     provideTerminalLinks: (context, token)=> {
+        //         if (context.line.indexOf("Exiting Vivado") != -1) {
+        //             vscode.window.showInformationMessage(context.line);
+        //         }
+        //     },
+        //     handleTerminalLink: (link)=> {
+        //       vscode.window.showInformationMessage(`Link activated (data=${link.data})`);
+        //     }
+        // });
+    }
     /**
      * @descriptionCn 创建终端，并返回对应的属性
      * @param {String} name 终端名

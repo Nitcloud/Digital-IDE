@@ -46,7 +46,6 @@
                     "type" : "object",
                     "properties":{
                         "src" : { "type" :"string"},
-                        "sim" : { "type" :"string"},
                         "data" : { "type" :"string"}
                     }
                 }

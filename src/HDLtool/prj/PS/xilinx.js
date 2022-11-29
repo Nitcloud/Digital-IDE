@@ -1,5 +1,33 @@
 "use strict";
 const fs = require("../../../HDLfilesys");
+var opeParam = require("../../../param");
+
+class xilinxOperation {
+    constructor() {
+
+    }
+
+    getConfig() {
+        this.config = {
+            'hw' : "SDK_Platform",
+            'bsp': "BSP_package",
+            'dat': opeParam.prjInfo.ARCH.Software.data,
+            'src': opeParam.prjInfo.ARCH.Software.src,
+            'soc': {
+                "core": "ps7_cortexa9_0",
+                "name": "template",
+                "app": "Hello World",
+                "os": "standalone"
+            }
+        };
+
+
+    }
+
+    launch() {
+
+    }
+}
 
 var xsdkScript = {
 

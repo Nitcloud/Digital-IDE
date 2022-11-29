@@ -59,7 +59,7 @@ class xilinxOperation {
      * @descriptionCn xilinx下的launch运行，打开存在的工程或者再没有工程时进行新建
      * @returns {String} 需要执行的脚本路径
      */
-    launch() {
+    launch(config) {
         let script = '';
         let scripts = [];
 
@@ -109,7 +109,10 @@ class xilinxOperation {
         scriptPath = `${this.rootPath}/resources/script/xilinx/launch.tcl`;
         script += `file delete ${scriptPath} -force\n`;
         fs.files.writeFile(scriptPath, script);
-        return scriptPath;
+        
+        const argu = `-notrace -nolog -nojournal`
+        const cmd = `${config.path} -mode tcl -s ${scriptPath} ${argu}`;
+        config.terminal.sendText(cmd);
     }
 
     /**
