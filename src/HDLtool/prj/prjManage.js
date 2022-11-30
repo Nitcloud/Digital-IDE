@@ -6,6 +6,35 @@ const plXilinx = require("./PL/xilinx");
 const psXilinx = require("./PS/xilinx");
 
 var opeParam = require("../../param");
+
+function registerPrjManage(params) {
+    // pl manage register
+    const pl = new plMarage();
+    const plFuncs = [
+        'Launch', 'GUI', 'Exit',
+        'Synth', 'Impl', 'Bit', 'Build', 
+        'Program', 'Refresh', 'Simulate', 
+    ]
+    for (let i = 0; i < plFuncs.length; i++) {
+        const fun = plFuncs[i];
+        vscode.commands.registerCommand(`HARD.${fun}`, () => {
+            pl[fun.toLowerCase()]();
+        });
+    }
+
+    // ps manage register
+    const ps = new psMarage();
+    const psFuncs = [
+        'Launch', 'Build', 'Program'
+    ]
+    for (let i = 0; i < psFuncs.length; i++) {
+        const fun = psFuncs[i];
+        vscode.commands.registerCommand(`SOFT.${fun}`, () => {
+            ps[fun.toLowerCase()]();
+        });
+    }
+}
+
 /**
  * the class of HDL file process
  * 
@@ -390,7 +419,7 @@ class plMarage extends baseManage {
         this.config.ope.impl(this.config);
     }
 
-    generateBit() {
+    bit() {
         if (!this.config.terminal) {
             return null;
         }
@@ -435,6 +464,7 @@ class plMarage extends baseManage {
 }
 
 /**
+ * @state finish-untest
  * @descriptionCn PS端工程管理类
  * @note 一次实例，一直使用
  */
@@ -495,6 +525,7 @@ class psMarage extends baseManage {
 }
 
 /**
+ * @state finish-untest
  * @descriptionCn 工程管理基础类
  */
 class baseManage {

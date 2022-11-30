@@ -47,3 +47,4 @@ class testbench {
         }
     }
 }
+module.exports = testbench;

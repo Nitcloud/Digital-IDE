@@ -23,65 +23,6 @@ class vlogCompletion {
     constructor(indexer){
         this.indexer = indexer;
         this.parse = new parser.vlogParser();
-        this.funcs = [
-            { key : "display()", description : ""},
-            { key : "write()", description : ""},
-            { key : "strobe()", description : ""},
-            { key : "monitor()", description : ""},
-
-            { key : "fopen()", description : ""},
-            { key : "fclose()", description : ""},
-            { key : "ferror()", description : ""},
-
-            { key : "fdisplay()", description : ""},
-            { key : "fwrite()", description : ""},
-            { key : "fstrobe()", description : ""},
-            { key : "fmonitor()", description : ""},
-
-            { key : "sformat()", description : ""},
-            { key : "swrite()", description : ""},
-
-            { key : "fgetc()", description : ""},
-            { key : "fgets()", description : ""},
-
-            { key : "fscanf()", description : ""},
-            { key : "fread()", description : ""},
-
-            { key : "readmemh()", description : ""},
-            { key : "readmemb()", description : ""},
-
-            { key : "clog2()", description : ""},
-            { key : "log10()", description : ""},
-            { key : "ln()", description : ""},
-
-            { key : "exp()", description : ""},
-            { key : "sqrt()", description : ""},
-            { key : "pow()", description : ""},
-
-            { key : "sin()", description : ""},
-            { key : "cos()", description : ""},
-            { key : "tan()", description : ""},
-
-            { key : "sinh()", description : ""},
-            { key : "cosh()", description : ""},
-            { key : "tanh()", description : ""},
-
-            { key : "asinh()", description : ""},
-            { key : "acosh()", description : ""},
-            { key : "atanh()", description : ""},
-
-            { key : "asin()", description : ""},
-            { key : "acos()", description : ""},
-            { key : "acos()", description : ""},
-
-            { key : "finish()", description : ""},
-            { key : "stop()", description : ""},
-
-            { key : "random()", description : ""},
-            
-            { key : "signed()", description : ""},
-            { key : "unsigned()", description : ""},
-        ]
     }
 
     provideCompletionItems(document, position) {

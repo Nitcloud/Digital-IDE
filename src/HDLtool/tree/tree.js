@@ -5,6 +5,17 @@ const vscode  = require("vscode");
 const parser  = require("HDLparser");
 const cells = require("./cells");
 
+/**
+ * 树状结构服务注册函数
+ */
+ function registerTreeServer() {
+    // // Tree View
+    vscode.window.registerTreeDataProvider('TOOL.soft_tree', new softwareTreeProvider());
+    vscode.window.registerTreeDataProvider('TOOL.hard_tree', new hardwareTreeProvider());
+    vscode.window.registerTreeDataProvider('TOOL.Tool_tree', new toolTreeProvider());
+}
+exports.registerTreeServer = registerTreeServer;
+
 class FileExplorer {
     constructor(indexer, process) {
         this.treeDataProvider = new FileSystemProvider(indexer, process);
@@ -369,7 +380,6 @@ class hardwareTreeProvider {
         return treeItem;
     }
 }
-exports.hardwareTreeProvider = hardwareTreeProvider;
 
 class softwareTreeProvider {
     constructor(opeParam){
@@ -409,7 +419,6 @@ class softwareTreeProvider {
         
     }
 }
-exports.softwareTreeProvider = softwareTreeProvider;
 
 class toolTreeProvider {
     constructor(opeParam){
@@ -433,4 +442,3 @@ class toolTreeProvider {
         
     }
 }
-exports.toolTreeProvider = toolTreeProvider;

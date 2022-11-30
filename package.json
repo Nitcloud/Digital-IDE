@@ -268,7 +268,7 @@
                 },
                 {
                     "id": "TOOL.hard_tree",
-                    "name": "FPGA Options"
+                    "name": "HARD Options"
                 },
                 {
                     "id": "TOOL.soft_tree",

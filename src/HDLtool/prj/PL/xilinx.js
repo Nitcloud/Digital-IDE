@@ -287,12 +287,12 @@ class xilinxOperation {
     synth(terminal) {
         let quietArg = '';
         if (opeParam.prjInfo.enableShowlog) {
-            quietArg = '-quiet '
+            quietArg = '-quiet'
         }
 
         let script = '';
         script += `reset_run synth_1 ${quietArg};`
-        script += `launch_runs synth_1 ${quietArg}-jobs 4;`
+        script += `launch_runs synth_1 ${quietArg} -jobs 4;`
         script += `wait_on_run synth_1 ${quietArg}`
 
         terminal.sendText(script);
@@ -307,12 +307,12 @@ class xilinxOperation {
     impl(terminal) {
         let quietArg = '';
         if (opeParam.prjInfo.enableShowlog) {
-            quietArg = '-quiet '
+            quietArg = '-quiet'
         }
 
         let script = '';
         script += `reset_run impl_1 ${quietArg};`;
-        script += `launch_runs impl_1 ${quietArg}-jobs 4;`;
+        script += `launch_runs impl_1 ${quietArg} -jobs 4;`;
         script += `wait_on_run impl_1 ${quietArg};`;
         script += `open_run impl_1 ${quietArg};`;
         script += `report_timing_summary ${quietArg}`;
@@ -333,10 +333,10 @@ class xilinxOperation {
         
         let script = '';
         script += `reset_run synth_1 ${quietArg}\n`;
-        script += `launch_runs synth_1 ${quietArg}-jobs 4\n`;
+        script += `launch_runs synth_1 ${quietArg} -jobs 4\n`;
         script += `wait_on_run synth_1 ${quietArg}\n`;
         script += `reset_run impl_1 ${quietArg}\n`;
-        script += `launch_runs impl_1 ${quietArg}-jobs 4\n`;
+        script += `launch_runs impl_1 ${quietArg} -jobs 4\n`;
         script += `wait_on_run impl_1 ${quietArg}\n`;
         script += `open_run impl_1 ${quietArg}\n`;
         script += `report_timing_summary ${quietArg}\n`;

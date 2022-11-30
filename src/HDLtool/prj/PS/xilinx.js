@@ -4,6 +4,10 @@ const vscode = require("vscode");
 const fs = require("../../../HDLfilesys");
 var opeParam = require("../../../param");
 
+/**
+ * @state finish-untest
+ * @descriptionCn xilinx工具链下PS端的操作类
+ */
 class xilinxOperation {
     constructor() {
         this.log  = vscode.window.showInformationMessage;
