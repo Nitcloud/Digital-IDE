@@ -128,6 +128,7 @@ class symbolDefine {
     getSymbolDefine(document, position) {
         let results = [];
         this.config(document, position);
+        const info = parser.HDLparam;
         const symbols = parser.utils.getSymbols({
             languageId : document.languageId,
             code : fs.files.readFile(this.config.path),
@@ -136,19 +137,25 @@ class symbolDefine {
         // 先判断是否是include
         parser.utils.getSymbolsFromType('include', symbols, (symbol) => {
             if (fs.files.ensureInclude(symbol, this.config.range)) {
-                return [{
+                results.push({
                     type : 'path',
                     uri : vscode.Uri.file(fs.paths.rel2abs(this.config.path, symbol.name)),
                     range : new vscode.Range(
                         {"line":0, "character":0}, 
                         {"line":0, "character":0}
                     ),
-                }];
+                });
+                return false;
             } else {
                 return true;
             }
         });
 
+        if (results.length) {
+            return results;
+        }
+
+        // 获得引导词
         let guide = '';
         do {
             guide = this.config.text[this.config.index--];
@@ -159,11 +166,99 @@ class symbolDefine {
         } while (/\s/.test(guide));
 
         switch (guide) {
+            case '`':
+                return this.findDefine(info, this.config.word, this.config.path);
             case '.':
-                
-            break;
-        
-            default: break;
+                return this.findInstance(info, this.config.word, this.config.range);
+            default: 
+                return this.findWordInfo(info, this.config.word, symbols);
+        }
+    }
+
+    findDefine(param, word, path) {
+        const defines  = param[path].marco.defines;
+        const includes = param[path].marco.includes;
+        if (defines[word]) {
+            return [{
+                uri : vscode.Uri.file(path),
+                range : new vscode.Range(
+                    defines[word].range.start, 
+                    defines[word].range.end
+                ),
+            }]
+        } else {
+            for (let i = 0; i < includes.length; i++) {
+                let element = includes[i];
+                element = fs.paths.rel2abs(path, element);
+                this.findDefine(param, word, element);
+            }
+        }
+    }
+
+    findInstance(param, word, range) {
+        const modules  = param[path].marco.modules;
+        for (const key in modules) {
+            const instances = modules[key].instances;
+            for (let i = 0; i < instances.length; i++) {
+                const instance = instances[i];
+                let list = instance.instModInfo.params;
+                if (fs.files.ensureInclude(instance.instparams, range)) {
+                    list = instance.instModInfo.ports;
+                }
+                else if (!fs.files.ensureInclude(instance.instports, range)) {
+                    continue;
+                }
+
+                for (let i = 0; i < list.length; i++) {
+                    const element = list[i];
+                    if (element.name !== word) {
+                        continue;
+                    }
+                    return [{
+                        uri : vscode.Uri.file(instance.instModPath),
+                        range : new vscode.Range(
+                            element.start, 
+                            element.end
+                        ),
+                    }];
+                }
+            }
+        }
+    }
+
+    findWordInfo(param, word, symbols) {
+        let results = [];
+        const res = parser.utils.getSymbolsFromName(word, symbols);
+        for (let i = 0; i < res.length; i++) {
+            const element = res[i];
+            results.push({
+                uri : vscode.Uri.file(this.config.path),
+                range : new vscode.Range(
+                    element.start, 
+                    element.end
+                ),
+            });
+        }
+
+        if (results.length) {
+            return results
+        }
+
+        for (const path in param) {
+            const modules = param[path].marco.modules;
+            for (let i = 0; i < modules.length; i++) {
+                const module = modules[i];
+                if (module.name !== word) {
+                    continue;
+                }
+                results.push({
+                    uri : vscode.Uri.file(path),
+                    range : new vscode.Range(
+                        module.start, 
+                        module.end
+                    ),
+                });
+            }
         }
 
         return results;

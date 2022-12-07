@@ -36,12 +36,12 @@ var HDLparam = {
     }
 }
 
-for (const key in prjStructure) {
-    let element = prjStructure[key]
-    element = "new";
-}
-
-console.log(prjStructure);
-
+HDLparam["/home/project/top.v"].modules.top.instances[0].instModInfo = 
+    HDLparam["/home/project/child2.v"].modules.child2;
+HDLparam["/home/project/child2.v"].modules.child2 = null;
+console.log(HDLparam["/home/project/top.v"].modules.top.instances[0].instModInfo);
+delete HDLparam["/home/project/child2.v"];
 console.log(HDLparam);
-console.log(HDLparam["/home/project/top.v"].modules[top]);
+HDLparam["/home/project/child2.v"] = null;
+console.log(HDLparam["/home/project/child2.v"]);
+console.log(HDLparam["/home/project/top.v"].modules.top.instances[0].instModInfo);
