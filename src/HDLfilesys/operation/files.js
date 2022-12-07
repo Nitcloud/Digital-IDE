@@ -189,16 +189,16 @@ var fileOperation = {
 
     /**
      * @state finish-test
-     * @descriptionCn 从指定文件夹下过滤出指定的要求的文件
+     * @descriptionCn 从指定文件夹下过滤出指定的要求的文件，已做合法性检查
      * @param {String}   path 文件夹的绝对地址 ('/'分隔) 同时支持文件夹和单文件
-     * @param {Function} callback 过滤函数传参为(file)单个文件路径
      * @param {Object}   options {
-                type : "once", // once:只一级文件搜索 | all:所有文件搜索
-                ignores : []   // 要忽视的文件所在的文件夹(绝对路径)
-            };
-     * @returns {Array} 返回满足要求的文件数组
+     *     type : "once", // once:只一级文件搜索 | all:所有文件搜索
+     *     ignores : []   // 要忽视的文件所在的文件夹(绝对路径)
+     * };
+     * @param {Function} callback 过滤函数传参为(file)单个文件路径，一定要存在的
+     * @returns {Array} 返回满足要求的文件数组(绝对路径)
      */
-    filter : function (path, callback, options) {
+    filter : function (path, options, callback) {
         // 检查 file path 是否存在
         if (!fs.existsSync(path)) {
             return [];
@@ -253,7 +253,7 @@ var fileOperation = {
             
             if (options.type === "all") {
                 // 默认全是存在的，既然不是文件就是文件夹
-                output.push(...(this.filter(`${path}/${file}`, callback, options)));
+                output.push(...(this.filter(`${path}/${file}`, options, callback)));
             }
         }
         
@@ -262,16 +262,18 @@ var fileOperation = {
 
     /**
      * @state finish-test
-     * @descriptionCn 从指定文件夹下找到指定后缀名的文件
-     * @param {String} path 文件夹的绝对地址 ('/'分隔)
+     * @descriptionCn 从指定文件夹下找到指定后缀名的文件，已做合法性检查
+     * @param {String | Array} paths 文件夹的绝对地址 ('/'分隔)，允许数组输入
      * @param {Object} options {
-                exts : [] | "" // 可以是数组(多个后缀)，也可以是字符串(单个后缀)
-                type : "once", // once:只一级文件搜索 | all:所有文件搜索
-                ignores : []   // 要忽视的文件所在的文件夹(绝对路径)
-            };
-     * @returns {Array} 返回文件数组
+     *     exts : [] | "" // 可以是数组(多个后缀)，也可以是字符串(单个后缀)
+     *     type : "once", // once:只一级文件搜索 | all:所有文件搜索
+     *     list : [],     // 支持继续添加
+     *     ignores : []   // 要忽视的文件所在的文件夹(绝对路径)
+     * };
+     * @param {Function} callback 对检测出的文件进行回调操作，可省缺
+     * @returns {Array} 返回文件数组(绝对路径)且去除重复的元素
      */
-    pickFileFromExt : function (path, options) {
+    pickFileFromExt : function (paths, options, callback) {
         if (!options) {
             return [];
         }
@@ -281,19 +283,48 @@ var fileOperation = {
             return [];
         }
 
-        if (Object.prototype.toString.call(options.exts) == '[object Array]') {
-            return this.filter(path, (file)=> {
-                if(options.exts.includes(paths.extname(file))) {
-                    return file;
-                }
-            }, options);
+        var _this = this;
+        var list = [];
+        if (options.list) {
+              list = options.list;  
+        }
+
+        if (Object.prototype.toString.call(paths) == '[object Array]') {
+            for (let i = 0; i < paths.length; i++) {
+                const path = paths[i];
+                list.push(...[once(path)]);
+            }
+            list = this.removeDuplicates(list);
+            return list;
         }
         else if (Object.prototype.toString.call(options.exts) == '[object String]') {
-            return this.filter(path, (file)=> {
-                if(options.exts === paths.extname(file)) {
-                    return file;
-                }
-            }, options);
+            return list.push(...[once(paths)]);
+        }
+        else {
+            return [];
+        }
+
+        function once(path) {
+            if (Object.prototype.toString.call(options.exts) == '[object Array]') {
+                return _this.filter(path, options, (file)=> {
+                    if(options.exts.includes(paths.extname(file))) {
+                        if (callback) {
+                            callback(file);
+                        }
+                        return file;
+                    }
+                });
+            }
+            else if (Object.prototype.toString.call(options.exts) == '[object String]') {
+                return _this.filter(path, options, (file)=> {
+                    if(options.exts === paths.extname(file)) {
+                        if (callback) {
+                            callback(file);
+                        }
+                        return file;
+                    }
+                });
+            }
         }
     },
 
@@ -302,8 +333,10 @@ var fileOperation = {
      * @descriptionCn 获取文件夹下的所有HDL文件，已经进行了文件存在性的检查，并且同时支持文件和文件夹
      * @param {String} path 所指定的文件夹路径
      * @param {Array} HDLFiles 最后输出的HDL文件列表
+     * @param {Array} ignores  获取过程中需要忽略的文件所在的文件夹(绝对路径)
+     * @returns {Array} 返回文件数组
      */
-     getHDLFiles(path, HDLFiles, ignores) {
+    getHDLFiles(path, HDLFiles, ignores) {
         let options = {
             exts : [
                 // verilog
@@ -328,7 +361,7 @@ var fileOperation = {
      * @param {String} path 文件的绝对路径
      * @returns {String} 文件的语言类型 (verilog | systemverilog | vhdl)
      */
-     getLanguageId : function(path) {
+    getLanguageId : function(path) {
         let vhdlExtensions = [".vhd",".vhdl",".vho",".vht"];
         let vlogExtensions = [".v",".V",".vh",".vl"];
         let svlogExtensions = [".sv",".SV"];
@@ -449,6 +482,132 @@ var fileOperation = {
             }
         }
         return true;
+    },
+
+    /**
+     * @state finish-test
+     * @descriptionCn 将position格式下的范围转化为index范围格式
+     * @param {String} text  文本内容
+     * @param {Object} position position格式的范围 {line, character}
+     * @returns {Number} index
+     */
+    position_to_index : function (text, position) {
+        let index = 0;
+        let lines = text.split('\n');
+        for (let i = 0; i < position.line; ++i) {
+            index += lines[i].length + 1;
+        }
+        index += position.character;
+        return index;
+    },
+
+    /**
+     * @state finish-test
+     * @descriptionCn 将range格式下的范围转化为index范围格式
+     * @param {String} text  文本内容
+     * @param {Object} range range格式的范围 {start:{line, character}, end:{line, character}}
+     * @returns {Object} index = {
+     *      "startIndex" : startIndex,
+     *      "lastIndex"  : lastIndex,
+     *  }
+     */
+    range_to_index : function (text, range) {
+        return {
+            "startIndex" : this.position_to_index(text, range.start),
+            "lastIndex"  : this.position_to_index(text, range.end),
+        }
+    },
+    
+    /**
+     * @state finish-test
+     * @descriptionCn 将index格式下的范围转化为range范围格式
+     * @param {String} text  文本内容
+     * @param {Object} index index格式的范围{
+     *     "startIndex" : startIndex,
+     *     "lastIndex"  : lastIndex,
+     * }
+     * @returns {Object} range = {
+     *     "start" : {"line":line, "character":character},
+     *     "end"   : {"line":line, "character":character},
+     * }
+     */
+    index_to_range : function (text, index) {
+        let lines = text.split('\n');
+        let line = 0;
+        let offset = 0;
+        let range = {
+            "start" : {line:0, character:0},
+            "end"  : {line:0, character:0},
+        };
+        while (1) {
+            offset += lines[line].length + 1; 
+            if (offset > index.startIndex) {
+                break;
+            }
+            line++;
+        }
+        range.start.line = line;
+        range.start.character = index.startIndex + lines[line].length - offset + 1;
+
+        while (1) {
+            if (offset > index.lastIndex) {
+                break;
+            }
+            line++;
+            offset += lines[line].length + 1; 
+        }
+        range.end.line = line;
+        range.end.character = index.lastIndex + lines[line].length - offset + 1;
+
+        return range;
+    },
+
+    /**
+     * @state finish-test
+     * @descriptionCn 确认是否是被包含的关系
+     * @param {Object} parent 父级 range
+     * @param {Object} child  子级 range
+     * @returns (true:被包含 | false:不被包含)
+     */
+    ensureInclude : function (parent, child) {
+        if (parent.start.line < child.start.line) {
+            if (parent.end.line > child.end.line) {
+                return true;
+            }
+            if (parent.end.line == child.end.line) {
+                if (parent.end.character >= child.end.character) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        if (parent.start.line == child.start.line) {
+            if (parent.start.character <= child.start.character) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    },
+
+    /**
+     * @descriptionCn 排查出A中不属于B的元素
+     * @param {Array} A 待排查的数组
+     * @param {Array} B 对比数组
+     * @returns {Array} 返回A中不属于B的元素
+     */
+    diffElement : function (A, B) {
+        let res = [];
+        const len = A.length;
+        for (let i = 0; i < len; i++) {
+            const element = A[i];
+            if (!B.includes(element)) {
+                res.push(element);
+            }
+        }
+        return res;
     }
 }
 module.exports = fileOperation;

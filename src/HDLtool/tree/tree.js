@@ -3,7 +3,18 @@
 const fs      = require("fs");
 const vscode  = require("vscode");
 const parser  = require("HDLparser");
-const celllib = require("./celllib");
+const cells = require("./cells");
+
+/**
+ * 树状结构服务注册函数
+ */
+ function registerTreeServer() {
+    // // Tree View
+    vscode.window.registerTreeDataProvider('TOOL.soft_tree', new softwareTreeProvider());
+    vscode.window.registerTreeDataProvider('TOOL.hard_tree', new hardwareTreeProvider());
+    vscode.window.registerTreeDataProvider('TOOL.Tool_tree', new toolTreeProvider());
+}
+exports.registerTreeServer = registerTreeServer;
 
 class FileExplorer {
     constructor(indexer, process) {
@@ -77,7 +88,7 @@ class FileSystemProvider {
      *      mode: 所归属的类型 
      *          - folder: [src, sim] 
      *          - TOP: top/current(Src/Sim)Top 
-     *          - child: [celllib, local, remote, verilog, systemverilog, vhdl]
+     *          - child: [cells, local, remote, verilog, systemverilog, vhdl]
      *      name: 模块名，顶层或者非文件类型时为空 
      *      type: 例化名，
      *      fsPath: 模块所在的文件的路径
@@ -85,7 +96,7 @@ class FileSystemProvider {
      */
     getTreeItem(element) {
         let itemName = element.name;
-        let itemChildMode = ["vhdl", "systemverilog", "verilog", "remote", "celllib"];
+        let itemChildMode = ["vhdl", "systemverilog", "verilog", "remote", "cells"];
         if (itemChildMode.includes(element.mode)) {
             itemName = `${element.type}(${element.name})`;
         }
@@ -107,7 +118,7 @@ class FileSystemProvider {
         }
 
         // set contextValue file -> simulate / netlist
-        let otherMode = ["src", "sim", "File Error", "celllib"]
+        let otherMode = ["src", "sim", "File Error", "cells"]
         if (otherMode.includes(element.mode)) {
             treeItem.contextValue = 'other';
         } else {
@@ -251,8 +262,8 @@ class FileSystemProvider {
                             childElement.mode = languageId;
                         }
                     } else {
-                        if (celllib.xilinx_component.includes(unitInstModule.instModule)) {
-                            childElement.mode = "celllib";
+                        if (cells.xilinx_component.includes(unitInstModule.instModule)) {
+                            childElement.mode = "cells";
                         } else {
                             childElement.mode = "File Error";
                         }
@@ -266,36 +277,90 @@ class FileSystemProvider {
 }
 exports.FileSystemProvider = FileSystemProvider;
 
-class hardTreeDataProvider {
-    constructor(process){
-        this.process = process;
-    }
-    getChildren(element) {
-        // 如果不是根节点
-        if (element) {
-            if (element.name === "Build") {
-                return [
-                    { "name" : "Synth"     },
-                    { "name" : "Impl"      },
-                    { "name" : "BitStream" }
-                ];
-            } else {
-                return [];
+class hardwareTreeProvider {
+    constructor(opeParam){
+        this.config = {
+            "Launch" : {
+                "cmd"  : 'HARD.Launch',
+                "icon" : 'cmd',
+                "tip"  : 'Launch FPGA development assist function'
+            },
+            "Simulate" : {
+                "cmd"  : 'HARD.Simulate',
+                "icon" : 'cmd',
+                "tip"  : 'Launch the manufacturer Simulation',
+                "children" : {
+                    "CLI" : {
+                        "cmd"  : 'HARD.simCLI',
+                        "icon" : 'cmd',
+                        "tip"  : 'Launch the manufacturer Simulation in CLI'
+                    },
+                    "GUI" : {
+                        "cmd"  : 'HARD.simGUI',
+                        "icon" : 'cmd',
+                        "tip"  : 'Launch the manufacturer Simulation in GUI'
+                    },
+                }
+            },
+            "Refresh" : {
+                "cmd"  : 'HARD.Refresh',
+                "icon" : 'cmd',
+                "tip"  : 'Refresh the current project file'
+            },
+            "Build" : {
+                "cmd"  : 'HARD.Build',
+                "icon" : 'cmd',
+                "tip"  : 'Build the current fpga project',
+                "children" : {
+                    "Synth" : {
+                        "cmd"  : 'HARD.Synth',
+                        "icon" : 'cmd',
+                        "tip"  : 'Synth the current project'
+                    },
+                    "Impl" : {
+                        "cmd"  : 'HARD.Impl',
+                        "icon" : 'cmd',
+                        "tip"  : 'Impl  the current project'
+                    },
+                    "BitStream" : {
+                        "cmd"  : 'HARD.Bit',
+                        "icon" : 'cmd',
+                        "tip"  : 'Generate the BIT File'
+                    },
+                }
+            },
+            "Program" : {
+                "cmd"  : 'HARD.Program',
+                "icon" : 'cmd',
+                "tip"  : 'Download the bit file into the device'
+            },
+            "GUI" : {
+                "cmd"  : 'HARD.GUI',
+                "icon" : 'cmd',
+                "tip"  : 'Open the GUI'
+            },
+            "Exit" : {
+                "cmd"  : 'HARD.Exit',
+                "icon" : 'cmd',
+                "tip"  : 'Exit the current project'
             }
         }
-        // 根节点
-        return [
-            { "name" : "Launch"   },
-            { "name" : "Simulate" },
-            { "name" : "Refresh"  },
-            { "name" : "Build"    },
-            { "name" : "Program"  },
-            { "name" : "GUI"      },
-            { "name" : "Exit"     }
-        ];
     }
+
+    getChildren(element) {
+        if (element && element.children) {
+            return element.children;
+        } else {
+            const list = [];
+            for (const key in this.config) {
+                list.push(key);
+            }
+            return list;
+        }
+    }
+
     getTreeItem(element) {
-        let childrenList = this.getChildren(element);
+        const list = this.getChildren(element);
         const treeItem = new vscode.TreeItem(
             element.name,
             childrenList.length === 0 ? 
@@ -309,206 +374,71 @@ class hardTreeDataProvider {
         }
         treeItem.contextValue = 'HARD';
         treeItem.children = TreeItemList;
-        treeItem.command  = this.getCommand(element.name);
-        treeItem.tooltip  = this.getToolTip(element.name);
-        treeItem.iconPath = this.getIconPath(element.name);
+        treeItem.command  = this.config[name].cmd;
+        treeItem.tooltip  = this.config[name].tip;
+        treeItem.iconPath = this.config[name].icon;
         return treeItem;
     }
-    getCommand(name){
-        let cuurentCommand = { 
-            title:     name, 
-            command:   ""
-        };
-        switch (name) {
-            case "Launch"    : cuurentCommand.command = "HARD.Launch";   break;
-            case "Simulate"  : cuurentCommand.command = "HARD.Simulate"; break;
-            case "Refresh"   : cuurentCommand.command = "HARD.Refresh";  break;
-            case "Build"     : cuurentCommand.command = "HARD.Build";    break;
-            case "Program"   : cuurentCommand.command = "HARD.Program";  break;
-            case "GUI"       : cuurentCommand.command = "HARD.GUI";      break;
-            case "Exit"      : cuurentCommand.command = "HARD.Exit";     break;
- 
-            case "Synth"     : cuurentCommand.command = "HARD.Synth";    break;
-            case "Impl"      : cuurentCommand.command = "HARD.Impl";     break;
-            case "BitStream" : cuurentCommand.command = "HARD.Bit";  break;
-            
-            default: break;
+}
+
+class softwareTreeProvider {
+    constructor(opeParam){
+        this.config = {
+            "Launch" : {
+                "command"  : 'SOFT.Launch',
+                "iconPath" : {
+                    light : `${opeParam.rootPath}/images/svg/light/cmd.svg`,
+                    dark  : `${opeParam.rootPath}/images/svg/dark/cmd.svg`
+                },
+                "tooltip"  : 'Launch SDK development assist function'
+            },
+            "Build" : {
+                "command"  : 'SOFT.Launch',
+                "iconPath" : {
+                    light : `${opeParam.rootPath}/images/svg/light/cmd.svg`,
+                    dark  : `${opeParam.rootPath}/images/svg/dark/cmd.svg`
+                },
+                "tooltip"  : 'Build the current SDK project'
+            },
+            "Download" : {
+                "command"  : 'SOFT.Launch',
+                "iconPath" : {
+                    light : `${opeParam.rootPath}/images/svg/light/cmd.svg`,
+                    dark  : `${opeParam.rootPath}/images/svg/dark/cmd.svg`
+                },
+                "tooltip"  : 'Download the boot file into the device'
+            },
         }
-        return cuurentCommand;
     }
-    getIconPath(name){
-        let iconPath = ""
-        switch (name) {
-            case "Launch"    : iconPath = "cmd"; break;
-            case "Simulate"  : iconPath = "cmd"; break;
-            case "Refresh"   : iconPath = "cmd"; break;
-            case "Build"     : iconPath = "cmd"; break;
-            case "Program"   : iconPath = "cmd"; break;
-            case "GUI"       : iconPath = "cmd"; break;
-            case "Exit"      : iconPath = "cmd"; break;
- 
-            case "Synth"     : iconPath = "branch"; break;
-            case "Impl"      : iconPath = "branch"; break;
-            case "BitStream" : iconPath = "branch"; break;
-            
-            default: break;
-        }
-        let currentIconPath = {
-            light : `${this.process.opeParam.rootPath}/images/svg/light/` + iconPath + ".svg",
-            dark  : `${this.process.opeParam.rootPath}/images/svg/dark/`  + iconPath + ".svg"
-        };
-        return currentIconPath;
+
+    getChildren(element) {
+        
     }
-    getToolTip(name){
-        let currentToolTip = ""
-        switch (name) {
-            case "Launch"    : currentToolTip = "Launch FPGA development assist function"; break;
-            case "Simulate"  : currentToolTip = "Launch the manufacturer Simulation"; break;
-            case "Refresh"   : currentToolTip = "Refresh the current project file"; break;
-            case "Build"     : currentToolTip = "Build the current fpga project"; break;
-            case "Program"   : currentToolTip = "Download the bit file into the device"; break;
-            case "GUI"       : currentToolTip = "Open the GUI"; break;
-            case "Exit"      : currentToolTip = "Exit the current project"; break;
- 
-            case "Synth"     : currentToolTip = "Synth the current project"; break;
-            case "Impl"      : currentToolTip = "Impl  the current project"; break;
-            case "BitStream" : currentToolTip = "Generate the BIT File"; break;
-            
-            default: break;
-        }
-        return currentToolTip;
+
+    getTreeItem(element) {
+        
     }
 }
-exports.hardTreeDataProvider = hardTreeDataProvider;
 
-class softTreeDataProvider {
-    constructor(process){
-        this.process = process;
+class toolTreeProvider {
+    constructor(opeParam){
+        this.config = {
+            "Clean" : {
+                "command"  : 'TOOL.Clean',
+                "iconPath" : {
+                    light : `${opeParam.rootPath}/images/svg/light/clean.svg`,
+                    dark  : `${opeParam.rootPath}/images/svg/dark/clean.svg`
+                },
+                "tooltip"  : 'Clean the current project'
+            }
+        }
     }
     getChildren(element) {
         // 根节点
-        return [
-            { "name" : "Launch"   },
-            { "name" : "Build"    },
-            { "name" : "Download" }
-        ];
+        
     }
-    getTreeItem(element) {
-        let treeItem = new vscode.TreeItem(
-            element.name,
-            vscode.TreeItemCollapsibleState.None
-        );
-        treeItem.contextValue = 'SOFT';
-        treeItem.command  = this.getCommand(element.name);
-        treeItem.tooltip  = this.getToolTip(element.name);
-        treeItem.iconPath = this.getIconPath(element.name);
-        return treeItem;
-    }
-    getCommand(name){
-        let cuurentCommand = { 
-            title:     name, 
-            command:   ""
-        };
-        switch (name) {
-            case "Launch"   : cuurentCommand.command = "SOFT.Launch";   break;
-            case "Build"    : cuurentCommand.command = "SOFT.Build";    break;
-            case "Download" : cuurentCommand.command = "SOFT.Download"; break;
-            
-            default: break;
-        }
-        return cuurentCommand;
-    }
-    getIconPath(name){
-        let iconPath = ""
-        switch (name) {
-            case "Launch"   : iconPath = "cmd"; break;
-            case "Build"    : iconPath = "cmd"; break;
-            case "Download" : iconPath = "cmd"; break;
-            
-            default: break;
-        }
-        let currentIconPath = {
-            light : `${this.process.opeParam.rootPath}/images/svg/light/` + iconPath + ".svg",
-            dark  : `${this.process.opeParam.rootPath}/images/svg/dark/`  + iconPath + ".svg"
-        };
-        return currentIconPath;
-    }
-    getToolTip(name){
-        let currentToolTip = ""
-        switch (name) {
-            case "Launch"   : currentToolTip = "Launch SDK development assist function"; break;
-            case "Build"    : currentToolTip = "Build the current SDK project"; break;
-            case "Download" : currentToolTip = "Download the boot file into the device"; break;
 
-            default: break;
-        }
-        return currentToolTip;
+    getTreeItem(element) {
+        
     }
 }
-exports.softTreeDataProvider = softTreeDataProvider;
-
-class toolTreeDataProvider {
-    constructor(process){
-        this.process = process;
-    }
-    getChildren(element) {
-        // 根节点
-        return [
-            { "name" : "BOOT"   },
-            { "name" : "Clean"    },
-            { "name" : "SerialPort" }
-        ];
-    }
-    getTreeItem(element) {
-        let treeItem = new vscode.TreeItem(
-            element.name,
-            vscode.TreeItemCollapsibleState.None
-        );
-        treeItem.contextValue = 'TOOL';
-        treeItem.command  = this.getCommand(element.name);
-        treeItem.tooltip  = this.getToolTip(element.name);
-        treeItem.iconPath = this.getIconPath(element.name);
-        return treeItem;
-    }
-    getCommand(name){
-        let cuurentCommand = { 
-            title:     name, 
-            command:   ""
-        };
-        switch (name) {
-            case "BOOT"       : cuurentCommand.command = "TOOL.BOOT";   break;
-            case "Clean"      : cuurentCommand.command = "TOOL.Clean";      break;
-            case "SerialPort" : cuurentCommand.command = "TOOL.SerialPort"; break;
-            
-            default: break;
-        }
-        return cuurentCommand;
-    }
-    getIconPath(name){
-        let iconPath = ""
-        switch (name) {
-            case "BOOT"       : iconPath = "BOOT"; break;
-            case "Clean"      : iconPath = "clean"; break;
-            case "SerialPort" : iconPath = "SerialPort"; break;
-            
-            default: break;
-        }
-        let currentIconPath = {
-            light : `${this.process.opeParam.rootPath}/images/svg/light/` + iconPath + ".svg",
-            dark  : `${this.process.opeParam.rootPath}/images/svg/dark/`  + iconPath + ".svg"
-        };
-        return currentIconPath;
-    }
-    getToolTip(name){
-        let currentToolTip = ""
-        switch (name) {
-            case "BOOT"       : currentToolTip = "Launch SDK development assist function"; break;
-            case "Clean"      : currentToolTip = "Clean the current project"; break;
-            case "SerialPort" : currentToolTip = "Launch Serial monitor"; break;
-
-            default: break;
-        }
-        return currentToolTip;
-    }
-}
-exports.toolTreeDataProvider = toolTreeDataProvider;

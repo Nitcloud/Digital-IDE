@@ -68,7 +68,7 @@
                     "default": "vivado",
                     "description": "Select the vhdl linter."
                 },
-                "HDL.linting.runFilePath": {
+                "HDL.linting.runPath": {
                     "scope": "window",
                     "type": "string",
                     "default": "",
@@ -268,7 +268,7 @@
                 },
                 {
                     "id": "TOOL.hard_tree",
-                    "name": "FPGA Options"
+                    "name": "HARD Options"
                 },
                 {
                     "id": "TOOL.soft_tree",
@@ -826,7 +826,10 @@
     "scripts": {
         "vscode:prepublish": "webpack --mode production"
     },
-    "devDependencies": {},
+    "devDependencies": {
+        "glob": "^8.0.3",
+        "mocha": "^10.1.0"
+    },
     "dependencies": {
         "chokidar": "^3.5.3",
         "antlr4": "^4.8.0",

@@ -1,221 +1,210 @@
 "use strict";
 
-let vscode  = require("vscode");
-let parser  = require("HDLparser");
+class instance {
 
-function instantiateModuleInteract(indexer, workspacePath) {
-    var doc = vscode.window.activeTextEditor.document;
-    parser.utils.selectModuleFromAll(indexer.HDLparam, workspacePath).then(selectModule => {
-        if (selectModule != null) {
-            let instContent = null;
-            switch (doc.languageId) {
-                case "systemverilog":
-                case "verilog":   
-                    instContent = instantiateVlogModule(selectModule);
-                break;
-                case "vhdl":   
-                    instContent = instantiateVhdlModule(selectModule);
-                break;
-                default: break;
-            }
-            selectInsert(instContent);
+    /**
+     * @descriptionCn verilog模式下生成整个例化的内容
+     * @param {Object} module 模块信息
+     * @returns {String} 整个例化的内容
+     */
+    vlog(module) {
+        let port = this.vlogPort(module.ports);
+        let param = this.vlogParam(module.params);
+
+        let instContent = '';
+        instContent += port.wireStr;
+        instContent += module.name + ' ';
+
+        if (param !== '') {
+            instContent += `#(\n${param})\n`;
         }
-    })
-}
-exports.instantiateModuleInteract = instantiateModuleInteract;
 
-function selectInsert(content) {
-    let editor = vscode.window.activeTextEditor;
-    if (editor === undefined) {
-        return;
+        instContent += `u_${module.name}(\n`;
+        instContent += port.portStr;
+        instContent += ');\n';
+
+        return instContent;
     }
-    let selections = editor.selections;
-    editor.edit((editBuilder) => {
-        selections.forEach((selection) => {
-            editBuilder.insert(selection.active, content);
-        });
-    });
-}
-exports.selectInsert = selectInsert;
 
-function instantiateVlogModule(module) {
-    // module 2001 style
-    let initPortMax_len = 0;
-    let initPort = '';
+    /**
+     * @descriptionCn vhdl模式下生成整个例化的内容
+     * @param {Object} module 模块信息
+     * @returns {String} 整个例化的内容
+     */
+    vhdl(module) {
+        // module 2001 style
+        let port = this.vhdlPort(module.ports);
+        let param = this.vhdlParam(module.params);
 
-    for (let i = 0; i < module.ports.length; i++) {
-        if (module.ports[i].type == "output") {
-            if (module.ports[i].portWidth.length > initPortMax_len) {
-                initPortMax_len = module.ports[i].portWidth.length;
-            }
+        let instContent = `u_${module.moduleName} : ${module.moduleName}\n`;
+
+        if (param !== '') {
+            instContent += `generic map(\n${param})\n`;
         }
-    }
 
-    for (let i = 0; i < module.ports.length; i++) {
-        if (module.ports[i].type == "output") {
-            let widthElement = module.ports[i].portWidth;
-            let padding = initPortMax_len - widthElement.length + 1;
-            if (module.languageId == "vhdl") {
-                widthElement = widthElement.replace('(','[').replace(')',']');
-                widthElement = widthElement.replace(/downto/mgi,':') + ' '.repeat(padding);
-            }
-            initPort += `wire ${widthElement}\t${module.ports[i].portName};\n`;
-        }
-    }
+        instContent += `port map(\n${port});\n`;
 
-    let paramString = '';
-    if (module.params.length > 0) {
-        paramString = `#(\n${instantiateVlogParam(module.params)})\n`;
-    }
-    let portString = '';
-    portString = instantiateVlogPort(module.ports);
-
-    let instContent = initPort + "\n";
-    instContent += module.moduleName;
-    instContent += " ";
-    instContent += paramString;
-    instContent += `u_${module.moduleName}(\n`;
-    instContent += portString;
-    instContent += ');\n';
-
-    return instContent;
-}
-exports.instantiateVlogModule = instantiateVlogModule;
-
-function instantiateVhdlModule(module) {
-    // module 2001 style
-    let paramString = ``;
-    if (module.params.length > 0) {
-        paramString = `generic map(\n${instantiateVhdlParam(module.params)})\n`;
-    }
-    let portString = ``;
-    portString = `port map(\n${instantiateVhdlPort(module.ports)})`;
-
-    // let instContent = initPort + "\n";
-    let instContent = `u_${module.moduleName} : ${module.moduleName}\n`;
-    instContent += paramString;
-    instContent += portString;
-    instContent += ';\n';
-
-    return instContent;
-}
-exports.instantiateVhdlModule = instantiateVhdlModule;
-
-function instantiateVlogPort(ports) {
-    let port = '';
-    let max_len = 0;
-    for (let index = 0; index < ports.length; index++) {
-        if (ports[index].portName.length > max_len) {
-            max_len = ports[index].portName.length;
-        }
-    }
-    // .NAME(NAME)
-    port += `\t//ports\n`;
-    for (let i = 0; i < ports.length; i++) {
-        let nameElement = ports[i].portName;
-        let padding = max_len - nameElement.length + 1;
-        nameElement = nameElement + ' '.repeat(padding);
-        port += `\t.${nameElement}\t\t( ${nameElement}\t\t)`;
-        if (i != ports.length - 1) {
-            port += ',';
-        }
-        port += '\n';
+        return instContent;
     }
     
-    return port;
+    /**
+     * @descriptionCn verilog模式下对端口信息生成要例化的内容
+     * @param {Array} ports 端口信息列表
+     * @returns {Object} {
+     *      "wireStr" : wireStr, // output wire 声明
+     *      "portStr" : portStr, // 端口例化
+     *  }
+     */
+    vlogPort(ports) {
+        let nmax = this.getlmax(ports, 'name');
+        let wmax = this.getlmax(ports, 'width');
+
+        let portStr = `\t// ports\n`;
+        let wireStr = '// outports wire\n';
+        for (let i = 0; i < ports.length; i++) {
+            const port = ports[i];
+
+            if (port.type === 'output') {
+                let width = port.width;
+                let wpadding = wmax - width.length + 1;
+                width += ' '.repeat(wpadding);
+                // TODO: vhdl type
+                wireStr += `wire ${width}\t${port.name};\n`;
+            }
+
+            let name = port.name;
+            let npadding = nmax - name.length + 1;
+            name += ' '.repeat(npadding);
+            portStr += `\t.${name}\t\t( ${name}\t\t)`;
+            if (i != ports.length - 1) {
+                portStr += ',';
+            }
+            portStr += '\n';
+        }
+        
+        return {
+            "wireStr" : wireStr,
+            "portStr" : portStr,
+        };
+
+    }
+
+    /**
+     * @descriptionCn verilog模式下对参数信息生成要例化的内容
+     * @param {Array} params 参数信息列表
+     * @returns {String} 对参数信息生成要例化的内容
+     */
+    vlogParam(params) {
+        let paramStr = '';
+        let nmax = this.getlmax(params, 'name');
+        let imax = this.getlmax(params, 'init');
+
+        // .NAME  ( INIT  ),
+        for (let i = 0; i < params.length; i++) {
+            let name = params[i].paramName;
+            let init = params[i].paramInit;
+    
+            let namePadding = nmax - name.length + 1;
+            let initPadding = imax - init.length + 1;
+    
+            name +=' '.repeat(namePadding);
+            init +=' '.repeat(initPadding);
+    
+            paramStr += `\t.${name}\t\t( ${init}\t\t)`;
+            if (i !== (params.length - 1)) {
+                paramStr += ',';
+                paramStr += '\n';
+            }
+        }
+
+        return paramStr;
+    }
+
+    /**
+     * @descriptionCn vhdl模式下对端口信息生成要例化的内容
+     * @param {Array} ports 端口信息列表
+     * @returns {String} 对端口信息生成要例化的内容
+     */
+    vhdlPort(ports) {
+        let nmax = this.getlmax(ports, 'name');
+        
+        // NAME => NAME,
+        let portStr = `\n\t-- ports\n`;
+        for (let i = 0; i < ports.length; i++) {
+            const name = ports[i].name;
+            let padding = nmax - name.length + 1;
+            name += ' '.repeat(padding);
+            portStr += `\t${name} => ${name}`;
+            if (i !== (ports.length - 1)) {
+                portStr += ',';
+            }
+            portStr += '\n';
+        }
+        return portStr;
+    }
+
+    /**
+     * @descriptionCn vhdl模式下对参数信息生成要例化的内容
+     * @param {Array} params 参数信息列表
+     * @returns {String} 对参数信息生成要例化的内容
+     */
+    vhdlParam(params) {
+        let paramStr = '';
+        let nmax = this.getlmax(params, 'name');
+
+        // NAME => NAME,
+        for (let i = 0; i < params.length; i++) {
+            const name = params[i].name;
+            const init = params[i].init;
+
+            let npadding = nmax - name.length + 1;
+            name += ' '.repeat(npadding);
+    
+            paramStr += `\t${name} => ${init}`;
+            if (i !== (params.length - 1)) {
+                paramStr += ',';
+                paramStr += '\n';
+            }
+        }
+        return paramStr;
+    }
+
+    /**
+     * @descriptionCn 在arr中找到pro属性的最大字符长度
+     * @param {Array}  arr 待查找的数组
+     * @param {String} pro 指定属性
+     * @returns {Number} 该数组中的pro属性的最大字符长度
+     */
+    getlmax(arr, pro) {
+        let lmax = 0;
+        for (let i = 0; i < arr.length; i++) {
+            const len = arr[i][pro].length;
+            if (len <= lmax) {
+                continue;
+            }
+            lmax = len;
+        }
+        return lmax;
+    }
+
+    /**
+     * @descriptionCn 向光标处插入内容
+     * @param {String} content 需要插入的内容
+     * @param {Class}  editor  vscode.window.activeTextEditor
+     * @returns {Boolean} true : success | false : faild
+     */
+    selectInsert(content, editor) {
+        if (editor === undefined) {
+            return false;
+        }
+        let selections = editor.selections;
+        editor.edit((editBuilder) => {
+            selections.forEach((selection) => {
+                // position, content
+                editBuilder.insert(selection.active, content);
+            });
+        });
+        return true
+    }
 }
-
-function instantiateVlogParam(params) {
-    let param = '';
-    let nameMax_len = 0;
-    let initMax_len = 0;
-    for (let i = 0; i < params.length; i++) {
-        if (params[i].paramName.length > nameMax_len) {
-            nameMax_len = params[i].paramName.length;
-        }
-    }
-
-    for (let i = 0; i < params.length; i++) {
-        params[i].paramInit = params[i].paramInit.replace(',','');
-        if (params[i].paramInit.length > initMax_len) {
-            initMax_len = params[i].paramInit.length;
-        }
-    }
-    // .NAME  ( INIT  ),
-    for (let i = 0; i < params.length; i++) {
-        let elementName = params[i].paramName;
-        let elementInit = params[i].paramInit;
-
-        let namePadding = nameMax_len - elementName.length + 1;
-        let initPadding = initMax_len - elementInit.length + 1;
-
-        elementName = elementName + ' '.repeat(namePadding);
-        elementInit = elementInit + ' '.repeat(initPadding);
-
-        param += `\t.${elementName}\t\t( ${elementInit}\t\t)`;
-        if (i !== params.length - 1) {
-            param += ',';
-            param += '\n';
-        }
-    }
-    return param;
-}
-
-function instantiateVhdlPort(ports) {
-    let port = '';
-    let max_len = 0;
-    for (let index = 0; index < ports.length; index++) {
-        if (ports[index].portName.length > max_len) {
-            max_len = ports[index].portName.length;
-        }
-    }
-    // NAME => NAME,
-    port += `\n\t-- ports\n`;
-    for (let i = 0; i < ports.length; i++) {
-        let nameElement = ports[i].portName;
-        let padding = max_len - nameElement.length + 1;
-        nameElement = nameElement + ' '.repeat(padding);
-        port += `\t${nameElement} => ${ports[i].portName}`;
-        if (i !== ports.length - 1) {
-            port += ',';
-        }
-        port += '\n';
-    }
-    return port;
-}
-
-function instantiateVhdlParam(params) {
-    let param = '';
-    let nameMax_len = 0;
-    // let initMax_len = 0;
-    for (let i = 0; i < params.length; i++) {
-        if (params[i].paramName.length > nameMax_len) {
-            nameMax_len = params[i].paramName.length;
-        }
-    }
-
-    // for (let i = 0; i < params.length; i++) {
-    //     params[i].paramInit = params[i].paramInit.replace(',','');
-    //     if (params[i].paramInit.length > initMax_len) {
-    //         initMax_len = params[i].paramInit.length;
-    //     }
-    // }
-    // NAME => NAME,
-    for (let i = 0; i < params.length; i++) {
-        let elementName = params[i].paramName;
-        let elementInit = params[i].paramInit;
-
-        let namePadding = nameMax_len - elementName.length + 1;
-        // let initPadding = initMax_len - elementInit.length + 1;
-
-        elementName = elementName + ' '.repeat(namePadding);
-        // elementInit = elementInit + ' '.repeat(initPadding);
-
-        param += `\t${elementName} => ${elementInit}`;
-        if (i !== params.length - 1) {
-            param += ',';
-            param += '\n';
-        }
-    }
-    return param;
-}
+module.exports = instance;
