@@ -1,4 +1,5 @@
-const parser = require("./src/kernel");
+const parser = require("./util/kernel");
+
 const fs = require("fs");
 
 const vlog = new parser.vlog();
