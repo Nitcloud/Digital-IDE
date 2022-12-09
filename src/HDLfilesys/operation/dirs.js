@@ -3,7 +3,7 @@
 const fs = require("fs");
 const fspath = require("path");
 
-var dirOperation = {
+const hdlDir = {
     os  : process.platform,
     log : console.log,
 
@@ -211,4 +211,4 @@ var dirOperation = {
         return true;
     }
 }
-module.exports = dirOperation;
+module.exports = hdlDir;

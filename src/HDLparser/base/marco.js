@@ -32,12 +32,17 @@ class MarcoContext {
 
 class Marco {
     /**
-     * @param {Error[]} errors                     错误
+     * @param {Array<Error>} errors                     错误
      * @param {Map<string, MarcoContext>} defines       定义的宏
-     * @param {any[]} includes                     include的文件
-     * @param {vscode.Position[]} invalid          无效的位置
+     * @param {Array<string>} includes                     include的文件
+     * @param {Array<vscode.Position>} invalid          无效的位置
      */
     constructor(errors, defines, includes, invalid) {
+        // TODO : 修改！！！等到parser好了
+        if (includes.length > 0) {
+            includes = ['child_1.v'];
+        }
+        
         this.errors = errors;
         this.defines = defines;
         this.includes = includes;

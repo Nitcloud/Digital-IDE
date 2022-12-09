@@ -7,7 +7,6 @@
  * #FilePath     : \src\extension.js
  * #Description  : 
  */
-'use strict';
 
 async function activate(context) {
 

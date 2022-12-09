@@ -1,5 +1,9 @@
+const assert = require('assert');
 const fs = require('fs');
+const path = require('path');
+
 const parser = require('./kernel');
+const hdlPath = require('../../HDLfilesys/operation/path');
 
 const PathModuleSplit = ' @ ';
 
@@ -76,6 +80,44 @@ function readJSON(path) {
 }
 
 
+
+/**
+ * @description 递归返回一个文件夹下的所有文件路径
+ * @param {string} folder 
+ * @returns {Array<string>}
+ */
+function getAllFilesFromFolder(folder) {
+    const files = [];
+    for (const file of fs.readdirSync(folder)) {
+        const filePath = hdlPath.join(folder, file);
+        const fileStat = fs.statSync(filePath);
+        if (fileStat.isFile()) {
+            files.push(filePath);
+        } else {
+            for (const ffile of getAllFilesFromFolder(filePath)) {
+                files.push(ffile);
+            }
+        }
+    } 
+    return files;
+}
+
+
+/**
+ * @description 根据语言ID选择解析器
+ * @param {string} langID 
+ * @returns {BaseParser}
+ */
+function selectParserByLangID(langID) {
+    if (langID == 'verilog') {
+        return vlogParser;
+    } else if (langID == 'vhdl') {
+        return vhdlParser;
+    } else {
+        assert(false, 'Unknown langID ' + langID);
+    }
+}
+
 class BaseParser {
     constructor() {
         this._parser = this.makeParser();
@@ -114,13 +156,28 @@ class VhdlParser extends BaseParser {
 }
 
 
+const vhdlParser = new VhdlParser();
+const vlogParser = new VlogParser();
+
+
+/**
+ * @description 解析一个文件并返回数据结构
+ * @param {string} path
+ * @returns {object} 
+ */
+function parseFile(path) {
+
+}
+
 module.exports = {
     getSymbols,
     getSymbolsFromType,
     getSymbolsFromName,
     readJSON,
     makeModuleID,
-    VlogParser,
-    VhdlParser,
+    getAllFilesFromFolder,
+    selectParserByLangID,
+    vhdlParser,
+    vlogParser,
     parser
 }

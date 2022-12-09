@@ -3,23 +3,30 @@ const fs = require('fs');
 const assert = require('assert');
 
 const util = require('../../../src/HDLparser/util');
+const hdlFile = require('../../../src/HDLfilesys/operation/files');
+const hdlPath = require('../../../src/HDLfilesys/operation/path');
 
-suite('HdlParam Util Test Suite', () => {
-    const JsonDir = path.join(path.dirname(__dirname), 'json');
+const TEST_ROOT = hdlPath.resolve(__dirname, '../..');
+const TEST_FOLDER = hdlPath.join(TEST_ROOT, 'vlog');
+const TEST_FILE = hdlPath.join(TEST_FOLDER, 'test.v');
+const TEST_FOLDER_FILE_NUM = 12;
 
-    // test('test util.readJSON', () => {
-    //     for (const file of fs.readdirSync(JsonDir)) {
-    //         const filePath = path.join(JsonDir, file);
-    //         const hdl_param = util.readJSON(filePath);
 
-    //         assert(hdl_param.languageId, 'parsed hdlparam does not have languageId');
-    //         assert(hdl_param.marco, 'parsed hdlparam does not have marco');
-    //         assert(hdl_param.modules, 'parsed hdlparam does not have modules');
-    //     }
-    // })
+suite('HDLparser.util Test', () => {
 
     test('test util.makeModuleID', () => {
         const pathModuleString = util.makeModuleID('a/b/c', 'module');
         assert.equal(pathModuleString, 'module @ a/b/c');
-    })
+    });
+
+    test('test util.getAllFilesFromFolder', () => {
+        const files = util.getAllFilesFromFolder(TEST_FOLDER);
+        assert.equal(files.length, TEST_FOLDER_FILE_NUM);
+    });
+
+    test('test util.selectParserByLangID', () => {
+        const langID = hdlFile.getLanguageId(TEST_FILE);
+        const parser = util.selectParserByLangID(langID);
+        assert.equal(parser, util.vlogParser);
+    });
 });
