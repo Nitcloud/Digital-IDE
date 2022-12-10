@@ -422,8 +422,8 @@ class Module {
 
 
         // 搜索 “include的文件”
-        for (const includePath of this.file.marco.includes) {
-            const absIncludePath = hdlPath.rel2abs(this.getPath(), includePath);
+        for (const include of this.file.marco.includes) {
+            const absIncludePath = hdlPath.rel2abs(this.getPath(), include.path);
             const includeFile = HdlParam.findModuleFile(absIncludePath);
             if (includeFile) {
                 excludeFile.add(includeFile);

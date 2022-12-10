@@ -114,11 +114,13 @@ suite('HDLparser.parser Test', () => {
             });
         }
         
-        test('vlog.parse -> ensure macro.includes is Array<string>', () => {
+        test('vlog.parse -> ensure macro.includes is {string : range}', () => {
             const includes = result.parse_result.marco.includes;
-            for (const include of includes) {
-                const includeType = typeof(include);
-                assert.equal(includeType, 'string', 'expect includes element is string, but receive ' + includeType);
+            for (const path of Object.keys(includes)) {
+                const range = includes[path];
+                assert.equal(typeof(path), 'string', 'keys of includes must be string');
+                assert(range.start, 'value of includes must have start');
+                assert(range.end, 'value of includes must have end');
             }
         });
 

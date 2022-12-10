@@ -30,6 +30,18 @@ class MarcoContext {
 };
 
 
+class Include {
+    /**
+     * @param {string} path 
+     * @param {vscode.Range} range 
+     */
+    constructor(path, range) {
+        this.path = path;
+        this.range = range;
+    }
+};
+
+
 class Marco {
     /**
      * @param {Array<Error>} errors                     错误
@@ -37,16 +49,26 @@ class Marco {
      * @param {Array<string>} includes                     include的文件
      * @param {Array<vscode.Position>} invalid          无效的位置
      */
-    constructor(errors, defines, includes, invalid) {
-        // TODO : 修改！！！等到parser好了
-        if (includes.length > 0) {
-            includes = ['child_1.v'];
-        }
-        
+    constructor(errors, defines, includes, invalid) {      
         this.errors = errors;
         this.defines = defines;
-        this.includes = includes;
+        this.includes = this.makeIncludes(includes);
         this.invalid = invalid;
+    }
+
+    /**
+     * 
+     * @param {object} includes
+     * @returns {Array<Include>} 
+     */
+    makeIncludes(includes) {
+        const new_includes = [];
+        for (const path of Object.keys(includes)) {
+            const new_include = new Include(path, includes[path]);
+            new_includes.push(new_include);
+        }
+
+        return new_includes;
     }
 };
 
