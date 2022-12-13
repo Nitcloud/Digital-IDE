@@ -1,6 +1,26 @@
-"use strict";
+const vscode = require('vscode');
+const HDLparser = require('../../HDLparser');
+const Module = require('../../HDLparser/base/module');
 
-class instance {
+const HdlParam = HDLparser.HdlParam;
+
+class ModuleInfoItem {
+    /**
+     * @description 具体请看 vscode.QuickPickItem 接口
+     * @param {string} label 
+     * @param {string} description 
+     * @param {string} detail
+     * @param {Module.Module} mod
+     */
+    constructor(label, description, detail, mod) {
+        this.label = label;
+        this.description = description;
+        this.detail = detail;
+        this.mod = mod;
+    }
+};
+
+const SimInstance = {
 
     /**
      * @descriptionCn verilog模式下生成整个例化的内容
@@ -24,7 +44,7 @@ class instance {
         instContent += ');\n';
 
         return instContent;
-    }
+    },
 
     /**
      * @descriptionCn vhdl模式下生成整个例化的内容
@@ -45,7 +65,7 @@ class instance {
         instContent += `port map(\n${port});\n`;
 
         return instContent;
-    }
+    },
     
     /**
      * @descriptionCn verilog模式下对端口信息生成要例化的内容
@@ -87,7 +107,7 @@ class instance {
             "portStr" : portStr,
         };
 
-    }
+    },
 
     /**
      * @descriptionCn verilog模式下对参数信息生成要例化的内容
@@ -118,7 +138,7 @@ class instance {
         }
 
         return paramStr;
-    }
+    },
 
     /**
      * @descriptionCn vhdl模式下对端口信息生成要例化的内容
@@ -141,7 +161,7 @@ class instance {
             portStr += '\n';
         }
         return portStr;
-    }
+    },
 
     /**
      * @descriptionCn vhdl模式下对参数信息生成要例化的内容
@@ -167,7 +187,7 @@ class instance {
             }
         }
         return paramStr;
-    }
+    },
 
     /**
      * @descriptionCn 在arr中找到pro属性的最大字符长度
@@ -185,7 +205,7 @@ class instance {
             lmax = len;
         }
         return lmax;
-    }
+    },
 
     /**
      * @descriptionCn 向光标处插入内容
@@ -204,7 +224,47 @@ class instance {
                 editBuilder.insert(selection.active, content);
             });
         });
-        return true
+        return true;
+    },
+
+
+    
+    /**
+     * @description 调用vscode的窗体，让用户从所有的Module中选择模块（为后续的例化准备）
+     * @returns {Promise<Module.Module>}
+     */
+    async selectModuleFromAll() {
+        const option = {
+            placeHolder: 'Select a Module'
+        };
+
+        // make ModuleInfoList
+        const items = [];
+        for (const mod of HdlParam.getAllModules()) {
+            let label = mod.name;
+            let desc = 'path ' + mod.path;
+            let detail = mod.params.length + ' Param, ' + mod.ports.length + ' Port';
+            items.push(new ModuleInfoItem(label, desc, detail, mod));
+        }
+
+        const selectModuleInfo = await vscode.window.showQuickPick(items, option);
+        if (selectModuleInfo) {
+            return selectModuleInfo.mod;
+        } else {
+            return null;
+        }
+    },
+
+    instantiation() {
+        this.selectModuleFromAll()
+        .then(mod => {
+            if (mod) {
+                vscode.window.showInformationMessage(`get ${mod.name}\n${mod.file}`);
+            }
+        })
+        .catch(reason => {
+            console.log('error in SimInstance.instantiation: ' + reason);
+        })
     }
 }
-module.exports = instance;
+module.exports = SimInstance;

@@ -1,4 +1,4 @@
-var vrfs = {
+const vrfs = {
     module: null,
 
     /**

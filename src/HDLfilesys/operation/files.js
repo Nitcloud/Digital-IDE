@@ -4,10 +4,10 @@
  * 输入格式：斜杠路径
  */
 const fs = require("fs");
-const paths = require("./path");
+const pathfs = require("./path");
 
 // const 
-var fileOperation = {
+const hdlFile = {
     log : console.log,
 
     /**
@@ -87,7 +87,7 @@ var fileOperation = {
      */
     writeFile : function (path, content) {
         try {
-            let parent = paths.dirname(path);
+            let parent = pathfs.dirname(path);
             fs.mkdirSync(parent, {recursive:true});
             fs.writeFileSync(path, content);
             return true;
@@ -171,7 +171,7 @@ var fileOperation = {
         }
 
         try {
-            let parent = paths.dirname(dest);
+            let parent = pathfs.dirname(dest);
             fs.mkdirSync(parent, {recursive:true});
             if (!fs.existsSync(dest)) {
                 fs.copyFileSync(src,dest);
@@ -263,7 +263,7 @@ var fileOperation = {
     /**
      * @state finish-test
      * @descriptionCn 从指定文件夹下找到指定后缀名的文件，已做合法性检查
-     * @param {String | Array} paths 文件夹的绝对地址 ('/'分隔)，允许数组输入
+     * @param {String | Array<String>} paths 文件夹的绝对地址 ('/'分隔)，允许数组输入
      * @param {Object} options {
      *     exts : [] | "" // 可以是数组(多个后缀)，也可以是字符串(单个后缀)
      *     type : "once", // once:只一级文件搜索 | all:所有文件搜索
@@ -271,7 +271,7 @@ var fileOperation = {
      *     ignores : []   // 要忽视的文件所在的文件夹(绝对路径)
      * };
      * @param {Function} callback 对检测出的文件进行回调操作，可省缺
-     * @returns {Array} 返回文件数组(绝对路径)且去除重复的元素
+     * @returns {Array<string>} 返回文件数组(绝对路径)且去除重复的元素
      */
     pickFileFromExt : function (paths, options, callback) {
         if (!options) {
@@ -282,32 +282,37 @@ var fileOperation = {
         if (!options.exts) {
             return [];
         }
-
-        var _this = this;
-        var list = [];
+        
+        let list = [];
+        const resultPath = new Set();
+        
         if (options.list) {
               list = options.list;  
         }
 
-        if (Object.prototype.toString.call(paths) == '[object Array]') {
-            for (let i = 0; i < paths.length; i++) {
-                const path = paths[i];
-                list.push(...[once(path)]);
+        if (paths instanceof Array) {
+            for (const path of paths) {
+                for (const ppath of once(path)) {
+                    resultPath.add(ppath);
+                }
             }
-            list = this.removeDuplicates(list);
-            return list;
         }
-        else if (Object.prototype.toString.call(options.exts) == '[object String]') {
-            return list.push(...[once(paths)]);
+        else if (typeof(paths) == 'string') {
+            for (const ppath of once(paths)) {
+                resultPath.add(ppath);
+            }
         }
-        else {
-            return [];
+        
+        // 转化为Array再返回
+        for (const path of resultPath) {
+            list.push(path);
         }
+        return list;
 
         function once(path) {
-            if (Object.prototype.toString.call(options.exts) == '[object Array]') {
-                return _this.filter(path, options, (file)=> {
-                    if(options.exts.includes(paths.extname(file))) {
+            if (path instanceof Array) {
+                return hdlFile.filter(path, options, (file) => {
+                    if(options.exts.includes(pathfs.extname(file))) {
                         if (callback) {
                             callback(file);
                         }
@@ -315,9 +320,10 @@ var fileOperation = {
                     }
                 });
             }
-            else if (Object.prototype.toString.call(options.exts) == '[object String]') {
-                return _this.filter(path, options, (file)=> {
-                    if(options.exts === paths.extname(file)) {
+
+            else if (typeof(path) == 'string') {
+                return hdlFile.filter(path, options, (file) => {
+                    if(options.exts.includes(pathfs.extname(file))) {
                         if (callback) {
                             callback(file);
                         }
@@ -349,8 +355,8 @@ var fileOperation = {
             type : "all",
             ignores : ignores ? ignores : []  
         }
-        
-        HDLFiles.push(...(this.pickFileFromExt(path, options)));
+
+        HDLFiles.push(...this.pickFileFromExt(path, options));
 
         return HDLFiles;
     },
@@ -365,7 +371,7 @@ var fileOperation = {
         let vhdlExtensions = [".vhd",".vhdl",".vho",".vht"];
         let vlogExtensions = [".v",".V",".vh",".vl"];
         let svlogExtensions = [".sv",".SV"];
-        let value = paths.extname(path);
+        let value = pathfs.extname(path);
         if (vlogExtensions.includes(value)) {
             return "verilog";
         }
@@ -610,4 +616,4 @@ var fileOperation = {
         return res;
     }
 }
-module.exports = fileOperation;
+module.exports = hdlFile;
