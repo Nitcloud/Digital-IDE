@@ -1,6 +1,6 @@
 // "use strict";
 
-// const vscode = require("vscode");
+const vscode = require("vscode");
 
 // const soc = require("./soc/soc");
 // const tree = require("./tree/tree");

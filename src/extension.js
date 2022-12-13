@@ -10,14 +10,16 @@
 
 const HDLtool = require('./HDLtool');
 const hdlPath = require('./HDLfilesys/operation/path');
+const prjManage = require('./HDLtool/prj/prjManage');
 const opeParam = require('./param');
 
 
 function launch() {
     // TODO : 构建好完整的配置加载后去除下面两行
-    opeParam.prjInfo.ARCH.Hardware.sim = '.';
-    opeParam.prjInfo.ARCH.Hardware.src = '.';
-
+    const manage = new prjManage.PrjManage();
+    opeParam.rootPath = hdlPath.dirname(__dirname);
+    manage.getOpeParam(opeParam);
+    console.log(opeParam);
     console.log(hdlPath.resolve('.'));
 }
 

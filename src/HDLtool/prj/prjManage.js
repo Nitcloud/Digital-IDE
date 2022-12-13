@@ -79,7 +79,7 @@ class PrjManage {
      * @descriptionCn 生成prpoerty.json文件
      * @returns true : success | false : failed
      */
-     generatePropertyFile(opeParam) {
+    generatePropertyFile(opeParam) {
         if (fs.files.isExist(opeParam.propertyPath)) {
             this.warn("property file already exists !!!");
             return false;
@@ -120,7 +120,7 @@ class PrjManage {
         opeParam.prjInitParam = `${opeParam.rootPath}/prjInitParam.json`;
         
         // 初始化工程参数与信息
-        this.getPropertyInfo();
+        this.getPropertyInfo(opeParam);
 
         return true;
     }
@@ -132,49 +132,47 @@ class PrjManage {
      */
     getPropertyInfo(opeParam) {
         // 初始化基本参数
-        opeParam.prjInfo = null;
         opeParam.propertyPath = `${opeParam.workspacePath}/.vscode/property.json`;
 
         if (!fs.files.isExist(opeParam.propertyPath)) {
-            return false;
+            opeParam.prjInfo.ARCH = {
+                "PRJ_Path": opeParam.workspacePath,
+                "Hardware" : {
+                    "src"  : opeParam.workspacePath, 
+                    "sim"  : opeParam.workspacePath,
+                    "data" : opeParam.workspacePath
+                },
+                "Software" : {
+                    "src"  : opeParam.workspacePath,
+                    "data" : opeParam.workspacePath
+                }
+            }
+            return;
         }
 
         // 拉取工程的配置参数
         opeParam.prjInfo = fs.files.pullJsonInfo(opeParam.propertyPath);
-
-        // 获取用户自定义的工程结构
-        if (files.isHasValue(opeParam.prjInfo, "PRJ_STRUCTURE", "customer")) {
-            for (const key in opeParam.prjStructure) {
-                let element = opeParam.prjStructure[key];
-                element = fs.paths.replace('${workspace}', element);
-                // 并对用户自定义的路径进行检查
-                if (fs.dirs.isillegal(element)) {
-                    this.err(`${element} is illegal(dont exist or not dir)`)
-                    return false
+        if (!fs.files.isHasAttr(opeParam.prjInfo, "ARCH")) {
+            let hardwarePath = `${opeParam.workspacePath}/user`;
+            if (fs.files.isHasAttr(opeParam.prjInfo, "SOC.core") && 
+                opeParam.prjInfo.SOC.core != 'none') {
+                hardwarePath += '/Hardware';
+            }
+            opeParam.prjInfo.ARCH = {
+                "PRJ_Path": `${opeParam.workspacePath}/prj`,
+                "Hardware" : {
+                    "src"  : `${hardwarePath}/src`, 
+                    "sim"  : `${hardwarePath}/sim`,
+                    "data" : `${hardwarePath}/data`
+                },
+                "Software" : {
+                    "src"  : `${opeParam.workspacePath}/user/Software/src`,
+                    "data" : `${opeParam.workspacePath}/user/Software/src`
                 }
             }
-            return true;
         }
 
-        // 根据片上系统的类型获取标准工程结构
-        opeParam.prjStructure.prjPath = `${opeParam.workspacePath}/prj`;
-
-        // 先默认无soc
-        let srcPath = `${opeParam.workspacePath}/user`;
-        if(fs.files.isHasAttr(opeParam.prjInfo, "SOC_MODE.soc")) {
-            if (opeParam.prjInfo.SOC_MODE.soc !== "none") {
-                srcPath = `${opeParam.workspacePath}/user/Hardware`;
-                opeParam.prjStructure.SoftwareSrc  = `${opeParam.workspacePath}/user/Software/src`;
-                opeParam.prjStructure.SoftwareData = `${opeParam.workspacePath}/user/Software/data`;
-            }
-        }
-
-        // 如果不存在或者为none的时候就是无soc的情况
-        opeParam.prjStructure.HardwareSrc  = `${srcPath}/src`;
-        opeParam.prjStructure.HardwareSim  = `${srcPath}/sim`;
-        opeParam.prjStructure.HardwareData = `${srcPath}/data`;
-
-        return true;
+        return;
     }
 
     /**
@@ -324,11 +322,78 @@ class PrjManage {
 exports.PrjManage = PrjManage;
 
 /**
+ * @state finish-untest
+ * @descriptionCn 工程管理基础类
+ */
+class baseManage {
+    // constructor() {
+        // vscode.window.onDidCloseTerminal((terminal) => {
+        //     if (terminal.name == "HardWare") {
+        //         _this.process.terminal = null;
+        //         let prjInfo = _this.process.opeParam.prjInfo;
+        //         if (!filesys.files.isHasAttr(prjInfo, "TOOL_CHAIN")) {
+        //             return null;
+        //         }
+        //         switch (prjInfo.TOOL_CHAIN) {
+        //             case "xilinx":
+        //                 _this.xilinxOpe.move_bd_ip();
+        //             break;
+                
+        //             default: break;
+        //         }
+        //     }
+        // });
+
+        // vscode.window.registerTerminalLinkProvider({
+        //     provideTerminalLinks: (context, token)=> {
+        //         if (context.line.indexOf("Exiting Vivado") != -1) {
+        //             vscode.window.showInformationMessage(context.line);
+        //         }
+        //     },
+        //     handleTerminalLink: (link)=> {
+        //       vscode.window.showInformationMessage(`Link activated (data=${link.data})`);
+        //     }
+        // });
+    // }
+    /**
+     * @descriptionCn 创建终端，并返回对应的属性
+     * @param {String} name 终端名
+     * @returns 终端属性
+     */
+    createTerminal(name) {
+        const terminal = this.getTerminal(name);
+        if (terminal) {
+            return terminal;
+        }
+
+        return vscode.window.createTerminal({ 
+            name: 'name' 
+        });
+    }
+
+    /**
+     * @descriptionCn 获取终端对应的属性
+     * @param {String} name 终端名
+     * @returns 终端属性
+     */
+    getTerminal(name) {
+        for (let i = 0; i < vscode.window.terminals.length; i++) {
+            const terminal = vscode.window.terminals[i];
+            if (terminal.name == name) {
+                return terminal;
+            }
+        }
+        return null;
+    }
+}
+
+/**
  * @descriptionCn PL端工程管理类
  * @note 一次实例，一直使用
  */
 class plMarage extends baseManage {
     constructor() {
+        super();
         this.set  = vscode.workspace.getConfiguration;
         this.config = {
             "tool" : 'default',
@@ -375,7 +440,7 @@ class plMarage extends baseManage {
 
     launch() {
         this.getConfig();
-        this.config["terminal"] = this.creatTerminal("Hardware");
+        this.config["terminal"] = this.createTerminal("Hardware");
         this.config.ope.launch(this.config);
     }
 
@@ -470,6 +535,7 @@ class plMarage extends baseManage {
  */
 class psMarage extends baseManage {
     constructor() {
+        super();
         this.set  = vscode.workspace.getConfiguration;
         this.config = {
             "tool" : 'default',
@@ -509,83 +575,18 @@ class psMarage extends baseManage {
     }
 
     launch() {
-        this.config.terminal = this.creatTerminal('Software');
+        this.config.terminal = this.createTerminal('Software');
         this.config.ope.launch(this.config);
     }
 
     build() {
-        this.config.terminal = this.creatTerminal('Software');
+        this.config.terminal = this.createTerminal('Software');
         this.config.ope.build(this.config);
     }
 
     program() {
-        this.config.terminal = this.creatTerminal('Software');
+        this.config.terminal = this.createTerminal('Software');
         this.config.ope.program(this.config);
     }
 }
 
-/**
- * @state finish-untest
- * @descriptionCn 工程管理基础类
- */
-class baseManage {
-    constructor() {
-        // vscode.window.onDidCloseTerminal((terminal) => {
-        //     if (terminal.name == "HardWare") {
-        //         _this.process.terminal = null;
-        //         let prjInfo = _this.process.opeParam.prjInfo;
-        //         if (!filesys.files.isHasAttr(prjInfo, "TOOL_CHAIN")) {
-        //             return null;
-        //         }
-        //         switch (prjInfo.TOOL_CHAIN) {
-        //             case "xilinx":
-        //                 _this.xilinxOpe.move_bd_ip();
-        //             break;
-                
-        //             default: break;
-        //         }
-        //     }
-        // });
-
-        // vscode.window.registerTerminalLinkProvider({
-        //     provideTerminalLinks: (context, token)=> {
-        //         if (context.line.indexOf("Exiting Vivado") != -1) {
-        //             vscode.window.showInformationMessage(context.line);
-        //         }
-        //     },
-        //     handleTerminalLink: (link)=> {
-        //       vscode.window.showInformationMessage(`Link activated (data=${link.data})`);
-        //     }
-        // });
-    }
-    /**
-     * @descriptionCn 创建终端，并返回对应的属性
-     * @param {String} name 终端名
-     * @returns 终端属性
-     */
-    creatTerminal(name) {
-        const terminal = this.getTerminal(name);
-        if (terminal) {
-            return terminal;
-        }
-
-        return vscode.window.createTerminal({ 
-            name: 'name' 
-        });
-    }
-
-    /**
-     * @descriptionCn 获取终端对应的属性
-     * @param {String} name 终端名
-     * @returns 终端属性
-     */
-    getTerminal(name) {
-        for (let i = 0; i < vscode.window.terminals.length; i++) {
-            const terminal = vscode.window.terminals[i];
-            if (terminal.name == name) {
-                return terminal;
-            }
-        }
-        return null;
-    }
-}
