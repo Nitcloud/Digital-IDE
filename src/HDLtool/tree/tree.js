@@ -166,7 +166,7 @@ class FileSystemProvider {
                 topHDLparam.push(element);
             }
         }
-    
+
         // 从所有 topPathType 下的HDL文件中找到其中的顶层文件
         topElementList = parser.utils.getTopElement(topHDLparam, type);
         

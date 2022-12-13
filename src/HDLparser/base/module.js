@@ -3,8 +3,7 @@ const vscode = require('vscode');
 const fs = require('fs');
 const path = require('path');
 
-const constant = require('./constant');
-const marco = require('./marco');
+const common = require('./common');
 const util = require('../util');
 const opeParam = require('../../param');
 const hdlFile = require('../../../src/HDLfilesys/operation/files');
@@ -228,7 +227,7 @@ const HdlParam = {
 class ModPort {
     /**
      * @param {string} name                     port名
-     * @param {constant.PortType} type          port的类型，必须是PortType类型的枚举量
+     * @param {common.PortType} type          port的类型，必须是PortType类型的枚举量
      * @param {string} width                    位宽，形如 "[3:0]" 的字符串
      * @param {vscode.Range} range              端口定义的开始和结束
      */
@@ -244,7 +243,7 @@ class ModPort {
 class ModParam {
     /**
      * @param {string} name                       param名
-     * @param {constant.ParamType} type           param的类型
+     * @param {common.ParamType} type           param的类型
      * @param {string} init                       初始化参数
      * @param {vscode.Range} range             端口定义的开始和结束
      */
@@ -449,7 +448,7 @@ class ModuleFile {
     /**
      * @param {string} path 
      * @param {string} languageId 
-     * @param {marco.Marco} marco 
+     * @param {common.Marco} marco 
      * @param {Map<string, Module>} nameToModule 
      */
     constructor(path, languageId, marco, modules) {
@@ -478,13 +477,13 @@ class ModuleFile {
     /**
      * transform wasm format object to real marco object
      * @param {any} 
-     * @returns {marco.Marco}
+     * @returns {common.Marco}
      */
     makeMarco(mar) {
-        if (mar instanceof marco.Marco) {
+        if (mar instanceof common.Marco) {
             return mar;
         } else {
-            let real_marco = new marco.Marco(null, 
+            let real_marco = new common.Marco(null, 
                                              mar.defines, 
                                              mar.includes, 
                                              mar.invalid);

@@ -8,9 +8,24 @@
  * #Description  : 
  */
 
-async function activate(context) {
+const HDLtool = require('./HDLtool');
+const hdlPath = require('./HDLfilesys/operation/path');
+const opeParam = require('./param');
 
+
+function launch() {
+    // TODO : 构建好完整的配置加载后去除下面两行
+    opeParam.prjInfo.ARCH.Hardware.sim = '.';
+    opeParam.prjInfo.ARCH.Hardware.src = '.';
+
+    console.log(hdlPath.resolve('.'));
 }
+
+async function activate(context) {
+    launch();
+    HDLtool.registerSimServer(context);
+}
+
 exports.activate = activate;
 
 

@@ -1,10 +1,44 @@
-const vscode = require('vscode');
+class Position {
+    /**
+     * @param {number} line 目标的行数
+     * @param {number} character 目标的列数
+     */
+    constructor(line, character) {
+        this.line = line;
+        this.character = character;
+    }
+};
+
+
+class Range {
+    /**
+     * @param {Position} start 目标起始的位置
+     * @param {Position} end 目标结束的位置
+     */
+    constructor(start, end) {
+        this.start = start;
+        this.end = end;
+    }
+};
+
+class PortType {
+    static INOUT = 'INOUT'
+    static OUTPUT = 'OUTPUT'
+    static INOUT = 'INOUT'
+};
+
+
+class ParamType {
+    static LOCALPARAM = 'LOCALPARAM'
+    static PARAMETER = 'PARAMETER'
+};
+
 
 class Error {
     /**
      * 
      * @param {number} severity             警告等级，一个三个级别，0，1，2
-     * @param {vscode.Range} range          错误代码所在位置 position
+     * @param {Range} range          错误代码所在位置 position
      * @param {string} message              错误信息 
      * @param {string} source               诊断器的名字
      */
@@ -19,7 +53,6 @@ class Error {
 
 class MarcoContext {
     /**
-     * 
      * @param {any} value                   被定义的宏值
      * @param {vscode.Position} position    宏的位置
      */
@@ -73,7 +106,9 @@ class Marco {
 };
 
 module.exports = {
+    PortType,
+    ParamType,
     Error,
     MarcoContext,
     Marco
-};
+}

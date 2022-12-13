@@ -1,5 +1,3 @@
-"use strict";
-
 const fspath = require("path");
 
 const hdlPath = {
