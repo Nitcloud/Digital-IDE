@@ -63,7 +63,7 @@ class PrjManage {
 
     /**
      * @state finish-test
-     * @descriptionCn 重写prpoerty.json文件
+     * @descriptionCn 重写默认的prpoerty.json文件
      */
     overwrite(opeParam) {
         const options = {
@@ -179,75 +179,8 @@ class PrjManage {
      * @descriptionCn 根据工程配置信息刷新工程文件结构
      * @returns null 用于退出无工程配置信息时以及用户自定义工程结构时的情况
      */
-    async refreshPrjFolder(opeParam) {
-        // 无工程配置文件则直接退出
-        if (!opeParam.prjInfo) {
-            return null;
-        }
-
-        // 如果是用户配置文件结构？
-        if (fs.files.isHasValue(opeParam.prjInfo, "PRJ_STRUCTURE", "customer")) {
-            return null;
-        }
-
-        // 先直接创建工程文件夹
-        fs.dirs.mkdir(`${opeParam.workspacePath}/prj`);
-
-        // 再对源文件结构进行创建
-        if (!fs.files.isHasAttr(opeParam.prjInfo, "SOC_MODE.soc")) {
-            return null;
-        }
+    async refreshPrjFolder(arch) {
         
-        // 初试化文件结构的路径
-        let userPath = `${opeParam.workspacePath}/user`;
-        let softwarePath = `${opeParam.workspacePath}/user/Software`;
-        let hardwarePath = `${opeParam.workspacePath}/user/Hardware`;
-
-        // 如果不是在soc模式下开发
-        if (opeParam.prjInfo.SOC_MODE.soc == "none") {
-            // 如果存在 software path 则将整个文件夹删除
-            if (fs.files.isExist(softwarePath)) {
-                if (this.setting.get("PRJ.file.structure.notice")) {
-                    // 删除时进行提醒，yes : 删除，no : 保留
-                    let select = await this.warn("Software will be deleted.", 'Yes', 'No');
-                    if (select == "Yes") {
-                        fs.dirs.rmdir(softwarePath);
-                    }
-                } else {
-                    fs.dirs.rmdir(softwarePath);
-                }
-            }
-
-            // 如果存在 software path 则对该文件夹下一级的所有子目录进行遍历
-            // 遍历之后将每个子目录全部移动到 user path 文件夹下
-            // 最后再将 hardware path 父级文件夹进行删除
-            if (fs.files.isExist(hardwarePath)) {
-                let elements = fs.readdirSync(hardwarePath);
-                for (let i = 0; i < elements.length; i++) {
-                    const element = elements[i];
-                    fs.dirs.mvdir(`${hardwarePath}/${element}`, userPath);
-                }
-                fs.dirs.rmdir(hardwarePath);
-                return null;
-            } 
-            
-            // 如果 software path 和 hardware path 都不存在
-            // 则直接在 user path 文件夹下构建 {src & sim & data}这三个子项 
-            fs.dirs.mkdir(`${userPath}/src`);
-            fs.dirs.mkdir(`${userPath}/sim`);
-            fs.dirs.mkdir(`${userPath}/data`);
-            return null;
-        }
-
-        // 如果是soc模式下开发
-        // 首先构建 software path 文件夹下的 {src & data} 等子项
-        dirs.mkdir(`${softwarePath}/data`);
-        dirs.mkdir(`${softwarePath}/src`);
-
-        // 在将原 user path 文件夹下的 {src & sim & data} 子项移动到 hardware path 
-        dirs.mvdir(`${userPath}/src`, `${hardwarePath}/src`);
-        dirs.mvdir(`${userPath}/sim`, `${hardwarePath}/sim`);
-        dirs.mvdir(`${userPath}/data`, `${hardwarePath}/data`);
     }
 
     /**
@@ -288,35 +221,6 @@ class PrjManage {
         // 获取src下的全部HDL文件
         let srcPath = opeParam.prjStructure.HardwareSrc;
         this.getHDLFiles(srcPath, HDLFileList, ignores);
-    }
-
-    addFilesInPrj(filePaths) {
-        if (!this.terminal) {
-            return null;
-        }
-        if (files.isHasAttr(opeParam.prjInfo, "TOOL_CHAIN")) {
-            if (opeParam.prjInfo.TOOL_CHAIN == "xilinx") {
-                this.processFileInPrj(filePaths, "add_file");
-            }				
-        }
-    }
-
-    delFilesInPrj(filePaths) {
-        if (!this.terminal) {
-            return null;
-        }
-        if (!files.isHasAttr(opeParam.prjInfo, "TOOL_CHAIN")) {
-            if (opeParam.prjInfo.TOOL_CHAIN == "xilinx") {
-                this.processFileInPrj(filePaths, "remove_files");
-            }				
-        }
-    }
-
-    processFileInPrj(filePaths, command) {
-        for (let i = 0; i < filePaths.length; i++) {
-            const libFileElement = filePaths[i];
-            this.terminal.sendText(`${command} ${libFileElement}`);
-        }
     }
 }
 exports.PrjManage = PrjManage;

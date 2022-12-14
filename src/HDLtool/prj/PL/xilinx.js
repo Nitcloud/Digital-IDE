@@ -6,7 +6,8 @@ const child  = require("child_process");
 
 var opeParam = require("../../../param");
 /**
- * 生命周期 
+ * @descriptionCn xilinx在PL端下的操作
+ * @state unfinish-untest
  */
 class xilinxOperation {
     constructor() {
@@ -30,8 +31,9 @@ class xilinxOperation {
         this.xip_repo = opeParam.prjInfo.IP_REPO;
         this.xip_path = `${opeParam.rootPath}/IP_repo`;
         this.xbd_path = `${opeParam.rootPath}/lib/xilinx/bd`;
+        this.xilinxPath = `${opeParam.rootPath}/resources/script/xilinx`;
         
-        this.prjPath = opeParam.prjInfo.ARCH.prjPath;
+        this.prjPath = opeParam.prjInfo.ARCH.PRJ_Path;
         this.srcPath = opeParam.prjInfo.ARCH.Hardware.src;
         this.simPath = opeParam.prjInfo.ARCH.Hardware.sim;
         this.datPath = opeParam.prjInfo.ARCH.Hardware.data;
@@ -106,7 +108,7 @@ class xilinxOperation {
         }
         let scriptPath = this.refresh();
         script += `source ${scriptPath} -notrace\n`;
-        scriptPath = `${this.rootPath}/resources/script/xilinx/launch.tcl`;
+        scriptPath = `${this.xilinxPath}/launch.tcl`;
         script += `file delete ${scriptPath} -force\n`;
         fs.files.writeFile(scriptPath, script);
         
@@ -243,7 +245,7 @@ class xilinxOperation {
             const content = scripts[i];
             script += content + '\n';
         }
-        let scriptPath = `${this.rootPath}/resources/script/xilinx/refresh.tcl`;
+        let scriptPath = `${this.xilinxPath}/refresh.tcl`;
         script += `file delete ${scriptPath} -force\n`;
         fs.files.writeFile(scriptPath, script);
         return scriptPath;
@@ -254,7 +256,7 @@ class xilinxOperation {
      * @returns 
      */
     simulate() {
-        const scriptPath = `${this.rootPath}/resources/script/xilinx/simulate.tcl`;
+        const scriptPath = `${this.xilinxPath}/simulate.tcl`;
         const script = `
         if {[current_sim] != ""} {
             relaunch_sim -quiet
@@ -344,7 +346,7 @@ class xilinxOperation {
         let scriptPath = this.generateBit();
         script += `source ${scriptPath} -notrace\n`;
 
-        scriptPath = `${this.rootPath}/resources/script/xilinx/build.tcl`;
+        scriptPath = `${this.xilinxPath}/build.tcl`;
         script += `file delete ${scriptPath} -force\n`;
         fs.files.writeFile(scriptPath, script);
         return scriptPath;
@@ -376,7 +378,7 @@ class xilinxOperation {
             const content = scripts[i];
             script += content + '\n';
         }
-        let scriptPath = `${this.rootPath}/resources/script/xilinx/bit.tcl`;
+        let scriptPath = `${this.xilinxPath}/bit.tcl`;
         script += `file delete ${scriptPath} -force\n`;
         fs.files.writeFile(scriptPath, script);
         return scriptPath;
@@ -387,7 +389,7 @@ class xilinxOperation {
      * @returns 
      */
     program() {
-        let scriptPath = `${this.rootPath}/resources/script/xilinx/program.tcl`;
+        let scriptPath = `${this.xilinxPath}/program.tcl`;
         let script = `
         open_hw -quiet
         connect_hw_server -quiet
@@ -473,6 +475,35 @@ class xilinxOperation {
         if (log != '') {
             this.outputCH.show(true);
             this.outputCH.appendLine(log);
+        }
+    }
+
+    addFilesInPrj(filePaths) {
+        if (!this.terminal) {
+            return null;
+        }
+        if (files.isHasAttr(opeParam.prjInfo, "TOOL_CHAIN")) {
+            if (opeParam.prjInfo.TOOL_CHAIN == "xilinx") {
+                this.processFileInPrj(filePaths, "add_file");
+            }				
+        }
+    }
+
+    delFilesInPrj(filePaths) {
+        if (!this.terminal) {
+            return null;
+        }
+        if (!files.isHasAttr(opeParam.prjInfo, "TOOL_CHAIN")) {
+            if (opeParam.prjInfo.TOOL_CHAIN == "xilinx") {
+                this.processFileInPrj(filePaths, "remove_files");
+            }				
+        }
+    }
+
+    processFileInPrj(filePaths, command) {
+        for (let i = 0; i < filePaths.length; i++) {
+            const libFileElement = filePaths[i];
+            this.terminal.sendText(`${command} ${libFileElement}`);
         }
     }
 }
@@ -588,7 +619,7 @@ class xilinxTool {
      */
     clean() {
         this.move_bd_ip();
-        const prjPath = opeParam.prjInfo.ARCH.prjPath;
+        const prjPath = opeParam.prjInfo.ARCH.PRJ_Path;
         const wkSpace = opeParam.workspacePath;
 
         fs.dirs.rmdir(prjPath); 

@@ -36,7 +36,7 @@ class libManage {
 
         this.srcPath = opeParam.prjInfo.ARCH.Hardware.src;
         this.simPath = opeParam.prjInfo.ARCH.Hardware.sim;
-        this.prjPath = opeParam.prjInfo.ARCH.prjPath;
+        this.prjPath = opeParam.prjInfo.ARCH.PRJ_Path;
 
         this.localLibPath  = `${this.srcPath}/lib`;
         this.SourceLibPath = `${opeParam.rootPath}/lib`;

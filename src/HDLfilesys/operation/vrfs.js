@@ -1,3 +1,6 @@
+const pathfs = require('./path');
+const files = require('./files');
+
 const vrfs = {
     module: null,
 
@@ -122,7 +125,7 @@ const vrfs = {
         if (this.module.FS.findObject(`/${path}`) != null) {
             return true;
         } else {
-            let dirname = fspath.dirname(path);
+            let dirname = pathfs.dirname(path);
             if (dirname == path) {
                 this.module.FS.mkdir(`/${path}`);
                 return true;
@@ -146,7 +149,7 @@ const vrfs = {
             files = this.module.FS.readdir(`/${path}`);
             for (let index = 2; index < files.length; index++) {
                 const element = files[index];
-                let curPath = fspath.join(`/${path}`, element).replace(/\\/g, "\/");
+                let curPath = pathfs.join(`/${path}`, element).replace(/\\/g, "\/");
                 let value = this.module.FS.isDir(this.module.FS.stat(curPath).mode);
                 if (value) {
                     this.rmdir(curPath);
@@ -175,8 +178,8 @@ const vrfs = {
      * 可越级创建，会自动生成父级文件夹
      */
     writeFileFormPath : function (src, des) {
-        let desDir = fspath.dirname(des);
-        let content = fs.readFileSync(src, "utf-8");
+        let desDir = pathfs.dirname(des);
+        let content = files.readFile(src);
         if (this.module.FS.findObject(`/${desDir}`) != null) {
             this.module.FS.writeFile(`/${des}`, content, { encoding: 'utf8' });
         } else {
@@ -193,7 +196,7 @@ const vrfs = {
      * 可越级创建，会自动生成父级文件夹
      */
     writeFileFormText : function (text, path) {
-        let pathDir = fspath.dirname(path);
+        let pathDir = pathfs.dirname(path);
         if (this.module.FS.findObject(`/${pathDir}`) != null) {
             this.module.FS.writeFile(`/${path}`, text, { encoding: 'utf8' });
         } else {
@@ -211,7 +214,7 @@ const vrfs = {
     readFileToPath : function (src, des) {
         if (this.module.FS.findObject(`/${src}`) != null) {
             let content = this.module.FS.readFile(`/${src}`, { encoding: 'utf8' });
-            fs.writeFileSync(des, content, "utf-8");
+            files.writeFile(des, content);
         } else {
             console.log(`ERROR: The ${src} is not at this virtual system.`);
         }
