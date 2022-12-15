@@ -114,7 +114,8 @@ class PrjManage {
         opeParam.os = process.platform;
 
         // 获取当前根路径
-        opeParam.rootPath = opeParam.rootPath.replace(/\\/g, "\/");
+        let rootPath = fs.paths.resolve(__dirname, '..', '..', '..');
+        opeParam.rootPath = rootPath.replace(/\\/g, "\/");
 
         // 获取初始配置文件的路径
         opeParam.prjInitParam = `${opeParam.rootPath}/prjInitParam.json`;

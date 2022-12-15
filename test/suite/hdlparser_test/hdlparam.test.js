@@ -32,15 +32,13 @@ const MODULE_NUM = 4;
 const HdlParam = base.HdlParam;
 
 // 手动给配置赋值
-opeParam.prjInfo.ARCH.Hardware.sim = '';
-opeParam.prjInfo.ARCH.Hardware.src = TEST_VLOG_FOLDER;
+opeParam.workspacePath = TEST_VLOG_FOLDER;
 
 suite('HDLparser HdlParam Test Suite', () => {
 
     test('test HdlParam HdlParam.Initialize', () => {
         HdlParam.Initialize();
     });
-
 
     test('test HdlParam.getAllModules', () => {
         const allModules = HdlParam.getAllModules();

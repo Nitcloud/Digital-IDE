@@ -32,6 +32,9 @@ suite('HDLparser.parser Test', () => {
             result.parse_result = HdlParser.vhdlParser.parse(code);
         });
 
+        test('vhdl.parse -> languageId', () => {
+            assert.equal(result.parse_result.languageId, 'vhdl');
+        });
     
         for (const property of NECE_PROPERTY) {
             test('vhdl.parse -> ensure parse result has ' + '"' + property + '"', () => {
@@ -96,6 +99,10 @@ suite('HDLparser.parser Test', () => {
 
         test('vlog.parse -> Simple Run', () => {
             result.parse_result = HdlParser.vlogParser.parse(code);
+        });
+
+        test('vlog.parse -> languageId', () => {
+            assert.equal(result.parse_result.languageId, 'verilog');
         });
 
         for (const property of NECE_PROPERTY) {

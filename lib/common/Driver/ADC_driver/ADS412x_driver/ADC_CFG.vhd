@@ -23,8 +23,8 @@ entity ADC_CFG is
     );
 end ADC_CFG;
 
-architecture Behavioral of ADC_CFG is
-    
+architecture Behavioral of ADC_CFG iimage.pngsimage.png
+    image.png
     component CFG_INT
     Port ( 
         CLK                             : in STD_LOGIC;--100mhz

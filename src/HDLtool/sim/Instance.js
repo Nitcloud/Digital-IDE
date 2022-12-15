@@ -2,20 +2,23 @@ const vscode = require('vscode');
 const HDLparser = require('../../HDLparser');
 const Module = require('../../HDLparser/base/module');
 
+const opeParam = require('../../param');
 const HdlParam = HDLparser.HdlParam;
 
 class ModuleInfoItem {
     /**
      * @description 具体请看 vscode.QuickPickItem 接口
-     * @param {string} label 
-     * @param {string} description 
-     * @param {string} detail
      * @param {Module.Module} mod
      */
-    constructor(label, description, detail, mod) {
-        this.label = label;
-        this.description = description;
-        this.detail = detail;
+    constructor(mod) {
+        // TODO : 等到sv的解析做好后，写入对于不同hdl的图标
+        let iconID = '$(instance-' + mod.file.languageId + ') ';
+        this.label = iconID + mod.name;
+        this.description = mod.params.length + ' $(instance-param) ' + 
+                           mod.ports.length + ' $(instance-port) ' + 
+                           mod.nameToInstances.size + ' $(instance-module)';
+        this.detail = mod.path;
+
         this.mod = mod;
     }
 };
@@ -24,23 +27,23 @@ const SimInstance = {
 
     /**
      * @descriptionCn verilog模式下生成整个例化的内容
-     * @param {Object} module 模块信息
-     * @returns {String} 整个例化的内容
+     * @param {Module.Module} module 模块信息
+     * @returns {string} 整个例化的内容
      */
-    vlog(module) {
-        let port = this.vlogPort(module.ports);
-        let param = this.vlogParam(module.params);
+    instanceVlogCode(module) {
+        let vlogPortStr = this.vlogPort(module.ports);
+        let vlogParamStr = this.vlogParam(module.params);
 
         let instContent = '';
-        instContent += port.wireStr;
+        instContent += vlogPortStr.wireStr;
         instContent += module.name + ' ';
 
-        if (param !== '') {
-            instContent += `#(\n${param})\n`;
+        if (vlogParamStr !== '') {
+            instContent += `#(\n${vlogParamStr})\n`;
         }
 
         instContent += `u_${module.name}(\n`;
-        instContent += port.portStr;
+        instContent += vlogPortStr.portStr;
         instContent += ');\n';
 
         return instContent;
@@ -51,7 +54,7 @@ const SimInstance = {
      * @param {Object} module 模块信息
      * @returns {String} 整个例化的内容
      */
-    vhdl(module) {
+    instanceVhdlCode(module) {
         // module 2001 style
         let port = this.vhdlPort(module.ports);
         let param = this.vhdlParam(module.params);
@@ -69,7 +72,7 @@ const SimInstance = {
     
     /**
      * @descriptionCn verilog模式下对端口信息生成要例化的内容
-     * @param {Array} ports 端口信息列表
+     * @param {Array<Module.ModPort>} ports 端口信息列表
      * @returns {Object} {
      *      "wireStr" : wireStr, // output wire 声明
      *      "portStr" : portStr, // 端口例化
@@ -95,7 +98,7 @@ const SimInstance = {
             let name = port.name;
             let npadding = nmax - name.length + 1;
             name += ' '.repeat(npadding);
-            portStr += `\t.${name}\t\t( ${name}\t\t)`;
+            portStr += `\t.${name}\t( ${name} )`;
             if (i != ports.length - 1) {
                 portStr += ',';
             }
@@ -111,7 +114,7 @@ const SimInstance = {
 
     /**
      * @descriptionCn verilog模式下对参数信息生成要例化的内容
-     * @param {Array} params 参数信息列表
+     * @param {Array<Module.ModParam>} params 参数信息列表
      * @returns {String} 对参数信息生成要例化的内容
      */
     vlogParam(params) {
@@ -121,8 +124,8 @@ const SimInstance = {
 
         // .NAME  ( INIT  ),
         for (let i = 0; i < params.length; i++) {
-            let name = params[i].paramName;
-            let init = params[i].paramInit;
+            let name = params[i].name;
+            let init = params[i].init;
     
             let namePadding = nmax - name.length + 1;
             let initPadding = imax - init.length + 1;
@@ -130,7 +133,7 @@ const SimInstance = {
             name +=' '.repeat(namePadding);
             init +=' '.repeat(initPadding);
     
-            paramStr += `\t.${name}\t\t( ${init}\t\t)`;
+            paramStr += `\t.${name}\t( ${init} )`;
             if (i !== (params.length - 1)) {
                 paramStr += ',';
                 paramStr += '\n';
@@ -142,7 +145,7 @@ const SimInstance = {
 
     /**
      * @descriptionCn vhdl模式下对端口信息生成要例化的内容
-     * @param {Array} ports 端口信息列表
+     * @param {Array<Module.ModPort>} ports 端口信息列表
      * @returns {String} 对端口信息生成要例化的内容
      */
     vhdlPort(ports) {
@@ -165,7 +168,7 @@ const SimInstance = {
 
     /**
      * @descriptionCn vhdl模式下对参数信息生成要例化的内容
-     * @param {Array} params 参数信息列表
+     * @param {Array<Module.ModParam>} params 参数信息列表
      * @returns {String} 对参数信息生成要例化的内容
      */
     vhdlParam(params) {
@@ -210,7 +213,7 @@ const SimInstance = {
     /**
      * @descriptionCn 向光标处插入内容
      * @param {String} content 需要插入的内容
-     * @param {Class}  editor  vscode.window.activeTextEditor
+     * @param {vscode.TextEditor}  editor  通过 vscode.window.activeTextEditor 获得
      * @returns {Boolean} true : success | false : faild
      */
     selectInsert(content, editor) {
@@ -227,7 +230,6 @@ const SimInstance = {
         return true;
     },
 
-
     
     /**
      * @description 调用vscode的窗体，让用户从所有的Module中选择模块（为后续的例化准备）
@@ -240,11 +242,8 @@ const SimInstance = {
 
         // make ModuleInfoList
         const items = [];
-        for (const mod of HdlParam.getAllModules()) {
-            let label = mod.name;
-            let desc = 'path ' + mod.path;
-            let detail = mod.params.length + ' Param, ' + mod.ports.length + ' Port';
-            items.push(new ModuleInfoItem(label, desc, detail, mod));
+        for (const mod of HdlParam.Modules) {
+            items.push(new ModuleInfoItem(mod));
         }
 
         const selectModuleInfo = await vscode.window.showQuickPick(items, option);
@@ -259,7 +258,9 @@ const SimInstance = {
         this.selectModuleFromAll()
         .then(mod => {
             if (mod) {
-                vscode.window.showInformationMessage(`get ${mod.name}\n${mod.file}`);
+                const code = this.instanceVlogCode(mod);
+                const editor = vscode.window.activeTextEditor;
+                this.selectInsert(code, editor);
             }
         })
         .catch(reason => {

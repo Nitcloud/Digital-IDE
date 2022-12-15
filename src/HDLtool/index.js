@@ -1,9 +1,8 @@
-// "use strict";
-
 const vscode = require("vscode");
 
+const prjManage = require('./prj/prjManage');
 // const soc = require("./soc/soc");
-// const tree = require("./tree/tree");
+const tree = require("./tree/tree");
 // const build = require("./build/build");
 
 // const lspLinter = require("./lsp/protocol/linter");
@@ -111,19 +110,17 @@ function registerSimServer(context) {
     //     simTestbench.Overwrite_tb(process.opeParam);
     // }));
 }
-exports.registerSimServer = registerSimServer;
 
 // /**
 //  * 树状结构服务注册函数
 //  * @param {*} process 
 //  */
-// function registerTreeServer(process) {
-//     // // Tree View
-//     vscode.window.registerTreeDataProvider('TOOL.soft_tree', new tree.softTreeDataProvider(process));
-//     vscode.window.registerTreeDataProvider('TOOL.hard_tree', new tree.hardTreeDataProvider(process));
-//     vscode.window.registerTreeDataProvider('TOOL.Tool_tree', new tree.toolTreeDataProvider(process));
-// }
-// exports.registerTreeServer = registerTreeServer;
+function registerTreeServer(context) {
+    vscode.window.registerTreeDataProvider('TOOL.arch_tree', new tree.ArchTreeProvider());
+    vscode.window.registerTreeDataProvider('TOOL.hard_tree', new tree.HardwareTreeProvider());
+    vscode.window.registerTreeDataProvider('TOOL.soft_tree', new tree.SoftwareTreeProvider());
+    vscode.window.registerTreeDataProvider('TOOL.Tool_tree', new tree.ToolTreeProvider());
+}
 
 // /**
 //  * 内置前端设计辅助服务注册函数
@@ -217,3 +214,10 @@ exports.registerSimServer = registerSimServer;
 //     });
 // }
 // exports.registerSoftServer = registerSoftServer;
+
+
+module.exports = {
+    prjManage,
+    registerSimServer,
+    registerTreeServer,
+}

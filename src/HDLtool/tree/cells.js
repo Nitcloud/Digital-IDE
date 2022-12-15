@@ -41,4 +41,5 @@ let xilinx = [
     "SRL16E", "SRLC32E",
     "MASTER_JTAG", "STARTUPE3", "HARD_SYNC"
 ]
-exports.xilinx = xilinx;
+
+exports.xilinx = new Set(xilinx);

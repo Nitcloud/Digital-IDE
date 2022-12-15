@@ -1,0 +1,58 @@
+{
+  "id": "3826523",
+  "name": "draft",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "15378918",
+      "name": "v",
+      "font_class": "v",
+      "unicode": "ecf7",
+      "unicode_decimal": 60663
+    },
+    {
+      "icon_id": "23306741",
+      "name": "chip",
+      "font_class": "chip1",
+      "unicode": "e7a8",
+      "unicode_decimal": 59304
+    },
+    {
+      "icon_id": "31357424",
+      "name": "模块",
+      "font_class": "mokuai",
+      "unicode": "e60b",
+      "unicode_decimal": 58891
+    },
+    {
+      "icon_id": "3851337",
+      "name": "参数",
+      "font_class": "canshu",
+      "unicode": "e655",
+      "unicode_decimal": 58965
+    },
+    {
+      "icon_id": "11520228",
+      "name": "接口",
+      "font_class": "jiekou",
+      "unicode": "e638",
+      "unicode_decimal": 58936
+    },
+    {
+      "icon_id": "24698418",
+      "name": "chip",
+      "font_class": "chip",
+      "unicode": "e749",
+      "unicode_decimal": 59209
+    },
+    {
+      "icon_id": "13304138",
+      "name": "verilog",
+      "font_class": "verilog",
+      "unicode": "e6b3",
+      "unicode_decimal": 59059
+    }
+  ]
+}

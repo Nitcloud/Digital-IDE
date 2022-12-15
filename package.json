@@ -259,12 +259,12 @@
         "views": {
             "TOOL": [
                 {
-                    "id": "TOOL.file_tree",
-                    "name": "File"
+                    "id": "TOOL.arch_tree",
+                    "name": "architecture"
                 },
                 {
                     "id": "TOOL.Tool_tree",
-                    "name": "Tool"
+                    "name": "TOOL"
                 },
                 {
                     "id": "TOOL.hard_tree",
@@ -821,6 +821,43 @@
                     "group": "navigation@12"
                 }
             ]
+        },
+        "icons": {
+            "instance-verilog": {
+                "description": "icon of verilog in TOOL.instance",
+                "default": {
+                    "fontPath": "./icons/iconfont.woff2",
+                    "fontCharacter": "\\e7a8"
+                }
+            },
+            "instance-vhdl": {
+                "description": "icon of verilog in TOOL.instance",
+                "default": {
+                    "fontPath": "./icons/iconfont.woff2",
+                    "fontCharacter": "\\e6b3"
+                }
+            },
+            "instance-port" :{
+                "description": "port of verilog in TOOL.instance",
+                "default": {
+                    "fontPath": "./icons/iconfont.woff2",
+                    "fontCharacter": "\\e638"
+                }
+            },
+            "instance-param" :{
+                "description": "param of verilog in TOOL.instance",
+                "default": {
+                    "fontPath": "./icons/iconfont.woff2",
+                    "fontCharacter": "\\e655"
+                }
+            },
+            "instance-module" :{
+                "description": "module of verilog in TOOL.instance",
+                "default": {
+                    "fontPath": "./icons/iconfont.woff2",
+                    "fontCharacter": "\\e60b"
+                }
+            }
         }
     },
     "scripts": {

@@ -144,15 +144,18 @@ const HdlParam = {
 
     /**
      * @description 根据Hardware文件夹名初始化
-     * @param {string} ConfigName 'src' 或者 'sim'
+     * @param {string} folder 文件夹路径
      */
-    InitByFolder(ConfigName) {
-        const folder = opeParam.prjInfo.ARCH.Hardware[ConfigName];
+    InitByFolder(folder) {
         if (fs.existsSync(folder)) {
             const HDLFiles = [];
             hdlFile.getHDLFiles(folder, HDLFiles);
             for (const filePath of HDLFiles) {
                 const langID = hdlFile.getLanguageId(filePath);
+                // TODO : vhdl 和 systemverilog 解析器调试好后去除下面的 if
+                if (langID == 'systemverilog') {
+                    continue;
+                }
                 const parser = util.selectParserByLangID(langID);
                 let code = fs.readFileSync(filePath, 'utf-8');
                 const json = parser.parse(code);
@@ -162,14 +165,16 @@ const HdlParam = {
     },
 
     Initialize() {
-        assert(!(this.hasInitialized | false), 'HdlParam.Initialize has been invoked');
-        this.hasInitialized = true;
-        
-        this.InitByFolder('src');
-        this.InitByFolder('sim');
+        assert(fs.existsSync(opeParam.workspacePath), 'workspace not exist, check the initialization of opeParam');
+        this.InitByFolder(opeParam.workspacePath);
 
         for (const moduleFile of this.getAllModuleFiles()) {
             moduleFile.makeInstance();
+        }
+
+        let count = 0;
+        for (const moduleFile of this.getAllModuleFiles()) {
+            count += moduleFile.nameToModule.size;
         }
     },
 
@@ -227,7 +232,7 @@ const HdlParam = {
 class ModPort {
     /**
      * @param {string} name                     port名
-     * @param {common.PortType} type          port的类型，必须是PortType类型的枚举量
+     * @param {common.PortType} type            port的类型，必须是PortType类型的枚举量
      * @param {string} width                    位宽，形如 "[3:0]" 的字符串
      * @param {vscode.Range} range              端口定义的开始和结束
      */
@@ -342,7 +347,7 @@ class Module {
     makeModParams(params) {
         let new_params = [];
         for (const param of params) {
-            let range = {start: vparam.start, end: param.end};
+            let range = {start: param.start, end: param.end};
             let new_param = new ModParam(param.name,
                                          param.type,
                                          param.init,
@@ -400,6 +405,16 @@ class Module {
         this.nameToInstances = nameToInstances;
         delete this.instances;
     }
+
+
+    /**
+     * @returns {IterableIterator<Instance>}
+     */
+    getInstances() {
+        return this.nameToInstances.values();
+    }
+
+    
 
 
     /**
@@ -507,11 +522,11 @@ class ModuleFile {
 
                 // replace the original object with a Module object
                 modules[module_name] = new Module(this,
-                                                   module_name,
-                                                   range,
-                                                   mod.params,
-                                                   mod.ports,
-                                                   mod.instances)
+                                                  module_name,
+                                                  range,
+                                                  mod.params,
+                                                  mod.ports,
+                                                  mod.instances)
             }
         }
         

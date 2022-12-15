@@ -9,23 +9,33 @@
  */
 
 const HDLtool = require('./HDLtool');
-const hdlPath = require('./HDLfilesys/operation/path');
-const prjManage = require('./HDLtool/prj/prjManage');
+const HDLparser = require('./HDLparser');
 const opeParam = require('./param');
+
+const hdlFile = require('./HDLfilesys/operation/files');
 
 
 function launch() {
-    // TODO : 构建好完整的配置加载后去除下面两行
-    const manage = new prjManage.PrjManage();
-    opeParam.rootPath = hdlPath.dirname(__dirname);
+    // 初始化 opeParam
+    const manage = new HDLtool.prjManage.PrjManage();
     manage.getOpeParam(opeParam);
-    console.log(opeParam);
-    console.log(hdlPath.resolve('.'));
+
+    // 初始化HdlParam
+    const HdlParam = HDLparser.HdlParam;
+    HdlParam.Initialize();
+
+    const files = [];
+    hdlFile.getHDLFiles(opeParam.workspacePath, files);
+
+
+    console.log(opeParam.prjInfo.ARCH);
+    console.log('init num', HdlParam.Modules.size);
 }
 
 async function activate(context) {
     launch();
     HDLtool.registerSimServer(context);
+    HDLtool.registerTreeServer(context);
 }
 
 exports.activate = activate;
