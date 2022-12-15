@@ -28,7 +28,7 @@
         "url": "https://github.com/Bestduan/Digital-IDE/issues"
     },
     "engines": {
-        "vscode": "^1.42.1"
+        "vscode": "^1.73.0"
     },
     "categories": [
         "Extension Packs",
