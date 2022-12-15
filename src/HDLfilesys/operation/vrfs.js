@@ -1,5 +1,6 @@
 const pathfs = require('./path');
 const files = require('./files');
+const os = require('os');
 
 const vrfs = {
     module: null,
