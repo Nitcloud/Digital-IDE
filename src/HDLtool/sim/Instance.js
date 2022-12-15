@@ -1,9 +1,8 @@
 const vscode = require('vscode');
 const HDLparser = require('../../HDLparser');
-const Module = require('../../HDLparser/base/module');
+const HDLParam = HDLparser.HdlParam;
 
-const opeParam = require('../../param');
-const HdlParam = HDLparser.HdlParam;
+const Module = require('../../HDLparser/base/module');
 
 class ModuleInfoItem {
     /**
@@ -23,7 +22,7 @@ class ModuleInfoItem {
     }
 };
 
-const SimInstance = {
+const instance = {
 
     /**
      * @descriptionCn verilog模式下生成整个例化的内容
@@ -230,6 +229,14 @@ const SimInstance = {
         return true;
     },
 
+    getSelectItem(modules) {
+        // make ModuleInfoList
+        const items = [];
+        for (const mod of modules) {
+            items.push(new ModuleInfoItem(mod));
+        }
+        return items;
+    },
     
     /**
      * @description 调用vscode的窗体，让用户从所有的Module中选择模块（为后续的例化准备）
@@ -240,13 +247,10 @@ const SimInstance = {
             placeHolder: 'Select a Module'
         };
 
-        // make ModuleInfoList
-        const items = [];
-        for (const mod of HdlParam.Modules) {
-            items.push(new ModuleInfoItem(mod));
-        }
-
-        const selectModuleInfo = await vscode.window.showQuickPick(items, option);
+        const selectModuleInfo = await vscode.window.showQuickPick(
+            this.getSelectItem(HDLParam.Modules), option
+        );
+        
         if (selectModuleInfo) {
             return selectModuleInfo.mod;
         } else {
@@ -268,4 +272,5 @@ const SimInstance = {
         })
     }
 }
-module.exports = SimInstance;
+
+module.exports = instance;

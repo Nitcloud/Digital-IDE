@@ -1,14 +1,13 @@
 "use strict";
 
-const fs = require("fs");
 const vscode = require("vscode");
 
+const fs = require('../../HDLfilesys');
 const HDLparser = require('../../HDLparser');
-const hdlFile = require('../../HDLfilesys/operation/files');
 const opeParam = require('../../param');
 const cells = require("./cells");
 
-const HdlParam = HDLparser.HdlParam;
+const HDLParam = HDLparser.HdlParam;
 
 
 function getIconPath(type, iconName) {
@@ -21,35 +20,6 @@ function getIconConfig(iconName) {
         dark: getIconPath('dark', iconName)
     };
 }
-
-class FileExplorer {
-    constructor(indexer, process) {
-        this.treeDataProvider = new FileSystemProvider(indexer, process);
-        this.fileExplorer = vscode.window.createTreeView('TOOL.file_tree', {
-            treeDataProvider: this.treeDataProvider,
-            canSelectMany: true
-        });
-
-        vscode.commands.registerCommand("FILE.expand", () => this.expand());
-        vscode.commands.registerCommand('FILE.collapse', () => this.collapse());
-        vscode.commands.registerCommand("FILE.refresh", () => this.treeDataProvider.refresh());
-        vscode.commands.registerCommand('FILE.openFile', (uri) => this.openResource(uri));
-    }
-    collapse() {
-        this.treeDataProvider.childCollapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
-        this.treeDataProvider.refresh();
-    }
-    expand() {
-        this.treeDataProvider.childCollapsibleState = vscode.TreeItemCollapsibleState.Expanded;
-        this.treeDataProvider.refresh();
-    }
-    openResource(resource) {
-        if (fs.existsSync(resource)) {
-            vscode.window.showTextDocument(vscode.Uri.file(resource));
-        }
-    }
-} 
-
 
 class ArchDataItem {
     /**
@@ -73,6 +43,16 @@ class ArchTreeProvider {
     constructor() {
         this._onDidChangeTreeData = new vscode.EventEmitter();
         // this.onDidChangeTreeData  = this._onDidChangeTreeData.event;
+
+        vscode.commands.registerCommand("FILE.refresh", () => {
+            this.refresh();
+        });
+
+        vscode.commands.registerCommand('FILE.openFile', (uri) => {
+            if (fs.files.isExist(uri)) {
+                vscode.window.showTextDocument(vscode.Uri.file(uri));
+            }
+        });
     }
 
     refresh(element) {
@@ -163,7 +143,7 @@ class ArchTreeProvider {
 
         // TODO : 在整合lib后修改这里
         const folder = opeParam.prjInfo.ARCH.Hardware[type];
-        const allTopModules = HdlParam.getAllTopModules();
+        const allTopModules = HDLParam.getAllTopModules();
         const topModuleItemList = [];
         for (const mod of allTopModules) {
             if (mod.path.includes(folder)) {
@@ -194,7 +174,7 @@ class ArchTreeProvider {
         let dataItemList = [];
         let localPath = opeParam.workspacePath;
 
-        const targetModule = HdlParam.findModule(element.fsPath, element.name);
+        const targetModule = HDLParam.findModule(element.fsPath, element.name);
         for (const inst of targetModule.getInstances()) {
             let dataItem = new ArchDataItem('file', inst.name, inst.module.name, inst.module.path);
 
@@ -204,11 +184,11 @@ class ArchTreeProvider {
                 continue;
             }
             
-            if (fs.existsSync(dataItem.fsPath)) {
+            if (fs.files.isExist(dataItem.fsPath)) {
                 if (!dataItem.fsPath.includes(localPath)) {
                     dataItem.icon = "remote";
                 } else {
-                    let langID = hdlFile.getLanguageId(dataItem.fsPath);
+                    let langID = fs.files.getLanguageId(dataItem.fsPath);
                     dataItem.icon = langID;
                 }
             } else {
@@ -223,7 +203,6 @@ class ArchTreeProvider {
         return dataItemList;
     }
 }
-
 
 class CommandDataItem {
     /**
@@ -429,7 +408,6 @@ class ToolTreeProvider extends BaseCommandTreeProvoder {
 
 
 module.exports = {
-    FileExplorer,
     ArchTreeProvider,
     HardwareTreeProvider,
     SoftwareTreeProvider,

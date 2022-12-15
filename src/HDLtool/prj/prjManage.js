@@ -7,7 +7,7 @@ const psXilinx = require("./PS/xilinx");
 
 var opeParam = require("../../param");
 
-function registerPrjManage(params) {
+function register() {
     // pl manage register
     const pl = new plMarage();
     const plFuncs = [
@@ -211,20 +211,11 @@ class PrjManage {
             }
         }
 
-        // let hdlignores = files.readFile(opeParam.workspacePath + '/.hdlignore');
-        // if (hdlignores) {
-        //     let list = hdlignores.split('\n');
-        //     for (let i = 0; i < list.length; i++) {
-        //         const element = list[i];
-        //     }
-        // }
-
         // 获取src下的全部HDL文件
         let srcPath = opeParam.prjStructure.HardwareSrc;
         this.getHDLFiles(srcPath, HDLFileList, ignores);
     }
 }
-exports.PrjManage = PrjManage;
 
 /**
  * @state finish-untest
@@ -306,13 +297,21 @@ class plMarage extends baseManage {
             "ope"  : new plXilinx(),
             "terminal" : null
         };
+
+        vscode.commands.registerCommand("HARD.srcTop", (uri) => {
+            this.setSrcTop(uri);
+        });
+
+        vscode.commands.registerCommand("HARD.simTop", (uri) => {
+            this.setSimTop(uri);
+        });
     }
 
     /**
      * @descriptionCn 获取PL工程管理中所需要的配置
      * @returns 配置信息 {
      *      "tool" : "default",
-     *      "path" : "path",  // 第三方工具安装路径
+     *      "path" : "path",  // 第三方工具运行路径
      *      "termianl" : null
      *  }
      */
@@ -406,10 +405,6 @@ class plMarage extends baseManage {
     }
 
     gui() {
-        if (!this.config.terminal) {
-            return null;
-        }
-
         this.config.ope.gui(this.config);
     }
 
@@ -430,6 +425,14 @@ class plMarage extends baseManage {
 
     setSimTop(uri) {
         
+    }
+
+    addFiles(files) {
+        this.config.ope.addFiles(files, this.config);
+    }
+
+    delFiles(files) {
+        this.config.ope.delFiles(files, this.config);
     }
 }
 
@@ -495,3 +498,7 @@ class psMarage extends baseManage {
     }
 }
 
+module.exports = {
+    register,
+    PrjManage,
+}

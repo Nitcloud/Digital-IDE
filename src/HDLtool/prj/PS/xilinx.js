@@ -39,7 +39,7 @@ class xilinxOperation {
         }
     }
 
-    launch(param) {
+    launch(config) {
         this.getConfig();
 
         const hdfs = fs.files.pickFileFromExt(this.config.dat, {
@@ -81,11 +81,11 @@ if { [getprojects -type app] == "" } {
 file delete ${scriptPath} -force\n`;
         
         fs.files.writeFile(scriptPath, script);
-        param.terminal.show(true);
-        param.terminal.sendText(`${param.path} ${scriptPath}`);
+        config.terminal.show(true);
+        config.terminal.sendText(`${config.path} ${scriptPath}`);
     }
 
-    build(param) {
+    build(config) {
         this.getConfig();
         
         const scriptPath = `${this.config.path}/build.tcl`;
@@ -95,11 +95,11 @@ openhw ${this.config.src}/[getprojects -type hw]/system.hdf
 projects -build
 file delete ${scriptPath} -force\n`;
         fs.files.writeFile(scriptPath, script);
-        param.terminal.show(true);
-        param.terminal.sendText(`${param.path} ${scriptPath}`);
+        config.terminal.show(true);
+        config.terminal.sendText(`${config.path} ${scriptPath}`);
     }
 
-    program(param) {
+    program(config) {
         this.getConfig();
         
         const len = this.config.soc.core.length;
@@ -120,8 +120,8 @@ dow  ${this.config.src}/${this.config.soc.name}/Debug/${this.config.soc.name}.el
 con
 file delete ${scriptPath} -force\n`;
         fs.files.writeFile(scriptPath, script);
-        param.terminal.show(true);
-        param.terminal.sendText(`${param.path} ${scriptPath}`);
+        config.terminal.show(true);
+        config.terminal.sendText(`${config.path} ${scriptPath}`);
     }
 }
 module.exports = xilinxOperation

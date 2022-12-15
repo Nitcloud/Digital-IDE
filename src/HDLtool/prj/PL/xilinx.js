@@ -255,7 +255,7 @@ class xilinxOperation {
      * 
      * @returns 
      */
-    simulate() {
+    simulate(config) {
         const scriptPath = `${this.xilinxPath}/simulate.tcl`;
         const script = `
         if {[current_sim] != ""} {
@@ -278,7 +278,8 @@ class xilinxOperation {
         start_gui -quiet
         file delete ${scriptPath} -force\n`;
         fs.files.writeFile(scriptPath, script);
-        return scriptPath;
+        const cmd = `sources ${scriptPath}`;
+        config.terminal.sendText(cmd);
     }
 
     /**
@@ -286,7 +287,7 @@ class xilinxOperation {
      * @param {*} terminal 
      * @returns 
      */
-    synth(terminal) {
+    synth(config) {
         let quietArg = '';
         if (opeParam.prjInfo.enableShowlog) {
             quietArg = '-quiet'
@@ -297,8 +298,7 @@ class xilinxOperation {
         script += `launch_runs synth_1 ${quietArg} -jobs 4;`
         script += `wait_on_run synth_1 ${quietArg}`
 
-        terminal.sendText(script);
-        return script;
+        config.terminal.sendText(script);
     }
 
     /**
@@ -306,7 +306,7 @@ class xilinxOperation {
      * @param {*} terminal 
      * @returns 
      */
-    impl(terminal) {
+    impl(config) {
         let quietArg = '';
         if (opeParam.prjInfo.enableShowlog) {
             quietArg = '-quiet'
@@ -319,15 +319,14 @@ class xilinxOperation {
         script += `open_run impl_1 ${quietArg};`;
         script += `report_timing_summary ${quietArg}`;
 
-        terminal.sendText(script);
-        return script;
+        config.terminal.sendText(script);
     }
 
     /**
      * 
      * @returns 
      */
-    build() {
+    build(config) {
         let quietArg = '';
         if (this.prjConfig.enableShowlog) {
             quietArg = '-quiet'
@@ -349,13 +348,14 @@ class xilinxOperation {
         scriptPath = `${this.xilinxPath}/build.tcl`;
         script += `file delete ${scriptPath} -force\n`;
         fs.files.writeFile(scriptPath, script);
-        return scriptPath;
+        const cmd = `sources ${scriptPath}`;
+        config.terminal.sendText(cmd);
     }
 
     /**
      * 
      */
-    generateBit() {
+    generateBit(config) {
         let scripts = [];
         let core = this.prjConfig.SOC.core;
         let sysdefPath = `${this.prjInfo.path}/${this.prjInfo.name}.runs` + 
@@ -381,14 +381,15 @@ class xilinxOperation {
         let scriptPath = `${this.xilinxPath}/bit.tcl`;
         script += `file delete ${scriptPath} -force\n`;
         fs.files.writeFile(scriptPath, script);
-        return scriptPath;
+        const cmd = `sources ${scriptPath}`;
+        config.terminal.sendText(cmd);
     }
 
     /**
      * @descriptenCn 将程序下载到器件中去
      * @returns 
      */
-    program() {
+    program(config) {
         let scriptPath = `${this.xilinxPath}/program.tcl`;
         let script = `
         open_hw -quiet
@@ -419,26 +420,43 @@ class xilinxOperation {
         file delete ${scriptPath} -force\n`;
 
         fs.files.writeFile(scriptPath, script);
-        return scriptPath;
+        const cmd = `sources ${scriptPath}`;
+        config.terminal.sendText(cmd);
     }
 
-    gui(mode, installPath, filePath) {
-        if (mode == "direct") {
-            let command = `${installPath} -mode gui -s ${filePath} -notrace -nolog -nojournal`
-            child.exec(command, (error, stdout, stderr) => {
+    gui(config) {
+        if (config.terminal) {
+            config.terminal.sendText("start_gui -quiet");
+        } else {
+            const prjFiles = fs.files.pickFileFromExt(this.prjPath, {
+                exts : ".xpr",
+                type : "all",
+                ignores : []
+            });
+            const arg = '-notrace -nolog -nojournal';
+            const cmd = `${config.path} -mode gui -s ${prjFiles[0]} ${arg}`;
+            child.exec(cmd, (error, stdout, stderr) => {
                 if (error !== null) {
                     this.err(stderr);
                 } else {
                     this.info("GUI open successfully")
                 }
             });
-        } 
-        else if (mode == "terminal") {
-            let terminal = this.process.terminal;
-            if (!terminal) {
-                return null;
-            }
-            terminal.sendText("start_gui -quiet");
+        }
+    }
+
+    addFiles(files, config) {
+        this.processFileInPrj(files, config, "add_file");
+    }
+
+    delFiles(files, config) {
+        this.processFileInPrj(files, config, "remove_files");
+    }
+
+    processFileInPrj(files, config, command) {
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            config.terminal.sendText(`${command} ${file}`);
         }
     }
 
@@ -475,35 +493,6 @@ class xilinxOperation {
         if (log != '') {
             this.outputCH.show(true);
             this.outputCH.appendLine(log);
-        }
-    }
-
-    addFilesInPrj(filePaths) {
-        if (!this.terminal) {
-            return null;
-        }
-        if (files.isHasAttr(opeParam.prjInfo, "TOOL_CHAIN")) {
-            if (opeParam.prjInfo.TOOL_CHAIN == "xilinx") {
-                this.processFileInPrj(filePaths, "add_file");
-            }				
-        }
-    }
-
-    delFilesInPrj(filePaths) {
-        if (!this.terminal) {
-            return null;
-        }
-        if (!files.isHasAttr(opeParam.prjInfo, "TOOL_CHAIN")) {
-            if (opeParam.prjInfo.TOOL_CHAIN == "xilinx") {
-                this.processFileInPrj(filePaths, "remove_files");
-            }				
-        }
-    }
-
-    processFileInPrj(filePaths, command) {
-        for (let i = 0; i < filePaths.length; i++) {
-            const libFileElement = filePaths[i];
-            this.terminal.sendText(`${command} ${libFileElement}`);
         }
     }
 }
@@ -732,7 +721,7 @@ class xilinxBd {
      * 
      * @param {*} uri 
      */
-    Owr_bd(uri) {
+    overwrite(uri) {
         this.getConfig();
         // 获取当前bd file的路径
         vscode.window.showQuickPick(this.bdEnum).then(select => {
@@ -760,7 +749,7 @@ class xilinxBd {
      * @param {*} uri 
      * @returns 
      */
-    Add_bd(uri) {
+    add(uri) {
         this.getConfig();
         // 获取当前bd file的路径
         let docPath = fs.paths.toSlash(uri.fsPath);
@@ -790,7 +779,7 @@ class xilinxBd {
     /**
      * 
      */
-    Del_bd() {
+    delete() {
         this.getConfig();
         vscode.window.showQuickPick(this.bdEnum).then(select => {
             // the user canceled the select
@@ -814,7 +803,7 @@ class xilinxBd {
     /**
      * 
      */
-    load_bd() {
+    load() {
         this.getConfig();
         fs.files.pickFileFromExt(this.bd_repo, {
             exts : ".bd",

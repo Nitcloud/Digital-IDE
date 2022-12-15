@@ -536,13 +536,8 @@
                 "category": "TOOL"
             },
             {
-                "command": "TOOL.Overwrite_tb",
+                "command": "TOOL.overwrite.tb",
                 "title": "Overwrite the template of testbench",
-                "category": "TOOL"
-            },
-            {
-                "command": "TOOL.Generate_template",
-                "title": "generate template file",
                 "category": "TOOL"
             },
             {
@@ -556,74 +551,74 @@
                 "category": "TOOL"
             },
             {
-                "command": "HARD.Launch",
-                "title": "Launch",
-                "category": "FPGA"
-            },
-            {
                 "command": "HARD.srcTop",
                 "title": "Set as TOP",
-                "category": "FPGA"
+                "category": "HARD"
             },
             {
                 "command": "HARD.simTop",
                 "title": "Set as Testbench TOP",
-                "category": "FPGA"
+                "category": "HARD"
+            },
+            {
+                "command": "HARD.Launch",
+                "title": "Launch",
+                "category": "HARD"
             },
             {
                 "command": "HARD.Refresh",
                 "title": "refresh designed file",
-                "category": "FPGA"
+                "category": "HARD"
             },
             {
                 "command": "HARD.Simulate",
                 "title": "Run the Simulation",
-                "category": "FPGA"
+                "category": "HARD"
             },
             {
                 "command": "HARD.Build",
                 "title": "Build the current fpga project",
-                "category": "FPGA"
+                "category": "HARD"
             },
             {
                 "command": "HARD.Synth",
                 "title": "Synth the current fpga project",
-                "category": "FPGA"
+                "category": "HARD"
             },
             {
                 "command": "HARD.Impl",
                 "title": "Impl the current fpga project",
-                "category": "FPGA"
+                "category": "HARD"
             },
             {
                 "command": "HARD.Bit",
                 "title": "Generate the bit file",
-                "category": "FPGA"
+                "category": "HARD"
             },
             {
                 "command": "HARD.Program",
                 "title": "Download the bit file into the device",
-                "category": "FPGA"
+                "category": "HARD"
             },
             {
                 "command": "HARD.GUI",
                 "title": "Open the GUI",
-                "category": "FPGA"
+                "category": "HARD"
             },
             {
                 "command": "HARD.Exit",
                 "title": "Exit the current project",
-                "category": "FPGA"
+                "category": "HARD"
             },
             {
-                "command": "HARD.Add_dev",
+                "command": "HARD.add.device",
                 "title": "Add devices to the database",
-                "category": "FPGA"
+                "category": "HARD"
             },
             {
-                "command": "HARD.Delete_dev",
+                "command": "HARD.del.device",
                 "title": "Remove the device from the database",
-                "category": "FPGA"
+                "category": "HARD"
             },
             {
                 "command": "SOFT.Launch",
@@ -641,19 +636,19 @@
                 "category": "SOFT"
             },
             {
-                "command": "xilinx.Overwrite_bd",
+                "command": "xilinx.overwrite.bd",
                 "title": "Overwrite the bd_file",
-                "category": "FPGA"
+                "category": "HARD"
             },
             {
-                "command": "xilinx.Add_bd",
+                "command": "xilinx.add.bd",
                 "title": "Add a bd_file",
-                "category": "FPGA"
+                "category": "HARD"
             },
             {
-                "command": "xilinx.Delete_bd",
+                "command": "xilinx.del.bd",
                 "title": "Delete the bd_file",
-                "category": "FPGA"
+                "category": "HARD"
             }
         ],
         "keybindings": [
@@ -770,7 +765,7 @@
                 },
                 {
                     "when": "editorLangId == bd",
-                    "command": "xilinx.Overwrite_bd",
+                    "command": "xilinx.overwrite.bd",
                     "group": "navigation@9"
                 },
                 {
@@ -817,7 +812,7 @@
                 },
                 {
                     "when": "editorLangId == bd",
-                    "command": "xilinx.Overwrite_bd",
+                    "command": "xilinx.overwrite.bd",
                     "group": "navigation@12"
                 }
             ]

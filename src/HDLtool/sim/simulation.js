@@ -2,8 +2,8 @@
 
 const fs = require("../../HDLfilesys");
 
-const child   = require("child_process");
-const vscode  = require("vscode");
+const child  = require("child_process");
+const vscode = require("vscode");
 
 class simulate {
     constructor() {

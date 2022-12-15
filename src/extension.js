@@ -17,7 +17,7 @@ const hdlFile = require('./HDLfilesys/operation/files');
 
 function launch() {
     // 初始化 opeParam
-    const manage = new HDLtool.prjManage.PrjManage();
+    const manage = HDLtool.registerPrjServer();
     manage.getOpeParam(opeParam);
 
     // 初始化HdlParam
@@ -35,7 +35,7 @@ function launch() {
 async function activate(context) {
     launch();
     HDLtool.registerSimServer(context);
-    HDLtool.registerTreeServer(context);
+    HDLtool.registerTreeServer();
 }
 
 exports.activate = activate;

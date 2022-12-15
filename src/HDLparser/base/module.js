@@ -11,7 +11,7 @@ const hdlPath = require('../../../src/HDLfilesys/operation/path');
 
 
 
-const HdlParam = {    
+const HdlParam = {
     TopModules : new Set(),             // Set<Module>
     PathToModuleFiles : new Map(),      // Map<string, ModuleFile>
     Modules : new Set(),                // Set<Module>
@@ -196,7 +196,7 @@ const HdlParam = {
     /**
      * @description 根据name找到所有的module
      * @param {string} name 
-     * @returns {Array<Module>}
+     * @returns {Set<Module>}
      */
      findModulesByName(name) {
         const targetModules = [];
@@ -205,14 +205,14 @@ const HdlParam = {
                 targetModules.push(mod);
             }
         }
-        return targetModules;
+        return new Set(targetModules);
     },
 
 
     /**
      * @description 根据path找到所有的module
      * @param {string} path 
-     * @returns {Array<Module>}
+     * @returns {Set<Module>}
      */
     findModuleByPath(path) {
         const targetModules = [];
@@ -222,7 +222,7 @@ const HdlParam = {
                 targetModules.push(mod);
             });
         }
-        return targetModules;
+        return new Set(targetModules);
     },
     
 };
