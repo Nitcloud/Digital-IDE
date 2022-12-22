@@ -4,12 +4,12 @@ const path = require('path');
 const assert = require('assert');
 
 const HdlParser = require('../../../src/HDLparser');
-const hdlPath = require('../../../src/HDLfilesys/operation/path');
+const HDLPath = require('../../../src/HDLfilesys/operation/path');
 
 
-const TEST_ROOT = hdlPath.resolve(__dirname, '../..');
-const TEST_VHDL_FILE = hdlPath.join(TEST_ROOT, 'vhdl/test.vhd');
-const TEST_VLOG_FILE = hdlPath.join(TEST_ROOT, 'vlog/test.v');
+const TEST_ROOT = HDLPath.resolve(__dirname, '../..');
+const TEST_VHDL_FILE = HDLPath.join(TEST_ROOT, 'vhdl/test.vhd');
+const TEST_VLOG_FILE = HDLPath.join(TEST_ROOT, 'vlog/test.v');
 
 const NECE_PROPERTY = ['languageId', 'marco', 'modules'];
 const NECE_MODULE_PROPERTY = ['instances', 'params', 'ports', 'start', 'end'];
@@ -45,8 +45,8 @@ suite('HDLparser.parser Test', () => {
 
         for (const property of NECE_MODULE_PROPERTY) {
             test('vhdl.parse -> ensure each module has ' + '"' + property + '"', () => {
-                for (const mod of Object.values(result.parse_result.modules)) {
-                    const properties = Object.keys(mod);
+                for (const module of Object.values(result.parse_result.modules)) {
+                    const properties = Object.keys(module);
                     assert(properties.includes(property), "module should have " + '"' + property + '"');
                 }
             });
@@ -55,8 +55,8 @@ suite('HDLparser.parser Test', () => {
 
         for (const property of NECE_INSTANCE_PROPERTY) {
             test('vhdl.parse -> ensure each module has ' + '"' + property + '"', () => {
-                for (const mod of Object.values(result.parse_result.modules)) {
-                    for (const instance of mod.instances) {
+                for (const module of Object.values(result.parse_result.modules)) {
+                    for (const instance of module.instances) {
                         const properties = Object.keys(instance);
                         assert(properties.includes(property), "instance should have " + '"' + property + '"');
                     }
@@ -67,8 +67,8 @@ suite('HDLparser.parser Test', () => {
 
         for (const property of NECE_PARAM_PROPERTY) {
             test('vhdl.parse -> ensure each param has ' + '"' + property + '"', () => {
-                for (const mod of Object.values(result.parse_result.modules)) {
-                    for (const param of mod.params) {
+                for (const module of Object.values(result.parse_result.modules)) {
+                    for (const param of module.params) {
                         const properties = Object.keys(param);
                         assert(properties.includes(property), "param should have " + '"' + property + '"');
                     }
@@ -79,8 +79,8 @@ suite('HDLparser.parser Test', () => {
 
         for (const property of NECE_PORT_PROPERTY) {
             test('vhdl.parse -> ensure each port has ' + '"' + property + '"', () => {
-                for (const mod of Object.values(result.parse_result.modules)) {
-                    for (const port of mod.ports) {
+                for (const module of Object.values(result.parse_result.modules)) {
+                    for (const port of module.ports) {
                         const properties = Object.keys(port);
                         assert(properties.includes(property), "port should have " + '"' + property + '"');
                     }
@@ -114,8 +114,8 @@ suite('HDLparser.parser Test', () => {
 
         for (const property of NECE_MODULE_PROPERTY) {
             test('vlog.parse -> ensure each module has ' + '"' + property + '"', () => {
-                for (const mod of Object.values(result.parse_result.modules)) {
-                    const properties = Object.keys(mod);
+                for (const module of Object.values(result.parse_result.modules)) {
+                    const properties = Object.keys(module);
                     assert(properties.includes(property), "module should have " + '"' + property + '"');
                 }
             });
@@ -133,8 +133,8 @@ suite('HDLparser.parser Test', () => {
 
         for (const property of NECE_INSTANCE_PROPERTY) {
             test('vlog.parse -> ensure each module has ' + '"' + property + '"', () => {
-                for (const mod of Object.values(result.parse_result.modules)) {
-                    for (const instance of mod.instances) {
+                for (const module of Object.values(result.parse_result.modules)) {
+                    for (const instance of module.instances) {
                         const properties = Object.keys(instance);
                         assert(properties.includes(property), "instance should have " + '"' + property + '"');
                     }
@@ -143,9 +143,9 @@ suite('HDLparser.parser Test', () => {
         }
 
         for (const property of NECE_PARAM_PROPERTY) {
-            test('vhdl.parse -> ensure each param has ' + '"' + property + '"', () => {
-                for (const mod of Object.values(result.parse_result.modules)) {
-                    for (const param of mod.params) {
+            test('vlog.parse -> ensure each param has ' + '"' + property + '"', () => {
+                for (const module of Object.values(result.parse_result.modules)) {
+                    for (const param of module.params) {
                         const properties = Object.keys(param);
                         assert(properties.includes(property), "param should have " + '"' + property + '"');
                     }
@@ -155,9 +155,9 @@ suite('HDLparser.parser Test', () => {
 
 
         for (const property of NECE_PORT_PROPERTY) {
-            test('vhdl.parse -> ensure each port has ' + '"' + property + '"', () => {
-                for (const mod of Object.values(result.parse_result.modules)) {
-                    for (const port of mod.ports) {
+            test('vlog.parse -> ensure each port has ' + '"' + property + '"', () => {
+                for (const module of Object.values(result.parse_result.modules)) {
+                    for (const port of module.ports) {
                         const properties = Object.keys(port);
                         assert(properties.includes(property), "port should have " + '"' + property + '"');
                     }

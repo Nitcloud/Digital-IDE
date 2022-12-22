@@ -1,6 +1,6 @@
 const fspath = require("path");
 
-const hdlPath = {
+const HDLPath = {
     log : console.log,
 
     /**
@@ -49,7 +49,7 @@ const hdlPath = {
      */
     resolve(...paths) {
         const absPath = fspath.resolve(...paths);
-        return this.toSlash(absPath);
+        return HDLPath.toSlash(absPath);
     },
 
     /**
@@ -110,4 +110,4 @@ const hdlPath = {
         return path.replace(str, path);
     }
 }
-module.exports = hdlPath;
+module.exports = HDLPath;

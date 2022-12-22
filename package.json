@@ -28,7 +28,7 @@
         "url": "https://github.com/Bestduan/Digital-IDE/issues"
     },
     "engines": {
-        "vscode": "^1.73.0"
+        "vscode": "^1.65.2"
     },
     "categories": [
         "Extension Packs",
@@ -276,6 +276,7 @@
                 }
             ]
         },
+        "keybindings": [],
         "languages": [
             {
                 "id": "tcl",
@@ -649,20 +650,35 @@
                 "command": "xilinx.del.bd",
                 "title": "Delete the bd_file",
                 "category": "HARD"
-            }
-        ],
-        "keybindings": [
-            {
-                "command": "HARD.Launch",
-                "key": "Alt+z",
-                "mac": "Alt+z",
-                "when": "editorTextFocus"
             },
             {
-                "command": "TOOL.instance",
-                "key": "Alt+i",
-                "mac": "Alt+i",
-                "when": "editorTextFocus"
+                "command": "TOOL.DocumentProject",
+                "title": "make the document of the project",
+                "category": "TOOL"
+            },
+            {
+                "command": "TOOL.ExportMarkdown",
+                "title": "export the document of current file as markdown",
+                "category": "TOOL"
+            },
+            {
+                "command": "TOOL.ExportHTML",
+                "title": "export the document of current file as HTML",
+                "category": "TOOL"
+            },
+            {
+                "command": "TOOL.ExportPDF",
+                "title": "export the document of current file as PDF",
+                "category": "TOOL"
+            },
+            {
+                "command": "TOOL.ShowDocWebview",
+                "title": "document current HDL file",
+                "category": "TOOL",
+                "icon": {
+                    "light": "images/svg/light/documentation.svg",
+                    "dark": "images/svg/dark/documentation.svg"
+                }
             }
         ],
         "menus": {
@@ -719,6 +735,11 @@
                 {
                     "when": "resourceLangId == vhdl",
                     "command": "TOOL.vhdl2vlog",
+                    "group": "navigation"
+                },
+                {
+                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+                    "command": "TOOL.ShowDocWebview",
                     "group": "navigation"
                 }
             ],
@@ -832,21 +853,21 @@
                     "fontCharacter": "\\e6b3"
                 }
             },
-            "instance-port" :{
+            "instance-port": {
                 "description": "port of verilog in TOOL.instance",
                 "default": {
                     "fontPath": "./icons/iconfont.woff2",
                     "fontCharacter": "\\e638"
                 }
             },
-            "instance-param" :{
+            "instance-param": {
                 "description": "param of verilog in TOOL.instance",
                 "default": {
                     "fontPath": "./icons/iconfont.woff2",
                     "fontCharacter": "\\e655"
                 }
             },
-            "instance-module" :{
+            "instance-module": {
                 "description": "module of verilog in TOOL.instance",
                 "default": {
                     "fontPath": "./icons/iconfont.woff2",
@@ -859,19 +880,23 @@
         "vscode:prepublish": "webpack --mode production"
     },
     "devDependencies": {
-        "@types/vscode": "^1.73.0",
         "@types/glob": "^8.0.0",
         "@types/mocha": "^10.0.0",
         "@types/node": "16.x",
+        "@types/vscode": "^1.73.0",
+        "@vscode/test-electron": "^2.2.0",
         "eslint": "^8.26.0",
         "glob": "^8.0.3",
         "mocha": "^10.1.0",
-        "typescript": "^4.8.4",
-        "@vscode/test-electron": "^2.2.0"
+        "typescript": "^4.8.4"
     },
     "dependencies": {
-        "chokidar": "^3.5.3",
         "antlr4": "^4.8.0",
-        "state-machine-cat": "^9.2.5"
+        "chokidar": "^3.5.3",
+        "json5": "^2.2.2",
+        "line-reader": "^0.4.0",
+        "showdown": "^2.1.0",
+        "state-machine-cat": "^9.2.5",
+        "wavedrom": "^2.9.1"
     }
 }

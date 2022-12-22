@@ -7,7 +7,7 @@ const fs = require("fs");
 const pathfs = require("./path");
 
 // const 
-const hdlFile = {
+const HDLFile = {
     log : console.log,
 
     /**
@@ -311,7 +311,7 @@ const hdlFile = {
 
         function once(path) {
             if (path instanceof Array) {
-                return hdlFile.filter(path, options, (file) => {
+                return HDLFile.filter(path, options, (file) => {
                     if(options.exts.includes(pathfs.extname(file))) {
                         if (callback) {
                             callback(file);
@@ -322,7 +322,7 @@ const hdlFile = {
             }
 
             else if (typeof(path) == 'string') {
-                return hdlFile.filter(path, options, (file) => {
+                return HDLFile.filter(path, options, (file) => {
                     if(options.exts.includes(pathfs.extname(file))) {
                         if (callback) {
                             callback(file);
@@ -343,6 +343,9 @@ const hdlFile = {
      * @returns {Array} 返回文件数组
      */
     getHDLFiles(path, HDLFiles, ignores) {
+        if (HDLFiles == undefined) {
+            HDLFiles = [];
+        }
         let options = {
             exts : [
                 // verilog
@@ -616,4 +619,4 @@ const hdlFile = {
         return res;
     }
 }
-module.exports = hdlFile;
+module.exports = HDLFile;

@@ -6,12 +6,12 @@ const path = require('path');
 const common = require('./common');
 const util = require('../util');
 const opeParam = require('../../param');
-const hdlFile = require('../../../src/HDLfilesys/operation/files');
-const hdlPath = require('../../../src/HDLfilesys/operation/path');
+const HDLFile = require('../../../src/HDLfilesys/operation/files');
+const HDLPath = require('../../../src/HDLfilesys/operation/path');
 
 
 
-const HdlParam = {
+const HDLParam = {
     TopModules : new Set(),             // Set<Module>
     PathToModuleFiles : new Map(),      // Map<string, ModuleFile>
     Modules : new Set(),                // Set<Module>
@@ -38,8 +38,8 @@ const HdlParam = {
         if (!moduleFile) {
             return false;
         }
-        let mod = moduleFile.findModule(name);
-        return Boolean(mod);
+        let module = moduleFile.findModule(name);
+        return Boolean(module);
     },
 
 
@@ -52,9 +52,9 @@ const HdlParam = {
     findModule(path, name) {
         let moduleFile = this.findModuleFile(path);
         assert(moduleFile, 'cannot find ' + path + ' in global moduleFiles');
-        let mod = moduleFile.findModule(name);
-        assert(mod, 'cannot find module "' + name + '" in file ' + path);
-        return mod;
+        let module = moduleFile.findModule(name);
+        assert(module, 'cannot find module "' + name + '" in file ' + path);
+        return module;
     },
 
 
@@ -66,12 +66,12 @@ const HdlParam = {
     deleteModule(path, name) {
         let moduleFile = this.PathToModuleFiles.get(path);
         if (this.hasModule(path, name)) {
-            let mod = this.findModule(path, name);
+            let module = this.findModule(path, name);
 
             // 删除包含 module 的任何容器
-            moduleFile.nameToModule.delete(mod.name);
-            this.TopModules.delete(mod);
-            this.Modules.delete(mod);
+            moduleFile.nameToModule.delete(module.name);
+            this.TopModules.delete(module);
+            this.Modules.delete(module);
         }
     },
 
@@ -83,8 +83,8 @@ const HdlParam = {
      * @returns {boolean}
      */
     isTopModule(path, name) {
-        let mod = this.findModule(path, name);
-        return this.TopModules.has(mod);
+        let module = this.findModule(path, name);
+        return this.TopModules.has(module);
     },
 
 
@@ -94,8 +94,8 @@ const HdlParam = {
      */
     getAllModules() {
         const modules = [];
-        for (const mod of this.Modules) {
-            modules.push(mod);
+        for (const module of this.Modules) {
+            modules.push(module);
         }
         return modules;
     },
@@ -148,14 +148,14 @@ const HdlParam = {
      */
     InitByFolder(folder) {
         if (fs.existsSync(folder)) {
-            const HDLFiles = [];
-            hdlFile.getHDLFiles(folder, HDLFiles);
+            // TODO : vhdl 和 systemverilog 解析器调试好后去除下面的 filter
+            const HDLFiles = HDLFile.getHDLFiles(folder).filter(filePath => {
+                const langID = HDLFile.getLanguageId(filePath);
+                return langID != 'systemverilog';
+            });
+
             for (const filePath of HDLFiles) {
-                const langID = hdlFile.getLanguageId(filePath);
-                // TODO : vhdl 和 systemverilog 解析器调试好后去除下面的 if
-                if (langID == 'systemverilog') {
-                    continue;
-                }
+                const langID = HDLFile.getLanguageId(filePath);
                 const parser = util.selectParserByLangID(langID);
                 let code = fs.readFileSync(filePath, 'utf-8');
                 const json = parser.parse(code);
@@ -186,7 +186,7 @@ const HdlParam = {
     deleteModuleFile(path) {
         const moduleFile = this.findModuleFile(path);
         if (moduleFile) {
-            for (const [moduleName, mod] of moduleFile.nameToModule) {
+            for (const [moduleName, module] of moduleFile.nameToModule) {
                 this.deleteModule(path, moduleName);
             }
             this.PathToModuleFiles.delete(path);
@@ -200,9 +200,9 @@ const HdlParam = {
      */
      findModulesByName(name) {
         const targetModules = [];
-        for (const mod of this.Modules) {
-            if (mod.name == name) {
-                targetModules.push(mod);
+        for (const module of this.Modules) {
+            if (module.name == name) {
+                targetModules.push(module);
             }
         }
         return new Set(targetModules);
@@ -218,8 +218,8 @@ const HdlParam = {
         const targetModules = [];
         const moduleFile = this.findModuleFile(path);
         if (moduleFile) {
-            moduleFile.nameToModule.forEach((mod, name) => {
-                targetModules.push(mod);
+            moduleFile.nameToModule.forEach((module, name) => {
+                targetModules.push(module);
             });
         }
         return new Set(targetModules);
@@ -280,12 +280,11 @@ class Instance {
         this.instports = instports;
 
         this.instModPath = instModPath;
-        
-        // find module according to HdlParam
-        this.module = HdlParam.findModule(instModPath, type);
-        
-        // add refer to this.module
-        this.addToModuleRefer(this.module);
+
+        this.module = null;
+        if (instModPath) {
+            this.locateModule();
+        }
     }
 
     /**
@@ -294,9 +293,19 @@ class Instance {
      */
     addToModuleRefer(targetModule) {
         targetModule.refers.add(this);
-        if (HdlParam.TopModules.has(targetModule)) {
-            HdlParam.TopModules.delete(targetModule);
+        if (HDLParam.TopModules.has(targetModule)) {
+            HDLParam.TopModules.delete(targetModule);
         }
+    }
+
+    locateModule() {
+        const instModPath = this.instModPath;
+        const instModName = this.type;
+
+        // 通过 HDLParam 找到 module
+        this.module = HDLParam.findModule(instModPath, instModName);
+        // 为 module 增加引用
+        this.addToModuleRefer(this.module);
     }
 };
 
@@ -319,12 +328,12 @@ class Module {
         this.params = this.makeModParams(params);
         this.ports = this.makeModPort(ports);
 
-        this.instances = instances;
-        // this.nameToInstances = this.makeNameToInstances(instances);
+        this._instances = instances;
+        this.unhandleInstances = new Set();
 
         // 默认情况下刚刚创建时将当前的Module加入
-        HdlParam.TopModules.add(this);
-        HdlParam.Modules.add(this);
+        HDLParam.TopModules.add(this);
+        HDLParam.Modules.add(this);
 
         // refers 代表实例化了这个Module的所有的Instance对象
         this.refers = new Set();
@@ -381,41 +390,34 @@ class Module {
      */
     makeNameToInstances() {
         let nameToInstances = new Map();
-        for (const inst of this.instances) {
+        for (const inst of this._instances) {
             // TODO : 核心，能否更加优雅
             let instModPath = this.searchInstModPath(inst);
-            if (instModPath) {
-                let new_inst = new Instance(inst.name,
-                                            inst.type,
-                                            instModPath,
-                                            inst.instparams,
-                                            inst.instports,
-                                            this);
-                nameToInstances.set(inst.name, new_inst);
-            } else {
-                // 如果没有找到对应的依赖文件，就构造一个 伪Instance类，加入cache中等到后续处理
-                HdlParam.UnhandleInstances.add({name: inst.name,
-                                                type: inst.type,
-                                                instModPath: '',
-                                                instparams: inst.instparams,
-                                                instports: inst.instports,
-                                                parentMod: inst.parentMod});
+            let new_inst = new Instance(inst.name,
+                                        inst.type,
+                                        instModPath,
+                                        inst.instparams,
+                                        inst.instports,
+                                        this);
+            nameToInstances.set(inst.name, new_inst);
+            if (!instModPath) {
+                HDLParam.UnhandleInstances.add(new_inst);
+                this.unhandleInstances.add(new_inst);
             }
+            
         }
         this.nameToInstances = nameToInstances;
-        delete this.instances;
+        delete this._instances;
     }
 
 
     /**
+     * @description 返回该模块下的所有 例化 对象
      * @returns {IterableIterator<Instance>}
      */
     getInstances() {
         return this.nameToInstances.values();
     }
-
-    
-
 
     /**
      * @description 所有的 ModuleFile 初始化完后再调用该函数
@@ -428,7 +430,7 @@ class Module {
         const excludeFile = new Set([this.file]);
 
         // 搜索 “当前文件”
-        for (const [name, mod] of this.file.nameToModule) {
+        for (const [name, module] of this.file.nameToModule) {
             if (targetModuleName == name) {
                 return this.getPath();      // 如果当前文件中就有 instance 的模块，直接返回当前文件的路径
             }
@@ -437,8 +439,8 @@ class Module {
 
         // 搜索 “include的文件”
         for (const include of this.file.marco.includes) {
-            const absIncludePath = hdlPath.rel2abs(this.getPath(), include.path);
-            const includeFile = HdlParam.findModuleFile(absIncludePath);
+            const absIncludePath = HDLPath.rel2abs(this.getPath(), include.path);
+            const includeFile = HDLParam.findModuleFile(absIncludePath);
             if (includeFile) {
                 excludeFile.add(includeFile);
                 if (includeFile.hasModule(targetModuleName)) {
@@ -448,13 +450,13 @@ class Module {
         }
 
         // 搜索 “其余工程文件”
-        for (const moduleFile of HdlParam.getAllModuleFiles()) {
+        for (const moduleFile of HDLParam.getAllModuleFiles()) {
             if (!excludeFile.has(moduleFile) && moduleFile.hasModule(targetModuleName)) {
                 return moduleFile.path;
             }
         }
 
-        return undefined;
+        return null;
     }
 };
 
@@ -468,15 +470,15 @@ class ModuleFile {
      */
     constructor(path, languageId, marco, modules) {
 
-        this.path = hdlPath.toSlash(path);
+        this.path = HDLPath.toSlash(path);
         this.languageId = languageId;
 
         // process in constructor
         this.marco = this.makeMarco(marco);
         this.nameToModule = this.makeNameToModule(modules);
         
-        // add to global HdlParam
-        HdlParam.PathToModuleFiles.set(path, this);
+        // add to global HDLParam
+        HDLParam.PathToModuleFiles.set(path, this);
     }
 
 
@@ -516,17 +518,17 @@ class ModuleFile {
         let module_names = Object.keys(modules);
         if (module_names.length > 0 && !(modules[module_names[0]] instanceof Module)) {
             for (const module_name of module_names) {
-                let mod = modules[module_name];
+                let module = modules[module_name];
                 // generate range
-                let range = {start: mod.start, stop: mod.stop};
+                let range = {start: module.start, stop: module.stop};
 
                 // replace the original object with a Module object
                 modules[module_name] = new Module(this,
                                                   module_name,
                                                   range,
-                                                  mod.params,
-                                                  mod.ports,
-                                                  mod.instances)
+                                                  module.params,
+                                                  module.ports,
+                                                  module.instances)
             }
         }
         
@@ -555,8 +557,8 @@ class ModuleFile {
      * moduleFile对象初始化完调用。Instance的依赖关系会在这个函数中被初始化
      */
     makeInstance() {
-        for (const [name, mod] of this.nameToModule) {
-            mod.makeNameToInstances();
+        for (const [name, module] of this.nameToModule) {
+            module.makeNameToInstances();
         }
     }
 };
@@ -567,5 +569,5 @@ module.exports = {
     ModParam,
     Module,
     ModuleFile,
-    HdlParam
+    HDLParam
 };

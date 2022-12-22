@@ -27,7 +27,7 @@ class showNetlist {
         } else {
             // 获取当前文件的模块名和模块数 选择要仿真的模块
             parser.utils.selectCurrentFileModule(
-                this.indexer.HDLparam, 
+                this.indexer.HDLParam, 
                 docPath
             ).then((selectModule) => {
                 if (selectModule != null) {
@@ -72,7 +72,7 @@ class showNetlist {
 
     async getPrjNetlist(module, opeParam) {
         // 获取工程依赖
-        let dependenceFilePathList = parser.utils.getModuleDependence(this.indexer.HDLparam, module);
+        let dependenceFilePathList = parser.utils.getModuleDependence(this.indexer.HDLParam, module);
 
         // 向内核中导入工程
         this.synth = await kernel.launch();

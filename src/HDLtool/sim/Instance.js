@@ -1,24 +1,24 @@
 const vscode = require('vscode');
 const HDLparser = require('../../HDLparser');
-const HDLParam = HDLparser.HdlParam;
+const HDLParam = HDLparser.HDLParam;
 
-const Module = require('../../HDLparser/base/module');
+const { Module, ModPort, ModParam } = require('../../HDLparser/base/module');
 
 class ModuleInfoItem {
     /**
      * @description 具体请看 vscode.QuickPickItem 接口
-     * @param {Module.Module} mod
+     * @param {Module} module
      */
-    constructor(mod) {
+    constructor(module) {
         // TODO : 等到sv的解析做好后，写入对于不同hdl的图标
-        let iconID = '$(instance-' + mod.file.languageId + ') ';
-        this.label = iconID + mod.name;
-        this.description = mod.params.length + ' $(instance-param) ' + 
-                           mod.ports.length + ' $(instance-port) ' + 
-                           mod.nameToInstances.size + ' $(instance-module)';
-        this.detail = mod.path;
+        let iconID = '$(instance-' + module.file.languageId + ') ';
+        this.label = iconID + module.name;
+        this.description = module.params.length + ' $(instance-param) ' + 
+                           module.ports.length + ' $(instance-port) ' + 
+                           module.nameToInstances.size + ' $(instance-module)';
+        this.detail = module.path;
 
-        this.mod = mod;
+        this.module = module;
     }
 };
 
@@ -26,7 +26,7 @@ const instance = {
 
     /**
      * @descriptionCn verilog模式下生成整个例化的内容
-     * @param {Module.Module} module 模块信息
+     * @param {Module} module 模块信息
      * @returns {string} 整个例化的内容
      */
     instanceVlogCode(module) {
@@ -71,7 +71,7 @@ const instance = {
     
     /**
      * @descriptionCn verilog模式下对端口信息生成要例化的内容
-     * @param {Array<Module.ModPort>} ports 端口信息列表
+     * @param {Array<ModPort>} ports 端口信息列表
      * @returns {Object} {
      *      "wireStr" : wireStr, // output wire 声明
      *      "portStr" : portStr, // 端口例化
@@ -113,7 +113,7 @@ const instance = {
 
     /**
      * @descriptionCn verilog模式下对参数信息生成要例化的内容
-     * @param {Array<Module.ModParam>} params 参数信息列表
+     * @param {Array<ModParam>} params 参数信息列表
      * @returns {String} 对参数信息生成要例化的内容
      */
     vlogParam(params) {
@@ -144,7 +144,7 @@ const instance = {
 
     /**
      * @descriptionCn vhdl模式下对端口信息生成要例化的内容
-     * @param {Array<Module.ModPort>} ports 端口信息列表
+     * @param {Array<ModPort>} ports 端口信息列表
      * @returns {String} 对端口信息生成要例化的内容
      */
     vhdlPort(ports) {
@@ -167,7 +167,7 @@ const instance = {
 
     /**
      * @descriptionCn vhdl模式下对参数信息生成要例化的内容
-     * @param {Array<Module.ModParam>} params 参数信息列表
+     * @param {Array<ModParam>} params 参数信息列表
      * @returns {String} 对参数信息生成要例化的内容
      */
     vhdlParam(params) {
@@ -232,15 +232,15 @@ const instance = {
     getSelectItem(modules) {
         // make ModuleInfoList
         const items = [];
-        for (const mod of modules) {
-            items.push(new ModuleInfoItem(mod));
+        for (const module of modules) {
+            items.push(new ModuleInfoItem(module));
         }
         return items;
     },
     
     /**
      * @description 调用vscode的窗体，让用户从所有的Module中选择模块（为后续的例化准备）
-     * @returns {Promise<Module.Module>}
+     * @returns {Promise<Module>}
      */
     async selectModuleFromAll() {
         const option = {
@@ -252,7 +252,7 @@ const instance = {
         );
         
         if (selectModuleInfo) {
-            return selectModuleInfo.mod;
+            return selectModuleInfo.module;
         } else {
             return null;
         }
@@ -260,9 +260,9 @@ const instance = {
 
     instantiation() {
         this.selectModuleFromAll()
-        .then(mod => {
-            if (mod) {
-                const code = this.instanceVlogCode(mod);
+        .then(module => {
+            if (module) {
+                const code = this.instanceVlogCode(module);
                 const editor = vscode.window.activeTextEditor;
                 this.selectInsert(code, editor);
             }

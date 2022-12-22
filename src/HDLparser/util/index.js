@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const parser = require('./kernel');
-const hdlPath = require('../../HDLfilesys/operation/path');
+const HDLPath = require('../../HDLfilesys/operation/path');
 
 const PathModuleSplit = ' @ ';
 
@@ -89,7 +89,7 @@ function readJSON(path) {
 function getAllFilesFromFolder(folder) {
     const files = [];
     for (const file of fs.readdirSync(folder)) {
-        const filePath = hdlPath.join(folder, file);
+        const filePath = HDLPath.join(folder, file);
         const fileStat = fs.statSync(filePath);
         if (fileStat.isFile()) {
             files.push(filePath);

@@ -6,6 +6,9 @@ const tree = require("./tree/tree");
 const instance = require("./sim/instance");
 const testbench = require("./sim/testbench");
 
+const markdown = require('./doc/markdown');
+const html = require('./doc/html');
+
 const manage = prj.PrjManage;
 // /**
 //  * HDL语言服务注册函数
@@ -87,14 +90,22 @@ function registerSimServer(context) {
     // }));
 }
 
-function registerTreeServer() {
+function registerTreeServer(context) {
     vscode.window.registerTreeDataProvider('TOOL.arch_tree', new tree.ArchTreeProvider());
     vscode.window.registerTreeDataProvider('TOOL.Tool_tree', new tree.ToolTreeProvider());
     vscode.window.registerTreeDataProvider('TOOL.hard_tree', new tree.HardwareTreeProvider());
     vscode.window.registerTreeDataProvider('TOOL.soft_tree', new tree.SoftwareTreeProvider());
 }
 
-function registerPrjServer() {
+
+function registerDocumentation(context) {
+    vscode.commands.registerCommand('TOOL.ShowDocWebview', () => {
+        html.showDocWebview();
+    });
+
+}
+
+function registerPrjServer(context) {
     prj.register();
     return new prj.PrjManage();
 }
@@ -103,4 +114,5 @@ module.exports = {
     registerPrjServer,
     registerSimServer,
     registerTreeServer,
+    registerDocumentation
 }

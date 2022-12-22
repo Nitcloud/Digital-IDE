@@ -37,7 +37,7 @@ class vlogCompletion {
                 "end"  : position,
             };
 
-            utils.HDLparam = this.indexer.HDLparam;
+            utils.HDLParam = this.indexer.HDLParam;
 
             // 合法性
             // 获取注释所对应的范围，并检测标识字符是否在该范围内

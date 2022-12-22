@@ -480,7 +480,7 @@
         "body": [
             "module ${1:moduleName} (",
             "    input      clk,",
-            "    input      RST,",
+            "    input      rst,",
             "    $2",
             ");",
             "    $3",
@@ -488,7 +488,15 @@
         ],
         "description": "Insert a module without parameter"
     },
-
+    "simple module": {
+        "prefix": "module",
+        "body": [
+            "module ${1:moduleName}($2);",
+            "    $3",
+            "endmodule //$1\n"
+        ],
+        "description": "Insert a common module"
+    },
     "generate_for": {
         "prefix": "genfor",
         "body": [
@@ -877,11 +885,22 @@
 		"description": ""
 	},
 
-    "random":{
+    "random" : {
 		"prefix": "$random",
 		"body": [
 			"\\$random($1)"
 		],
 		"description": ""
-	}
+	},
+
+    "wavedrom comment": {
+        "prefix" : "wavedrom",
+        "body": [
+            "/* @wavedrom",
+            "{",
+            "    $1",
+            "}",
+            "*/"
+        ]
+    }
 }

@@ -4,8 +4,7 @@ const vscode   = require("vscode");
 const instance = require("./instance");
 const opeParam = require('../../param');
 const fs = require("../../HDLfilesys");
-const HDLparser = require('../../HDLparser');
-const HDLParam = HDLparser.HdlParam;
+const { HDLParam } = require('../../HDLparser');
 
 const testbench = {
     overwrite : function() {
@@ -52,10 +51,10 @@ const testbench = {
             vscode.window.showErrorMessage('There is no module in this file');
         } else {
             if (items.length == 1) {
-                this.puts(items[0].mod);
+                this.puts(items[0].module);
             } else {
                 vscode.window.showQuickPick(items, option).then((select) => {
-                    this.puts(select.mod);
+                    this.puts(select.module);
                 });
             }
         }

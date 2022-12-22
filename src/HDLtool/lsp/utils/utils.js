@@ -111,7 +111,7 @@ var symbol = {
  * @process : 初始化 -> 合法性 -> 文本内查找(port, constants, methods) -> 跨文件查找(instance, define)
  */
 var utils = {
-    HDLparam : null,
+    HDLParam : null,
 
     nonblank : /\S+/g,
 
@@ -286,7 +286,7 @@ var utils = {
      * @returns 返回标识符所在的位置找到被定义内容(port | param)
      */
     getInstDefine : function (wordRange, item){
-        let modules = parser.utils.findModuleFromName(this.HDLparam, item.instModule);
+        let modules = parser.utils.findModuleFromName(this.HDLParam, item.instModule);
         let module = modules[0];
 
         // 确认所需定位的标识是否为例化的端口
@@ -327,8 +327,8 @@ var utils = {
         // 优先检测是否是指定例化模块名module
         let item = this.getItemInfo(wordRange, symbols, "instance");
         if (item.instModule == word) {
-            for (let index = 0; index < this.HDLparam.length; index++) {
-                const element = this.HDLparam[index];
+            for (let index = 0; index < this.HDLParam.length; index++) {
+                const element = this.HDLParam[index];
                 if (element.moduleName != word) {
                     continue;
                 }

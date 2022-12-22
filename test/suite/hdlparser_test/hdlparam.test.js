@@ -3,51 +3,51 @@ const assert = require('assert');
 
 const base = require('../../../src/HDLparser/base');
 const util = require('../../../src/HDLparser/util');
-const hdlPath = require('../../../src/HDLfilesys/operation/path');
+const HDLPath = require('../../../src/HDLfilesys/operation/path');
 
 const opeParam = require('../../../src/param');
 
-const TEST_ROOT = hdlPath.resolve(__dirname, '../..');
-const TEST_VLOG_FOLDER = hdlPath.join(TEST_ROOT, 'vlog/dependence_test');
+const TEST_ROOT = HDLPath.resolve(__dirname, '../..');
+const TEST_VLOG_FOLDER = HDLPath.join(TEST_ROOT, 'vlog/dependence_test');
 const TEST_TOP_MODULE = {
-    path : hdlPath.join(TEST_VLOG_FOLDER, 'parent.v'),
+    path : HDLPath.join(TEST_VLOG_FOLDER, 'parent.v'),
     name : 'Main'
 };
 const TEST_MODULE = {
-    path : hdlPath.join(TEST_VLOG_FOLDER, 'child_1.v'),
+    path : HDLPath.join(TEST_VLOG_FOLDER, 'child_1.v'),
     name : 'dependence_1'
 };
 const TOP_MODULES = [
     {
-        path : hdlPath.join(TEST_VLOG_FOLDER, 'parent.v'),
+        path : HDLPath.join(TEST_VLOG_FOLDER, 'parent.v'),
         name : 'Main'
     },
     {
-        path : hdlPath.join(TEST_VLOG_FOLDER, 'head_1.v'),
+        path : HDLPath.join(TEST_VLOG_FOLDER, 'head_1.v'),
         name : 'dependence_1'
     }
 ];
 const MODULE_NUM = 4;
 
-const HdlParam = base.HdlParam;
+const HDLParam = base.HDLParam;
 
 // 手动给配置赋值
 opeParam.workspacePath = TEST_VLOG_FOLDER;
 
-suite('HDLparser HdlParam Test Suite', () => {
+suite('HDLparser HDLParam Test Suite', () => {
 
-    test('test HdlParam HdlParam.Initialize', () => {
-        HdlParam.Initialize();
+    test('test HDLParam HDLParam.Initialize', () => {
+        HDLParam.Initialize();
     });
 
-    test('test HdlParam.getAllModules', () => {
-        const allModules = HdlParam.getAllModules();
+    test('test HDLParam.getAllModules', () => {
+        const allModules = HDLParam.getAllModules();
         assert.equal(allModules.length, MODULE_NUM);
     });
 
 
-    test('test HdlParam.getAllTopModules', () => {
-        const topModules = HdlParam.getAllTopModules();
+    test('test HDLParam.getAllTopModules', () => {
+        const topModules = HDLParam.getAllTopModules();
         assert.equal(topModules.length, TOP_MODULES.length);
         for (const topModule of topModules) {
             let inTopModules = false;
@@ -63,30 +63,30 @@ suite('HDLparser HdlParam Test Suite', () => {
     });
 
 
-    test('test HdlParam.isTopModule', () => {
-        let isTop = HdlParam.isTopModule(TEST_TOP_MODULE.path, TEST_TOP_MODULE.name);
+    test('test HDLParam.isTopModule', () => {
+        let isTop = HDLParam.isTopModule(TEST_TOP_MODULE.path, TEST_TOP_MODULE.name);
         assert(isTop);
     });
 
 
-    test('test HdlParam.hasModule', () => {
-        let has = HdlParam.hasModule(TEST_MODULE.path, TEST_MODULE.name);
+    test('test HDLParam.hasModule', () => {
+        let has = HDLParam.hasModule(TEST_MODULE.path, TEST_MODULE.name);
         assert(has);
     });
 
 
-    test('test HdlParam.findModule', () => {
-        let targetModule = HdlParam.findModule(TEST_MODULE.path, TEST_MODULE.name);
+    test('test HDLParam.findModule', () => {
+        let targetModule = HDLParam.findModule(TEST_MODULE.path, TEST_MODULE.name);
         assert.equal(targetModule.name, TEST_MODULE.name);
         assert.equal(targetModule.path, TEST_MODULE.path);
     });
 
 
-    test('test HdlParam.deleteModule', () => {
-        HdlParam.deleteModule(TEST_MODULE.path, TEST_MODULE.name);
-        assert(!HdlParam.hasModule(TEST_MODULE.path, TEST_MODULE.name));
+    test('test HDLParam.deleteModule', () => {
+        HDLParam.deleteModule(TEST_MODULE.path, TEST_MODULE.name);
+        assert(!HDLParam.hasModule(TEST_MODULE.path, TEST_MODULE.name));
         
-        let target = HdlParam.getAllModules().filter(mod => mod.name == TEST_MODULE.name && mod.path == TEST_MODULE.path);
+        let target = HDLParam.getAllModules().filter(module => module.name == TEST_MODULE.name && module.path == TEST_MODULE.path);
         assert.equal(target.length, 0);
     });
 

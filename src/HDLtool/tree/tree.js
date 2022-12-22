@@ -6,20 +6,9 @@ const fs = require('../../HDLfilesys');
 const HDLparser = require('../../HDLparser');
 const opeParam = require('../../param');
 const cells = require("./cells");
+const { getIconConfig } = require('../../HDLfilesys/icons');
 
-const HDLParam = HDLparser.HdlParam;
-
-
-function getIconPath(type, iconName) {
-    return `${opeParam.rootPath}/images/svg/${type}/` + iconName + ".svg";
-}
-
-function getIconConfig(iconName) {
-    return {
-        light: getIconPath('light', iconName),
-        dark: getIconPath('dark', iconName)
-    };
-}
+const HDLParam = HDLparser.HDLParam;
 
 class ArchDataItem {
     /**
@@ -122,6 +111,9 @@ class ArchTreeProvider {
 
         // set tooltip
         treeItem.tooltip = element.fsPath;
+        if (!treeItem.tooltip) {
+            treeItem.tooltip = "can't find the module of this instance";
+        }
 
         // set iconPath
         treeItem.iconPath = getIconConfig(element.icon);
@@ -145,12 +137,12 @@ class ArchTreeProvider {
         const folder = opeParam.prjInfo.ARCH.Hardware[type];
         const allTopModules = HDLParam.getAllTopModules();
         const topModuleItemList = [];
-        for (const mod of allTopModules) {
-            if (mod.path.includes(folder)) {
+        for (const module of allTopModules) {
+            if (module.path.includes(folder)) {
                 const topMuduleItem = new ArchDataItem('top',
                                                        type,
-                                                       mod.name,
-                                                       mod.path);
+                                                       module.name,
+                                                       module.path);
                 topModuleItemList.push(topMuduleItem);
             }
         }
@@ -168,15 +160,19 @@ class ArchTreeProvider {
     /**
      * 获取当前模块下的子模块
      * @param {ArchDataItem} element   父级元素
-     * @returns 该父级模块下所包含的所有例化模块信息
+     * @returns {Array<ArchDataItem>} 该父级模块下所包含的所有例化模块信息
      */
     getInstanceItemList(element) {
+        if (!element.fsPath) {        // 为解决依赖关系的 instance 对象
+            return [];
+        }
         let dataItemList = [];
         let localPath = opeParam.workspacePath;
 
         const targetModule = HDLParam.findModule(element.fsPath, element.name);
+        
         for (const inst of targetModule.getInstances()) {
-            let dataItem = new ArchDataItem('file', inst.name, inst.module.name, inst.module.path);
+            let dataItem = new ArchDataItem('file', inst.name, inst.type, inst.instModPath);
 
             if (dataItem.type == element.type &&            // 防止递归
                 dataItem.name == element.name &&
@@ -192,7 +188,7 @@ class ArchTreeProvider {
                     dataItem.icon = langID;
                 }
             } else {
-                if (cells.xilinx.has(inst.module.name)) {
+                if (cells.xilinx.has(inst.type)) {
                     dataItem.icon = "cells";
                 } else {
                     dataItem.icon = "File Error";

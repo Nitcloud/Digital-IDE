@@ -142,7 +142,7 @@
                     "name": "keyword.control.verilog"
                 },
                 "2": {
-                    "name": "entity.name.type.module.verilog"
+                    "name": "support.class"
                 }
             },
             "end": ";",
@@ -166,7 +166,7 @@
                     "include": "#ifmodport"
                 }
             ],
-            "name": "meta.module.verilog"
+            "name": "variable.module.verilog"
         },
         {
             "captures": {
@@ -281,7 +281,7 @@
                     "name": "comment.block.verilog"
                 },
                 "2": {
-                    "name": "keyword.psl.verilog"
+                    "name": "keyword.comment.special.verilog"
                 }
             },
             "end": "(\\*/)",
@@ -336,6 +336,69 @@
             "name": "meta.psl.verilog"
         },
         {
+            "begin": "\\s*(/\\*)\\s*(@wavedrom)",
+            "beginCaptures": {
+                "0": {
+                    "name": "meta.psl.verilog"
+                },
+                "1": {
+                    "name": "comment.block.verilog"
+                },
+                "2": {
+                    "name": "keyword.comment.special.verilog"
+                }
+            },
+            "end": "(\\*/)",
+            "endCaptures": {
+                "1": {
+                    "name": "comment.block.verilog"
+                }
+            },
+            "patterns": [
+                {
+                    "match": "\\s*(signal|assign|reg)",
+                    "captures": {
+                        "0": {
+                            "name": "keyword.wavedrom.verilog"
+                        },
+                        "2": {
+                            "name": "entity.wavedrom.name.verilog"
+                        },
+                        "3": {
+                            "name": "keyword.operator.verilog"
+                        }
+                    }
+                },
+                {
+                    "match": "\\s*(name|wave|data)",
+                    "captures": {
+                        "0": {
+                            "name": "variable.wavedrom.verilog"
+                        },
+                        "2": {
+                            "name": "entity.wavedrom.name.verilog"
+                        },
+                        "3": {
+                            "name": "keyword.operator.verilog"
+                        },
+                        "4": {
+                            "name": "variable.wavedrom.verilog"
+                        }
+                    }
+                },
+                {
+                    "include": "#operators"
+                },
+                {
+                    "include": "#constants"
+                },
+                {
+                    "include" : "#strings" 
+                }
+            ],
+            "name": "meta.comment.wavedrom"
+        },
+        {
             "match": "\\s*\\b(automatic|cell|config|deassign|defparam|design|disable|edge|endconfig|endgenerate|endspecify|endtable|event|generate|genvar|ifnone|incdir|instance|liblist|library|macromodule|negedge|noshowcancelled|posedge|pulsestyle_onevent|pulsestyle_ondetect|scalared|showcancelled|specify|specparam|table|use|vectored)\\b",
             "captures": {
                 "1": {
@@ -373,10 +436,10 @@
         {
             "captures": {
                 "1": {
-                    "name": "constant.other.define.verilog"
+                    "name": "storage.type.define.verilog"
                 },
                 "2": {
-                    "name": "entity.name.type.define.verilog"
+                    "name": "variable.other.constant.define.verilog"
                 }
             },
             "match": "^\\s*(`define)\\s+([a-zA-Z_][a-zA-Z0-9_]*)",
@@ -543,7 +606,7 @@
                     "name": "keyword.control.verilog"
                 },
                 "4": {
-                    "name": "storage.module.verilog"
+                    "name": "support.class"
                 }
             },
             "end": "(?=;|=|:)",
@@ -568,7 +631,7 @@
                 },
                 {
                     "match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\b(?=\\s*(\\(|$))",
-                    "name": "entity.name.type.module.verilog"
+                    "name": "support.class"
                 }
             ],
             "name": "meta.module.inst.param.verilog"
@@ -577,10 +640,10 @@
             "begin": "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\s+(?!intersect|and|or|throughout|within)([a-zA-Z_][a-zA-Z0-9_]*)\\s*(\\[(\\d+)(\\:(\\d+))?\\])?\\s*(\\(|$)",
             "beginCaptures": {
                 "1": {
-                    "name": "storage.module.verilog"
+                    "name": "support.class"
                 },
                 "2": {
-                    "name": "entity.name.type.module.verilog"
+                    "name": "entity.name.module.verilog"
                 },
                 "4": {
                     "name": "constant.numeric.verilog"
@@ -607,7 +670,7 @@
                     "include": "#constants"
                 }
             ],
-            "name": "meta.module.inst.verilog"
+            "name": "variable.module.inst.verilog"
         },
         {
             "name": "meta.struct.assign.verilog",
@@ -717,11 +780,11 @@
                 },
                 {
                     "match": "`(celldefine|else|elsif|endcelldefine|endif|include|line|nounconnected_drive|resetall|timescale|unconnected_drive|undef|begin_\\w+|end_\\w+|remove_\\w+|restore_\\w+)\\b",
-                    "name": "constant.other.preprocessor.verilog"
+                    "name": "storage.type.define.verilog"
                 },
                 {
                     "match": "`\\b([a-zA-Z_][a-zA-Z0-9_]*)\\b",
-                    "name": "constant.other.define.verilog"
+                    "name": "variable.other.constant.define.verilog"
                 },
                 {
                     "match": "\\b(null)\\b",
@@ -744,7 +807,7 @@
                     "name": "keyword.operator.logical.verilog"
                 },
                 {
-                    "match": "(&|\\||\\^|~|{|'{|}|<<|>>|\\?|:)",
+                    "match": "(&|\\||\\^|~|{|'{|}|<<|>>|\\?|:|\\[|\\])",
                     "name": "keyword.operator.bitwise.verilog"
                 },
                 {
@@ -782,7 +845,7 @@
                     "match": "\\s*\\b(output|input|inout|ref)\\s+(([a-zA-Z_][a-zA-Z0-9_]*)(::))?([a-zA-Z_][a-zA-Z0-9_]*)?\\s+(?=\\[[a-zA-Z0-9_\\-\\+]*:[a-zA-Z0-9_\\-\\+]*\\]\\s+[a-zA-Z_][a-zA-Z0-9_\\s]*)",
                     "captures": {
                         "1": {
-                            "name": "support.type.verilog"
+                            "name": "keyword.type.verilog"
                         },
                         "3": {
                             "name": "support.type.scope.verilog"
@@ -799,7 +862,7 @@
                     "match": "\\s*\\b(output|input|inout|ref)\\s+(([a-zA-Z_][a-zA-Z0-9_]*)(::))?([a-zA-Z_][a-zA-Z0-9_]*)?\\s+(?=[a-zA-Z_][a-zA-Z0-9_\\s]*)",
                     "captures": {
                         "1": {
-                            "name": "support.type.verilog"
+                            "name": "keyword.type.verilog"
                         },
                         "3": {
                             "name": "support.type.scope.verilog"
@@ -814,7 +877,7 @@
                 },
                 {
                     "match": "\\s*\\b(output|input|inout|ref)\\b",
-                    "name": "support.type.verilog"
+                    "name": "keyword.type.verilog"
                 }
             ]
         },
@@ -978,7 +1041,7 @@
             "match": "\\.([a-zA-Z_][a-zA-Z0-9_]*)\\s*",
             "captures": {
                 "1": {
-                    "name": "support.function.port.implicit.verilog"
+                    "name": "keyword.inst.port.verilog"
                 }
             }
         },

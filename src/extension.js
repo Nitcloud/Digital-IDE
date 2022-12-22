@@ -9,10 +9,10 @@
  */
 
 const HDLtool = require('./HDLtool');
-const HDLparser = require('./HDLparser');
+const { HDLParam } = require('./HDLparser');
 const opeParam = require('./param');
 
-const hdlFile = require('./HDLfilesys/operation/files');
+const HDLFile = require('./HDLfilesys/operation/files');
 
 
 function launch() {
@@ -21,21 +21,22 @@ function launch() {
     manage.getOpeParam(opeParam);
 
     // 初始化HdlParam
-    const HdlParam = HDLparser.HdlParam;
-    HdlParam.Initialize();
+    HDLParam.Initialize();
 
-    const files = [];
-    hdlFile.getHDLFiles(opeParam.workspacePath, files);
-
+    const files = HDLFile.getHDLFiles(opeParam.workspacePath);
 
     console.log(opeParam.prjInfo.ARCH);
-    console.log('init num', HdlParam.Modules.size);
+    console.log('init num', HDLParam.Modules.size);
 }
 
 async function activate(context) {
+    const start = Date.now();
     launch();
     HDLtool.registerSimServer(context);
-    HDLtool.registerTreeServer();
+    HDLtool.registerTreeServer(context);
+    HDLtool.registerDocumentation(context);
+
+    console.log('cost time : ' + (Date.now() - start) / 1000 + 's');
 }
 
 exports.activate = activate;

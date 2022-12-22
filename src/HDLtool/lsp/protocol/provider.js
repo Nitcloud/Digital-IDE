@@ -97,8 +97,8 @@ class WorkspaceSymbolProvider {
 exports.wspSymbolProvider = WorkspaceSymbolProvider;
 
 class symbolDefine {
-    constructor(HDLparam) {
-        this.HDLparam = HDLparam;
+    constructor(HDLParam) {
+        this.HDLParam = HDLParam;
         this.nonblank = /\S+/g;
         this.b_comment = /\/\*[\s\S]*?\*\//g;
         this.b_comment_begin = /(?<!(\s*\w+\s*))(\/\/.*)/g;
@@ -128,7 +128,7 @@ class symbolDefine {
     getSymbolDefine(document, position) {
         let results = [];
         this.config(document, position);
-        const info = parser.HDLparam;
+        const info = parser.HDLParam;
         const symbols = parser.utils.getSymbols({
             languageId : document.languageId,
             code : fs.files.readFile(this.config.path),
