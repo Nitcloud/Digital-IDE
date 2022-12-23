@@ -4,10 +4,9 @@ const assert = require('assert');
 const showdown = require('showdown');
 
 const HDLPath = require('../../../src/HDLfilesys/operation/path');
+const { makeWaveDromSVG } = require('../../../src/HDLtool/doc/common');
 const { makeMarkdownFromFile, getDocsFromFile } = require('../../../src/HDLtool/doc/markdown');
 const { HDLParam } = require('../../../src/HDLparser');
-const { makeWaveDromSVG } = require('../../../src/HDLtool/doc/easy-wavedrom');
-
 
 const TEST_ROOT = HDLPath.resolve(__dirname);
 const TEST_SHOWDOWN_FILE = HDLPath.join(TEST_ROOT, 'data/showdown.test.md');

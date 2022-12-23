@@ -23,8 +23,6 @@ function launch() {
     // 初始化HdlParam
     HDLParam.Initialize();
 
-    const files = HDLFile.getHDLFiles(opeParam.workspacePath);
-
     console.log(opeParam.prjInfo.ARCH);
     console.log('init num', HDLParam.Modules.size);
 }

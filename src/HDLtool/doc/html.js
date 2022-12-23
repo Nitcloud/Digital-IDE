@@ -2,12 +2,9 @@ const vscode = require('vscode');
 const assert = require('assert');
 const fs = require('fs');
 
-const { getDocsFromFile } = require('./markdown');
-const { getWavedromsFromFile } = require('./easy-wavedrom');
-const { toSlash } = require('../../HDLfilesys/operation/path');
+const { getDocsFromFile, getRenderList, getCurrentRenderList } = require('./markdown');
 const { getIconConfig } = require('../../HDLfilesys/icons');
-const { MarkdownString } = require('./common');
-const { WavedromString } = require('./easy-wavedrom');
+
 const opeParam = require('../../param');
 const HDLPath = require('../../HDLfilesys/operation/path');
 
@@ -46,35 +43,6 @@ function getDocCssString() {
     }
 }
 
-/**
- * @description merge sort by line
- * @param {Array<MarkdownString>} docs
- * @param {Array<WavedromString>} svgs 
- * @returns {Array<MarkdownString | WavedromString>}
- */
-function mergeSortByLine(docs, svgs) {
-    const renderList = [];
-    let i = 0, j = 0;
-    while (i < docs.length && j < svgs.length) {
-        if (docs[i].line < svgs[j].line) {
-            renderList.push(docs[i]);
-            i ++;
-        } else {
-            renderList.push(svgs[j]);
-            j ++;
-        }
-    }
-    while (i < docs.length) {
-        renderList.push(docs[i]);
-        i ++;
-    }
-    while (j < svgs.length) {
-        renderList.push(svgs[j]);
-        j ++;
-    }
-    return renderList;
-}
-
 
 function makeWavedromRenderErrorHTML() {
     return `<div class="error-out">
@@ -83,11 +51,7 @@ function makeWavedromRenderErrorHTML() {
 }
 
 function showDocWebview() {
-    const editor = vscode.window.activeTextEditor;
-    const path = toSlash(editor.document.fileName);
-    const docs = getDocsFromFile(path);
-    const svgs = getWavedromsFromFile(path);
-    const renderList = mergeSortByLine(docs, svgs);
+    const renderList = getCurrentRenderList();
 
     // start to render the real html
     let body = '';
@@ -103,7 +67,6 @@ function showDocWebview() {
     // add css
     let style = getDocCssString();
     const html = makeFinalHTML(body, style);
-    fs.writeFileSync(HDLPath.join(opeParam.rootPath, 'result.html'), html);
 
     const webview = vscode.window.createWebviewPanel(
         'TOOL.showDocWebview', 
@@ -116,6 +79,11 @@ function showDocWebview() {
     );
     webview.iconPath = getIconConfig('documentation');
     webview.webview.html = html;
+}
+
+
+function exportCurrentFileDocAsHTML() {
+
 }
 
 

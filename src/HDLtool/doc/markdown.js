@@ -1,9 +1,14 @@
 const vscode = require('vscode');
 const assert = require('assert');
+const fs = require('fs');
 
 const { toSlash } = require('../../HDLfilesys/operation/path');
 const { HDLParam, Module } = require('../../HDLparser');
-const { MarkdownString, BaseDoc } = require('./common');
+const { MarkdownString, BaseDoc, RenderString,
+        mergeSortByLine, getWavedromsFromFile } = require('./common');
+
+const opeParam = require('../../param');
+const HDLPath = require('../../HDLfilesys/operation/path');
 
 /**
  * @param {MarkdownString} md 
@@ -167,9 +172,39 @@ function makeMarkdownFromFile(path) {
     return fileDocs;
 }
 
+/**
+ * @description get render list of path
+ * @param {string} path
+ * @returns {Array<RenderString>} 
+ */
+ function getRenderList(path) {
+    const docs = getDocsFromFile(path);
+    const svgs = getWavedromsFromFile(path);
+    const renderList = mergeSortByLine(docs, svgs);
+    return renderList;
+}
+
+
+/**
+ * @description return render list of current file 
+ * @returns {Array<RenderString>}
+ */
+function getCurrentRenderList() {
+    const editor = vscode.window.activeTextEditor;
+    const currentFilePath = toSlash(editor.document.fileName);
+    return getRenderList(currentFilePath);
+}
+
+
+function exportCurrentFileDocAsMarkdown() {
+
+}
+
 
 
 module.exports = {
     makeMarkdownFromFile,
-    getDocsFromFile
+    getDocsFromFile,
+    getRenderList,
+    getCurrentRenderList
 };

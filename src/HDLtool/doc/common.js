@@ -1,5 +1,17 @@
 const assert = require('assert');
+const vscode = require('vscode');
 const showdown = require('showdown');
+const fs = require('fs');
+const json5 = require('json5');
+
+const renderAny = require('wavedrom/lib/render-any');
+const onmlStringify = require('onml/stringify.js');
+const darkSkin = require('wavedrom/skins/dark');
+const lightSkin = require('wavedrom/skins/default');
+
+const Global = {
+    svgMakeTimes : 0
+};
 
 const converter = new showdown.Converter({
     tables : true,
@@ -22,6 +34,11 @@ const MarkdownAlign = {
     Center : 'Center',
     Right : 'Right'    
 };
+
+const RenderType = {
+    Wavedrom : 'Wavedrom',
+    Markdown : 'Markdown'
+}
 
 const MarkdownAlignSpliter = {
     Left : ':---',
@@ -47,6 +64,14 @@ function catString(...strings) {
     return strings.join('');
 }
 
+function getThemeColorKind() {
+    const currentColorKind = vscode.window.activeColorTheme.kind;
+    if (currentColorKind == vscode.ColorThemeKind.Dark || currentColorKind == vscode.ColorThemeKind.HighContrast) {
+        return 'dark';
+    } else {
+        return 'light';
+    }
+}
 
 class BaseDoc {
     constructor(value) {
@@ -162,20 +187,28 @@ class Table extends BaseDoc {
     }
 };
 
-class Svg extends BaseDoc {
-    constructor(uri) {
-        super();
-        this.uri;
+class RenderString {
+    /**
+     * @param {number} line start line id of the render 
+     * @param {string} type type, must be in RenderType 
+     */
+    constructor(line, type) {
+        this.line = line;
+        this.type = type;
     }
-};
+    /**
+     * @description render to the target html string
+     * @returns {string}
+     */
+    render() {}
+}
 
-
-class MarkdownString {
+class MarkdownString extends RenderString {
     /**
      * @param {number} line start line number of module in the file 
      */
     constructor(line) {
-        this.line = line
+        super(line, RenderType.Markdown);
         this.values = [];
     }
     addText(value, end='\n') {
@@ -218,6 +251,7 @@ class MarkdownString {
         this.values.push({tag, end});
     }
     addSplit(value) {
+        const end = '\n';
         const tag = new Split();
         this.values.push({tag, end});
     }
@@ -239,8 +273,119 @@ class MarkdownString {
 };
 
 
+const SvgStyle = {
+    light : lightSkin,
+    dark : darkSkin
+};
+
+class WavedromString extends RenderString {
+    constructor(line) {
+        super(line, RenderType.Wavedrom);
+        this.value = '';
+    }
+    add(text) {
+        this.value += text;
+    }
+    render() {
+        const style = getThemeColorKind();
+        return makeWaveDromSVG(this.value, style);
+    }
+};
+
+/**
+ * @description make svg according to the input wavedrom-style json
+ * @param {string} wavedromComment
+ * @param {string} style light, dark
+ * @returns {string} 
+ */
+function makeWaveDromSVG(wavedromComment, style) {
+    try {
+        const json = json5.parse(wavedromComment);
+        const index = Global.svgMakeTimes;
+        const skin = SvgStyle[style];
+        const renderObj = renderAny(Global.svgMakeTimes, json, skin);
+        const svgString = onmlStringify(renderObj);
+        Global.svgMakeTimes += 1;
+        return "<br>" + svgString + "<br>";
+    } catch (error) {
+        return undefined;
+    }
+}
+
+
+/**
+ * @description make object of wavedroms according to a HDL file
+ * @param {string} path 
+ * @returns {Array<WavedromString>}
+ */
+function getWavedromsFromFile(path) {
+    let lineID = 0;
+    let findWavedrom = false;
+    const wavedroms = [];
+
+    const text = fs.readFileSync(path, 'utf-8');
+    // TODO : parse it line by line 
+    for (const line of text.split('\n')) {
+        lineID += 1;
+        if (findWavedrom) {
+            if (/\*\//g.test(line)) {
+                findWavedrom = false;
+            } else {
+                const currentWav = wavedroms[wavedroms.length - 1];
+                currentWav.add(line.trim());
+            }
+        } else {
+            if (/\/\*[\s\S]*(@wavedrom)/g.test(line)) {
+                findWavedrom = true;
+                const newWavedrom = new WavedromString(lineID);
+                wavedroms.push(newWavedrom);
+            }
+        }
+    }
+
+    return wavedroms;
+}
+
+
+/**
+ * @description merge sort by line
+ * @param {Array<MarkdownString>} docs
+ * @param {Array<WavedromString>} svgs 
+ * @returns {Array<RenderString>}
+ */
+ function mergeSortByLine(docs, svgs) {
+    const renderList = [];
+    let i = 0, j = 0;
+    while (i < docs.length && j < svgs.length) {
+        if (docs[i].line < svgs[j].line) {
+            renderList.push(docs[i]);
+            i ++;
+        } else {
+            renderList.push(svgs[j]);
+            j ++;
+        }
+    }
+    while (i < docs.length) {
+        renderList.push(docs[i]);
+        i ++;
+    }
+    while (j < svgs.length) {
+        renderList.push(svgs[j]);
+        j ++;
+    }
+    return renderList;
+}
+
+
+
 module.exports = {
     converter,
+    mergeSortByLine,
+    RenderType,
     BaseDoc,
-    MarkdownString
+    MarkdownString,
+    WavedromString,
+    RenderString,
+    makeWaveDromSVG,
+    getWavedromsFromFile
 };
