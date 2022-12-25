@@ -336,7 +336,7 @@
             "name": "meta.psl.verilog"
         },
         {
-            "begin": "\\s*(/\\*)\\s*(@wavedrom)",
+            "begin": "\\s*(/\\*)\\s*(@wavedrom)\\s*([\\S\\s]*)",
             "beginCaptures": {
                 "0": {
                     "name": "meta.psl.verilog"
@@ -346,6 +346,12 @@
                 },
                 "2": {
                     "name": "keyword.comment.special.verilog"
+                },
+                "3": {
+                    "name": "comment.block.verilog"
+                },
+                "4": {
+                    "name": "comment.block.verilog"
                 }
             },
             "end": "(\\*/)",

@@ -1,4 +1,5 @@
 const fspath = require("path");
+const fs = require('fs');
 
 const HDLPath = {
     log : console.log,
@@ -108,6 +109,39 @@ const HDLPath = {
         // 先做反斜杠保护
         path = this.toSlash(path);
         return path.replace(str, path);
+    },
+
+    /**
+     * @description delete the folder
+     * @param {string} path path of the target folder 
+     */
+    deleteFolder(path) {
+        if (fs.existsSync(path)) {
+            if (fs.statSync(path).isDirectory()) {
+                const files = fs.readdirSync(path);
+                files.forEach(function (file, index) {
+                    const curPath = HDLPath.join(path, file);
+                    if (fs.statSync(curPath).isDirectory()) { // recurse
+                        HDLPath.deleteFolder(curPath);
+                    } else {                                  // delete file
+                        fs.unlinkSync(curPath);
+                    }
+                });
+                fs.rmdirSync(path);
+            } else {
+                fs.unlinkSync(path);
+            }
+        }
+    },
+
+    /**
+     * @description delete the target file
+     * @param {string} path path of the target file
+     */
+    deleteFile(path) {
+        if (fs.existsSync(path)) {
+            fs.rmSync(path)
+        }
     }
 }
 module.exports = HDLPath;

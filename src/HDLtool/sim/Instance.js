@@ -153,7 +153,7 @@ const instance = {
         // NAME => NAME,
         let portStr = `\n\t-- ports\n`;
         for (let i = 0; i < ports.length; i++) {
-            const name = ports[i].name;
+            let name = ports[i].name;
             let padding = nmax - name.length + 1;
             name += ' '.repeat(padding);
             portStr += `\t${name} => ${name}`;
@@ -176,7 +176,7 @@ const instance = {
 
         // NAME => NAME,
         for (let i = 0; i < params.length; i++) {
-            const name = params[i].name;
+            let name = params[i].name;
             const init = params[i].init;
 
             let npadding = nmax - name.length + 1;

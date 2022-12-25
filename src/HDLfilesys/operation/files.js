@@ -365,6 +365,24 @@ const HDLFile = {
     },
 
     /**
+     * @description judge if this is a HDL file
+     * @param {string} path 
+     * @returns {boolean}
+     */
+    isHDLFiles(path) {
+        const exts = [
+            // verilog
+            ".v", ".V", ".vh", ".vl", 
+            // systemverilog
+            ".sv", ".SV", 
+            // vhdl
+            ".vhd", ".vhdl", ".vho", ".vht"
+        ];
+        const extName = pathfs.extname(path);
+        return exts.includes(extName);
+    },
+
+    /**
      * @state finish-test
      * @descriptionCn  获取当前文件的语言类型
      * @param {String} path 文件的绝对路径

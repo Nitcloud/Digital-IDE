@@ -2,13 +2,25 @@ const vscode = require('vscode');
 const assert = require('assert');
 const fs = require('fs');
 
-const { toSlash } = require('../../HDLfilesys/operation/path');
 const { HDLParam, Module } = require('../../HDLparser');
-const { MarkdownString, BaseDoc, RenderString,
+const { MarkdownString, BaseDoc, RenderString, RenderType,
+        Global,
         mergeSortByLine, getWavedromsFromFile } = require('./common');
 
 const opeParam = require('../../param');
 const HDLPath = require('../../HDLfilesys/operation/path');
+const HDLFile = require('../../HDLfilesys/operation/files');
+
+
+function makeSVGElementByLink(link, caption) {
+    let mainHtml;
+    if (caption) {
+        mainHtml = `<div align=center><img src="${link}"></img><p class="ImgCaption">${caption}</p></div>`;
+    } else {
+        mainHtml = `<div align=center><img src="${link}"></img></div>`;
+    }
+    return '<br>' + mainHtml + '<br><br>\n';
+}
 
 /**
  * @param {MarkdownString} md 
@@ -54,8 +66,8 @@ function makeMarkdownFromModule(module) {
 
     const md = new MarkdownString(module.range.start.line);
     // add module name
-    md.addTitle(moduleName, 2);
-    md.addTitle('Basic Info', 3);
+    md.addTitle(moduleName, 1);
+    md.addTitle('Basic Info', 2);
     const infos = [
         `${portNum} params, ${paramNum} ports`,
         'top module ' + topModuleDesc
@@ -63,15 +75,15 @@ function makeMarkdownFromModule(module) {
     md.addUnorderedList(infos);
     md.addEnter();
 
-    md.addTitle('params', 3);
+    md.addTitle('params', 2);
     makeTableFromObjArray(md, module.params, 'params', ['name', 'type', 'init']);
     md.addEnter();
     
-    md.addTitle('ports', 3);
+    md.addTitle('ports', 2);
     makeTableFromObjArray(md, module.ports, 'ports', ['name', 'type', 'width']);
     md.addEnter();
     
-    md.addTitle('Dependency', 3);
+    md.addTitle('Dependency', 2);
     const insts = [];
     for (const inst of module.getInstances()) {
         insts.push(inst);
@@ -122,8 +134,8 @@ function makeMarkdownFromFile(path) {
 
     const md = new MarkdownString(module.range.start.line);
     // add module name
-    md.addTitle(moduleName, 2);
-    md.addTitle('Basic Info', 3);
+    md.addTitle(moduleName, 1);
+    md.addTitle('Basic Info', 2);
     const infos = [
         `${portNum} params, ${paramNum} ports`,
         'top module ' + topModuleDesc
@@ -131,15 +143,15 @@ function makeMarkdownFromFile(path) {
     md.addUnorderedList(infos);
     md.addEnter();
 
-    md.addTitle('params', 3);
+    md.addTitle('params', 2);
     makeTableFromObjArray(md, module.params, 'params', ['name', 'type', 'init']);
     md.addEnter();
     
-    md.addTitle('ports', 3);
+    md.addTitle('ports', 2);
     makeTableFromObjArray(md, module.ports, 'ports', ['name', 'type', 'width']);
     md.addEnter();
     
-    md.addTitle('Dependency', 3);
+    md.addTitle('Dependency', 2);
     const insts = [];
     for (const inst of module.getInstances()) {
         insts.push(inst);
@@ -178,6 +190,10 @@ function makeMarkdownFromFile(path) {
  * @returns {Array<RenderString>} 
  */
  function getRenderList(path) {
+    if (!HDLFile.isHDLFiles(path)) {
+        vscode.window.showErrorMessage('Please use the command in a HDL file!');
+        return [];
+    }
     const docs = getDocsFromFile(path);
     const svgs = getWavedromsFromFile(path);
     const renderList = mergeSortByLine(docs, svgs);
@@ -191,20 +207,63 @@ function makeMarkdownFromFile(path) {
  */
 function getCurrentRenderList() {
     const editor = vscode.window.activeTextEditor;
-    const currentFilePath = toSlash(editor.document.fileName);
+    const currentFilePath = HDLPath.toSlash(editor.document.fileName);
     return getRenderList(currentFilePath);
 }
 
 
 function exportCurrentFileDocAsMarkdown() {
+    const editor = vscode.window.activeTextEditor;
+    const currentFilePath = HDLPath.toSlash(editor.document.fileName);
+    const HDLFileName = HDLPath.basename(currentFilePath);
 
+    const renderList = getRenderList(currentFilePath);
+    if (renderList.length == 0) {
+        return;
+    }
+
+    const wsPath = opeParam.workspacePath;
+    const markdownFolderPath = HDLPath.join(wsPath, 'markdown');
+    if (!fs.existsSync(markdownFolderPath)) {
+        fs.mkdirSync(markdownFolderPath);
+    }
+    const currentRoot = HDLPath.join(markdownFolderPath, HDLFileName);
+    if (fs.existsSync(currentRoot)) {
+        HDLPath.deleteFolder(currentRoot);
+    }
+    fs.mkdirSync(currentRoot);
+    const figureFolder = HDLPath.join(currentRoot, 'figure');
+    fs.mkdirSync(figureFolder);
+
+    let markdown = '';
+    for (const r of renderList) {
+        if (r.type == RenderType.Markdown) {
+            markdown += r.renderMarkdown() + '\n';
+        } else if (r.type == RenderType.Wavedrom) {
+            const svgString = r.render();
+            const svgName = 'wavedrom-' + Global.svgMakeTimes + '.svg';
+            const svgPath = HDLPath.join(figureFolder, svgName);
+            fs.writeFileSync(svgPath, svgString);
+            const relatePath = HDLPath.join('./figure', svgName);
+            const svgHtml = makeSVGElementByLink(relatePath);
+            markdown += '\n\n' + svgHtml + '\n\n';
+        }
+    }
+    
+    const markdownName = 'index.md';
+    const markdownPath = HDLPath.join(currentRoot, markdownName);
+    fs.writeFileSync(markdownPath, markdown);
 }
 
-
+function exportProjectDocAsMarkdown() {
+    vscode.window.showInformationMessage('this is exportProjectDocAsMarkdown');
+}
 
 module.exports = {
     makeMarkdownFromFile,
     getDocsFromFile,
     getRenderList,
-    getCurrentRenderList
+    getCurrentRenderList,
+    exportCurrentFileDocAsMarkdown,
+    exportProjectDocAsMarkdown
 };

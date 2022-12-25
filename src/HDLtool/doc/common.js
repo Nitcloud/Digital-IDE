@@ -279,9 +279,10 @@ const SvgStyle = {
 };
 
 class WavedromString extends RenderString {
-    constructor(line) {
+    constructor(line, desc) {
         super(line, RenderType.Wavedrom);
         this.value = '';
+        this.desc = desc;
     }
     add(text) {
         this.value += text;
@@ -306,7 +307,7 @@ function makeWaveDromSVG(wavedromComment, style) {
         const renderObj = renderAny(Global.svgMakeTimes, json, skin);
         const svgString = onmlStringify(renderObj);
         Global.svgMakeTimes += 1;
-        return "<br>" + svgString + "<br>";
+        return svgString;
     } catch (error) {
         return undefined;
     }
@@ -337,7 +338,9 @@ function getWavedromsFromFile(path) {
         } else {
             if (/\/\*[\s\S]*(@wavedrom)/g.test(line)) {
                 findWavedrom = true;
-                const newWavedrom = new WavedromString(lineID);
+                let spliters = line.trim().split('@wavedrom');
+                let desc = spliters[spliters.length - 1];
+                const newWavedrom = new WavedromString(lineID, desc);
                 wavedroms.push(newWavedrom);
             }
         }
@@ -387,5 +390,6 @@ module.exports = {
     WavedromString,
     RenderString,
     makeWaveDromSVG,
-    getWavedromsFromFile
+    getWavedromsFromFile,
+    Global
 };

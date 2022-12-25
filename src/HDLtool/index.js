@@ -6,8 +6,8 @@ const tree = require("./tree/tree");
 const instance = require("./sim/instance");
 const testbench = require("./sim/testbench");
 
-const markdown = require('./doc/markdown');
 const html = require('./doc/html');
+const doc = require('./doc');
 
 const manage = prj.PrjManage;
 // /**
@@ -99,10 +99,9 @@ function registerTreeServer(context) {
 
 
 function registerDocumentation(context) {
-    vscode.commands.registerCommand('TOOL.ShowDocWebview', () => {
-        html.showDocWebview();
-    });
-
+    vscode.commands.registerCommand('TOOL.ShowDocWebview', html.showDocWebview);
+    doc.registerFileDocExport(context);
+    doc.registerProjectDocExport(context);
 }
 
 function registerPrjServer(context) {

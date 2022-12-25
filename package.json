@@ -244,7 +244,73 @@
                     "type": "string",
                     "default": "",
                     "description": "set the gtkwave install path. \n e.g. : D:/APP/iverilog/gtkwave/bin/"
+                },
+                "TOOL.doc.webview.backgroundImage": {
+                    "type": "string",
+                    "default": "",
+                    "description": "url of the background image"
+                },
+                "TOOL.doc.pdf.scale": {
+                    "type": "number",
+                    "default": 1,
+                    "description": "scale of the exported pdf"
+                },
+                "TOOL.doc.pdf.printBackground" : {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "whether print background"
+                },
+                "TOOL.doc.pdf.landscape": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "whether export pdf as a landscape style"
+                },
+                "TOOL.doc.pdf.format": {
+                    "type": "string",
+                    "default": "A4",
+                    "description": "format of pdf size"
+                },
+                "TOOL.doc.pdf.displayHeaderFooter": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "display header and footer in the exported pdf"
+                },
+                "TOOL.doc.pdf.browserPath": {
+                    "type": "string",
+                    "default": "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+                    "description": "the absolute path of edge or chrome, we need browser to render pdf"
+                },
+                "TOOL.doc.pdf.margin.top" : {
+                    "type": "number",
+                    "default": 0.5,
+                    "description": "top margin of exported pdf, unit cm"
+                },
+                "TOOL.doc.pdf.margin.right" : {
+                    "type": "number",
+                    "default": 0.5,
+                    "description": "top margin of exported pdf, unit cm"
+                },
+                "TOOL.doc.pdf.margin.bottom" : {
+                    "type": "number",
+                    "default": 0.5,
+                    "description": "top margin of exported pdf, unit cm"
+                },
+                "TOOL.doc.pdf.margin.left" : {
+                    "type": "number",
+                    "default": 0.5,
+                    "description": "top margin of exported pdf, unit cm"
+                },
+                "TOOL.doc.pdf.headerTemplate": {
+                    "type": "string",
+                    "default": "<div style=\"font-size: 9px; margin-left: 1cm;\"> <span class='title'></span></div> <div style=\"font-size: 9px; margin-left: auto; margin-right: 1cm; \"> <span class='date'></span></div>",
+                    "description": "html template of header, if displayHeaderFooter is set to false, this setting will be ignored"
+                },
+                "TOOL.doc.pdf.footerTemplate": {
+                    "type": "string",
+                    "default": "<div style=\"font-size: 9px; margin-left: 1cm;\"> <span class='title'></span></div> <div style=\"font-size: 9px; margin-left: auto; margin-right: 1cm; \"> <span class='date'></span></div>",
+                    "description": "<div style=\"font-size: 9px; margin: 0 auto;\"> <span class='pageNumber'></span> / <span class='totalPages'></span></div>"
                 }
+
             }
         },
         "viewsContainers": {
@@ -652,23 +718,13 @@
                 "category": "HARD"
             },
             {
-                "command": "TOOL.DocumentProject",
-                "title": "make the document of the project",
+                "command": "TOOL.export.file",
+                "title": "export the document of current file",
                 "category": "TOOL"
             },
             {
-                "command": "TOOL.ExportMarkdown",
-                "title": "export the document of current file as markdown",
-                "category": "TOOL"
-            },
-            {
-                "command": "TOOL.ExportHTML",
-                "title": "export the document of current file as HTML",
-                "category": "TOOL"
-            },
-            {
-                "command": "TOOL.ExportPDF",
-                "title": "export the document of current file as PDF",
+                "command": "TOOL.export.project",
+                "title": "export the document of the project",
                 "category": "TOOL"
             },
             {
@@ -686,12 +742,12 @@
                 {
                     "command": "TOOL.libPick",
                     "group": "navigation",
-                    "when": "view == TOOL.file_tree"
+                    "when": "view == TOOL.arch_tree"
                 },
                 {
                     "command": "FILE.refresh",
                     "group": "navigation",
-                    "when": "view == TOOL.file_tree"
+                    "when": "view == TOOL.arch_tree"
                 }
             ],
             "view/item/context": [
@@ -873,6 +929,27 @@
                     "fontPath": "./icons/iconfont.woff2",
                     "fontCharacter": "\\e60b"
                 }
+            },
+            "export-html": {
+                "description": "export html",
+                "default": {
+                    "fontPath": "./icons/iconfont.woff2",
+                    "fontCharacter": "\\e633"
+                }
+            },
+            "export-markdown": {
+                "description": "export markdown",
+                "default": {
+                    "fontPath": "./icons/iconfont.woff2",
+                    "fontCharacter": "\\ee68"
+                }
+            },
+            "export-pdf": {
+                "description": "export pdf",
+                "default": {
+                    "fontPath": "./icons/iconfont.woff2",
+                    "fontCharacter": "\\e684"
+                }
             }
         }
     },
@@ -894,7 +971,7 @@
         "antlr4": "^4.8.0",
         "chokidar": "^3.5.3",
         "json5": "^2.2.2",
-        "line-reader": "^0.4.0",
+        "puppeteer-core": "^19.4.1",
         "showdown": "^2.1.0",
         "state-machine-cat": "^9.2.5",
         "wavedrom": "^2.9.1"

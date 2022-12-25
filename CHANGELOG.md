@@ -5,7 +5,26 @@ All notable changes to the "FPGA Develop Support" extension will be documented i
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.1.23] - 2022-12-24
+- Finish the css of documentation, see `./css/documentation.css` for detail.
+
+## [0.1.23] - 2022-12-23
+- Finish the function of documentation, webview display
+- Finish the function of documentation, support export markdown and html
+
+## [0.1.23] - 2022-12-22
+- Rename partial tokens of verilog, make highlighting more colorful
+
+## [0.1.23] - 2022-12-05
+- Tree View can display the module that has not solved the dependence
+- Finish the function of Instance and add icon for each solved module
+
+## [0.1.23] - 2022-12-02
+- Add unit test for most of logic
+
+## [0.1.23] - 2022-12-01
+- Finish reconstruction of HDLparam
+- Finish the implementation of tree view
 
 ## [0.1.22] - 2022-01-20
 
@@ -83,4 +102,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial Release
 
 [Unreleased]: https://github.com/Bestduan/fpga_support_plug/compare/06093a8fb5711b1979ff1695c629f866a00cd5f2...HEAD
-

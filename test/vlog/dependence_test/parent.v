@@ -1,21 +1,19 @@
 
 /* 
- * CN: 如果使用`include "head_1.v" 则模块 dependence_1 使用的应该是 head_1.v 文件中的，
- *     而不会调用child_1.v中的 dependence_1 同名模块。
- * EN: 
+ * EN: A simple demo to test search order of dependence
+ *     current file -> macro include -> whole project
+ *     expect dependence_1 from child_1.v (macro include)
+ *     expect dependence_2 from child_2.v (whole project)
+ *     cannot find dependence_3
  */
-
 
 `include "child_1.v"
 `define main out
-
-
 
 module Main(
     input a, b, c,
     output Qus, Qs, `main
 );
-
 
 dependence_1 dependence_1(
     .a(a),
@@ -39,9 +37,10 @@ dependence_3 dependence_3(
 );
 
 endmodule
-/* @wavedrom
+
+/* @wavedrom this is wavedrom demo1
 {
-    "signal" : [
+    signal : [
         { name: "clk",  wave: "p......" },
         { name: "bus",  wave: "x.34.5x", data: "head body tail" },
         { name: "wire", wave: "0.1..0." }
@@ -50,7 +49,7 @@ endmodule
 */
 
 
-/* @wavedrom
+/* @wavedrom this is wavedrom demo2
 { 
     signal: [
     { name: "pclk", wave: 'p.......' },
