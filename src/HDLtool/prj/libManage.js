@@ -1,6 +1,6 @@
 var opeParam = require("../../../param");
 
-const fs     = require("../../HDLfilesys");
+const fs = require("../../HDLfilesys");
 const vscode = require("vscode");
 
 class libManage {
@@ -24,6 +24,10 @@ class libManage {
             _this.getConfig();
         });
 
+        vscode.commands.registerCommand('TOOL.libPick', () => {
+            const pick = new libPick();
+            pick.pickItems();
+        })
     }
 
     /**
@@ -151,14 +155,6 @@ class libManage {
                         const commonPath = `${this.SourceLibPath}/common/${element}`
                         fs.files.getHDLFiles(commonPath, libFileList);
                     break;
-                    case "xilinx":
-                        const xilinxPath = `${this.SourceLibPath}/xilinx/${element}`
-                        fs.files.getHDLFiles(xilinxPath, libFileList);
-                    break;
-                    case "intel":
-                        const intelPath = `${this.SourceLibPath}/intel/${element}`
-                        fs.files.getHDLFiles(intelPath, libFileList);
-                    break;
                     case "customer":
                         if (fs.dirs.isillegal(this.customerPath)) {
                             this.err(`The PRJ.customer.Lib.repo.path ${this.customerPath} do not exist or not dir.`);
@@ -196,6 +192,7 @@ class libManage {
         }
     }
 }
+module.exports = libManage;
 
 class libPick {
     constructor () {

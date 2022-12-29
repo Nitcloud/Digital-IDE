@@ -183,38 +183,6 @@ class PrjManage {
     async refreshPrjFolder(arch) {
         
     }
-
-    /**
-     * 获取本地的src(和sim、bd)路径下的HDL文件，lib被包含在src下
-     * @param {*} HDLFileList 
-     */
-    getPrjFiles(HDLFileList) {
-        let ignores = null;
-        // 当含有工程配置信息时 (才有sim和src之分)
-        if (opeParam.prjInfo) {
-            ignores = opeParam.prjInfo.ignores;
-            // 首先获取sim路径下的HDL源文件
-            this.getHDLFiles(opeParam.prjStructure.HardwareSim, HDLFileList);
-
-            // 获取src路径下的HDL源文件 (针对 IP和bd文件下的HDL进行选择性的获取，获取后直接退出) 
-            if (files.isHasAttr(opeParam.prjInfo, "TOOL_CHAIN")) {
-                // 获取xilinx下bd数据
-                if (opeParam.prjInfo.TOOL_CHAIN == "xilinx") {
-                   this.getXilinxFiles(HDLFileList);
-                }
-            }
-        }
-
-        if (ignores) {
-            for (let i = 0; i < ignores.length; i++) {
-                ignores[i] = opeParam.workspacePath + '/' + ignores[i];
-            }
-        }
-
-        // 获取src下的全部HDL文件
-        let srcPath = opeParam.prjStructure.HardwareSrc;
-        this.getHDLFiles(srcPath, HDLFileList, ignores);
-    }
 }
 
 /**
