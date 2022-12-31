@@ -4,7 +4,8 @@ const fs     = require("../../../HDLfilesys");
 const vscode = require("vscode");
 const child  = require("child_process");
 
-var opeParam = require("../../../param");
+const opeParam = require("../../../param");
+const HDLparam = require("../../../HDLparser")
 /**
  * @descriptionCn xilinx在PL端下的操作
  * @state unfinish-untest
@@ -106,7 +107,6 @@ class xilinxOperation {
             const content = scripts[i];
             script += content + '\n';
         }
-        let scriptPath = this.refresh();
         script += `source ${scriptPath} -notrace\n`;
         scriptPath = `${this.xilinxPath}/launch.tcl`;
         script += `file delete ${scriptPath} -force\n`;
@@ -115,6 +115,7 @@ class xilinxOperation {
         const argu = `-notrace -nolog -nojournal`
         const cmd = `${config.path} -mode tcl -s ${scriptPath} ${argu}`;
         config.terminal.sendText(cmd);
+        this.refresh(config);
     }
 
     /**
@@ -146,7 +147,7 @@ class xilinxOperation {
      * @descriptionCn xilinx刷新整个工程设计
      * @returns {String} 需要执行的脚本路径
      */
-    refresh(HDLFiles) {
+    refresh(config) {
         let scripts = [];
         // 清除所有源文件
         scripts.push(`remove_files -quiet [get_files]`);
@@ -227,10 +228,11 @@ class xilinxOperation {
         });
 
         // 导入非本地的设计源文件
-        for (let i = 0; i < HDLFiles.length; i++) {
-            const element = HDLFiles[i];
-            scripts.push(`add_files ${element} -quiet`);
+        const HDLFiles = HDLparam.HdlParam.getAllModuleFiles();
+        for (const file of HDLFiles) {
+            scripts.push(`add_files ${file.path} -quiet`);
         }
+
         scripts.push(`add_files -fileset constrs_1 ${this.datPath} -quiet`);
 
         if (this.topMod.src != '') {
@@ -245,10 +247,11 @@ class xilinxOperation {
             const content = scripts[i];
             script += content + '\n';
         }
-        let scriptPath = `${this.xilinxPath}/refresh.tcl`;
+        const scriptPath = `${this.xilinxPath}/refresh.tcl`;
         script += `file delete ${scriptPath} -force\n`;
         fs.files.writeFile(scriptPath, script);
-        return scriptPath;
+        const cmd = `sources ${scriptPath}`;
+        config.terminal.sendText(cmd);
     }
 
     /**

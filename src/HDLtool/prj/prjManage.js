@@ -48,16 +48,11 @@ class PrjManage {
         this.err  = vscode.window.showErrorMessage;
         this.warn = vscode.window.showWarningMessage;
 
-        // All are represented in the form of library paths and no workspace paths
-        // 路径形式全为扩展硬件库所在的路径
-        this.oldLibFileList = [];
-        this.newLibFileList = []; 
-
-        vscode.commands.registerCommand('TOOL.Gen_Property', () => {
-            this.generatePropertyFile();
+        vscode.commands.registerCommand('TOOL.generate.property', () => {
+            this.generate();
         });
-        vscode.commands.registerCommand('TOOL.Overwrite_InitProperty', () => {
-            this.overwriteInitProperty();
+        vscode.commands.registerCommand('TOOL.overwrite.property', () => {
+            this.overwrite();
         });
     }
 
@@ -65,7 +60,7 @@ class PrjManage {
      * @state finish-test
      * @descriptionCn 重写默认的prpoerty.json文件
      */
-    overwrite(opeParam) {
+    overwrite() {
         const options = {
             preview: false,
             viewColumn: vscode.ViewColumn.Active
@@ -79,7 +74,7 @@ class PrjManage {
      * @descriptionCn 生成prpoerty.json文件
      * @returns true : success | false : failed
      */
-    generatePropertyFile(opeParam) {
+    generate() {
         if (fs.files.isExist(opeParam.propertyPath)) {
             this.warn("property file already exists !!!");
             return false;
@@ -99,7 +94,7 @@ class PrjManage {
      * note: 失败说明没有打开工作区 且所有路径都是斜杠，且最后不带斜杠
      * TODO: 处理在其他工作区下只打开一个HDL文件的情况
      */
-    getOpeParam(opeParam) {
+    getOpeParam() {
         // 获取当前工作区路径
         if (vscode.workspace.workspaceFolders != undefined &&
             vscode.workspace.workspaceFolders.length != 0) {
@@ -131,7 +126,7 @@ class PrjManage {
      * @descriptionCn 获取工程配置参数 (不对参数内容做深度处理)
      * @returns {Boolean} (false: 不存在工程配置文件 | true: 成功获取工程的配置参数)
      */
-    getPropertyInfo(opeParam) {
+    getPropertyInfo() {
         // 初始化基本参数
         opeParam.propertyPath = `${opeParam.workspacePath}/.vscode/property.json`;
 
@@ -178,10 +173,116 @@ class PrjManage {
 
     /**
      * @descriptionCn 根据工程配置信息刷新工程文件结构
-     * @returns null 用于退出无工程配置信息时以及用户自定义工程结构时的情况
      */
-    async refreshPrjFolder(arch) {
+    async refreshPrjFolder() {
+        // 无工程配置文件则直接退出
+        if (!opeParam.prjInfo) {
+            return;
+        }
+
+        // 如果是用户配置文件结构，检查并生成相关文件夹
+        if (opeParam.prjInfo.ARCH) {
+            fs.dirs.mkdir(opeParam.prjInfo.ARCH.PRJ_Path);
+
+            const hardware = opeParam.prjInfo.ARCH.Hardware;
+            const software = opeParam.prjInfo.ARCH.Software;
+
+            if (hardware) {
+                fs.dirs.mkdir(hardware.src);
+                fs.dirs.mkdir(hardware.sim);
+                fs.dirs.mkdir(hardware.data);
+            }
+
+            if (software) {
+                fs.dirs.mkdir(software.src);
+                fs.dirs.mkdir(software.data);
+            }
+            return;
+        }
+
+        // 先直接创建工程文件夹
+        fs.dirs.mkdir(`${opeParam.workspacePath}/prj`);
+
+        // 初试化文件结构的路径
+        const userPath = `${opeParam.workspacePath}/user`;
+        const softwarePath = `${opeParam.workspacePath}/user/Software`;
+        const hardwarePath = `${opeParam.workspacePath}/user/Hardware`;
+
+        let nextmode = "PL";
+        // 再对源文件结构进行创建
+        if (fs.files.isHasAttr(opeParam.prjInfo, "SOC.core")) {
+            if (opeParam.prjInfo.SOC.core !== 'none') {
+                nextmode = "LS";
+            }
+        }
+
+        let currmode = "PL";
+        if (fs.files.isExist(softwarePath)) {
+            currmode = "LS";
+        }
         
+        if (currmode == nextmode) {
+            return;
+        }
+
+        if (currmode == "PL" && nextmode == "LS") {
+            fs.dirs.mkdir(hardwarePath);
+            fs.dirs.readdir(userPath, true, (folder) => {
+                if (folder != "Hardware") {
+                    fs.dirs.mvdir(`${userPath}/${folder}`, hardwarePath);
+                }
+            });
+
+            fs.dirs.mkdir(`${softwarePath}/data`);
+            fs.dirs.mkdir(`${softwarePath}/src`);
+        }
+        else if (currmode == "LS" && nextmode == "PL") {
+            if (this.setting.get("PRJ.file.structure.notice")) {
+                // 删除时进行提醒，yes : 删除，no : 保留
+                let select = await this.warn("Software will be deleted.", 'Yes', 'No');
+                if (select == "Yes") {
+                    fs.dirs.rmdir(softwarePath);
+                }
+            } else {
+                fs.dirs.rmdir(softwarePath);
+            }
+
+            if (fs.files.isExist(hardwarePath)) {
+                fs.dirs.readdir(hardwarePath, true, (folder) => {
+                    fs.dirs.mvdir(`${hardwarePath}/${folder}`, userPath);
+                })
+                
+                fs.dirs.rmdir(hardwarePath);
+            } 
+
+            fs.dirs.mkdir(`${userPath}/src`);
+            fs.dirs.mkdir(`${userPath}/sim`);
+            fs.dirs.mkdir(`${userPath}/data`);
+        }
+    }
+
+    getPrjFiles() {
+        // 获取ignore .dideignore
+        let ignores = [];
+        const lines = fs.files.getlines(`${opeParam.workspacePath}/.dideignore`);
+        for (const line of lines) {
+            ignores.push(fs.paths.rel2abs(opeParam.workspacePath, line));
+        }
+
+        // 先处理好library，再启动monitor
+        let files = [];
+        if (opeParam.prjInfo.library) {
+            const res = opeParam.liboperation.processLibFiles(opeParam.prjInfo.library);
+            files = res.add;
+        }
+        
+        // 获取本地的源文件
+        fs.files.getHDLFiles([
+            opeParam.prjInfo.ARCH.Hardware.src,
+            opeParam.prjInfo.ARCH.Hardware.sim
+        ], files, ignores);
+
+        return files;
     }
 }
 

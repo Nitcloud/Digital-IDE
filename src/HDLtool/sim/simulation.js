@@ -4,6 +4,7 @@ const fs = require("../../HDLfilesys");
 
 const child  = require("child_process");
 const vscode = require("vscode");
+const opeParam = require("../../param");
 
 class simulate {
     constructor() {
@@ -92,16 +93,16 @@ class simulate {
  * {
  *      "name" : "moduleName", // 顶层模块名
  *      "path" : "modulePath", // 顶层仿真文件所在的绝对路径(斜杠分割)
- *      "dependence" : [],           // 顶层文件仿真时所需要的依赖
- *      "opeParam" : null      // 全局操作参数
+ *      "dependence" : [],     // 顶层文件仿真时所需要的依赖
  *  }
  */
 class icarus extends simulate { 
     constructor(param) {
         super();
-        this.os = param.opeParam.os;
-        this.prjPath = param.opeParam.prjStructure.prjPath;
-        this.toolchain = param.opeParam.prjInfo.TOOL_CHAIN;
+        this.param = param;
+        this.os = opeParam.os;
+        this.prjPath = opeParam.prjInfo.ARCH.PRJ_Path;
+        this.toolchain = opeParam.prjInfo.TOOL_CHAIN;
     }
 
     /**
