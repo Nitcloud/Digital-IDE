@@ -336,8 +336,22 @@ const HDLFile = {
 
     /**
      * @state finish-test
+     * @descriptionCn 
+     * @param {String} path 文件夹的绝对地址 ('/'分隔) 同时支持文件夹和单文件
+     */
+    getlines : function (path) {
+        if (this.isillegal(path)) {
+            return [];
+        }
+
+        const content = this.readFile(path);
+        return content ? content.split('\n') : [];
+    },
+
+    /**
+     * @state finish-test
      * @descriptionCn 获取文件夹下的所有HDL文件，已经进行了文件存在性的检查，并且同时支持文件和文件夹
-     * @param {String} path 所指定的文件夹路径
+     * @param {String | Array<String>} paths 所指定的文件夹路径
      * @param {Array} HDLFiles 最后输出的HDL文件列表
      * @param {Array} ignores  获取过程中需要忽略的文件所在的文件夹(绝对路径)
      * @returns {Array} 返回文件数组

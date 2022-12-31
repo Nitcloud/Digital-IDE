@@ -2,7 +2,7 @@
 
 const fs     = require('fs');
 const vscode = require('vscode');
-const vhd2vl = require("../translate/vhd2vl");
+const vhd2vl = require("../translate/vhd2vlog");
 
 function vhdl2vlog(path) {
     vhd2vl().then((Module) => {
@@ -30,7 +30,8 @@ function vhdl2vlog(path) {
                 }
             });
         } else {
-            return null;
+            
+            
         }
     });
 }

@@ -1,5 +1,4 @@
-const path = require('path');
-const fs = require('fs');
+const library = require("./HDLtool/prj/libManage");
 
 const defaultPrjInfo = {
     TOOL_CHAIN: "xilinx",       // 当前使用的第三方工具链，一般为xilinx, intel 或者 自定义
@@ -58,9 +57,10 @@ const opeParam = {
         path: ''
     },
 
-    prjInfo: defaultPrjInfo,  // 用户配置的参数
-    prjInitParam: "",    // 初始配置文件的路径
-    propertyPath: "",    // 用户配置文件的路径
+    prjInfo: defaultPrjInfo,        // 用户配置的参数
+    liboperation: new library(),    // 远程library操作类
+    prjInitParam: "",               // 初始配置文件的路径
+    propertyPath: ""                // 用户配置文件的路径
 };
 
 
