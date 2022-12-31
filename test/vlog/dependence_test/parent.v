@@ -1,4 +1,3 @@
-
 /* 
  * EN: A simple demo to test search order of dependence
  *     current file -> macro include -> whole project
@@ -15,21 +14,21 @@ module Main(
     output Qus, Qs, `main
 );
 
-dependence_1 dependence_1(
+dependence_1 u_dependence_1(
     .a(a),
     .b(b),
     .c(c),
     .Q(Qus)
 );
 
-dependence_2 dependence_2(
+dependence_2 u_dependence_2(
     .a(a),
     .b(b),
     .c(c),
     .Q(Qs)
 );
 
-dependence_3 dependence_3(
+dependence_3 u_dependence_3(
     .a(a),
     .b(b),
     .c(c),

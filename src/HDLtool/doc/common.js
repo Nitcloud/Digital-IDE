@@ -9,9 +9,7 @@ const onmlStringify = require('onml/stringify.js');
 const darkSkin = require('wavedrom/skins/dark');
 const lightSkin = require('wavedrom/skins/default');
 
-const Global = {
-    svgMakeTimes : 0
-};
+const Global = require('../../global');
 
 const converter = new showdown.Converter({
     tables : true,
@@ -302,11 +300,11 @@ class WavedromString extends RenderString {
 function makeWaveDromSVG(wavedromComment, style) {
     try {
         const json = json5.parse(wavedromComment);
-        const index = Global.svgMakeTimes;
+        const index = Global.Doc.svgMakeTimes;
         const skin = SvgStyle[style];
-        const renderObj = renderAny(Global.svgMakeTimes, json, skin);
+        const renderObj = renderAny(Global.Doc.svgMakeTimes, json, skin);
         const svgString = onmlStringify(renderObj);
-        Global.svgMakeTimes += 1;
+        Global.Doc.svgMakeTimes += 1;
         return svgString;
     } catch (error) {
         return undefined;

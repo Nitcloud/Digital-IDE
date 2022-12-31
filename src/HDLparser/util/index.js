@@ -1,11 +1,40 @@
 const assert = require('assert');
+const vscode = require('vscode');
 const fs = require('fs');
 const path = require('path');
 
 const parser = require('./kernel');
 const HDLPath = require('../../HDLfilesys/operation/path');
 
+
 const PathModuleSplit = ' @ ';
+
+class SymbolResult {
+    /**
+     * @param {string} name 
+     * @param {string} type 
+     * @param {vscode.Position} start 
+     * @param {vscode.Position} end 
+     */
+    constructor(name, type, start, end) {
+        this.name = name;
+        this.type = type;
+        this.start = start;
+        this.end = end;
+    }
+};
+
+
+class CommentResult {
+    /**
+     * @param {{line: number}} start 
+     * @param {number} length 
+     */
+    constructor(start, length) {
+        this.start = start;
+        this.length = length;
+    }
+};
 
 
 function getSymbols(options) {
@@ -135,7 +164,10 @@ class BaseParser {
     /**
      * @description 给出词法解析结果
      * @param {string} code 
-     * @returns {object}
+     * @returns {{comments: Array<CommentResult>, 
+     *            defines: object, 
+     *            includes: object, 
+     *            symbols: Array<SymbolResult>}}
      */
     symbol(code) {
         return this._parser.symbol(code);
@@ -170,6 +202,8 @@ function parseFile(path) {
 }
 
 module.exports = {
+    SymbolResult,
+    CommentResult,
     getSymbols,
     getSymbolsFromType,
     getSymbolsFromName,

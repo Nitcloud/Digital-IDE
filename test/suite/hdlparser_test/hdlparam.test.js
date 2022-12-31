@@ -25,9 +25,13 @@ const TOP_MODULES = [
     {
         path : HDLPath.join(TEST_VLOG_FOLDER, 'head_1.v'),
         name : 'dependence_1'
+    },
+    {
+        path : HDLPath.join(TEST_VLOG_FOLDER, 'head_1.v'),
+        name : 'test_1'
     }
 ];
-const MODULE_NUM = 4;
+const MODULE_NUM = 5;
 
 const HDLParam = base.HDLParam;
 

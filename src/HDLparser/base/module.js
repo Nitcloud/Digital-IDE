@@ -44,6 +44,21 @@ const HDLParam = {
 
 
     /**
+     * @description 
+     * @param {string} path 
+     * @returns {boolean}
+     */
+    hasModuleFile(path) {
+        let moduleFile = this.findModuleFile(path);
+        if (!moduleFile) {
+            return false;
+        } else {
+            return true;
+        }
+    },
+
+
+    /**
      * @description 根据 path 和 name 找到对应的module对象
      * @param {string} path 
      * @param {string} name 
@@ -420,6 +435,21 @@ class Module {
     }
 
     /**
+     * @param {string} instName 
+     * @returns {Instance}
+     */
+    getInstanceByName(instName) {
+        return this.nameToInstances.get(instName);
+    }
+
+    /**
+     * @returns {number}
+     */
+    getInstanceNum() {
+        return this.nameToInstances.size;
+    }
+
+    /**
      * @description 所有的 ModuleFile 初始化完后再调用该函数
      * @param {Instance} inst 
      */
@@ -520,7 +550,7 @@ class ModuleFile {
             for (const module_name of module_names) {
                 let module = modules[module_name];
                 // generate range
-                let range = {start: module.start, stop: module.stop};
+                let range = {start: module.start, end: module.end};
 
                 // replace the original object with a Module object
                 modules[module_name] = new Module(this,
@@ -569,5 +599,6 @@ module.exports = {
     ModParam,
     Module,
     ModuleFile,
+    Instance,
     HDLParam
 };

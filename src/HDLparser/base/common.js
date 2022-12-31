@@ -106,6 +106,8 @@ class Marco {
 };
 
 module.exports = {
+    Position,
+    Range,
     PortType,
     ParamType,
     Error,

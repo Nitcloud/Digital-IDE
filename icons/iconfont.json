@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1478582",
+      "name": "ic_input",
+      "font_class": "ic_input",
+      "unicode": "e908",
+      "unicode_decimal": 59656
+    },
+    {
+      "icon_id": "17397810",
+      "name": "output",
+      "font_class": "output",
+      "unicode": "e7b0",
+      "unicode_decimal": 59312
+    },
+    {
+      "icon_id": "18171148",
+      "name": "交换,双箭头,平行",
+      "font_class": "exchange-full",
+      "unicode": "ea19",
+      "unicode_decimal": 59929
+    },
+    {
       "icon_id": "13553191",
       "name": "markdown-line",
       "font_class": "markdown-line",

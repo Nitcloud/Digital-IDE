@@ -4,8 +4,9 @@ const fs = require('fs');
 
 const { HDLParam, Module } = require('../../HDLparser');
 const { MarkdownString, BaseDoc, RenderString, RenderType,
-        Global,
         mergeSortByLine, getWavedromsFromFile } = require('./common');
+
+const Global = require('../../global');
 
 const opeParam = require('../../param');
 const HDLPath = require('../../HDLfilesys/operation/path');
@@ -241,7 +242,7 @@ function exportCurrentFileDocAsMarkdown() {
             markdown += r.renderMarkdown() + '\n';
         } else if (r.type == RenderType.Wavedrom) {
             const svgString = r.render();
-            const svgName = 'wavedrom-' + Global.svgMakeTimes + '.svg';
+            const svgName = 'wavedrom-' + Global.Doc.svgMakeTimes + '.svg';
             const svgPath = HDLPath.join(figureFolder, svgName);
             fs.writeFileSync(svgPath, svgString);
             const relatePath = HDLPath.join('./figure', svgName);
@@ -252,6 +253,7 @@ function exportCurrentFileDocAsMarkdown() {
     
     const markdownName = 'index.md';
     const markdownPath = HDLPath.join(currentRoot, markdownName);
+    Global.Doc.resetSvgMakeTimes();
     fs.writeFileSync(markdownPath, markdown);
 }
 

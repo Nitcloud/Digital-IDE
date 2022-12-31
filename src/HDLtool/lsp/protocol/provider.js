@@ -2,6 +2,7 @@
 const vscode = require("vscode");
 const parser = require("../../../HDLparser");
 const fs = require("../../../HDLfilesys");
+const HDLFile = require("../../../HDLfilesys/operation/files");
 
 function registerProvider() {
     const lsp = [
@@ -25,14 +26,12 @@ class hoverProvider {
 
     /**
      * @descriptionCn 悬停提供注释提示
-     * @param {Object} document 所在的文件属性
-     * @param {Object} position 悬停所在的标识的地址
-     * @returns {String} 注释提示
+     * @param {vscode.TextDocument} document 所在的文件属性
+     * @param {vscode.Position} position 悬停所在的标识的地址
+     * @returns {vscode.Hover} 注释提示
      */
-    provideHover(document, position) {
-        return new Promise((resolve, reject) => {
-            resolve([]);
-        });
+    async provideHover(document, position) {
+        
     }
 }
 
@@ -267,12 +266,12 @@ class symbolDefine {
     /**
      * @state finish-untest
      * @descriptionCn  根据定义点获取对应的注释提示
-     * @param {Object} define  { uri : uri, range : range, }
+     * @param {{ uri : vscode.Uri, range : vscode.Range}} define  
      * @returns {Object} 定义点所对应的注释提示内容
      */
     getSymbolComment(define) {
         let path = define.uri.fsPath.replace(/\\/g, "\/");
-        let text = filesys.files.readFile(path);
+        let text = HDLFile.readFile(path);
         let line = define.range.start.line+1; 
         let lines = text.split('\n');
         let index = this.range_to_index(text, define.range);

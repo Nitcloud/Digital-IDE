@@ -10,12 +10,15 @@
 
 const HDLtool = require('./HDLtool');
 const { HDLParam } = require('./HDLparser');
+const { HDLGlobal } = require('./global');
+
 const opeParam = require('./param');
 
 const HDLFile = require('./HDLfilesys/operation/files');
 
 
-function launch() {
+function launch(context) {
+    HDLGlobal.setContext(context);
     // 初始化 opeParam
     const manage = HDLtool.registerPrjServer();
     manage.getOpeParam(opeParam);
@@ -29,10 +32,12 @@ function launch() {
 
 async function activate(context) {
     const start = Date.now();
-    launch();
+
+    launch(context);
     HDLtool.registerSimServer(context);
     HDLtool.registerTreeServer(context);
     HDLtool.registerDocumentation(context);
+    HDLtool.registerLspServer(context);
 
     console.log('cost time : ' + (Date.now() - start) / 1000 + 's');
 }

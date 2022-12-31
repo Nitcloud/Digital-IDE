@@ -7,7 +7,8 @@ const { getIconConfig } = require('../../HDLfilesys/icons');
 
 const opeParam = require('../../param');
 const HDLPath = require('../../HDLfilesys/operation/path');
-const { RenderType, Global } = require('./common');
+const { RenderType } = require('./common');
+const Global = require('../../global');
 
 const _cache = {
     css : null
@@ -140,7 +141,7 @@ function makeShowHTML(usage) {
 
 function showDocWebview() {
     const webview = vscode.window.createWebviewPanel(
-        'TOOL.showDocWebview', 
+        'TOOL.doc.webview.show', 
         'document',
         vscode.ViewColumn.Two,
         {
@@ -196,7 +197,7 @@ function exportCurrentFileDocAsHTML() {
         if (r.type == RenderType.Markdown) {
             body += makeCommonElement(renderResult);
         } else if (r.type == RenderType.Wavedrom) {
-            const svgName = 'wavedrom-' + Global.svgMakeTimes + '.svg';
+            const svgName = 'wavedrom-' + Global.Doc.svgMakeTimes + '.svg';
             const svgPath = HDLPath.join(figureFolder, svgName);
             fs.writeFileSync(svgPath, renderResult);
             const relatePath = HDLPath.join('./figure', svgName);
@@ -207,6 +208,7 @@ function exportCurrentFileDocAsHTML() {
     const html = makeExportHTML(relateCssPath, body);    
     const htmlName = 'index.html';
     const htmlPath = HDLPath.join(currentRoot, htmlName);
+    Global.Doc.resetSvgMakeTimes();
     fs.writeFileSync(htmlPath, html);
 }
 

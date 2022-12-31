@@ -1,2 +1,0 @@
-const parser = require('./parser');
-

@@ -1,4 +1,3 @@
-"use strict";
 // let opeParam = require("./param");
 const chokidar = require('chokidar');
 

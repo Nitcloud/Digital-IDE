@@ -28,7 +28,7 @@
         "url": "https://github.com/Bestduan/Digital-IDE/issues"
     },
     "engines": {
-        "vscode": "^1.65.2"
+        "vscode": "^1.70.1"
     },
     "categories": [
         "Extension Packs",
@@ -310,7 +310,6 @@
                     "default": "<div style=\"font-size: 9px; margin-left: 1cm;\"> <span class='title'></span></div> <div style=\"font-size: 9px; margin-left: auto; margin-right: 1cm; \"> <span class='date'></span></div>",
                     "description": "<div style=\"font-size: 9px; margin: 0 auto;\"> <span class='pageNumber'></span> / <span class='totalPages'></span></div>"
                 }
-
             }
         },
         "viewsContainers": {
@@ -325,19 +324,19 @@
         "views": {
             "TOOL": [
                 {
-                    "id": "TOOL.arch_tree",
+                    "id": "TOOL-tree-arch",
                     "name": "architecture"
                 },
                 {
-                    "id": "TOOL.Tool_tree",
+                    "id": "TOOL-tree-tool",
                     "name": "TOOL"
                 },
                 {
-                    "id": "TOOL.hard_tree",
+                    "id": "TOOL-tree-hardware",
                     "name": "HARD Options"
                 },
                 {
-                    "id": "TOOL.soft_tree",
+                    "id": "TOOL-tree-software",
                     "name": "SOFT Options"
                 }
             ]
@@ -490,7 +489,7 @@
         ],
         "commands": [
             {
-                "command": "FILE.refresh",
+                "command": "TOOL.tree.arch.refresh",
                 "title": "Refresh this File List",
                 "icon": "$(refresh)",
                 "category": "FILE"
@@ -508,7 +507,7 @@
                 "category": "FILE"
             },
             {
-                "command": "FILE.openFile",
+                "command": "TOOL.tree.arch.openFile",
                 "title": "Open this File",
                 "category": "FILE"
             },
@@ -566,11 +565,23 @@
                 "category": "TOOL"
             },
             {
+                "command": "TOOL.tree.arch.expand",
+                "title": "expand the tree view",
+                "icon": "$(expand-all)",
+                "category": "TOOL"
+            },
+            {
+                "command": "TOOL.tree.arch.collapse",
+                "title": "collapse the tree view",
+                "icon": "$(collapse-all)",
+                "category": "TOOL"
+            },
+            {
                 "command": "TOOL.netlist",
                 "title": "show netlist",
                 "icon": {
-                    "light": "images/svg/light/list-tree.svg",
-                    "dark": "images/svg/dark/list-tree.svg"
+                    "light": "images/svg/light/netlist.svg",
+                    "dark": "images/svg/dark/netlist.svg"
                 },
                 "category": "TOOL"
             },
@@ -728,8 +739,8 @@
                 "category": "TOOL"
             },
             {
-                "command": "TOOL.ShowDocWebview",
-                "title": "document current HDL file",
+                "command": "TOOL.doc.webview.show",
+                "title": "show the document of current file",
                 "category": "TOOL",
                 "icon": {
                     "light": "images/svg/light/documentation.svg",
@@ -740,63 +751,83 @@
         "menus": {
             "view/title": [
                 {
-                    "command": "TOOL.libPick",
+                    "command": "TOOL.tree.arch.collapse",
                     "group": "navigation",
-                    "when": "view == TOOL.arch_tree"
+                    "when": "view == TOOL-tree-arch"
                 },
                 {
-                    "command": "FILE.refresh",
+                    "command": "TOOL.libPick",
                     "group": "navigation",
-                    "when": "view == TOOL.arch_tree"
+                    "when": "view == TOOL-tree-arch"
+                },
+                {
+                    "command": "TOOL.tree.arch.refresh",
+                    "group": "navigation",
+                    "when": "view == TOOL-tree-arch"
                 }
             ],
             "view/item/context": [
                 {
                     "command": "TOOL.simulate",
-                    "group": "inline",
-                    "when": "view == TOOL.file_tree && viewItem == file"
+                    "group": "inline@1",
+                    "when": "view == TOOL-tree-arch && viewItem == file"
+                },
+                {
+                    "command": "TOOL.FSMGraph",
+                    "group": "inline@2",
+                    "when": "view == TOOL-tree-arch && viewItem == file"
                 },
                 {
                     "command": "TOOL.netlist",
-                    "group": "inline",
-                    "when": "view == TOOL.file_tree && viewItem == file"
+                    "group": "inline@3",
+                    "when": "view == TOOL-tree-arch && viewItem == file"
+                },
+                {
+                    "command": "TOOL.doc.webview.show",
+                    "group": "inline@4",
+                    "when": "view == TOOL-tree-arch && viewItem == file"
                 },
                 {
                     "command": "HARD.srcTop",
                     "group": "navigation@1",
-                    "when": "view == TOOL.file_tree && viewItem == file"
+                    "when": "view == TOOL-tree-arch && viewItem == file"
                 },
                 {
                     "command": "HARD.simTop",
                     "group": "navigation@2",
-                    "when": "view == TOOL.file_tree && viewItem == file"
+                    "when": "view == TOOL-tree-arch && viewItem == file"
                 },
                 {
                     "command": "TOOL.simulate",
                     "group": "navigation@3",
-                    "when": "view == TOOL.file_tree && viewItem == file"
+                    "when": "view == TOOL-tree-arch && viewItem == file"
                 }
             ],
             "editor/title": [
                 {
                     "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-                    "command": "TOOL.netlist",
-                    "group": "navigation"
+                    "command": "TOOL.simulate",
+                    "group": "navigation@1"
                 },
                 {
                     "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
                     "command": "TOOL.FSMGraph",
-                    "group": "navigation"
+                    "group": "navigation@2"
+                },
+                {
+                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+                    "command": "TOOL.netlist",
+                    "group": "navigation@3"
+                },
+                {
+                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+                    "command": "TOOL.doc.webview.show",
+                    "group": "navigation@4"
                 },
                 {
                     "when": "resourceLangId == vhdl",
                     "command": "TOOL.vhdl2vlog",
-                    "group": "navigation"
-                },
-                {
-                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-                    "command": "TOOL.ShowDocWebview",
-                    "group": "navigation"
+                    "group": "navigation@5"
                 }
             ],
             "editor/context": [
@@ -928,6 +959,27 @@
                 "default": {
                     "fontPath": "./icons/iconfont.woff2",
                     "fontCharacter": "\\e60b"
+                }
+            },
+            "instance-input": {
+                "description": "input",
+                "default": {
+                    "fontPath": "./icons/iconfont.woff2",
+                    "fontCharacter": "\\e908"
+                }
+            },
+            "instance-output": {
+                "description": "output",
+                "default": {
+                    "fontPath": "./icons/iconfont.woff2",
+                    "fontCharacter": "\\e7b0"
+                }
+            },
+            "instance-inout": {
+                "description": "inout",
+                "default": {
+                    "fontPath": "./icons/iconfont.woff2",
+                    "fontCharacter": "\\ea19"
                 }
             },
             "export-html": {

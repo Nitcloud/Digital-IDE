@@ -1,10 +1,9 @@
 `define cow 34
 
 module dependence_1 (
-    input a, b, c,
-    output Q 
+    input port_a, port_b, port_c,
+    output out_q
 );
-
     // a & b | ((b & c) & (b | c))
     // &=*, |=+               AB + BC(B+C)
     // Distribute             AB + BBC + BCC
@@ -12,5 +11,13 @@ module dependence_1 (
     // Simplify A + A = A     AB + BC
     // Factor                 B(A+C)
 
-    assign Q = b & (a | c);
+    assign out_q = port_b & (port_a | port_c);
+endmodule
+
+
+module test_1 (
+    input port_a, port_b,
+    output Q 
+);
+    assign Q = port_b & port_a;
 endmodule
