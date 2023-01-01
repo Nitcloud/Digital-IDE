@@ -4,7 +4,7 @@ const vscode   = require("vscode");
 const instance = require("./instance");
 const opeParam = require('../../param');
 const fs = require("../../HDLfilesys");
-const { HDLParam } = require('../../HDLparser');
+const HDLParam = require('../../HDLparser');
 
 const testbench = {
     overwrite : function() {
@@ -19,8 +19,14 @@ const testbench = {
 
     puts : function(module) {
         const tbSrcPath = `${opeParam.rootPath}/lib/testbench.v`;
-        const tbDisPath = `${opeParam.ARCH.Hardware.sim}/testbench.v`;
-        const temp = fs.files.readFile(tbSrcPath);
+        const tbDisPath = `${opeParam.prjInfo.ARCH.Hardware.sim}/testbench.v`;
+
+        if (fs.files.isillegal(tbDisPath)) {
+            var temp = fs.files.readFile(tbSrcPath);
+        } else {
+            var temp = fs.files.readFile(tbDisPath);
+        }
+
         if (!temp) {
             return null;
         }
@@ -36,8 +42,10 @@ const testbench = {
             }
         }
 
-        if (!fs.files.writeFile(tbDisPath, content)) {
-            return null;
+        if (fs.files.writeFile(tbDisPath, content)) {
+            vscode.window.showInformationMessage("Generate testbench successed");
+        } else {
+            vscode.window.showErrorMessage("Generate testbench failed");
         }
     },
 
@@ -46,10 +54,8 @@ const testbench = {
             placeHolder: 'Select a Module'
         };
         const path = fs.paths.toSlash(uri.fsPath);
-        const items = instance.getSelectItem(HDLParam.findModuleByPath(path));
+        const items = instance.getSelectItem(HDLParam.HDLParam.findModuleByPath(path));
         if (items.length) {
-            vscode.window.showErrorMessage('There is no module in this file');
-        } else {
             if (items.length == 1) {
                 this.puts(items[0].module);
             } else {
@@ -57,6 +63,8 @@ const testbench = {
                     this.puts(select.module);
                 });
             }
+        } else {
+            vscode.window.showErrorMessage('There is no module in this file');
         }
     }
 }

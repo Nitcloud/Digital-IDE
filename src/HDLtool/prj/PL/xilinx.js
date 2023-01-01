@@ -5,7 +5,7 @@ const vscode = require("vscode");
 const child  = require("child_process");
 
 const opeParam = require("../../../param");
-const HDLparam = require("../../../HDLparser")
+const HDLparam = require("../../../HDLparser").HDLParam;
 /**
  * @descriptionCn xilinx在PL端下的操作
  * @state unfinish-untest
@@ -32,7 +32,7 @@ class xilinxOperation {
         this.xip_repo = opeParam.prjInfo.IP_REPO;
         this.xip_path = `${opeParam.rootPath}/IP_repo`;
         this.xbd_path = `${opeParam.rootPath}/lib/xilinx/bd`;
-        this.xilinxPath = `${opeParam.rootPath}/resources/script/xilinx`;
+        this.xilinxPath = `${opeParam.rootPath}/resource/script/xilinx`;
         
         this.prjPath = opeParam.prjInfo.ARCH.PRJ_Path;
         this.srcPath = opeParam.prjInfo.ARCH.Hardware.src;
@@ -74,6 +74,13 @@ class xilinxOperation {
         });
         
         // 找到工程文件，如果找到就直接打开，找不到就根据配置信息新建工程。
+        this.prjInfo = {
+            'path'   : `${prjFilePath}/xilinx`,
+            'name'   : fs.files.isHasAttr(this.prjConfig, "PRJ_NAME.PL") ? 
+                       this.prjConfig.PRJ_NAME.PL : 'template',
+            'device' : fs.files.isHasAttr(this.prjConfig, "Device") ? 
+                       this.prjConfig.Device : 'xc7z020clg400-2'
+        }
         if (prjFiles.length) {
             if (prjFiles.length > 1) {
                 vscode.window.showQuickPick(prjFiles, {
@@ -86,14 +93,6 @@ class xilinxOperation {
                 this.open(prjFilePath, scripts);
             }
         } else {
-            this.prjInfo = {
-                'path'   : `${prjFilePath}/xilinx`,
-                'name'   : fs.files.isHasAttr(this.prjConfig, "PRJ_NAME.PL") ? 
-                           this.prjConfig.PRJ_NAME.PL : 'template',
-                'device' : fs.files.isHasAttr(this.prjConfig, "Device") ? 
-                           this.prjConfig.Device : 'xc7z020clg400-2'
-            }
-            
             if (!fs.dirs.mkdir(this.prjInfo.path)) {
                 this.err(`mkdir ${this.prjInfo.path} failed`)
                 return null;
@@ -107,13 +106,14 @@ class xilinxOperation {
             const content = scripts[i];
             script += content + '\n';
         }
-        script += `source ${scriptPath} -notrace\n`;
-        scriptPath = `${this.xilinxPath}/launch.tcl`;
+
+        const scriptPath = `${this.xilinxPath}/launch.tcl`;
         script += `file delete ${scriptPath} -force\n`;
         fs.files.writeFile(scriptPath, script);
         
         const argu = `-notrace -nolog -nojournal`
         const cmd = `${config.path} -mode tcl -s ${scriptPath} ${argu}`;
+        config.terminal.show(true);
         config.terminal.sendText(cmd);
         this.refresh(config);
     }
@@ -126,7 +126,7 @@ class xilinxOperation {
     create(scripts) {
         scripts.push(`set_param general.maxThreads 8`);
         scripts.push(`create_project ${this.prjInfo.name} ${this.prjInfo.path} -part ${this.prjInfo.device} -force`);
-        scripts.push(`set_property SOURCE_SET sources_1   [get_filesets sim_1]`);
+        scripts.push(`set_property SOURCE_SET source_1   [get_filesets sim_1]`);
         scripts.push(`set_property top_lib xil_defaultlib [get_filesets sim_1]`);
         scripts.push(`update_compile_order -fileset sim_1 -quiet`);
     }
@@ -169,41 +169,43 @@ class xilinxOperation {
         scripts.push(`update_ip_catalog -quiet`);
 
         // 导入bd设计源文件
-        const bd = this.prjConfig.SOC.bd;
-        let bdSrcPath = `${this.xbd_path}/${bd}.bd`;
-        if (fs.files.isillegal(bdSrcPath)) {
-            bdSrcPath = `${this.customer.bd_repo}/${bd}.bd`;
-        }
-
-        if (fs.files.isillegal(bdSrcPath)) {
-            this.err(`can not find ${bd}.bd in ${this.xbd_path} and ${this.customer.bd_repo}`);
-        } else {
-            if (fs.files.copyFile(
-                bdSrcPath, 
-                `${this.HWPath}/bd/${bd}/${bd}.bd`
-            )) {
-                this.err(`cp ${bd} failed, can not find ${bdSrcPath}`);
+        if (fs.files.isHasAttr(this.prjConfig, "SOC.bd")) {            
+            const bd = this.prjConfig.SOC.bd;
+            let bdSrcPath = `${this.xbd_path}/${bd}.bd`;
+            if (fs.files.isillegal(bdSrcPath)) {
+                bdSrcPath = `${this.customer.bd_repo}/${bd}.bd`;
             }
-        }
-
-        const bdPaths = [
-            `${this.HWPath}/bd`,
-            `${this.prjInfo.path}/${this.prjInfo.name}.src/sources_1/bd`
-        ]
-        fs.files.pickFileFromExt(bdPaths, {
-            exts : ".bd",
-            type : "all",
-            ignores : []
-        }, (bd_file) => {
-            scripts.push(`add_files ${bd_file} -quiet`);
-            scripts.push(`add_files ${path.dirname(bd_file)}/hdl -quiet`);
-        });
-
-        if (bd) {
-            const load_bd_path = `${this.HWPath}/bd/${bd}/${bd}.bd`
-            scripts.push(`generate_target all [get_files ${load_bd_path}] -quiet`);
-            scripts.push(`make_wrapper -files [get_files ${load_bd_path}] -top -quiet`);
-            scripts.push(`open_bd_design ${load_bd_path} -quiet`);
+    
+            if (fs.files.isillegal(bdSrcPath)) {
+                this.err(`can not find ${bd}.bd in ${this.xbd_path} and ${this.customer.bd_repo}`);
+            } else {
+                if (fs.files.copyFile(
+                    bdSrcPath, 
+                    `${this.HWPath}/bd/${bd}/${bd}.bd`
+                )) {
+                    this.err(`cp ${bd} failed, can not find ${bdSrcPath}`);
+                }
+            }
+    
+            const bdPaths = [
+                `${this.HWPath}/bd`,
+                `${this.prjInfo.path}/${this.prjInfo.name}.src/source_1/bd`
+            ]
+            fs.files.pickFileFromExt(bdPaths, {
+                exts : ".bd",
+                type : "all",
+                ignores : []
+            }, (bd_file) => {
+                scripts.push(`add_files ${bd_file} -quiet`);
+                scripts.push(`add_files ${path.dirname(bd_file)}/hdl -quiet`);
+            });
+    
+            if (bd) {
+                const load_bd_path = `${this.HWPath}/bd/${bd}/${bd}.bd`
+                scripts.push(`generate_target all [get_files ${load_bd_path}] -quiet`);
+                scripts.push(`make_wrapper -files [get_files ${load_bd_path}] -top -quiet`);
+                scripts.push(`open_bd_design ${load_bd_path} -quiet`);
+            }
         }
 
         fs.files.pickFileFromExt(`${this.HWPath}/bd/mref`, {
@@ -217,7 +219,7 @@ class xilinxOperation {
         // 导入ip设计源文件
         const ipPaths = [
             `${this.HWPath}/ip`,
-            `${this.prjInfo.path}/${this.prjInfo.name}.src/sources_1/ip`
+            `${this.prjInfo.path}/${this.prjInfo.name}.src/source_1/ip`
         ]
         fs.files.pickFileFromExt(ipPaths, {
             exts : ".xci",
@@ -228,7 +230,7 @@ class xilinxOperation {
         });
 
         // 导入非本地的设计源文件
-        const HDLFiles = HDLparam.HdlParam.getAllModuleFiles();
+        const HDLFiles = HDLparam.getAllModuleFiles();
         for (const file of HDLFiles) {
             scripts.push(`add_files ${file.path} -quiet`);
         }
@@ -247,10 +249,11 @@ class xilinxOperation {
             const content = scripts[i];
             script += content + '\n';
         }
+
         const scriptPath = `${this.xilinxPath}/refresh.tcl`;
         script += `file delete ${scriptPath} -force\n`;
         fs.files.writeFile(scriptPath, script);
-        const cmd = `sources ${scriptPath}`;
+        const cmd = `source ${scriptPath} -quiet`;
         config.terminal.sendText(cmd);
     }
 
@@ -259,6 +262,14 @@ class xilinxOperation {
      * @returns 
      */
     simulate(config) {
+        this.simcli(config);
+    }
+
+    /**
+     * 
+     * @returns 
+     */
+    simgui(config) {
         const scriptPath = `${this.xilinxPath}/simulate.tcl`;
         const script = `
         if {[current_sim] != ""} {
@@ -281,7 +292,36 @@ class xilinxOperation {
         start_gui -quiet
         file delete ${scriptPath} -force\n`;
         fs.files.writeFile(scriptPath, script);
-        const cmd = `sources ${scriptPath}`;
+        const cmd = `source ${scriptPath} -quiet`;
+        config.terminal.sendText(cmd);
+    }
+
+    /**
+     * 
+     * @returns 
+     */
+    simcli(config) {
+        const scriptPath = `${this.xilinxPath}/simulate.tcl`;
+        const script = `
+        if {[current_sim] != ""} {
+            relaunch_sim -quiet
+        } else {
+            launch_simulation -quiet
+        }
+
+        set curr_wave [current_wave_config]
+        if { [string length $curr_wave] == 0 } {
+            if { [llength [get_objects]] > 0} {
+                add_wave /
+                set_property needs_save false [current_wave_config]
+            } else {
+                send_msg_id Add_Wave-1 WARNING "No top level signals found. Simulator will start without a wave window. If you want to open a wave window go to 'File->New Waveform Configuration' or type 'create_wave_config' in the TCL console."
+            }
+        }
+        run 1us
+        file delete ${scriptPath} -force\n`;
+        fs.files.writeFile(scriptPath, script);
+        const cmd = `source ${scriptPath} -quiet`;
         config.terminal.sendText(cmd);
     }
 
@@ -351,7 +391,7 @@ class xilinxOperation {
         scriptPath = `${this.xilinxPath}/build.tcl`;
         script += `file delete ${scriptPath} -force\n`;
         fs.files.writeFile(scriptPath, script);
-        const cmd = `sources ${scriptPath}`;
+        const cmd = `source ${scriptPath} -quiet`;
         config.terminal.sendText(cmd);
     }
 
@@ -384,7 +424,7 @@ class xilinxOperation {
         let scriptPath = `${this.xilinxPath}/bit.tcl`;
         script += `file delete ${scriptPath} -force\n`;
         fs.files.writeFile(scriptPath, script);
-        const cmd = `sources ${scriptPath}`;
+        const cmd = `source ${scriptPath} -quiet`;
         config.terminal.sendText(cmd);
     }
 
@@ -423,7 +463,7 @@ class xilinxOperation {
         file delete ${scriptPath} -force\n`;
 
         fs.files.writeFile(scriptPath, script);
-        const cmd = `sources ${scriptPath}`;
+        const cmd = `source ${scriptPath} -quiet`;
         config.terminal.sendText(cmd);
     }
 
@@ -629,13 +669,13 @@ class xilinxTool {
     /**
      * 
      */
-    move_bd_ip() {
+    move() {
         const prjName = opeParam.prjInfo.PRJ_NAME.PL;
         const srcPath = opeParam.prjInfo.ARCH.Hardware.src;
         const target_path = fs.paths.dirname(srcPath);
 
-        const source_ip_path = `${opeParam.workspacePath}/prj/xilinx/${prjName}.srcs/sources_1/ip`;
-        const source_bd_path = `${opeParam.workspacePath}/prj/xilinx/${prjName}.srcs/sources_1/bd`;
+        const source_ip_path = `${opeParam.workspacePath}/prj/xilinx/${prjName}.srcs/source_1/ip`;
+        const source_bd_path = `${opeParam.workspacePath}/prj/xilinx/${prjName}.srcs/source_1/bd`;
 
         fs.dirs.mvdir(source_ip_path, target_path);
         fs.dirs.mvdir(source_bd_path, target_path);
@@ -647,8 +687,8 @@ class xilinxTool {
         let opeParam = this.process.opeParam;
         let BootInfo = {
             "outsidePath" : `${path.dirname(opeParam.prjStructure.prjPath)}/boot`,
-            "insidePath"  : `${opeParam.rootPath}/resources/boot/xilinx`,
-            "outputPath"  : `${opeParam.rootPath}/resources/boot/xilinx/output.bif`,
+            "insidePath"  : `${opeParam.rootPath}/resource/boot/xilinx`,
+            "outputPath"  : `${opeParam.rootPath}/resource/boot/xilinx/output.bif`,
             "elf_path"    : '',
             "bit_path"    : '',
             "fsbl_path"   : ''

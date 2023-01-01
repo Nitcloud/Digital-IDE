@@ -13,8 +13,10 @@ function register() {
     const plFuncs = [
         'Launch', 'GUI', 'Exit',
         'Synth', 'Impl', 'Bit', 'Build', 
-        'Program', 'Refresh', 'Simulate', 
+        'Simulate', 'simGUI', 'simCLI',
+        'Program', 'Refresh',  
     ]
+    
     for (let i = 0; i < plFuncs.length; i++) {
         const fun = plFuncs[i];
         vscode.commands.registerCommand(`HARD.${fun}`, () => {
@@ -337,7 +339,7 @@ class baseManage {
         }
 
         return vscode.window.createTerminal({ 
-            name: 'name' 
+            name: name
         });
     }
 

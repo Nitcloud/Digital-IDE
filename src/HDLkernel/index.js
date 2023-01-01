@@ -6,11 +6,13 @@ const kernel = require("./kernel/kernel");
 class operation {
     constructor() {
         this.kernel = null;
+        this.vrfs = null;
     }
 
     async launch() {
         this.kernel = await kernel(); 
-        fs.vrfs.module = this.kernel;
+        this.vrfs = new fs.vrfs(this.kernel);
+        this.vrfs.diskMount();
     }
 
     /**
@@ -19,7 +21,7 @@ class operation {
      * @param {String} command 
      */
     exec(command) {
-        this.vrfs.module.ccall('run', '', ['string'], [command]);
+        this.kernel.ccall('run', '', ['string'], [command]);
     }
 
     /**
@@ -27,9 +29,9 @@ class operation {
      * @descriptionCn 输出帮助界面
      */
     printHelp() {
-        this.vrfs.module.TTY.message = '';
+        this.kernel.TTY.message = '';
         this.exec("help");
-        return this.vrfs.module.TTY.message;
+        return this.kernel.TTY.message;
     }
 
     /**
@@ -38,7 +40,7 @@ class operation {
      * @param {Boolean} params (true : 打开内置log输出 | false : 关闭内置log输出)
      */
     setInnerOutput(params) {
-        this.vrfs.module.TTY.innerOutput = params;
+        this.kernel.TTY.innerOutput = params;
     }
 
     /**
@@ -47,9 +49,9 @@ class operation {
      * @param {*} callback 对message操作的回调函数
      */
     setMessageCallback(callback) {
-        this.vrfs.module.TTY.innerOutput = false;
-        this.vrfs.module.TTY.callbackOutput = true;
-        this.vrfs.module.TTY.callback = callback;
+        this.kernel.TTY.innerOutput = false;
+        this.kernel.TTY.callbackOutput = true;
+        this.kernel.TTY.callback = callback;
     }
 
     /**

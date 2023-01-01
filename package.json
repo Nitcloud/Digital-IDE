@@ -512,38 +512,18 @@
                 "category": "FILE"
             },
             {
-                "command": "TOOL.Lint",
-                "title": "syntax check",
-                "category": "TOOL"
-            },
-            {
-                "command": "TOOL.Launch",
-                "title": "launch extension",
-                "category": "TOOL"
-            },
-            {
-                "command": "TOOL.Gen_Property",
+                "command": "TOOL.generate.property",
                 "title": "generate property file",
                 "category": "TOOL"
             },
             {
-                "command": "TOOL.Overwrite_InitProperty",
+                "command": "TOOL.overwrite.property",
                 "title": "Overwrite the InitPropertyParam",
-                "category": "TOOL"
-            },
-            {
-                "command": "TOOL.BOOT",
-                "title": "BOOT",
                 "category": "TOOL"
             },
             {
                 "command": "TOOL.Clean",
                 "title": "Clean",
-                "category": "TOOL"
-            },
-            {
-                "command": "TOOL.SerialPort",
-                "title": "Serial monitor",
                 "category": "TOOL"
             },
             {
@@ -619,11 +599,6 @@
                 "category": "TOOL"
             },
             {
-                "command": "TOOL.state_machine.designer",
-                "title": "State machine designer",
-                "category": "TOOL"
-            },
-            {
                 "command": "TOOL.state_machine.viewer",
                 "title": "State machine viewer",
                 "category": "TOOL"
@@ -651,6 +626,16 @@
             {
                 "command": "HARD.Simulate",
                 "title": "Run the Simulation",
+                "category": "HARD"
+            },
+            {
+                "command": "HARD.simCLI",
+                "title": "Run the Simulation in CLI",
+                "category": "HARD"
+            },
+            {
+                "command": "HARD.simGUI",
+                "title": "Run the Simulation in GUI",
                 "category": "HARD"
             },
             {
@@ -865,11 +850,6 @@
                     "when": "editorLangId == bd",
                     "command": "xilinx.overwrite.bd",
                     "group": "navigation@9"
-                },
-                {
-                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
-                    "command": "TOOL.Lint",
-                    "group": "navigation@10"
                 }
             ],
             "explorer/context": [

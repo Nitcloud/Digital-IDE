@@ -316,11 +316,7 @@ class BaseCommandTreeProvoder {
         treeItem.command = element.cmd
         treeItem.tooltip = element.tip;
 
-        if (childNum == 0) {
-            treeItem.iconPath = getIconConfig(element.icon);
-        } else {
-            treeItem.iconPath = getIconConfig('toolBox');
-        }
+        treeItem.iconPath = getIconConfig(element.icon);
 
         return treeItem;
     }
@@ -336,7 +332,7 @@ class HardwareTreeProvider extends BaseCommandTreeProvoder {
             },
             Simulate: {
                 cmd: 'HARD.Simulate',
-                icon: 'cmd',
+                icon: 'toolBox',
                 tip: 'Launch the manufacturer Simulation',
                 children: {
                     CLI: {
@@ -358,7 +354,7 @@ class HardwareTreeProvider extends BaseCommandTreeProvoder {
             },
             Build: {
                 cmd: 'HARD.Build',
-                icon: 'cmd',
+                icon: 'toolBox',
                 tip: 'Build the current fpga project',
                 children: {
                     Synth: {

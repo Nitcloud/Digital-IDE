@@ -9,13 +9,9 @@ const testbench = require("./sim/testbench");
 const html = require('./doc/html');
 const doc = require('./doc');
 
-const Lsp = require('./lsp');
+const lsp = require('./lsp');
+const tool = require('./tool');
 
-// /**
-//  * HDL语言服务注册函数
-//  * @param {*} context 
-//  * @param {*} indexer 
-//  */
 function registerLspServer(context) {
     // Configure Provider manager
     const vlogSelector = { scheme: 'file', language: 'verilog' };
@@ -24,25 +20,24 @@ function registerLspServer(context) {
     const HDLSelector = [vlogSelector, svlogSelector, vhdlSelector];
     
     // Translate Language sever
-    Lsp.translateProvider();
+    lsp.translateProvider();
 
     // Linter Language sever
-    Lsp.linterProvider();
+    lsp.linterProvider();
 
     // Formatting Language sever
-    vscode.languages.registerDocumentFormattingEditProvider(HDLSelector, Lsp.formatterProvider.hdlFormatterProvide);
+    vscode.languages.registerDocumentFormattingEditProvider(HDLSelector, lsp.formatterProvider.hdlFormatterProvide);
 
     // verilog lsp
-    vscode.languages.registerHoverProvider(vlogSelector, Lsp.hoverProvider.vlogHoverProvider);
-    vscode.languages.registerDefinitionProvider(vlogSelector, Lsp.definitionProvider.vlogDefinitionProvider);
-    vscode.languages.registerDocumentSymbolProvider(vlogSelector, Lsp.docSymbolProvider.vlogDocSymbolProvider);
+    vscode.languages.registerHoverProvider(vlogSelector, lsp.hoverProvider.vlogHoverProvider);
+    vscode.languages.registerDefinitionProvider(vlogSelector, lsp.definitionProvider.vlogDefinitionProvider);
+    vscode.languages.registerDocumentSymbolProvider(vlogSelector, lsp.docSymbolProvider.vlogDocSymbolProvider);
 
-    vscode.languages.registerCompletionItemProvider(vlogSelector, Lsp.completionProvider.vlogIncludeCompletionProvider, '/');
-    vscode.languages.registerCompletionItemProvider(vlogSelector, Lsp.completionProvider.vlogMacroCompletionProvider, '`');
-    vscode.languages.registerCompletionItemProvider(vlogSelector, Lsp.completionProvider.vlogPositionPortProvider, '.');
-    vscode.languages.registerCompletionItemProvider(vlogSelector, Lsp.completionProvider.vlogCompletionProvider);
+    vscode.languages.registerCompletionItemProvider(vlogSelector, lsp.completionProvider.vlogIncludeCompletionProvider, '/');
+    vscode.languages.registerCompletionItemProvider(vlogSelector, lsp.completionProvider.vlogMacroCompletionProvider, '`');
+    vscode.languages.registerCompletionItemProvider(vlogSelector, lsp.completionProvider.vlogPositionPortProvider, '.');
+    vscode.languages.registerCompletionItemProvider(vlogSelector, lsp.completionProvider.vlogCompletionProvider);
 }
-
 
 function registerSimServer(context) {
     // var simulate = new simulation.icarus(process);
@@ -59,9 +54,9 @@ function registerSimServer(context) {
         testbench.generate(uri);
     }));
 
-    // context.subscriptions.push(vscode.commands.registerCommand('TOOL.Overwrite_tb', () => {
-    //     simTestbench.Overwrite_tb(process.opeParam);
-    // }));
+    context.subscriptions.push(vscode.commands.registerCommand('TOOL.overwrite.tb', () => {
+        testbench.overwrite();
+    }));
 }
 
 function registerTreeServer(context) {
@@ -81,11 +76,22 @@ function registerTreeServer(context) {
     vscode.commands.registerCommand('TOOL.tree.arch.openFile', tree.openFileByUri);
 }
 
-
 function registerDocumentation(context) {
     vscode.commands.registerCommand('TOOL.doc.webview.show', html.showDocWebview);
     doc.registerFileDocExport(context);
     doc.registerProjectDocExport(context);
+}
+
+function registerToolServer(context) {
+    context.subscriptions.push(vscode.commands.registerCommand('TOOL.netlist', (uri) => {
+        const netViewer = new tool.net(context);
+        netViewer.open(uri);
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('TOOL.FSMGraph', (uri) => {
+        const fsmViewer = new tool.fsm(context);
+        fsmViewer.open(uri);
+    }));
 }
 
 function registerPrjServer(context) {
@@ -98,5 +104,6 @@ module.exports = {
     registerSimServer,
     registerTreeServer,
     registerDocumentation,
-    registerLspServer
+    registerLspServer,
+    registerToolServer
 }

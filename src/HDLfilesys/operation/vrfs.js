@@ -2,8 +2,10 @@ const pathfs = require('./path');
 const files = require('./files');
 const os = require('os');
 
-const vrfs = {
-    module: null,
+class vrfs {
+    constructor(module) {
+        this.module = module;
+    }
 
     /**
      * @state finish-test
@@ -11,11 +13,11 @@ const vrfs = {
      * @param {*} path 所要显示的文件夹的绝对路径 (省略对应root的\)
      * @returns 返回所有子目录
      */
-    readdir : function (path) {
+    readdir(path) {
         let lists = this.module.FS.readdir(`/${path}`);
         console.log(lists);
         return lists;
-    },
+    }
 
     /**
      * @state finish-test
@@ -23,16 +25,16 @@ const vrfs = {
      * @param {*} local   需要挂载的本地路径
      * @param {*} virtual 所要挂载到的虚拟文件系统的绝对路径 (省略对应root的/)
      */
-    mount : function (local, virtual) {
+    mount(local, virtual) {
         this.mkdir(virtual);
         this.module.FS.mount(this.module.NODEFS, { root: local }, `/${virtual}`);
-    },
+    }
 
     /**
      * @state finish-test
      * @descriptionCn 将当前系统根目录进行挂在到虚拟文件系统下
      */
-    diskMount : function () {
+    diskMount() {
         var aDrives = [];
         var result = null;
         var stdout = null;
@@ -114,7 +116,7 @@ const vrfs = {
                 this.mount('/', 'host');
             break;
         }
-    },
+    }
 
     /**
      * @state finish-test
@@ -122,7 +124,7 @@ const vrfs = {
      * @param {*} path 虚拟文件系统内部的绝对路径 (省略对应root的\)
      * 可越级创建，会自动生成父级文件夹
      */
-    mkdir : function (path) {
+    mkdir(path) {
         if (this.module.FS.findObject(`/${path}`) != null) {
             return true;
         } else {
@@ -136,7 +138,7 @@ const vrfs = {
             }
             return true;
         }
-    },
+    }
 
     /**
      * @state finish-test
@@ -144,7 +146,7 @@ const vrfs = {
      * @param {*} path 虚拟文件系统内部的绝对路径 (省略对应root的\)
      * 可越级创建，会自动删除父级文件夹
      */
-    rmdir : function (path) {
+    rmdir(path) {
         let files = [];
         if (this.module.FS.findObject(`/${path}`) != null) {
             files = this.module.FS.readdir(`/${path}`);
@@ -160,16 +162,16 @@ const vrfs = {
             }
             this.module.FS.rmdir(`/${path}`); //清除文件夹
         }
-    },
+    }
 
     /**
      * @state finish-test
      * @descriptionCn 删除虚拟文件系统下的指定文件
      * @param {*} path 虚拟文件系统内部的绝对路径 (省略对应root的\)
      */
-    rmfile : function (path) {
+    rmfile(path) {
         this.module.FS.unlink(`/${path}`);
-    },
+    }
 
     /**
      * @state finish-test
@@ -178,7 +180,7 @@ const vrfs = {
      * @param {*} des 虚拟文件系统内部指定地址 (省略对应root的\)
      * 可越级创建，会自动生成父级文件夹
      */
-    writeFileFormPath : function (src, des) {
+    writeFileFormPath(src, des) {
         let desDir = pathfs.dirname(des);
         let content = files.readFile(src);
         if (this.module.FS.findObject(`/${desDir}`) != null) {
@@ -187,7 +189,7 @@ const vrfs = {
             this.mkdir(`/${desDir}`);
             this.module.FS.writeFile(`/${des}`, content, { encoding: 'utf8' });
         }
-    },
+    }
 
     /**
      * @state finish-test
@@ -196,7 +198,7 @@ const vrfs = {
      * @param {*} path 虚拟文件系统内部指定地址 (省略对应root的\)
      * 可越级创建，会自动生成父级文件夹
      */
-    writeFileFormText : function (text, path) {
+    writeFileFormText(text, path) {
         let pathDir = pathfs.dirname(path);
         if (this.module.FS.findObject(`/${pathDir}`) != null) {
             this.module.FS.writeFile(`/${path}`, text, { encoding: 'utf8' });
@@ -204,7 +206,7 @@ const vrfs = {
             this.mkdir(`/${pathDir}`);
             this.module.FS.writeFile(`/${path}`, text, { encoding: 'utf8' });
         }
-    },
+    }
 
     /**
      * @state finish-test
@@ -212,14 +214,14 @@ const vrfs = {
      * @param {*} src 虚拟文件系统内部指定地址 (省略对应root的\)
      * @param {*} des 要写到的本地文件的绝对路径
      */
-    readFileToPath : function (src, des) {
+    readFileToPath(src, des) {
         if (this.module.FS.findObject(`/${src}`) != null) {
             let content = this.module.FS.readFile(`/${src}`, { encoding: 'utf8' });
             files.writeFile(des, content);
         } else {
             console.log(`ERROR: The ${src} is not at this virtual system.`);
         }
-    },
+    }
 
     /**
      * @state finish-test
@@ -227,13 +229,13 @@ const vrfs = {
      * @param {*} path 虚拟文件系统内部指定地址 (省略对应root的\)
      * @returns 读出文件的内容
      */
-    readFileToText : function (path) {
+    readFileToText(path) {
         if (this.module.FS.findObject(`/${path}`) != null) {
             let content = this.module.FS.readFile(`/${path}`, { encoding: 'utf8' });
             return content;
         } else {
             console.log(`ERROR: The ${path} is not at this virtual system.`);
         }
-    },
+    }
 }
 module.exports = vrfs;

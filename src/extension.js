@@ -38,6 +38,7 @@ async function activate(context) {
     HDLtool.registerTreeServer(context);
     HDLtool.registerDocumentation(context);
     HDLtool.registerLspServer(context);
+    HDLtool.registerToolServer(context);
 
     console.log('cost time : ' + (Date.now() - start) / 1000 + 's');
 }
