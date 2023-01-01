@@ -3,17 +3,17 @@
 const vscode = require("vscode");
 
 // Verilog or SystemVerilog only
-const Icarus = require('../linter/Icarus');
-const Verible = require('../linter/Verible');
-const Verilator = require('../linter/Verilator');
+const Icarus = require('./vlog/Icarus');
+const Verible = require('./vlog/Verible');
+const Verilator = require('./vlog/Verilator');
 
 // VHDL only
-const Ghdl = require('../linter/Ghdl');
+const Ghdl = require('./vhdl/Ghdl');
 
 // HDL linter
-const Vivado = require('../linter/Vivado');
-const Default = require("../linter/Default");
-const Modelsim = require('../linter/Modelsim');
+const Vivado = require('./mixed/Vivado');
+const Default = require("./mixed/Default");
+const Modelsim = require('./mixed/Modelsim');
 
 function registerLinterServer() {
     let linter = new Linter();
@@ -27,7 +27,7 @@ function registerLinterServer() {
         linter.remove(doc)
     });
 }
-exports.registerLinterServer = registerLinterServer;
+module.exports = registerLinterServer;
 
 class Linter {
     constructor() {

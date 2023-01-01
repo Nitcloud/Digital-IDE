@@ -1,5 +1,5 @@
 
-const BaseLinter = require('./BaseLinter');
+const BaseLinter = require('../BaseLinter');
 
 class Ghdl extends BaseLinter {
     constructor() {

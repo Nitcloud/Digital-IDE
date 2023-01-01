@@ -1,10 +1,10 @@
-const parser = require("HDLparser");
-const filesys = require("HDLfilesys");
+const parser = require("../../../../HDLparser");
+const filesys = require("../../../../HDLfilesys");
 
 class Default {
     constructor() {
-        this.vlogLinter = new parser.vlogParser();
-        this.vhdlLinter = new parser.vhdlParser();
+        this.vlogLinter = parser.vlogParser;
+        this.vhdlLinter = parser.vhdlParser;
     }
 
     async lint(file, options) {

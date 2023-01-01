@@ -9,6 +9,8 @@ class libManage {
         this.warn = vscode.showWarningMessage;
         this.info = vscode.showInformationMessage;
 
+        this.set  = vscode.workspace.getConfiguration;
+
         this.curr = {
             'type' : null,
             'list' : [],
@@ -36,7 +38,7 @@ class libManage {
      * @descriptionEn Dynamic update of property configuration
      */
     getConfig() {
-        this.customerPath = this.setting.get("PRJ.customer.Lib.repo.path");
+        this.customerPath = this.set().get("PRJ.customer.Lib.repo.path");
 
         this.srcPath = opeParam.prjInfo.ARCH.Hardware.src;
         this.simPath = opeParam.prjInfo.ARCH.Hardware.sim;
@@ -100,7 +102,7 @@ class libManage {
             case 'local-remote':
                 // 本地的lib全部删除，交给monitor进行处理
                 if (fs.files.isExist(this.localLibPath)) {
-                    if (this.setting.get("PRJ.file.structure.notice")) {
+                    if (this.set().get("PRJ.file.structure.notice")) {
                         let select = await this.warn("local lib will be removed.", 'Yes', 'Cancel');
                         if (select == "Yes") {
                             fs.dirs.rmdir(localLibPath);

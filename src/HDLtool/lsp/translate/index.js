@@ -2,7 +2,7 @@
 
 const fs     = require('fs');
 const vscode = require('vscode');
-const vhd2vl = require("../translate/vhd2vlog");
+const vhd2vl = require("./vhd2vlog");
 
 function vhdl2vlog(path) {
     vhd2vl().then((Module) => {
@@ -30,9 +30,16 @@ function vhdl2vlog(path) {
                 }
             });
         } else {
-            
-            
+            const error = Module.ccall('getErr', 'string', ['string'], []);
+            vscode.window.showErrorMessage(error);
         }
     });
 }
-exports.vhdl2vlog = vhdl2vlog;
+
+function register() {
+    vscode.commands.registerCommand('TOOL.vhdl2vlog', (uri) => {
+        const docPath = uri.fsPath.replace(/\\/g, '/');
+        vhdl2vlog(docPath);
+    });
+}
+module.exports = register;

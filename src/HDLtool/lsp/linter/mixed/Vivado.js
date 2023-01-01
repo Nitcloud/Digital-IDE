@@ -1,5 +1,5 @@
 
-const BaseLinter = require('./BaseLinter');
+const BaseLinter = require('../BaseLinter');
 
 class Vivado extends BaseLinter {
     constructor() {

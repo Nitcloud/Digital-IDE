@@ -1,5 +1,5 @@
 
-const BaseLinter = require('./BaseLinter');
+const BaseLinter = require('../BaseLinter');
 
 class Icarus extends BaseLinter {
     constructor() {

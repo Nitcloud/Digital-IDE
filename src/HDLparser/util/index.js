@@ -172,6 +172,10 @@ class BaseParser {
     symbol(code) {
         return this._parser.symbol(code);
     }
+
+    lint(code) {
+        return this._parser.lint(code);
+    }
 }
 
 

@@ -261,19 +261,24 @@ class PrjManage {
         }
     }
 
+    /**
+     * @descriptionCn 获取所有工程源码文件的路径
+     * @returns {Array<string>} 
+     */
     getPrjFiles() {
         // 获取ignore .dideignore
         let ignores = [];
-        const lines = fs.files.getlines(`${opeParam.workspacePath}/.dideignore`);
-        for (const line of lines) {
-            ignores.push(fs.paths.rel2abs(opeParam.workspacePath, line));
-        }
+        // TODO
+        // const lines = fs.files.getlines(`${opeParam.workspacePath}/.dideignore`);
+        // for (const line of lines) {
+        //     ignores.push(fs.paths.rel2abs(opeParam.workspacePath, line));
+        // }
 
         // 先处理好library，再启动monitor
         let files = [];
         if (opeParam.prjInfo.library) {
-            const res = opeParam.liboperation.processLibFiles(opeParam.prjInfo.library);
-            files = res.add;
+            // const res = opeParam.liboperation.processLibFiles(opeParam.prjInfo.library);
+            // files = res.add;
         }
         
         // 获取本地的源文件

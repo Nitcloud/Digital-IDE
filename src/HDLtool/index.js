@@ -1,5 +1,4 @@
 const vscode = require("vscode");
-const fs = require('fs');
 
 const prj  = require('./prj/prjManage');
 const tree = require("./tree/tree");
@@ -12,7 +11,6 @@ const doc = require('./doc');
 
 const Lsp = require('./lsp');
 
-const manage = prj.PrjManage;
 // /**
 //  * HDL语言服务注册函数
 //  * @param {*} context 
@@ -25,40 +23,14 @@ function registerLspServer(context) {
     const vhdlSelector = { scheme: 'file', language: 'vhdl' };
     const HDLSelector = [vlogSelector, svlogSelector, vhdlSelector];
     
-    //     // Translate Language sever
-    //     vscode.commands.registerCommand('TOOL.vhdl2vlog', (uri) => {
-    //         let docPath = uri.fsPath.replace(/\\/g, '/');
-    //         lspTranslation.vhdl2vlog(docPath);
-    //     });
+    // Translate Language sever
+    Lsp.translateProvider();
 
-    //     // Formatting Language sever
-    //     vscode.languages.registerDocumentFormattingEditProvider(
-    //         HDL_lsp,
-    //         new lspFormatter.Formatter()
-    //     );
+    // Linter Language sever
+    Lsp.linterProvider();
 
-    //     // Linter Language sever
-    //     lspLinter.registerLinterServer();
-
-    //     // Complete Language sever
-    //     vscode.languages.registerCompletionItemProvider(
-    //         [HDL_lsp[0],HDL_lsp[1]],
-    //         new lspCompletion.vlogCompletion(indexer),
-    //         '.','`','$'
-    //     )
-
-    //     vscode.languages.registerCompletionItemProvider(
-    //         HDL_lsp[2],
-    //         new lspCompletion.vhdlCompletion(),
-    //         '.', '\"'
-    //     );
-    //     // vscode.languages.registerCompletionItemProvider(
-    //     //     { scheme: 'file', language: 'json' },
-    //     //     new lspCompletion.jsonCompletion(),
-    //     //     '\/'
-    //     // );
-
-    // Providers Language sever
+    // Formatting Language sever
+    vscode.languages.registerDocumentFormattingEditProvider(HDLSelector, Lsp.formatterProvider.hdlFormatterProvide);
 
     // verilog lsp
     vscode.languages.registerHoverProvider(vlogSelector, Lsp.hoverProvider.vlogHoverProvider);
@@ -69,13 +41,6 @@ function registerLspServer(context) {
     vscode.languages.registerCompletionItemProvider(vlogSelector, Lsp.completionProvider.vlogMacroCompletionProvider, '`');
     vscode.languages.registerCompletionItemProvider(vlogSelector, Lsp.completionProvider.vlogPositionPortProvider, '.');
     vscode.languages.registerCompletionItemProvider(vlogSelector, Lsp.completionProvider.vlogCompletionProvider);
-
-    
-    //     const docProvider = new lspProvider.DocumentSymbolProvider();
-    //     const defProvider = new lspProvider.DefinitionProvider(indexer);
-    //     vscode.languages.registerDefinitionProvider(HDL_lsp, defProvider);
-    //     // const symProvider = new lspProvider.WorkspaceSymbolProvider(indexer);
-    //     // vscode.languages.registerWorkspaceSymbolProvider(symProvider);
 }
 
 
@@ -112,9 +77,8 @@ function registerTreeServer(context) {
     // register command in tree
     vscode.commands.registerCommand('TOOL.tree.arch.expand', tree.expandTreeView);
     vscode.commands.registerCommand('TOOL.tree.arch.collapse', tree.collapseTreeView);
-    vscode.commands.registerCommand("TOOL.tree.arch.refresh", tree.refreshArchTree);
+    vscode.commands.registerCommand('TOOL.tree.arch.refresh', tree.refreshArchTree);
     vscode.commands.registerCommand('TOOL.tree.arch.openFile', tree.openFileByUri);
-
 }
 
 

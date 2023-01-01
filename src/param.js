@@ -58,7 +58,6 @@ const opeParam = {
     },
 
     prjInfo: defaultPrjInfo,        // 用户配置的参数
-    liboperation: new library(),    // 远程library操作类
     prjInitParam: "",               // 初始配置文件的路径
     propertyPath: ""                // 用户配置文件的路径
 };

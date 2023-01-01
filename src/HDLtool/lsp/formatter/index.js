@@ -3,10 +3,10 @@ const os = require('os');
 const fs = require('fs');
 const path = require('path');
 const vscode = require('vscode');
-const temp = require('../temp/temp');
+const temp = require("temp");
 
-const vlogFormatter = require("../formatter/vlogFormatter.js");
-const vhdlFormatter = require("../formatter/vhdlFormatter.js");
+const vlogFormatter = require("./vlogFormatter.js");
+const vhdlFormatter = require("./vhdlFormatter.js");
 
 class Formatter {
     constructor() {
@@ -112,7 +112,6 @@ class Formatter {
         return new vscode.Range(0, 0, lastLineId, document.lineAt(lastLineId).text.length);
     }
 }
-exports.Formatter = Formatter;
 
 class VLOGFormatter {
     constructor() {
@@ -249,3 +248,6 @@ class Verible extends BaseFormatter {
         return formatted_code.stdout;
     }
 }
+
+const hdlFormatterProvide = new Formatter();
+module.exports = {hdlFormatterProvide};
