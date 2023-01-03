@@ -103,10 +103,10 @@ function makeWavedromRenderErrorHTML() {
 /**
  * @description make the html string of a finial display style
  * @param {string} usage in whick module is used
- * @returns {string}
+ * @returns {Promise<string>}
  */
-function makeShowHTML(usage) {
-    const renderList = getCurrentRenderList();
+async function makeShowHTML(usage) {
+    const renderList = await getCurrentRenderList();
     if (renderList.length == 0) {
         return '';
     }
@@ -139,7 +139,8 @@ function makeShowHTML(usage) {
     return html;
 }
 
-function showDocWebview() {
+async function showDocWebview() {
+    const htmlPromise = makeShowHTML("webview")
     const webview = vscode.window.createWebviewPanel(
         'TOOL.doc.webview.show', 
         'document',
@@ -150,11 +151,11 @@ function showDocWebview() {
         }
     );
     webview.iconPath = getIconConfig('documentation');
-    webview.webview.html = makeShowHTML("webview");
+    webview.webview.html = await htmlPromise;
 }
 
 
-function exportCurrentFileDocAsHTML() {
+async function exportCurrentFileDocAsHTML() {
     if (vscode.window.activeColorTheme.kind != vscode.ColorThemeKind.Light) {
         vscode.window.showErrorMessage('Please export html in a light theme!');
         return;
@@ -163,7 +164,7 @@ function exportCurrentFileDocAsHTML() {
     const editor = vscode.window.activeTextEditor;
     const currentFilePath = HDLPath.toSlash(editor.document.fileName);
     const HDLFileName = HDLPath.basename(currentFilePath);
-    const renderList = getRenderList(currentFilePath);
+    const renderList = await getRenderList(currentFilePath);
     if (renderList.length == 0) {
         return;
     }
@@ -213,7 +214,7 @@ function exportCurrentFileDocAsHTML() {
 }
 
 
-function exportProjectDocAsHTML() {
+async function exportProjectDocAsHTML() {
     vscode.window.showInformationMessage('this is exportProjectDocAsHTML');
 }
 

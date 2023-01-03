@@ -1,6 +1,6 @@
 const vscode = require('vscode');
 
-const { transferVlogNumber } = require('./feature');
+const { transferVlogNumber, getSymbolComment, getSymbolComments } = require('./feature');
 
 const { SymbolResult, Position, CommentResult, Range, Module, Instance, 
         HDLParam, ModPort, ModParam } = require('../../../HDLparser');
@@ -344,7 +344,7 @@ function filterInstanceByPosition(position, symbols, module) {
  * @param {Instance} inst 
  * @param {vscode.Position} position 
  * @param {string} singleWord
- * @returns {Position<ModPort>}
+ * @returns {Promise<ModPort>}
  */
 async function getInstPortByPosition(inst, position, singleWord) {
     if (!inst.module || !inst.instports) {
@@ -564,5 +564,7 @@ module.exports = {
     getInstParamByPosition,
     makePortDesc,
     makeParamDesc,
-    transferVlogNumber
+    transferVlogNumber,
+    getSymbolComment,
+    getSymbolComments
 };

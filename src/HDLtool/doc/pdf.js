@@ -48,13 +48,13 @@ async function htmlFile2PdfFile(htmlPath, pdfPath) {
     await browser.close();
 }
 
-function exportCurrentFileDocAsPDF() {
+async function exportCurrentFileDocAsPDF() {
     const editor = vscode.window.activeTextEditor;
     const currentFilePath = HDLPath.toSlash(editor.document.fileName);
     const HDLFileName = HDLPath.basename(currentFilePath);
     const wsPath = opeParam.workspacePath;
 
-    const html = makeShowHTML("pdf");
+    const html = await makeShowHTML("pdf");
 
     if (!html) {
         return;

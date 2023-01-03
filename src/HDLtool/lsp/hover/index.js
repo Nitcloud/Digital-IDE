@@ -6,7 +6,7 @@ const { getSingleWordAtCurrentPosition,
         matchDefine, matchInclude, matchDefineMacro, matchInstance, matchNormalSymbol,
         matchPorts, matchParams, transferVlogNumber,
         makeVlogHoverContent, makePortDesc, makeParamDesc,
-        getInstParamByPosition, getInstPortByPosition } = require('../util');
+        getInstParamByPosition, getInstPortByPosition, getSymbolComment } = require('../util');
 
 const { vlogParser, HDLParam } = require('../../../HDLparser');
 
@@ -104,12 +104,14 @@ class VlogHoverProvider {
                 const instPort = await instPortPromise;
 
                 if (instParam) {
-                    const initParamDesc = makeParamDesc(instParam);
+                    const initParamDesc = await getSymbolComment(currentInstResult.instModPath, instParam.range);
+                    // const initParamDesc = makeParamDesc(instParam);
                     content.appendCodeblock(initParamDesc, 'verilog');
                     return new vscode.Hover(content);
                 }
                 if (instPort) {
-                    const initPortDesc = makePortDesc(instPort);
+                    const initPortDesc = await getSymbolComment(currentInstResult.instModPath, instPort.range);
+                    // const initPortDesc = makePortDesc(instPort);
                     content.appendCodeblock(initPortDesc, 'verilog');
                     return new vscode.Hover(content);
                 }
@@ -118,7 +120,7 @@ class VlogHoverProvider {
             // 8. match params
             const paramResult = matchParams(targetWord, currentModule);
             if (paramResult) {
-                const paramDesc = makeParamDesc(paramResult);
+                const paramDesc = await getSymbolComment(filePath, paramResult.range);
                 content.appendCodeblock(paramDesc, 'verilog');
                 return new vscode.Hover(content);
             }
@@ -126,7 +128,7 @@ class VlogHoverProvider {
             // 9. match ports
             const portResult = matchPorts(targetWord, currentModule);
             if (portResult) {
-                const portDesc = makePortDesc(portResult);
+                const portDesc = await getSymbolComment(filePath, portResult.range);
                 content.appendCodeblock(portDesc, 'verilog');
                 return new vscode.Hover(content);
             }
@@ -134,7 +136,8 @@ class VlogHoverProvider {
             // 10. match others
             const normalResult = matchNormalSymbol(targetWord, scopeSymbols.symbols);
             if (normalResult) {
-                const normalDesc = normalResult.type + ' ' + normalResult.name;
+                const normalRange = {start: normalResult.start, end: normalResult.end};
+                const normalDesc = await getSymbolComment(filePath, normalRange);
                 content.appendCodeblock(normalDesc, 'verilog');
                 return new vscode.Hover(content);
             }

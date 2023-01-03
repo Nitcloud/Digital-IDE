@@ -96,6 +96,7 @@ function registerToolServer(context) {
 
 function registerPrjServer(context) {
     prj.register();
+
     return new prj.PrjManage();
 }
 

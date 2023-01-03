@@ -85,13 +85,21 @@ suite('HDLparser HDLParam Test Suite', () => {
         assert.equal(targetModule.path, TEST_MODULE.path);
     });
 
-
     test('test HDLParam.deleteModule', () => {
         HDLParam.deleteModule(TEST_MODULE.path, TEST_MODULE.name);
         assert(!HDLParam.hasModule(TEST_MODULE.path, TEST_MODULE.name));
         
         let target = HDLParam.getAllModules().filter(module => module.name == TEST_MODULE.name && module.path == TEST_MODULE.path);
         assert.equal(target.length, 0);
+    });
+
+    test('test HDLParam.getAllDependences', () => {
+        const dependencies = HDLParam.getAllDependences(TEST_TOP_MODULE.path, TEST_TOP_MODULE.name);
+        assert.equal(dependencies.current.length, 0);
+        assert.equal(dependencies.include.length, 1);
+        assert.equal(dependencies.others.length, 1);
+        assert.equal(dependencies.include[0], HDLPath.join(TEST_VLOG_FOLDER, 'child_1.v'));
+        assert.equal(dependencies.others[0], HDLPath.join(TEST_VLOG_FOLDER, 'child_2.v'));
     });
 
 });

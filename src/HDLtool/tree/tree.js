@@ -313,7 +313,12 @@ class BaseCommandTreeProvoder {
             vscode.TreeItemCollapsibleState.Collapsed
         );
         treeItem.contextValue = this.contextValue;
-        treeItem.command = element.cmd
+        treeItem.command = element.cmd;
+        treeItem.command = {
+            title: element.cmd,
+            command: element.cmd,
+        };
+
         treeItem.tooltip = element.tip;
 
         treeItem.iconPath = getIconConfig(element.icon);
