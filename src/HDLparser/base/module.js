@@ -240,6 +240,47 @@ const HDLParam = {
         return new Set(targetModules);
     },
     
+
+    /**
+     * 
+     * @param {string} path path of the module
+     * @param {string} name name of the module
+     * @returns {{current: Array<string>, include: Array<string>, others: Array<string>}}
+     */
+    getAllDependences(path, name) {
+        if (!this.hasModule(path, name)) {
+            return null;
+        }
+        
+        const module = this.findModule(path, name);
+        const dependencies = {
+            current: [],
+            include: [],
+            others: []
+        };
+
+        for (const inst of module.getInstances()) {
+            if (!inst.module) {
+                continue;
+            }
+            const status = inst.instModPathStatus;
+            if (status == common.InstModPathStatus.CURRENT) {
+                dependencies.current.push(inst.instModPath);
+            } else if (status == common.InstModPathStatus.INCLUDE) {
+                dependencies.include.push(inst.instModPath);
+            } else if (status == common.InstModPathStatus.OTHERS) {
+                dependencies.others.push(inst.instModPath);
+            }
+            const instDependencies = this.getAllDependences(inst.module.path, inst.module.name);
+            if (instDependencies) {
+                dependencies.current.push(...instDependencies.current);
+                dependencies.include.push(...instDependencies.include);
+                dependencies.others.push(...instDependencies.others);
+            }
+        }
+
+        return dependencies;
+    }
 };
 
 
@@ -281,11 +322,12 @@ class Instance {
      * @param {string} name                             实例名称
      * @param {string} type                             实例自的模块名字
      * @param {string} instModPath                      实例模块路径
+     * @param {common.InstModPathStatus} instModPath    实例模块路径被引入的状态 （当前文件、include、项目搜索）
      * @param {vscode.Range} instparams                 params起始
      * @param {vscode.Range} instports                  ports起始
      * @param {Module} parentMod                        所属的 Module
      */
-    constructor(name, type, instModPath, instparams, instports, parentMod) {
+    constructor(name, type, instModPath, instModPathStatus, instparams, instports, parentMod) {
         this.name = name;
         this.type = type;
         this.parentMod = parentMod;
@@ -295,6 +337,7 @@ class Instance {
         this.instports = instports;
 
         this.instModPath = instModPath;
+        this.instModPathStatus = instModPathStatus;
 
         this.module = null;
         if (instModPath) {
@@ -407,15 +450,16 @@ class Module {
         let nameToInstances = new Map();
         for (const inst of this._instances) {
             // TODO : 核心，能否更加优雅
-            let instModPath = this.searchInstModPath(inst);
+            let instMod = this.searchInstModPath(inst);
             let new_inst = new Instance(inst.name,
                                         inst.type,
-                                        instModPath,
+                                        instMod.path,
+                                        instMod.status,
                                         inst.instparams,
                                         inst.instports,
                                         this);
             nameToInstances.set(inst.name, new_inst);
-            if (!instModPath) {
+            if (!instMod.path) {
                 HDLParam.UnhandleInstances.add(new_inst);
                 this.unhandleInstances.add(new_inst);
             }
@@ -452,6 +496,7 @@ class Module {
     /**
      * @description 所有的 ModuleFile 初始化完后再调用该函数
      * @param {Instance} inst 
+     * @returns {{path: string, status: common.InstModPathStatus}}
      */
     searchInstModPath(inst) {
         // 搜索例化的模块 优先级 “当前文件” -> “include的文件” -> “其余工程文件”
@@ -461,8 +506,8 @@ class Module {
 
         // 搜索 “当前文件”
         for (const [name, module] of this.file.nameToModule) {
-            if (targetModuleName == name) {
-                return this.getPath();      // 如果当前文件中就有 instance 的模块，直接返回当前文件的路径
+            if (targetModuleName == name) { // 如果当前文件中就有 instance 的模块，直接返回当前文件的路径
+                return {path : this.getPath(), status: common.InstModPathStatus.CURRENT};      
             }
         }
 
@@ -474,7 +519,7 @@ class Module {
             if (includeFile) {
                 excludeFile.add(includeFile);
                 if (includeFile.hasModule(targetModuleName)) {
-                    return includeFile.path;
+                    return {path: includeFile.path, status: common.InstModPathStatus.INCLUDE};
                 }
             }
         }
@@ -482,11 +527,11 @@ class Module {
         // 搜索 “其余工程文件”
         for (const moduleFile of HDLParam.getAllModuleFiles()) {
             if (!excludeFile.has(moduleFile) && moduleFile.hasModule(targetModuleName)) {
-                return moduleFile.path;
+                return {path: moduleFile.path, status: common.InstModPathStatus.OTHERS};
             }
         }
 
-        return null;
+        return {path: null, status: null};
     }
 };
 

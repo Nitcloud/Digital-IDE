@@ -7,6 +7,7 @@
  * #FilePath     : \src\extension.js
  * #Description  : 
  */
+const vscode = require('vscode');
 
 const HDLtool = require('./HDLtool');
 const { HDLParam } = require('./HDLparser');

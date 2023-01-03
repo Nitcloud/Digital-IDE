@@ -21,16 +21,24 @@ class Range {
     }
 };
 
+
 class PortType {
-    static INOUT = 'INOUT'
-    static OUTPUT = 'OUTPUT'
-    static INOUT = 'INOUT'
+    static INOUT = 'INOUT';
+    static OUTPUT = 'OUTPUT';
+    static INOUT = 'INOUT';
 };
 
 
 class ParamType {
     static LOCALPARAM = 'LOCALPARAM'
     static PARAMETER = 'PARAMETER'
+};
+
+
+class InstModPathStatus {
+    static CURRENT = 'CURRENT'
+    static INCLUDE = 'INCLUDE'
+    static OTHERS = 'OTHERS'
 };
 
 
@@ -110,7 +118,8 @@ module.exports = {
     Range,
     PortType,
     ParamType,
+    InstModPathStatus,
     Error,
     MarcoContext,
-    Marco
+    Marco,
 }

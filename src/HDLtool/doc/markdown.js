@@ -30,6 +30,7 @@ function makeSVGElementByLink(link, caption) {
  * @param {Array<string>} fieldNames 
  */
 function makeTableFromObjArray(md, array, name, fieldNames, displayNames) {
+    const ws = HDLPath.toSlash(opeParam.workspacePath) + '/';
     if (array.length == 0) {
         md.addText(`no ${name} info`);
     } else {
@@ -37,7 +38,11 @@ function makeTableFromObjArray(md, array, name, fieldNames, displayNames) {
         for (const obj of array) {
             const data = [];
             for (const name of fieldNames) {
-                data.push(obj[name]);
+                let value = obj[name];
+                if (name == 'instModPath' && value) {
+                    value = value.replace(ws, '');
+                }
+                data.push(value);
             }
             rows.push(data);
         }
@@ -77,7 +82,7 @@ function makeMarkdownFromModule(module) {
     md.addEnter();
 
     md.addTitle('params', 2);
-    makeTableFromObjArray(md, module.params, 'params', ['name', 'type', 'init']);
+    makeTableFromObjArray(md, module.params, 'params', ['name', 'init']);
     md.addEnter();
     
     md.addTitle('ports', 2);
@@ -145,7 +150,7 @@ function makeMarkdownFromFile(path) {
     md.addEnter();
 
     md.addTitle('params', 2);
-    makeTableFromObjArray(md, module.params, 'params', ['name', 'type', 'init']);
+    makeTableFromObjArray(md, module.params, 'params', ['name', 'init']);
     md.addEnter();
     
     md.addTitle('ports', 2);
