@@ -6,6 +6,7 @@ const { HDLParam, Module } = require('../../HDLparser');
 const { MarkdownString, BaseDoc, RenderString, RenderType,
         mergeSortByLine, getWavedromsFromFile } = require('./common');
 
+const { getSymbolComments } = require('../lsp/util');
 const Global = require('../../global');
 
 const opeParam = require('../../param');
@@ -41,6 +42,10 @@ function makeTableFromObjArray(md, array, name, fieldNames, displayNames) {
                 let value = obj[name];
                 if (name == 'instModPath' && value) {
                     value = value.replace(ws, '');
+                }
+
+                if (value.trim().length == 0) {
+                    value = ' ';
                 }
                 data.push(value);
             }
@@ -120,17 +125,38 @@ function makeMarkdownFromFile(path) {
 }
 
 
+/**
+ * @description add attribute description to each port/param
+ * @param {string} path
+ * @param {Array<ModPort|ModParam>} ports
+ */
+async function patchComment(path, ports) {
+    if (!ports || !ports.length) {
+        return;
+    }
+    const ranges = ports.map(port => port.range);
+    const comments = await getSymbolComments(path, ranges);
+    for (let i = 0; i < ports.length; ++ i) {
+        const inlineComment = comments[i].replace(/\n/, ' ');
+        ports[i].desc = inlineComment;
+    }
+}
 
 // base doc
 /**
  * @description get basedoc obj from a module
  * @param {Module} module 
- * @returns {MarkdownString}
+ * @returns {Promise<MarkdownString>}
  */
- function getDocsFromModule(module) {
+async function getDocsFromModule(module) {
     const moduleName = module.name;
     const portNum = module.ports.length;
     const paramNum = module.params.length;
+    
+    // add desc can optimizer in the future version
+    const paramPP = patchComment(module.path, module.params);
+    const portPP = patchComment(module.path, module.ports);
+
     let topModuleDesc = '';
     if (HDLParam.TopModules.has(module)) {
         topModuleDesc = '√';
@@ -149,14 +175,27 @@ function makeMarkdownFromFile(path) {
     md.addUnorderedList(infos);
     md.addEnter();
 
+    // wait param and port patch
+    await paramPP;
+    await portPP;
+
+    // param section
     md.addTitle('params', 2);
-    makeTableFromObjArray(md, module.params, 'params', ['name', 'init']);
+    makeTableFromObjArray(md, module.params, 'params', 
+                          ['name', 'init', 'desc'],
+                          ['name', 'init', 'description']);
     md.addEnter();
     
+
+    // port section
     md.addTitle('ports', 2);
-    makeTableFromObjArray(md, module.ports, 'ports', ['name', 'type', 'width']);
+    makeTableFromObjArray(md, module.ports, 'ports', 
+                          ['name', 'type', 'width', 'desc'],
+                          ['name', 'type', 'width', 'description']);
     md.addEnter();
     
+
+    // dependency section
     md.addTitle('Dependency', 2);
     const insts = [];
     for (const inst of module.getInstances()) {
@@ -174,17 +213,22 @@ function makeMarkdownFromFile(path) {
 /**
  * @description get basedoc obj according to a file
  * @param {string} path absolute path of the file
- * @returns {Array<MarkdownString>} 
+ * @returns {Promise<Array<MarkdownString>>} 
  */
- function getDocsFromFile(path) {
-    let fileDocs = [];
+async function getDocsFromFile(path) {
     const moduleFile = HDLParam.findModuleFile(path);
     if (!moduleFile) {
         console.log('Fail to export documentation of', path);
         return '';
     }
+    const markdownStringPromises = [];
     for (const [name, mod] of moduleFile.nameToModule) {
-        const markdownString = getDocsFromModule(mod);
+        const markdownStringPromise = getDocsFromModule(mod);
+        markdownStringPromises.push(markdownStringPromise);
+    }
+    const fileDocs = [];
+    for (const p of markdownStringPromises) {
+        const markdownString = await p;
         fileDocs.push(markdownString);
     }
     return fileDocs;
@@ -193,14 +237,14 @@ function makeMarkdownFromFile(path) {
 /**
  * @description get render list of path
  * @param {string} path
- * @returns {Array<RenderString>} 
+ * @returns {Promise<Array<RenderString>>} 
  */
- function getRenderList(path) {
+async function getRenderList(path) {
     if (!HDLFile.isHDLFiles(path)) {
         vscode.window.showErrorMessage('Please use the command in a HDL file!');
         return [];
     }
-    const docs = getDocsFromFile(path);
+    const docs = await getDocsFromFile(path);
     const svgs = getWavedromsFromFile(path);
     const renderList = mergeSortByLine(docs, svgs);
     return renderList;
@@ -209,21 +253,21 @@ function makeMarkdownFromFile(path) {
 
 /**
  * @description return render list of current file 
- * @returns {Array<RenderString>}
+ * @returns {Promise<Array<RenderString>>}
  */
-function getCurrentRenderList() {
+async function getCurrentRenderList() {
     const editor = vscode.window.activeTextEditor;
     const currentFilePath = HDLPath.toSlash(editor.document.fileName);
-    return getRenderList(currentFilePath);
+    return await getRenderList(currentFilePath);
 }
 
 
-function exportCurrentFileDocAsMarkdown() {
+async function exportCurrentFileDocAsMarkdown() {
     const editor = vscode.window.activeTextEditor;
     const currentFilePath = HDLPath.toSlash(editor.document.fileName);
     const HDLFileName = HDLPath.basename(currentFilePath);
 
-    const renderList = getRenderList(currentFilePath);
+    const renderList = await getRenderList(currentFilePath);
     if (renderList.length == 0) {
         return;
     }
@@ -262,7 +306,7 @@ function exportCurrentFileDocAsMarkdown() {
     fs.writeFileSync(markdownPath, markdown);
 }
 
-function exportProjectDocAsMarkdown() {
+async function exportProjectDocAsMarkdown() {
     vscode.window.showInformationMessage('this is exportProjectDocAsMarkdown');
 }
 
