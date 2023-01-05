@@ -20,9 +20,8 @@ const HDLFile = require('./HDLfilesys/operation/files');
 
 function launch(context) {
     HDLGlobal.setContext(context);
-    // 初始化 opeParam
-    const manage = HDLtool.registerPrjServer();
-    manage.getOpeParam(opeParam);
+
+    const HDLfiles = HDLtool.registerManageServer();
 
     // 初始化HdlParam
     HDLParam.Initialize();

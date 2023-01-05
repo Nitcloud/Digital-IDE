@@ -3,6 +3,11 @@ var opeParam = require("../../param");
 const fs = require("../../HDLfilesys");
 const vscode = require("vscode");
 
+/**
+ * @state finish-untest
+ * @descriptionCn library 工程管理类
+ * @note 一次实例，一直使用
+ */
 class libManage {
     constructor() {
         this.err  = vscode.showErrorMessage;

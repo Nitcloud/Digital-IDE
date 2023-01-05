@@ -201,7 +201,14 @@ class fsmViewer {
     }
 
     getWebviewContent() {
-        const resource_path = `${opeParam.rootPath}/resources/fsm/fsm_viewer.html`;
+        // const resource_path = `${opeParam.rootPath}/resources/fsm/fsm_viewer.html`;
+        const resource_path = opeParam.rootPath + 
+        fspath.sep + 
+        'resources' + 
+        fspath.sep +   
+        'fsm' + 
+        fspath.sep + 
+        'fsm_viewer.html';
         const dir_path = fspath.dirname(resource_path);
         let html = fs.readFileSync(resource_path, 'utf-8');
         html = html.replace(/(<link.+?href="|<script.+?src="|<img.+?src=")(.+?)"/g, (m, $1, $2) => {

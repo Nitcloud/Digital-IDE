@@ -1,6 +1,7 @@
 const vscode = require("vscode");
 
-const prj  = require('./prj/prjManage');
+const opeParam = require("../param");
+const manager = require('./manager');
 const tree = require("./tree/tree");
 
 const instance = require("./sim/instance");
@@ -94,14 +95,22 @@ function registerToolServer(context) {
     }));
 }
 
-function registerPrjServer(context) {
-    prj.register();
+function registerManageServer(context) {
+    manager.prj.register();
+    const prjManager = new manager.prj.PrjManage();
+    const libManager = new manager.lib();
+    opeParam.liboperation = libManager;
 
-    return new prj.PrjManage();
+    // 初始化
+    prjManager.getOpeParam();
+    prjManager.getPropertyInfo();
+    // prjManager.refreshPrjFolder();
+    
+    return prjManager.getPrjFiles();
 }
 
 module.exports = {
-    registerPrjServer,
+    registerManageServer,
     registerSimServer,
     registerTreeServer,
     registerDocumentation,

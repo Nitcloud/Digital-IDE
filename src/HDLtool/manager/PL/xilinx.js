@@ -32,7 +32,7 @@ class xilinxOperation {
         this.xip_repo = opeParam.prjInfo.IP_REPO;
         this.xip_path = `${opeParam.rootPath}/IP_repo`;
         this.xbd_path = `${opeParam.rootPath}/lib/xilinx/bd`;
-        this.xilinxPath = `${opeParam.rootPath}/resource/script/xilinx`;
+        this.xilinxPath = `${opeParam.rootPath}/resources/script/xilinx`;
         
         this.prjPath = opeParam.prjInfo.ARCH.PRJ_Path;
         this.srcPath = opeParam.prjInfo.ARCH.Hardware.src;
@@ -60,6 +60,12 @@ class xilinxOperation {
     /**
      * @state finish-untested
      * @descriptionCn xilinx下的launch运行，打开存在的工程或者再没有工程时进行新建
+     * @param {{
+     *      terminal : vscode.Terminal,
+     *      tool : String, // 工具类型
+     *      path : String, // 第三方工具运行路径
+     *      ope  : xilinxOperation,
+     * }} config
      * @returns {String} 需要执行的脚本路径
      */
     launch(config) {
@@ -107,6 +113,7 @@ class xilinxOperation {
             script += content + '\n';
         }
 
+        script += `${this.refresh({terminal:null})}\n`;
         const scriptPath = `${this.xilinxPath}/launch.tcl`;
         script += `file delete ${scriptPath} -force\n`;
         fs.files.writeFile(scriptPath, script);
@@ -115,7 +122,6 @@ class xilinxOperation {
         const cmd = `${config.path} -mode tcl -s ${scriptPath} ${argu}`;
         config.terminal.show(true);
         config.terminal.sendText(cmd);
-        this.refresh(config);
     }
 
     /**
@@ -145,6 +151,12 @@ class xilinxOperation {
     /**
      * @state finish-untested
      * @descriptionCn xilinx刷新整个工程设计
+     * @param {{
+     *      terminal : vscode.Terminal,
+     *      tool : String, // 工具类型
+     *      path : String, // 第三方工具运行路径
+     *      ope  : xilinxOperation,
+     * }} config
      * @returns {String} 需要执行的脚本路径
      */
     refresh(config) {
@@ -254,11 +266,20 @@ class xilinxOperation {
         script += `file delete ${scriptPath} -force\n`;
         fs.files.writeFile(scriptPath, script);
         const cmd = `source ${scriptPath} -quiet`;
-        config.terminal.sendText(cmd);
+        if (config.terminal) {
+            config.terminal.sendText(cmd);
+        } else {
+            return cmd;
+        }
     }
 
     /**
-     * 
+     * @param {{
+     *      terminal : vscode.Terminal,
+     *      tool : String, // 工具类型
+     *      path : String, // 第三方工具运行路径
+     *      ope  : xilinxOperation,
+     * }} config
      * @returns 
      */
     simulate(config) {
@@ -266,7 +287,12 @@ class xilinxOperation {
     }
 
     /**
-     * 
+     * @param {{
+     *      terminal : vscode.Terminal,
+     *      tool : String, // 工具类型
+     *      path : String, // 第三方工具运行路径
+     *      ope  : xilinxOperation,
+     * }} config
      * @returns 
      */
     simgui(config) {
@@ -297,7 +323,12 @@ class xilinxOperation {
     }
 
     /**
-     * 
+     * @param {{
+     *      terminal : vscode.Terminal,
+     *      tool : String, // 工具类型
+     *      path : String, // 第三方工具运行路径
+     *      ope  : xilinxOperation,
+     * }} config
      * @returns 
      */
     simcli(config) {
@@ -327,7 +358,12 @@ class xilinxOperation {
 
     /**
      * 
-     * @param {*} terminal 
+     * @param {{
+     *      terminal : vscode.Terminal,
+     *      tool : String, // 工具类型
+     *      path : String, // 第三方工具运行路径
+     *      ope  : xilinxOperation,
+     * }} config
      * @returns 
      */
     synth(config) {
@@ -346,7 +382,12 @@ class xilinxOperation {
 
     /**
      * 
-     * @param {*} terminal 
+     * @param {{
+     *      terminal : vscode.Terminal,
+     *      tool : String, // 工具类型
+     *      path : String, // 第三方工具运行路径
+     *      ope  : xilinxOperation,
+     * }} config
      * @returns 
      */
     impl(config) {
@@ -366,7 +407,12 @@ class xilinxOperation {
     }
 
     /**
-     * 
+     * @param {{
+     *      terminal : vscode.Terminal,
+     *      tool : String, // 工具类型
+     *      path : String, // 第三方工具运行路径
+     *      ope  : xilinxOperation,
+     * }} config
      * @returns 
      */
     build(config) {
@@ -396,7 +442,12 @@ class xilinxOperation {
     }
 
     /**
-     * 
+     * @param {{
+     *      terminal : vscode.Terminal,
+     *      tool : String, // 工具类型
+     *      path : String, // 第三方工具运行路径
+     *      ope  : xilinxOperation,
+     * }} config
      */
     generateBit(config) {
         let scripts = [];
@@ -430,6 +481,12 @@ class xilinxOperation {
 
     /**
      * @descriptenCn 将程序下载到器件中去
+     * @param {{
+     *      terminal : vscode.Terminal,
+     *      tool : String, // 工具类型
+     *      path : String, // 第三方工具运行路径
+     *      ope  : xilinxOperation,
+     * }} config
      * @returns 
      */
     program(config) {
@@ -467,6 +524,15 @@ class xilinxOperation {
         config.terminal.sendText(cmd);
     }
 
+    /**
+     * 
+     * @param {{
+     *      terminal : vscode.Terminal,
+     *      tool : String, // 工具类型
+     *      path : String, // 第三方工具运行路径
+     *      ope  : xilinxOperation,
+     * }} config
+     */
     gui(config) {
         if (config.terminal) {
             config.terminal.sendText("start_gui -quiet");
@@ -539,7 +605,188 @@ class xilinxOperation {
         }
     }
 }
-module.exports = xilinxOperation;
+
+const xilinxBd = {
+    err  : vscode.showErrorMessage,
+    warn : vscode.showWarningMessage,
+    info : vscode.showInformationMessage,
+    setting : vscode.workspace.getConfiguration(),
+
+    getConfig() {
+        this.rootPath = opeParam.rootPath;
+
+        this.xbd_path = `${opeParam.rootPath}/lib/bd/xilinx`;
+        this.schemaPath = opeParam.propertySche;
+        this.schemaCont = fs.files.pullJsonInfo(this.schemaPath);
+        this.bdEnum = this.schemaCont.properties.SOC.properties.bd.enum;
+
+        this.bd_repo = this.setting.get('PRJ.xilinx.BD.repo.path');
+    },
+
+    /**
+     * 
+     * @param {*} uri 
+     */
+    overwrite(uri) {
+        this.getConfig();
+        // 获取当前bd file的路径
+        vscode.window.showQuickPick(this.bdEnum).then(select => {
+            // the user canceled the select
+            if (!select) {
+                return;
+            }
+            
+            let bdSrcPath = `${this.xbd_path}/${select}.bd`;
+            if (fs.files.isillegal(bdSrcPath)) {
+                bdSrcPath = `${this.bd_repo}/${select}.bd`;
+            }
+
+            if (fs.files.isillegal(bdSrcPath)) {
+                this.err(`can not find ${select}.bd in ${this.xbd_path} and ${this.bd_repo}, please load again.`);
+            } else {
+                const docPath = fs.paths.toSlash(uri.fsPath);
+                fs.files.writeFile(bdSrcPath, fs.files.readFile(docPath));
+            }
+        });
+    },
+
+    /**
+     * 
+     * @param {*} uri 
+     * @returns 
+     */
+    add(uri) {
+        this.getConfig();
+        // 获取当前bd file的路径
+        let docPath = fs.paths.toSlash(uri.fsPath);
+        let bd_name = fs.paths.basename(docPath); 
+
+        // 检查是否重复
+        if (this.bdEnum.includes(bd_name)) {
+            this.warn(`The file already exists.`);
+            return null;
+        }
+
+        // 获取存放路径
+        let storePath = this.setting.get('PRJ.xilinx.BD.repo.path');
+        if (!fs.files.isExist(storePath)) {
+            this.warn(`This bd file will be added into extension folder.We don't recommend doing this because it will be cleared in the next update.`);
+            storePath = this.xbd_path;
+        }
+
+        // 写入
+        const bd_path = `${storePath}/${bd_name}.bd`;
+        fs.files.writeFile(bd_path, fs.files.readFile(docPath));
+
+        this.schemaCont.properties.SOC.properties.bd.enum.push(bd_name);
+        fs.files.pushJsonInfo(this.schemaPath, this.schemaCont);
+    },
+
+    /**
+     * 
+     */
+    delete() {
+        this.getConfig();
+        vscode.window.showQuickPick(this.bdEnum).then(select => {
+            // the user canceled the select
+            if (!select) {
+                return;
+            }
+            
+            let bdSrcPath = `${this.xbd_path}/${select}.bd`;
+            if (fs.files.isillegal(bdSrcPath)) {
+                bdSrcPath = `${this.bd_repo}/${select}.bd`;
+            }
+
+            if (fs.files.isillegal(bdSrcPath)) {
+                this.err(`can not find ${select}.bd in ${this.xbd_path} and ${this.bd_repo}, please load again.`);
+            } else {
+                fs.files.removeFile(bdSrcPath);
+            }
+        });
+    },
+
+    /**
+     * 
+     */
+    load() {
+        this.getConfig();
+        fs.files.pickFileFromExt(this.bd_repo, {
+            exts : ".bd",
+            type : "once",
+            ignores : []
+        }, (bd_file) => {
+            let basename = fs.paths.basename(bd_file);
+            if (this.bdEnum.includes(basename)) {
+                return;
+            }
+            this.schemaCont.properties.SOC.properties.bd.enum.push(basename);
+        });
+        
+        fs.files.pushJsonInfo(this.schemaPath, this.schemaCont);
+    }
+}
+
+const tools = {
+
+
+    async boot() {
+        // 声明变量
+        let opeParam = this.process.opeParam;
+        let BootInfo = {
+            "outsidePath" : `${path.dirname(opeParam.prjStructure.prjPath)}/boot`,
+            "insidePath"  : `${opeParam.rootPath}/resources/boot/xilinx`,
+            "outputPath"  : `${opeParam.rootPath}/resources/boot/xilinx/output.bif`,
+            "elf_path"    : '',
+            "bit_path"    : '',
+            "fsbl_path"   : ''
+        };
+
+        if (opeParam.prjInfo.INSIDE_BOOT_TYPE) {
+            BootInfo.insidePath = `${BootInfo.insidePath}/${opeParam.prjInfo.INSIDE_BOOT_TYPE}`;
+        } else {
+            BootInfo.insidePath = `${BootInfo.insidePath}/microphase`;
+        }
+    
+        let output_context =  "//arch = zynq; split = false; format = BIN\n";
+            output_context += "the_ROM_image:\n";
+            output_context += "{\n";
+    
+        BootInfo.fsbl_path = await this.getfsblPath(BootInfo.outsidePath, BootInfo.insidePath);
+        if (!BootInfo.fsbl_path) {
+            return null;
+        }
+        output_context += BootInfo.fsbl_path;
+
+        BootInfo.bit_path  = await this.getBitPath(opeParam.workspacePath);
+        if (BootInfo.bit_path) {
+            output_context += BootInfo.bit_path;
+        }
+
+        BootInfo.elf_path  = await this.getElfPath(BootInfo);
+        if (!BootInfo.elf_path) {
+            return null;
+        }
+        output_context += BootInfo.elf_path;
+
+        output_context += "}";
+        let result = fs.files.writeFile(BootInfo.outputPath, output_context);
+        if (!result) {
+            return null;
+        }
+
+        let command = `bootgen -arch zynq -image ${BootInfo.outputPath} -o ${opeParam.workspacePath}/BOOT.bin -w on`;
+        child.exec(command, function (error, stdout, stderr) {
+            if (error) {
+                vscode.window.showErrorMessage(`${error}`);
+                vscode.window.showErrorMessage(`stderr: ${stderr}`);
+                return;
+            } else {
+                vscode.window.showInformationMessage("write boot file successfully!!")
+            }
+        });
+    }
+}
 
 class xilinxBoot {
     constructor() {
@@ -641,225 +888,8 @@ class xilinxBoot {
     }
 }
 
-class xilinxTool {
-    constructor() {
-
-    }
-
-    /**
-     * 
-     */
-    clean() {
-        this.move_bd_ip();
-        const prjPath = opeParam.prjInfo.ARCH.PRJ_Path;
-        const wkSpace = opeParam.workspacePath;
-
-        fs.dirs.rmdir(prjPath); 
-        fs.dirs.rmdir(`${wkSpace}/.Xil`); 
-
-        fs.files.pickFileFromExt(wkSpace, {
-            exts : [".str", ".log"],
-            type : "once",
-            ignores : []
-        }, (file) => {
-            fs.files.removeFile(file);
-        });
-    }
-
-    /**
-     * 
-     */
-    move() {
-        const prjName = opeParam.prjInfo.PRJ_NAME.PL;
-        const srcPath = opeParam.prjInfo.ARCH.Hardware.src;
-        const target_path = fs.paths.dirname(srcPath);
-
-        const source_ip_path = `${opeParam.workspacePath}/prj/xilinx/${prjName}.srcs/source_1/ip`;
-        const source_bd_path = `${opeParam.workspacePath}/prj/xilinx/${prjName}.srcs/source_1/bd`;
-
-        fs.dirs.mvdir(source_ip_path, target_path);
-        fs.dirs.mvdir(source_bd_path, target_path);
-    }
-
-    
-    async boot() {
-        // 声明变量
-        let opeParam = this.process.opeParam;
-        let BootInfo = {
-            "outsidePath" : `${path.dirname(opeParam.prjStructure.prjPath)}/boot`,
-            "insidePath"  : `${opeParam.rootPath}/resource/boot/xilinx`,
-            "outputPath"  : `${opeParam.rootPath}/resource/boot/xilinx/output.bif`,
-            "elf_path"    : '',
-            "bit_path"    : '',
-            "fsbl_path"   : ''
-        };
-
-        if (opeParam.prjInfo.INSIDE_BOOT_TYPE) {
-            BootInfo.insidePath = `${BootInfo.insidePath}/${opeParam.prjInfo.INSIDE_BOOT_TYPE}`;
-        } else {
-            BootInfo.insidePath = `${BootInfo.insidePath}/microphase`;
-        }
-    
-        let output_context =  "//arch = zynq; split = false; format = BIN\n";
-            output_context += "the_ROM_image:\n";
-            output_context += "{\n";
-    
-        BootInfo.fsbl_path = await this.getfsblPath(BootInfo.outsidePath, BootInfo.insidePath);
-        if (!BootInfo.fsbl_path) {
-            return null;
-        }
-        output_context += BootInfo.fsbl_path;
-
-        BootInfo.bit_path  = await this.getBitPath(opeParam.workspacePath);
-        if (BootInfo.bit_path) {
-            output_context += BootInfo.bit_path;
-        }
-
-        BootInfo.elf_path  = await this.getElfPath(BootInfo);
-        if (!BootInfo.elf_path) {
-            return null;
-        }
-        output_context += BootInfo.elf_path;
-
-        output_context += "}";
-        let result = fs.files.writeFile(BootInfo.outputPath, output_context);
-        if (!result) {
-            return null;
-        }
-
-        let command = `bootgen -arch zynq -image ${BootInfo.outputPath} -o ${opeParam.workspacePath}/BOOT.bin -w on`;
-        child.exec(command, function (error, stdout, stderr) {
-            if (error) {
-                vscode.window.showErrorMessage(`${error}`);
-                vscode.window.showErrorMessage(`stderr: ${stderr}`);
-                return;
-            } else {
-                vscode.window.showInformationMessage("write boot file successfully!!")
-            }
-        });
-    }
-}
-
-class xilinxBd {
-    constructor() {
-        this.err  = vscode.showErrorMessage;
-        this.warn = vscode.showWarningMessage;
-        this.info = vscode.showInformationMessage;
-
-        this.setting = vscode.workspace.getConfiguration();
-    }
-
-    getConfig() {
-        this.rootPath = opeParam.rootPath;
-
-        this.xbd_path = `${opeParam.rootPath}/lib/bd/xilinx`;
-        this.schemaPath = opeParam.propertySche;
-        this.schemaCont = fs.files.pullJsonInfo(this.schemaPath);
-        this.bdEnum = this.schemaCont.properties.SOC.properties.bd.enum;
-
-        this.bd_repo = this.setting.get('PRJ.xilinx.BD.repo.path');
-    }
-
-    /**
-     * 
-     * @param {*} uri 
-     */
-    overwrite(uri) {
-        this.getConfig();
-        // 获取当前bd file的路径
-        vscode.window.showQuickPick(this.bdEnum).then(select => {
-            // the user canceled the select
-            if (!select) {
-                return;
-            }
-            
-            let bdSrcPath = `${this.xbd_path}/${select}.bd`;
-            if (fs.files.isillegal(bdSrcPath)) {
-                bdSrcPath = `${this.bd_repo}/${select}.bd`;
-            }
-
-            if (fs.files.isillegal(bdSrcPath)) {
-                this.err(`can not find ${select}.bd in ${this.xbd_path} and ${this.bd_repo}, please load again.`);
-            } else {
-                const docPath = fs.paths.toSlash(uri.fsPath);
-                fs.files.writeFile(bdSrcPath, fs.files.readFile(docPath));
-            }
-        });
-    }
-
-    /**
-     * 
-     * @param {*} uri 
-     * @returns 
-     */
-    add(uri) {
-        this.getConfig();
-        // 获取当前bd file的路径
-        let docPath = fs.paths.toSlash(uri.fsPath);
-        let bd_name = fs.paths.basename(docPath); 
-
-        // 检查是否重复
-        if (this.bdEnum.includes(bd_name)) {
-            this.warn(`The file already exists.`);
-            return null;
-        }
-
-        // 获取存放路径
-        let storePath = this.setting.get('PRJ.xilinx.BD.repo.path');
-        if (!fs.files.isExist(storePath)) {
-            this.warn(`This bd file will be added into extension folder.We don't recommend doing this because it will be cleared in the next update.`);
-            storePath = this.xbd_path;
-        }
-
-        // 写入
-        const bd_path = `${storePath}/${bd_name}.bd`;
-        fs.files.writeFile(bd_path, fs.files.readFile(docPath));
-
-        this.schemaCont.properties.SOC.properties.bd.enum.push(bd_name);
-        fs.files.pushJsonInfo(this.schemaPath, this.schemaCont);
-    }
-
-    /**
-     * 
-     */
-    delete() {
-        this.getConfig();
-        vscode.window.showQuickPick(this.bdEnum).then(select => {
-            // the user canceled the select
-            if (!select) {
-                return;
-            }
-            
-            let bdSrcPath = `${this.xbd_path}/${select}.bd`;
-            if (fs.files.isillegal(bdSrcPath)) {
-                bdSrcPath = `${this.bd_repo}/${select}.bd`;
-            }
-
-            if (fs.files.isillegal(bdSrcPath)) {
-                this.err(`can not find ${select}.bd in ${this.xbd_path} and ${this.bd_repo}, please load again.`);
-            } else {
-                fs.files.removeFile(bdSrcPath);
-            }
-        });
-    }
-
-    /**
-     * 
-     */
-    load() {
-        this.getConfig();
-        fs.files.pickFileFromExt(this.bd_repo, {
-            exts : ".bd",
-            type : "once",
-            ignores : []
-        }, (bd_file) => {
-            let basename = fs.paths.basename(bd_file);
-            if (this.bdEnum.includes(basename)) {
-                return;
-            }
-            this.schemaCont.properties.SOC.properties.bd.enum.push(basename);
-        });
-        
-        fs.files.pushJsonInfo(this.schemaPath, this.schemaCont);
-    }
-}
+module.exports = {
+    xilinxOperation,
+    tools,
+    xilinxBd
+};

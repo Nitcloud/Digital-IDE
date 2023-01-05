@@ -35,6 +35,36 @@ function register() {
             ps[fun.toLowerCase()]();
         });
     }
+
+    // tool manage register
+    const toolFuncs = [
+        'Clean'
+    ];
+    for (let i = 0; i < toolFuncs.length; i++) {
+        const fun = toolFuncs[i];
+        vscode.commands.registerCommand(`TOOL.${fun}`, () => {
+            toolManage[fun.toLowerCase()]();
+        });
+    }
+
+    // TODO
+    // vscode.window.onDidCloseTerminal((terminal) => {
+    //     if (terminal.name == "HardWare") {
+    //         toolManage.clean();
+    //     }
+    // });
+
+    // TODO
+    // vscode.window.registerTerminalLinkProvider({
+    //     provideTerminalLinks: (context, token)=> {
+    //         if (context.line.indexOf("Exiting Vivado") != -1) {
+    //             vscode.window.showInformationMessage(context.line);
+    //         }
+    //     },
+    //     handleTerminalLink: (link)=> {
+    //       vscode.window.showInformationMessage(`Link activated (data=${link.data})`);
+    //     }
+    // });
 }
 
 /**
@@ -298,35 +328,6 @@ class PrjManage {
  * @descriptionCn 工程管理基础类
  */
 class baseManage {
-    // constructor() {
-        // vscode.window.onDidCloseTerminal((terminal) => {
-        //     if (terminal.name == "HardWare") {
-        //         _this.process.terminal = null;
-        //         let prjInfo = _this.process.opeParam.prjInfo;
-        //         if (!filesys.files.isHasAttr(prjInfo, "TOOL_CHAIN")) {
-        //             return null;
-        //         }
-        //         switch (prjInfo.TOOL_CHAIN) {
-        //             case "xilinx":
-        //                 _this.xilinxOpe.move_bd_ip();
-        //             break;
-                
-        //             default: break;
-        //         }
-        //     }
-        // });
-
-        // vscode.window.registerTerminalLinkProvider({
-        //     provideTerminalLinks: (context, token)=> {
-        //         if (context.line.indexOf("Exiting Vivado") != -1) {
-        //             vscode.window.showInformationMessage(context.line);
-        //         }
-        //     },
-        //     handleTerminalLink: (link)=> {
-        //       vscode.window.showInformationMessage(`Link activated (data=${link.data})`);
-        //     }
-        // });
-    // }
     /**
      * @descriptionCn 创建终端，并返回对应的属性
      * @param {String} name 终端名
@@ -360,6 +361,7 @@ class baseManage {
 }
 
 /**
+ * @state finish-untest
  * @descriptionCn PL端工程管理类
  * @note 一次实例，一直使用
  */
@@ -370,7 +372,7 @@ class plMarage extends baseManage {
         this.config = {
             "tool" : 'default',
             "path" : '',
-            "ope"  : new plXilinx(),
+            "ope"  : null,
             "terminal" : null
         };
 
@@ -385,11 +387,12 @@ class plMarage extends baseManage {
 
     /**
      * @descriptionCn 获取PL工程管理中所需要的配置
-     * @returns 配置信息 {
-     *      "tool" : "default",
-     *      "path" : "path",  // 第三方工具运行路径
-     *      "termianl" : null
-     *  }
+     * @returns {{
+     *      "tool" : "default",                     // 工具类型
+     *      "path" : "path",                        // 第三方工具运行路径
+     *      "ope"  : new plXilinx.xilinxOperation() // 操作类
+     *      "termianl" : vscode.Terminal            // 操作终端                       
+     *  }} 配置信息
      */
     getConfig() {
         if (fs.files.isHasAttr(opeParam.prjInfo, "TOOL_CHAIN")) {
@@ -409,7 +412,7 @@ class plMarage extends baseManage {
                     }
                 }
 
-                this.config["ope"] = new plXilinx();
+                this.config["ope"] = new plXilinx.xilinxOperation();
             break;
         
             default: this.config["path"] = ""; break;
@@ -571,6 +574,51 @@ class psMarage extends baseManage {
     program() {
         this.config.terminal = this.createTerminal('Software');
         this.config.ope.program(this.config);
+    }
+}
+
+const toolManage = {
+    clean() {
+        const tool = opeParam.prjInfo.TOOL_CHAIN ? opeParam.prjInfo.TOOL_CHAIN : 'xilinx';
+        switch (tool) {
+            case 'xilinx': this.xclean(); break;
+            default: break;
+        }
+    },
+
+    /**
+     * 
+     */
+    xclean() {
+        this.xmove();
+        const wkSpace = opeParam.workspacePath;
+        const prjPath = opeParam.prjInfo.ARCH.PRJ_Path + '/xilinx';
+
+        fs.dirs.rmdir(prjPath); 
+        fs.dirs.rmdir(`${wkSpace}/.Xil`); 
+
+        fs.files.pickFileFromExt(wkSpace, {
+            exts : [".str", ".log"],
+            type : "once",
+            ignores : []
+        }, (file) => {
+            fs.files.removeFile(file);
+        });
+    },
+
+    /**
+     * 
+     */
+    xmove() {
+        const prjName = opeParam.prjInfo.PRJ_NAME.PL;
+        const srcPath = opeParam.prjInfo.ARCH.Hardware.src;
+        const target_path = fs.paths.dirname(srcPath);
+
+        const source_ip_path = `${opeParam.workspacePath}/prj/xilinx/${prjName}.srcs/source_1/ip`;
+        const source_bd_path = `${opeParam.workspacePath}/prj/xilinx/${prjName}.srcs/source_1/bd`;
+
+        fs.dirs.mvdir(source_ip_path, target_path);
+        fs.dirs.mvdir(source_bd_path, target_path);
     }
 }
 
