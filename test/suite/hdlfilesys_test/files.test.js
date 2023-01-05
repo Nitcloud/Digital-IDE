@@ -17,9 +17,6 @@ const TEST_VLOG_FOLDER_FILE_NUM = 12;
 suite('HDLfilesys.files Test', () => {
     test('test HDLFile.getHDLFiles', () => {
         const files = HDLFile.getHDLFiles(TEST_VLOG_FOLDER);
-        for (const file of files) {
-            console.log(file.split('.')[1]);
-        }
         assert.equal(files.length, TEST_VLOG_FOLDER_FILE_NUM);
     });
 

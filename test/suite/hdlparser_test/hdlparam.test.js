@@ -5,6 +5,8 @@ const base = require('../../../src/HDLparser/base');
 const util = require('../../../src/HDLparser/util');
 const HDLPath = require('../../../src/HDLfilesys/operation/path');
 
+const HDLtool = require('../../../src/HDLtool');
+
 const opeParam = require('../../../src/param');
 
 const TEST_ROOT = HDLPath.resolve(__dirname, '../..');
@@ -36,12 +38,16 @@ const MODULE_NUM = 5;
 const HDLParam = base.HDLParam;
 
 // 手动给配置赋值
-opeParam.workspacePath = TEST_VLOG_FOLDER;
+const TEST_HDL_FILES = [
+    HDLPath.join(TEST_VLOG_FOLDER, 'child_1.v'),
+    HDLPath.join(TEST_VLOG_FOLDER, 'child_2.v'),
+    HDLPath.join(TEST_VLOG_FOLDER, 'head_1.v'),
+    HDLPath.join(TEST_VLOG_FOLDER, 'parent.v')
+]
 
 suite('HDLparser HDLParam Test Suite', () => {
-
     test('test HDLParam HDLParam.Initialize', () => {
-        HDLParam.Initialize();
+        HDLParam.Initialize(TEST_HDL_FILES);
     });
 
     test('test HDLParam.getAllModules', () => {
@@ -95,6 +101,7 @@ suite('HDLparser HDLParam Test Suite', () => {
 
     test('test HDLParam.getAllDependences', () => {
         const dependencies = HDLParam.getAllDependences(TEST_TOP_MODULE.path, TEST_TOP_MODULE.name);
+        
         assert.equal(dependencies.current.length, 0);
         assert.equal(dependencies.include.length, 1);
         assert.equal(dependencies.others.length, 1);

@@ -44,7 +44,7 @@ function makeTableFromObjArray(md, array, name, fieldNames, displayNames) {
                     value = value.replace(ws, '');
                 }
 
-                if (value.trim().length == 0) {
+                if (value && value.trim().length == 0) {
                     value = ' ';
                 }
                 data.push(value);

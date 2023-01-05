@@ -158,31 +158,32 @@ const HDLParam = {
 
 
     /**
-     * @description 根据Hardware文件夹名初始化
-     * @param {string} folder 文件夹路径
+     * @description Initialize HDLfiles
+     * @param {Array<string>} HDLfiles
      */
-    InitByFolder(folder) {
-        if (fs.existsSync(folder)) {
-            // TODO : vhdl 和 systemverilog 解析器调试好后去除下面的 filter
-            const HDLFiles = HDLFile.getHDLFiles(folder).filter(filePath => {
-                const langID = HDLFile.getLanguageId(filePath);
-                return langID != 'systemverilog';
-            });
+     InitHDLFiles(HDLfiles) {
+        // TODO : vhdl 和 systemverilog 解析器调试好后去除下面的 filter
+        const HDLFiles = HDLfiles.filter(filePath => {
+            const langID = HDLFile.getLanguageId(filePath);
+            return langID != 'systemverilog';
+        });
 
-            for (const filePath of HDLFiles) {
-                const langID = HDLFile.getLanguageId(filePath);
-                const parser = util.selectParserByLangID(langID);
-                let code = fs.readFileSync(filePath, 'utf-8');
-                const json = parser.parse(code);
-                this.InitByJSON(filePath, json);
-            }
+        for (const filePath of HDLFiles) {
+            const langID = HDLFile.getLanguageId(filePath);
+            const parser = util.selectParserByLangID(langID);
+            let code = fs.readFileSync(filePath, 'utf-8');
+            const json = parser.parse(code);
+            this.InitByJSON(filePath, json);
         }
     },
 
-    Initialize() {
-        assert(fs.existsSync(opeParam.workspacePath), 'workspace not exist, check the initialization of opeParam');
-        this.InitByFolder(opeParam.workspacePath);
-
+    /**
+     * @description Initialize
+     * @param {Array<string>} HDLfiles 
+     */
+    Initialize(HDLfiles) {
+        this.InitHDLFiles(HDLfiles);
+        
         for (const moduleFile of this.getAllModuleFiles()) {
             moduleFile.makeInstance();
         }
@@ -245,7 +246,11 @@ const HDLParam = {
      * 
      * @param {string} path path of the module
      * @param {string} name name of the module
-     * @returns {{current: Array<string>, include: Array<string>, others: Array<string>}}
+     * @returns {{
+     *      current: Array<string>,         // module import from current file
+     *      include: Array<string>,         // module import by "`include"
+     *      others: Array<string>           // module search by extension
+     * }}
      */
     getAllDependences(path, name) {
         if (!this.hasModule(path, name)) {

@@ -22,9 +22,8 @@ function launch(context) {
     HDLGlobal.setContext(context);
 
     const HDLfiles = HDLtool.registerManageServer();
-
     // 初始化HdlParam
-    HDLParam.Initialize();
+    HDLParam.Initialize(HDLfiles);
 
     console.log(opeParam.prjInfo.ARCH);
     console.log('init num', HDLParam.Modules.size);
