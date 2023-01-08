@@ -342,12 +342,12 @@ class HardwareTreeProvider extends BaseCommandTreeProvoder {
                 children: {
                     CLI: {
                         cmd: 'HARD.simCLI',
-                        icon: 'cmd',
+                        icon: 'branch',
                         tip: 'Launch the manufacturer Simulation in CLI'
                     },
                     GUI: {
                         cmd: 'HARD.simGUI',
-                        icon: 'cmd',
+                        icon: 'branch',
                         tip: 'Launch the manufacturer Simulation in GUI'
                     },
                 }
@@ -364,17 +364,17 @@ class HardwareTreeProvider extends BaseCommandTreeProvoder {
                 children: {
                     Synth: {
                         cmd: 'HARD.Synth',
-                        icon: 'cmd',
+                        icon: 'branch',
                         tip: 'Synth the current project'
                     },
                     Impl: {
                         cmd: 'HARD.Impl',
-                        icon: 'cmd',
+                        icon: 'branch',
                         tip: 'Impl  the current project'
                     },
                     BitStream: {
                         cmd: 'HARD.Bit',
-                        icon: 'cmd',
+                        icon: 'branch',
                         tip: 'Generate the BIT File'
                     },
                 }

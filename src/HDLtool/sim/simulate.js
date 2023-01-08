@@ -5,6 +5,8 @@ const fs = require("../../HDLfilesys");
 const child  = require("child_process");
 const vscode = require("vscode");
 const opeParam = require("../../param");
+const instance = require("./instance");
+const HDLParam = require('../../HDLparser').HDLParam;
 
 class simulate {
     constructor() {
@@ -20,9 +22,9 @@ class simulate {
             "xeclib", "unisims" ,"unimacro" ,"unifast" ,"retarget"
         ]
 
-        this.err = vscode.showErrorMessage;
-        this.warn = vscode.showWarningMessage;
-        this.info = vscode.showInformationMessage;
+        this.err = vscode.window.showErrorMessage;
+        this.warn = vscode.window.showWarningMessage;
+        this.info = vscode.window.showInformationMessage;
 
         this.terminal = vscode.window.createTerminal;
 
@@ -34,7 +36,16 @@ class simulate {
      * @descriptionCn 获取仿真的配置
      * @param {String} path 代码路径
      * @param {String} tool 仿真工具名
-     * @returns 仿真的配置
+     * @returns {{
+     *      mod : String,   // 设置的顶层模块              
+     *      clk : String,   // 设置的主频信号
+     *      rst : String,   // 设置的复位信号
+     *      end : String,   // 
+     *      wave : String,  // wave存放的路径     
+     *      runPath : String, // sim运行的路径
+     *      gtkwavePath : String, // gtkwave安装路径
+     *      installPath : String  // 第三方仿真工具的安装路径
+     * }} 仿真的配置
      */
     getConfig(path, tool) {
         let simConfig = {};
@@ -46,10 +57,11 @@ class simulate {
 
         for (const element in this.regExp) {
             simConfig[element] = code.match(this.regExp[element]);
-            simConfig[element] = simConfig[element].groups[element];
+            simConfig[element] = simConfig[element] ? simConfig[element].groups[element] : null;
         }
 
         simConfig["runPath"] = this.setting.get('HDL.linting.runPath');
+        simConfig["gtkwavePath"] = this.setting.get('TOOL.gtkwave.install.path');
 
         // 确保安装路径有效
         simConfig["installPath"] = this.setting.get(`TOOL.${tool}.install.path`);
@@ -89,17 +101,11 @@ class simulate {
 
 /**
  * @descriptionCn icarus 仿真类
- * @param {Object} param 
- * {
- *      "name" : "moduleName", // 顶层模块名
- *      "path" : "modulePath", // 顶层仿真文件所在的绝对路径(斜杠分割)
- *      "dependence" : [],     // 顶层文件仿真时所需要的依赖
- *  }
+ * 
  */
 class icarus extends simulate { 
-    constructor(param) {
+    constructor() {
         super();
-        this.param = param;
         this.os = opeParam.os;
         this.prjPath = opeParam.prjInfo.ARCH.PRJ_Path;
         this.toolchain = opeParam.prjInfo.TOOL_CHAIN;
@@ -107,10 +113,15 @@ class icarus extends simulate {
 
     /**
      * @descriptionCn 根据要求生成 icarus 的仿真命令
+     * @param {{
+     *      name : String,
+     *      path : String,
+     *      dependences : Array<string>
+     * }}
      * @returns 
      */
-    getCommand() {
-        this.simConfig = this.getConfig(this.param.path, 'iverilog');
+    getCommand(param) {
+        this.simConfig = this.getConfig(param.path, 'iverilog');
         if (!this.simConfig) {
             return null;
         }
@@ -141,7 +152,7 @@ class icarus extends simulate {
 
         // 获取 dependence path 
         let dependencePath = ' ';
-        this.param.dependence.forEach(element => {
+        param.dependences.forEach(element => {
             this.outputCH.appendLine(`${element} \n`);
             dependencePath += element + " ";
         });
@@ -158,13 +169,12 @@ class icarus extends simulate {
 
         let argu = '-g2012'
 
-        return `${icarusPath} ${argu} -o ${this.simConfig.runPath}/out.vvp -s ${this.param.name} ${this.param.path} ${dependencePath} ${thirdLibPath}`
+        return `${icarusPath} ${argu} -o ${this.simConfig.runPath}/out.vvp -s ${param.name} ${param.path} ${dependencePath} ${thirdLibPath}`
     }
 
-    exec() {
+    exec(command) {
         var _this = this;
-        child.exec(this.getCommand, { cwd: this.simConfig.runPath }, function (error, stdout, stderr) {
-            _this.info(stdout);
+        child.exec(command, { cwd: this.simConfig.runPath }, function (error, stdout, stderr) {
             if (error !== null) {
                 stderr = "ERROR From iverilog : \n\n" + stderr;
                 _this.outputCH.appendLine(`${stderr}`);
@@ -188,24 +198,61 @@ class icarus extends simulate {
                 });
 
                 if (!Exists_flag) {
-                    vvp = vscode.window.createTerminal({ name: 'vvp' });
+                    vvp = _this.terminal({ name: 'vvp' });
                 }
                 
-                if (waveImagePath != '') {
-                    let waveImageExtname = waveImagePath.split('.');
-                    cmd = `${vvpPath} ${currentOutFilePath}/out.vvp -${waveImageExtname[waveImageExtname.length-1]}`;
-                } else {
-                    cmd = `${vvpPath} ${currentOutFilePath}/out.vvp`;
+                let cmd = `${vvpPath} ${_this.simConfig.runPath}/out.vvp`;
+                if (_this.simConfig.wave != '') {
+                    let waveExtname = _this.simConfig.wave.split('.');
+                    cmd = `${vvpPath} ${_this.simConfig.runPath}/out.vvp -${waveExtname[_this.simConfig.wave.length-1]}`;
                 }
+
                 vvp.show(true);
                 vvp.sendText(cmd);
-                if (waveImagePath != '') {
-                    vvp.sendText(`${gtkwavePath} ${waveImagePath}`);
+                if (_this.simConfig.wave != '') {
+                    vvp.sendText(`${_this.simConfig.gtkwavePath} ${_this.simConfig.wave}`);
                 } else {
-                    vscode.window.showWarningMessage("There is no wave image path in this testbench");
+                    _this.warn("There is no wave image path in this testbench");
                 }
             }
         });
+    }
+
+    simulate(uri) {
+        const param = {
+            path : fs.paths.toSlash(uri.fsPath)
+        };
+        if (uri.name) {
+            param.name = uri.name;
+            param.dependences = HDLParam.getAllDependences(
+                param.path,
+                param.name
+            ).others;
+            this.exec(this.getCommand(param));
+        } else {
+            const items = instance.getSelectItem(HDLParam.findModuleByPath(param.path));
+            if (items.length) {
+                if (items.length == 1) {
+                    param.name = items[0].module.name;
+                    param.dependences = HDLParam.getAllDependences(
+                        param.path,
+                        param.name
+                    ).others    ;
+                    this.exec(this.getCommand(param));
+                } else {
+                    vscode.window.showQuickPick(items, option).then((select) => {
+                        param.name = select.module.name;
+                        param.dependences = HDLParam.getAllDependences(
+                            param.path,
+                            param.name
+                        ).others;
+                        this.exec(this.getCommand(param));
+                    }); 
+                }
+            } else {
+                this.err('There is no module in this file');
+            }
+        }
     }
 }
 exports.icarus = icarus;

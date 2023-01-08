@@ -208,23 +208,26 @@ class libPick {
             'common' : `${opeParam.rootPath}/lib/common`,
             'custom' : this.set("PRJ.customer.Lib.repo").get("path"),
         };
+        this.start = [
+            {label: "common", description: fs.files.readFile(this.config.common+'/readme.md')},
+            {label: "custom", description: `custom library by yourself`}
+        ];
         this.curPath = '/';
     }
 
     provide(item) {
         if (item == '..') {
             if ((this.curPath == this.config.common) || (this.curPath == this.config.custom)) {
-                return [
-                    {label: "common", description: fs.files.readFile(this.config.common+'/readme.md')},
-                    {label: "custom", description: `custom library by yourself`}
-                ]
+                return this.start;
             } else {
                 this.curPath = fs.paths.dirname(this.curPath);
                 return this.provide(this.curPath);
             }
         }
         
-        if (item == "common") {
+        if (item == "/") {
+            return this.start;
+        } else if (item == "common") {
             this.curPath = this.config.common;
         } else if (item == "custom") {
             this.curPath = this.config.custom;

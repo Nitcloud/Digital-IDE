@@ -61,19 +61,19 @@ class operation {
      * @returns {String} 导入过程中所输出的日志(仅适用与message回调关闭的时候)
      */
     load(files) {
-        this.module.TTY.message = "";
+        this.kernel.TTY.message = "";
         const command = 'read_verilog -sv -formal -overwrite';
-
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
             if (os.platform().toLowerCase() === 'win32') {
+                console.log(this.kernel.FS.readdir('/'));
                 this.exec(`${command} /${file}`);
             } else {
                 this.exec(`${command} /host/${file}`);
             }
         }
 
-        return this.module.TTY.message;
+        return this.kernel.TTY.message;
     }
 
     synth(options) {
@@ -102,11 +102,11 @@ class operation {
 
     /**
      * @descriptionCn 以指定的模式导出设计
-     * @param {Object} options {
+     * @param {{
      *      path : '' // 在虚拟文件系统中存放的路径
      *      type : '' // 指定的模式
      *      argu : '' // 指定导出的参数
-     * }
+     * }} options 
      * @returns {String} 设计的内容
      */
     export(options) {
@@ -142,7 +142,7 @@ class operation {
 
     exit() {
         this.kernel = null;
-        fs.vrfs.module = null;
+        this.vrfs = null;
     }
 }
 module.exports = operation;

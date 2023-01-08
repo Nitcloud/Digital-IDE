@@ -195,7 +195,7 @@
 	},
 	"required": [
 		"TOOL_CHAIN",
-		"SOC_MODE",
+		"SOC",
 		"Device"
 	]
 }
