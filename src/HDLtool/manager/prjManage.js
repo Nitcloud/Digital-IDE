@@ -6,7 +6,7 @@ const plXilinx = require("./PL/xilinx");
 const psXilinx = require("./PS/xilinx");
 
 const opeParam = require("../../param");
-const { ModuleFileType } = require('../../HDLparser/base/common');
+const { ModuleFileType, HDLParam } = require('../../HDLparser');
 const { archTreeProvider, ArchDataItem } = require('../tree/tree');
 const HDLPath = require("../../HDLfilesys/operation/path");
 
@@ -214,7 +214,8 @@ class PrjManage {
         }
 
         // 拉取工程的配置参数
-        opeParam.prjInfo = fs.files.pullJsonInfo(opeParam.propertyPath);
+        const property = fs.files.pullJsonInfo(opeParam.propertyPath);
+        opeParam.prjInfo = property ? property : getDefaultProperty();
         
         if (opeParam.prjInfo.ARCH) {
             const hardware = opeParam.prjInfo.ARCH.Hardware;
@@ -375,17 +376,25 @@ class PrjManage {
         let ignores = [];
 
         // 先处理好library，再启动monitor
-        let files = [];
-        if (opeParam.prjInfo.library) {
-            const res = opeParam.LibManager.processLibFiles(opeParam.prjInfo.library);
-            files = res.add;
-        }
+        const searchFolders = [];
 
+        const library = opeParam.prjInfo.library;
+        if (library) {
+            opeParam.LibManager.processLibFiles(library);
+            if (library.Hardware.common instanceof Array) {
+                searchFolders.push(...library.Hardware.common);
+            }
+            if (library.Hardware.custom instanceof Array) {
+                searchFolders.push(...library.Hardware.custom);
+            }
+        }
+        searchFolders.push(opeParam.prjInfo.ARCH.Hardware.src);
+        searchFolders.push(opeParam.prjInfo.ARCH.Hardware.sim);
+
+        
+        const files = [];
         // 获取本地的源文件
-        fs.files.getHDLFiles([
-            opeParam.prjInfo.ARCH.Hardware.src,
-            opeParam.prjInfo.ARCH.Hardware.sim
-        ], files, ignores);
+        fs.files.getHDLFiles(searchFolders, files, ignores);
 
         return files;
     }
@@ -571,7 +580,8 @@ class plMarage extends baseManage {
      * @param {ArchDataItem} item
      */
     setSrcTop(item) {
-        if (item.type == ModuleFileType.SRC) {
+        const type = archTreeProvider.getfileType(item);
+        if (type == ModuleFileType.SRC) {
             archTreeProvider.setFirstTop(ModuleFileType.SRC, item.name, item.fsPath);
             archTreeProvider.refreshSrc();
         }
@@ -582,7 +592,8 @@ class plMarage extends baseManage {
      * @param {ArchDataItem} item 
      */
     setSimTop(item) {
-        if (item.type == ModuleFileType.SIM) {
+        const type = archTreeProvider.getfileType(item);
+        if (type == ModuleFileType.SIM) {
             archTreeProvider.setFirstTop(ModuleFileType.SIM, item.name, item.fsPath);
             archTreeProvider.refreshSim();
         }

@@ -65,7 +65,7 @@
                     "type": "object",
                     "properties": {
                         "common":   { "type": "array" },
-                        "customer": { "type": "array" }
+                        "custom": { "type": "array" }
                     }
                 }
 			}

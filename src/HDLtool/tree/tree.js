@@ -130,12 +130,41 @@ class ArchTreeProvider {
         }
     }
 
+    makeFirstTopIconName(type) {
+        return 'current-' + type + '-top';
+    }
+
+    /**
+     * 
+     * @param {ArchDataItem} element
+     * @returns {ModuleFileType} 
+     */
+    getfileType(element) {
+        if (!element) {
+            return null;
+        }
+        while (element.parent) {
+            element = element.parent;
+        }
+        return element.type;
+    }
+
     /**
      * 获取元素的项目信息
      * @param {ArchDataItem} element 
      * @returns {vscode.TreeItem}
      */
     getTreeItem(element) {
+        const type = this.getfileType(element);
+        if (this.firstTop[type]) {
+            const firstName = this.firstTop[type].name;
+            const firstPath = this.firstTop[type].path;
+            if (element.name == firstName && element.fsPath == firstPath) {
+                element.icon = this.makeFirstTopIconName(type);
+            }
+        }
+
+
         let itemName = element.name;
         let itemChildMode = new Set(["vhdl", "systemverilog", "verilog", "remote", "cells"]);
         if (itemChildMode.has(element.icon)) {
@@ -203,92 +232,23 @@ class ArchTreeProvider {
 
 
     /**
-     * @param {string} type
-     * @param {Array<ArchDataItem>} topModuleItemList 
-     * @return {ArchDataItem}
-     */
-    pickFirstTopModule(type, topModuleItemList) {
-        if (!topModuleItemList || topModuleItemList.length == 0) {
-            return null;
-        }
-        if (this.firstTop[type]) {
-            const targetPath = this.firstTop[type].path;
-            const targetName = this.firstTop[type].name;
-            const targetItems = topModuleItemList.filter(
-                item => item.fsPath == targetPath && item.name == targetName);
-            if (targetItems.length == 0) {
-                return topModuleItemList[0];
-            }
-            return targetItems[0];
-        } else {
-            // make default value for firstTopModule
-            const defaultFirst = topModuleItemList[0];
-            const name = defaultFirst.name;
-            const path = defaultFirst.fsPath;
-            this.firstTop[type] = {name, path};
-            return topModuleItemList[0];
-        }
-    }
-
-    /**
-     * @param {ModuleFileType} type 'src' or 'sim'
-     * @returns {{
-     *      name: string,
-     *      path: string
-     * }} 
-     */
-    getFirstTop(type) {
-        const firstTop = this.firstTop[type];
-        if (!firstTop) {
-            console.log('error happen in getFirstTop, reason: firstTop is null');
-            return null;
-        }
-        return firstTop;
-    }
-
-    /**
-     * @param {string} type
-     * @param {Array<ArchDataItem>} topModuleItemList 
-     * @returns {Array<ArchDataItem>}
-     */
-    adjustFirstTopModule(type, topModuleItemList) {
-        if (topModuleItemList.length == 0) {
-            return [];
-        }
-        const activateIcon = 'current' + type[0].toUpperCase() + type.substring(1) + 'Top';
-        // pick the first module and make it to be the first element in topModuleItemList
-        const firstTopModule = this.pickFirstTopModule(type, topModuleItemList);
-        firstTopModule.icon = activateIcon;
-
-        if (firstTopModule == topModuleItemList[0]) {
-            // if the first top module is  topModuleItemList[0]
-            // then no need to adjust
-            return topModuleItemList;
-        }
-        const adjustResult = [firstTopModule];
-        for (const item of topModuleItemList) {
-            if (item != firstTopModule) {
-                adjustResult.push(item);
-            }
-        }
-        return adjustResult;
-    }
-
-    /**
      * @param {ArchDataItem} element 
      * @returns {Array<ArchDataItem>}
      */
     getTopModuleItemList(element) {
         const type = element.name;
-
         const folderPath = HDLPath.toSlash(opeParam.prjInfo.ARCH.Hardware[type]);
         const topModules = this.getTopModulesByType(type);
-
         const topModuleItemList = topModules.map(
             module => new ArchDataItem('top', type, module.name, module.path, element));
         
-        const adjustList = this.adjustFirstTopModule(type, topModuleItemList);
-        return adjustList;
+        if (topModuleItemList.length > 0) {
+            const firstTop = topModuleItemList[0];
+            if (!this.firstTop[type]) {
+                this.firstTop[type] = {name: firstTop.name, path: firstTop.fsPath};
+            }
+        }
+        return topModuleItemList;
     }
 
     /**

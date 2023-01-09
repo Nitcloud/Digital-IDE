@@ -2,6 +2,7 @@ var opeParam = require("../../param");
 
 const fs = require("../../HDLfilesys");
 const vscode = require("vscode");
+const HDLPath = require("../../HDLfilesys/operation/path");
 
 /**
  * @state finish-untest
@@ -63,6 +64,13 @@ class libManage {
      */
     processLibFiles(library) {
         this.getConfig();
+        const configFolder = HDLPath.join(opeParam.workspacePath, '.vscode');
+        // transform to abs path
+
+        if (library.Hardware && library.Hardware.custom instanceof Array) {
+            library.Hardware.custom = library.Hardware.custom.map(path => HDLPath.rel2abs(configFolder, path));
+        }
+
         // 在不设置state属性的时候默认为remote
         this.next.list = this.getLibFiles(library.Hardware);
         if (!fs.files.isHasAttr(library, 'state')) {

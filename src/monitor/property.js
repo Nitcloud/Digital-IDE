@@ -105,6 +105,9 @@ function recurseUpdateObject(originalObj, newObj, keyTrace, updateCallback) {
                         if (!sameSet(originalSet, newSet)) {
                             console.log('change lib');
                             const returnVal = updateCallback(keyTrace, originalValue, newValue);
+                            if (returnVal) {
+                                originalObj[newKey] = returnVal;
+                            }
                         }
                     }
                 } else if (originalType == 'object') {
@@ -151,8 +154,7 @@ function updateProperty(newProperty, monitor) {
     
     recurseUpdateObject(originalPrjInfo, newProperty, [], 
         (keyTrace, oldValue, newValue) => {
-            console.log(keyTrace, oldValue, newValue);
-            const keyName = keyTrace.join('.');
+            console.log('enter callback ', keyTrace, oldValue, newValue);
             if (keyTrace.length >= 3 && 
                 keyTrace[0] == 'ARCH' &&
                 keyTrace[1] == 'Hardware' &&
@@ -171,9 +173,15 @@ function updateProperty(newProperty, monitor) {
             if (keyTrace.length >= 3 &&
                 keyTrace[0] == 'library' &&
                 keyTrace[1] == 'Hardware' &&
-                (keyTrace[2] == 'common' && keyTrace[2] == 'custom')) {
+                (keyTrace[2] == 'common' || keyTrace[2] == 'customer')) {
                 
-                const existPaths = newValue.filter(path => fs.existsSync(path));
+                const existPaths = [];
+                for (const path of newValue) {
+                    const absPath = HDLPath.rel2abs(configFolder, path);
+                    if (fs.existsSync(absPath)) {
+                        existPaths.push(absPath);
+                    }
+                }
                 HDLFileChanged = true;
                 return existPaths;
             }
@@ -189,6 +197,8 @@ function updateProperty(newProperty, monitor) {
             monitor.remakeHDLMonitor('HDL');
             const uncheckedFiles = new Set(originalHDLfiles);
             const newFilePaths = new Set(opeParam.PrjManager.getPrjFiles());
+
+            
             for (const newFilePath of newFilePaths) {
                 if (!uncheckedFiles.has(newFilePath)) {
                     addFile(newFilePath);
@@ -208,37 +218,25 @@ function updateProperty(newProperty, monitor) {
 async function add(path, monitor) {
     console.log('add property');
     const ppyPath = getPropertyPath();
-    try {
-        const newProperty = HDLFile.pullJsonInfo(ppyPath);
+    const newProperty = HDLFile.pullJsonInfo(ppyPath);
+    if (newProperty) {
         return updateProperty(newProperty, monitor);
-    } catch (err) {
-        console.log('parse error json');
     }
 }
 
 async function change(path, monitor) {
     console.log('change property');
-
     const ppyPath = getPropertyPath();
-    try {
-        const newProperty = HDLFile.pullJsonInfo(ppyPath);
+    const newProperty = HDLFile.pullJsonInfo(ppyPath);
+    if (newProperty) {
         return updateProperty(newProperty, monitor);
-    } catch (err) {
-        console.log('parse error json');
-        return;
     }
 }
 
 async function unlink(path, monitor) {
     console.log('unlink property');
-
     const defaultProperty = getDefaultProperty();
-    try {
-        return updateProperty(defaultProperty, monitor);
-    } catch (err) {
-        console.log('parse error json');
-        return;
-    }
+    return updateProperty(defaultProperty, monitor);
 }
 
 module.exports = {

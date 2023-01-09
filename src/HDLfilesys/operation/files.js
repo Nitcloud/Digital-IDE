@@ -449,14 +449,18 @@ const HDLFile = {
      * @param {String} path json文件的路径
      * @returns {Object} 获取到的对象信息
      */
-    pullJsonInfo : function (path) {
+    pullJsonInfo(path) {
         if (this.isillegal(path)) {
             return {};
         }
 
-        var data = fs.readFileSync(path, "utf-8");
-        let obj = JSON.parse(data);
-        return obj;
+        const data = fs.readFileSync(path, "utf-8");
+        try {
+            const obj = JSON.parse(data);
+            return obj;
+        } catch (err) {
+            return null;
+        }
     },
 
     /**

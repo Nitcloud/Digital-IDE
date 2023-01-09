@@ -16,9 +16,9 @@
 	},
 	"library": {
 		"Hardware": {
-			"common": [
-				"./common/Apply",
-				"./common/Soc"
+			"custom": [
+				"./common/Math"
+
 			]
 		}
 	}
