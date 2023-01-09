@@ -329,7 +329,7 @@ function filterInstanceByPosition(position, symbols, module) {
         return null;
     }
     for (const symbol of symbols) {
-        const inst = module.getInstanceByName(symbol.name);
+        const inst = module.findInstance(symbol.name);
         if (positionAfterEqual(position, symbol.start) && 
             positionAfterEqual(symbol.end, position) &&
             inst) {

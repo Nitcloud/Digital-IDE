@@ -1,43 +1,53 @@
 // @ts-nocheck
 /*
  * #Author       : sterben(Duan)
- * #LastAuthor   : sterben(Duan)
- * #Date         : 2020-02-15 15:44:35
- * #lastTime     : 2020-02-15 17:26:23
+ * #LastAuthor   : lstm-kirigaya
+ * #Date         : 2020-02-15 15:44
+ * #lastTime     : 2023-01-06 16:20
  * #FilePath     : \src\extension.js
- * #Description  : 
+ * #Description  : main of the extension
  */
 const vscode = require('vscode');
-
 const HDLtool = require('./HDLtool');
 const { HDLParam } = require('./HDLparser');
-const { HDLGlobal } = require('./global');
-
 const opeParam = require('./param');
-
 const HDLFile = require('./HDLfilesys/operation/files');
+const monitor = require('./monitor');
 
-
-function launch(context) {
-    HDLGlobal.setContext(context);
-
+/**
+ * @param {vscode.ExtensionContext} context 
+ */
+async function launch(context) {
     const HDLfiles = HDLtool.registerManageServer();
-    // 初始化HdlParam
-    HDLParam.Initialize(HDLfiles);
+    return vscode.window.withProgress({
+        location: vscode.ProgressLocation.Notification,
+        title: 'Initialize the project'
+    }, async () => {
+        // initialize HDLParam
+        HDLParam.Initialize(HDLfiles);
 
-    console.log(opeParam.prjInfo.ARCH);
-    console.log('init num', HDLParam.Modules.size);
+        // register command
+        HDLtool.registerSimServer(context);
+        HDLtool.registerTreeServer(context);
+        HDLtool.registerDocumentation(context);
+        HDLtool.registerLspServer(context);
+        HDLtool.registerToolServer(context);
+        
+        // launch monitor
+        monitor.start();
+    });
 }
 
+/**
+ * @param {vscode.ExtensionContext} context 
+ */
 async function activate(context) {
     const start = Date.now();
-
-    launch(context);
-    HDLtool.registerSimServer(context);
-    HDLtool.registerTreeServer(context);
-    HDLtool.registerDocumentation(context);
-    HDLtool.registerLspServer(context);
-    HDLtool.registerToolServer(context);
+    
+    await launch(context);
+    
+    console.log('#module ', HDLParam.Modules.size);
+    console.log(opeParam.prjInfo);
 
     console.log('cost time : ' + (Date.now() - start) / 1000 + 's');
 }
@@ -46,6 +56,6 @@ exports.activate = activate;
 
 
 function deactivate() {
-    
+    monitor.close();    
 }
 exports.deactivate = deactivate;

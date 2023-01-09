@@ -34,6 +34,19 @@ class ParamType {
     static PARAMETER = 'PARAMETER'
 };
 
+class ModuleFileType {
+    static SRC = 'src'
+    static SIM = 'sim'
+    static LOCAL_LIB = 'local_lib'
+    static REMOTE_LIB = 'remote_lib'
+};
+
+
+class HDLLanguageID {
+    static VERILOG = 'verilog'
+    static SYSTEM_VERILOG = 'systemverilog'
+    static VHDL = 'vhdl'
+};
 
 class InstModPathStatus {
     static CURRENT = 'CURRENT'
@@ -113,6 +126,82 @@ class Marco {
     }
 };
 
+
+class RawParam {
+    /**
+     * @param {string} name 
+     * @param {string} type 
+     * @param {string} init 
+     * @param {Position} start 
+     * @param {Position} end 
+     */
+    constructor(name, type, init, start, end) {
+        this.name = name;
+        this.type = type;
+        this.init = init;
+        this.start = start;
+        this.end = end;
+    }
+}
+
+
+class RawPort {
+    /**
+     * @param {string} name 
+     * @param {string} type 
+     * @param {string} width 
+     * @param {Position} start 
+     * @param {Position} end 
+     */
+     constructor(name, type, width, start, end) {
+        this.name = name;
+        this.type = type;
+        this.width = width;
+        this.start = start;
+        this.end = end;
+    }
+}
+
+class RawInstance {
+    /**
+     * @param {string} name 
+     * @param {string} type 
+     * @param {string} instModPath 
+     * @param {Range} instparams 
+     * @param {Range} instports 
+     * @param {Position} start 
+     * @param {Position} end 
+     */
+    constructor(name, type, instModPath, instparams, instports, start, end) {
+        this.name = name;
+        this.type = type;
+        this.instModPath = instModPath;
+        this.instparams = instparams;
+        this.instports = instports;
+        this.start = start;
+        this.end = end;
+    }
+}
+
+
+class RawModule {
+    /**
+     * @description describe a raw module from json
+     * @param {Array<RawParam>} params 
+     * @param {Array<RawPort>} ports 
+     * @param {Array<RawInstance>} instances 
+     * @param {Position} start 
+     * @param {Position} end 
+     */
+    constructor(params, ports, instances, start, end) {
+        this.params = params;
+        this.ports = ports;
+        this.instances = instances;
+        this.start = start;
+        this.end = end;
+    }
+}
+
 module.exports = {
     Position,
     Range,
@@ -122,4 +211,10 @@ module.exports = {
     Error,
     MarcoContext,
     Marco,
+    RawParam,
+    RawPort,
+    RawInstance,
+    RawModule,
+    ModuleFileType,
+    HDLLanguageID
 }

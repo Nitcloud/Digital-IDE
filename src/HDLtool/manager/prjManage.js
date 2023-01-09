@@ -5,7 +5,47 @@ const fs = require("../../HDLfilesys");
 const plXilinx = require("./PL/xilinx");
 const psXilinx = require("./PS/xilinx");
 
-var opeParam = require("../../param");
+const opeParam = require("../../param");
+const { ModuleFileType } = require('../../HDLparser/base/common');
+const { archTreeProvider, ArchDataItem } = require('../tree/tree');
+const HDLPath = require("../../HDLfilesys/operation/path");
+
+
+function getPropertyPath() {
+    return HDLPath.join(opeParam.workspacePath, '.vscode', 'property.json');
+}
+
+
+function getDefaultARCH() {
+    return {
+        PRJ_Path: opeParam.workspacePath,
+        Hardware : {
+            src  : opeParam.workspacePath, 
+            sim  : opeParam.workspacePath,
+            data : opeParam.workspacePath
+        },
+        Software : {
+            src  : opeParam.workspacePath,
+            data : opeParam.workspacePath
+        }
+    };
+}
+
+
+function getDefaultProperty() {
+    return {
+        TOOL_CHAIN: "xilinx",
+        PRJ_NAME: {
+            PL: "template"
+        },
+        SOC: {
+            "core": "none"
+        },
+        enableShowlog: false,
+        Device: "none",
+        ARCH: getDefaultARCH()
+    };
+}
 
 function register() {
     // pl manage register
@@ -160,21 +200,10 @@ class PrjManage {
      */
     getPropertyInfo() {
         // 初始化基本参数
-        opeParam.propertyPath = `${opeParam.workspacePath}/.vscode/property.json`;
+        opeParam.propertyPath = getPropertyPath();
 
         if (!fs.files.isExist(opeParam.propertyPath)) {
-            opeParam.prjInfo.ARCH = {
-                "PRJ_Path": opeParam.workspacePath,
-                "Hardware" : {
-                    "src"  : opeParam.workspacePath, 
-                    "sim"  : opeParam.workspacePath,
-                    "data" : opeParam.workspacePath
-                },
-                "Software" : {
-                    "src"  : opeParam.workspacePath,
-                    "data" : opeParam.workspacePath
-                }
-            }
+            opeParam.prjInfo.ARCH = getDefaultARCH();
             return;
         }
 
@@ -187,15 +216,15 @@ class PrjManage {
                 hardwarePath += '/Hardware';
             }
             opeParam.prjInfo.ARCH = {
-                "PRJ_Path": `${opeParam.workspacePath}/prj`,
-                "Hardware" : {
-                    "src"  : `${hardwarePath}/src`, 
-                    "sim"  : `${hardwarePath}/sim`,
-                    "data" : `${hardwarePath}/data`
+                PRJ_Path: `${opeParam.workspacePath}/prj`,
+                Hardware : {
+                    src  : `${hardwarePath}/src`, 
+                    sim  : `${hardwarePath}/sim`,
+                    data : `${hardwarePath}/data`
                 },
-                "Software" : {
-                    "src"  : `${opeParam.workspacePath}/user/Software/src`,
-                    "data" : `${opeParam.workspacePath}/user/Software/src`
+                Software : {
+                    src  : `${opeParam.workspacePath}/user/Software/src`,
+                    data : `${opeParam.workspacePath}/user/Software/src`
                 }
             }
         }
@@ -301,16 +330,12 @@ class PrjManage {
         // 获取ignore .dideignore
         let ignores = [];
         // TODO
-        // const lines = fs.files.getlines(`${opeParam.workspacePath}/.dideignore`);
-        // for (const line of lines) {
-        //     ignores.push(fs.paths.rel2abs(opeParam.workspacePath, line));
-        // }
 
         // 先处理好library，再启动monitor
         let files = [];
         if (opeParam.prjInfo.library) {
-            // const res = opeParam.liboperation.processLibFiles(opeParam.prjInfo.library);
-            // files = res.add;
+            const res = opeParam.liboperation.processLibFiles(opeParam.prjInfo.library);
+            files = res.add;
         }
         
         // 获取本地的源文件
@@ -498,12 +523,26 @@ class plMarage extends baseManage {
         this.config.terminal = null;
     }
 
-    setSrcTop(uri) {
-        
+    /**
+     * 
+     * @param {ArchDataItem} item
+     */
+    setSrcTop(item) {
+        if (item.type == ModuleFileType.SRC) {
+            archTreeProvider.setFirstTop(ModuleFileType.SRC, item.name, item.fsPath);
+            archTreeProvider.refreshSrc();
+        }
     }
 
-    setSimTop(uri) {
-        
+    /**
+     * 
+     * @param {ArchDataItem} item 
+     */
+    setSimTop(item) {
+        if (item.type == ModuleFileType.SIM) {
+            archTreeProvider.setFirstTop(ModuleFileType.SIM, item.name, item.fsPath);
+            archTreeProvider.refreshSim();
+        }
     }
 
     addFiles(files) {
@@ -625,4 +664,7 @@ const toolManage = {
 module.exports = {
     register,
     PrjManage,
-}
+    getPropertyPath,
+    getDefaultARCH,
+    getDefaultProperty
+};

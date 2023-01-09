@@ -110,10 +110,10 @@ class libManage {
                     if (this.set().get("PRJ.file.structure.notice")) {
                         let select = await this.warn("local lib will be removed.", 'Yes', 'Cancel');
                         if (select == "Yes") {
-                            fs.dirs.rmdir(localLibPath);
+                            fs.dirs.rmdir(this.localLibPath);
                         }
                     } else {
-                        fs.dirs.rmdir(localLibPath);
+                        fs.dirs.rmdir(this.localLibPath);
                     }
                 }
 

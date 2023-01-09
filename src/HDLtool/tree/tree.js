@@ -3,10 +3,11 @@
 const vscode = require("vscode");
 
 const HDLFile = require('../../HDLfilesys/operation/files');
-const { HDLParam } = require('../../HDLparser');
+const { HDLParam, ModuleFileType, Module } = require('../../HDLparser');
 const opeParam = require('../../param');
 const cells = require("./cells");
 const { getIconConfig } = require('../../HDLfilesys/icons');
+const HDLPath = require("../../HDLfilesys/operation/path");
 
 let needExpand = true;
 
@@ -16,9 +17,9 @@ function openFileByUri(uri) {
     }
 }
 
-function refreshArchTree() {
+function refreshArchTree(element) {
     // TODO : diff and optimize
-    archTreeProvider.refresh();
+    archTreeProvider.refresh(element);
 }
 
 
@@ -69,10 +70,27 @@ class ArchTreeProvider {
         this.onDidChangeTreeData = this._onDidChangeTreeData.event;
         this.itemNodes = new Set();
         this.initItems = [
-            new ArchDataItem('src', 'src', 'src', '', undefined),
-            new ArchDataItem('sim', 'sim', 'sim', '', undefined)
+            new ArchDataItem('src', ModuleFileType.SRC, 'src', '', undefined),
+            new ArchDataItem('sim', ModuleFileType.SIM, 'sim', '', undefined)
         ];
+
+        this.srcRootElement = this.initItems[0];
+        this.simRootElement = this.initItems[1];
+
+        this.firstTop = {
+            src: null,
+            sim: null
+        };
     }
+
+    refreshSrc() {
+        this._onDidChangeTreeData.fire(this.srcRootElement)
+    }
+
+    refreshSim() {
+        this._onDidChangeTreeData.fire(this.simRootElement);
+    }
+
 
     refresh(element) {
         if (element) {
@@ -166,35 +184,111 @@ class ArchTreeProvider {
     }
 
     /**
+     * 
+     * @param {string} type 
+     * @returns {Array<Module>}
+     */
+    getTopModulesByType(type) {
+        const hardware = opeParam.prjInfo.ARCH.Hardware;
+        if (hardware.sim == hardware.src) {
+            return HDLParam.getAllTopModules();
+        }
+
+        switch (type) {
+            case ModuleFileType.SRC: return HDLParam.getSrcTopModules();
+            case ModuleFileType.SIM: return HDLParam.getSimTopModules();
+            default: return [];
+        }
+    }
+
+
+    /**
+     * @param {string} type
+     * @param {Array<ArchDataItem>} topModuleItemList 
+     * @return {ArchDataItem}
+     */
+    pickFirstTopModule(type, topModuleItemList) {
+        if (!topModuleItemList || topModuleItemList.length == 0) {
+            return null;
+        }
+        if (this.firstTop[type]) {
+            const targetPath = this.firstTop[type].path;
+            const targetName = this.firstTop[type].name;
+            const targetItems = topModuleItemList.filter(
+                item => item.fsPath == targetPath && item.name == targetName);
+            if (targetItems.length == 0) {
+                return topModuleItemList[0];
+            }
+            return targetItems[0];
+        } else {
+            // make default value for firstTopModule
+            const defaultFirst = topModuleItemList[0];
+            const name = defaultFirst.name;
+            const path = defaultFirst.fsPath;
+            this.firstTop[type] = {name, path};
+            return topModuleItemList[0];
+        }
+    }
+
+    /**
+     * @param {ModuleFileType} type 'src' or 'sim'
+     * @returns {{
+     *      name: string,
+     *      path: string
+     * }} 
+     */
+    getFirstTop(type) {
+        const firstTop = this.firstTop[type];
+        if (!firstTop) {
+            console.log('error happen in getFirstTop, reason: firstTop is null');
+            return null;
+        }
+        return firstTop;
+    }
+
+    /**
+     * @param {string} type
+     * @param {Array<ArchDataItem>} topModuleItemList 
+     * @returns {Array<ArchDataItem>}
+     */
+    adjustFirstTopModule(type, topModuleItemList) {
+        if (topModuleItemList.length == 0) {
+            return [];
+        }
+        const activateIcon = 'current' + type[0].toUpperCase() + type.substring(1) + 'Top';
+        // pick the first module and make it to be the first element in topModuleItemList
+        const firstTopModule = this.pickFirstTopModule(type, topModuleItemList);
+        firstTopModule.icon = activateIcon;
+
+        if (firstTopModule == topModuleItemList[0]) {
+            // if the first top module is  topModuleItemList[0]
+            // then no need to adjust
+            return topModuleItemList;
+        }
+        const adjustResult = [firstTopModule];
+        for (const item of topModuleItemList) {
+            if (item != firstTopModule) {
+                adjustResult.push(item);
+            }
+        }
+        return adjustResult;
+    }
+
+    /**
      * @param {ArchDataItem} element 
      * @returns {Array<ArchDataItem>}
      */
     getTopModuleItemList(element) {
         const type = element.name;
 
-        // TODO : 在整合lib后修改这里
-        const folder = opeParam.prjInfo.ARCH.Hardware[type];
-        const allTopModules = HDLParam.getAllTopModules();
-        const topModuleItemList = [];
-        for (const module of allTopModules) {
-            if (module.path.includes(folder)) {
-                const topMuduleItem = new ArchDataItem('top',
-                                                       type,
-                                                       module.name,
-                                                       module.path,
-                                                       element);
-                topModuleItemList.push(topMuduleItem);
-            }
-        }
+        const folderPath = HDLPath.toSlash(opeParam.prjInfo.ARCH.Hardware[type]);
+        const topModules = this.getTopModulesByType(type);
 
-        // TODO : 修改默认的顶层模块的选择
-        if (topModuleItemList.length > 0) {
-            const defaultTopModule = topModuleItemList[0];
-            const activateIcon = 'current' + type[0].toUpperCase() + type.substring(1) + 'Top';
-            defaultTopModule.icon = activateIcon;
-        }
-
-        return topModuleItemList;
+        const topModuleItemList = topModules.map(
+            module => new ArchDataItem('top', type, module.name, module.path, element));
+        
+        const adjustList = this.adjustFirstTopModule(type, topModuleItemList);
+        return adjustList;
     }
 
     /**
@@ -237,6 +331,16 @@ class ArchTreeProvider {
             dataItemList.push(dataItem);
         }
         return dataItemList;
+    }
+
+    /**
+     * 
+     * @param {string} type 
+     * @param {string} name 
+     * @param {string} path 
+     */
+    setFirstTop(type, name, path) {
+        this.firstTop[type] = {name, path};
     }
 }
 
@@ -457,6 +561,7 @@ module.exports = {
     hardwareTreeProvider,
     softwareTreeProvider,
     toolTreeProvider,
+    ArchDataItem,
     expandTreeView,
     collapseTreeView,
     openFileByUri,

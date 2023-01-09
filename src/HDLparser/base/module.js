@@ -9,10 +9,17 @@ const opeParam = require('../../param');
 const HDLFile = require('../../../src/HDLfilesys/operation/files');
 const HDLPath = require('../../../src/HDLfilesys/operation/path');
 
-
-
+/**
+ * @param {Set<Module>} TopModules
+ * If folders of src and sim are the same, use TopModules
+ * 
+ * @param {Set<Module>} SrcTopModules
+ * @param {Set<Module>} SimTopModules
+ */
 const HDLParam = {
     TopModules : new Set(),             // Set<Module>
+    SrcTopModules : new Set(),          // Set<Module>
+    SimTopModules : new Set(),          // Set<Module>
     PathToModuleFiles : new Map(),      // Map<string, ModuleFile>
     Modules : new Set(),                // Set<Module>
     UnhandleInstances : new Set(),      // Set<Instance> 未处理依赖关系的 Instance
@@ -66,9 +73,12 @@ const HDLParam = {
      */
     findModule(path, name) {
         let moduleFile = this.findModuleFile(path);
-        assert(moduleFile, 'cannot find ' + path + ' in global moduleFiles');
+        // assert(moduleFile, 'cannot find ' + path + ' in global moduleFiles');
+        if (!moduleFile) {
+            return undefined;
+        }
         let module = moduleFile.findModule(name);
-        assert(module, 'cannot find module "' + name + '" in file ' + path);
+        // assert(module, 'cannot find module "' + name + '" in file ' + path);
         return module;
     },
 
@@ -79,15 +89,8 @@ const HDLParam = {
      * @param {string} name 
      */
     deleteModule(path, name) {
-        let moduleFile = this.PathToModuleFiles.get(path);
-        if (this.hasModule(path, name)) {
-            let module = this.findModule(path, name);
-
-            // 删除包含 module 的任何容器
-            moduleFile.nameToModule.delete(module.name);
-            this.TopModules.delete(module);
-            this.Modules.delete(module);
-        }
+        let moduleFile = this.findModuleFile(path);
+        moduleFile.deleteModule(name);
     },
 
 
@@ -98,10 +101,56 @@ const HDLParam = {
      * @returns {boolean}
      */
     isTopModule(path, name) {
-        let module = this.findModule(path, name);
+        const module = this.findModule(path, name);
         return this.TopModules.has(module);
     },
 
+
+    /**
+     * @param {string} path 
+     * @param {string} name 
+     * @returns {boolean}
+     */
+    isSrcTopModule(path, name) {
+        const module = this.findModule(path, name);
+        return this.SrcTopModules.has(module);  
+    },
+
+    /**
+     * @param {string} path 
+     * @param {string} name 
+     * @returns {boolean}
+     */
+    isSimTopModule(path, name) {
+        const module = this.findModule(path, name);
+        return this.SimTopModules.has(module);
+    },
+
+
+    /**
+     * @description get SrcTopModules and SimTopModules by module
+     * @param {Module} module 
+     * @return {Set<Module>}
+     */
+    selectTopModule(module) {
+        switch (module.file.type) {
+            case common.ModuleFileType.SRC: return this.SrcTopModules;
+            case common.ModuleFileType.SIM: return this.SimTopModules;
+            case common.ModuleFileType.LOCAL_LIB: return this.SrcTopModules;
+            case common.ModuleFileType.REMOTE_LIB: return this.SrcTopModules;
+            default: return this.SrcTopModules;        
+        }
+    },
+
+    addSrcSimTopModule(module) {
+        const topModules = this.selectTopModule(module);
+        topModules.add(module);
+    },
+
+    deleteSrcSimTopModule(module) {
+        const topModules = this.selectTopModule(module);
+        topModules.delete(module);
+    },
 
     /**
      * @description 以列表的形式返回所有注册的 module 对象
@@ -124,6 +173,36 @@ const HDLParam = {
         const moduleFiles = [];
         for (const [path, moduleFile] of this.PathToModuleFiles) {
             moduleFiles.push(moduleFile);
+        }
+        return moduleFiles;
+    },
+
+    /**
+     * @returns {Array<Module>}
+     */
+    getSrcTopModules() {
+        const srcTopModules = this.SrcTopModules;
+        if (!srcTopModules) {
+            return [];
+        }
+        const moduleFiles = [];
+        for (const module of srcTopModules) {
+            moduleFiles.push(module);
+        }
+        return moduleFiles;
+    },
+
+    /**
+     * @returns {Array<Module>}
+     */
+    getSimTopModules() {
+        const simTopModules = this.SimTopModules;
+        if (!simTopModules) {
+            return [];
+        }
+        const moduleFiles = [];
+        for (const module of simTopModules) {
+            moduleFiles.push(module);
         }
         return moduleFiles;
     },
@@ -162,17 +241,14 @@ const HDLParam = {
      * @param {Array<string>} HDLfiles
      */
      InitHDLFiles(HDLfiles) {
-        // TODO : vhdl 和 systemverilog 解析器调试好后去除下面的 filter
-        const HDLFiles = HDLfiles.filter(filePath => {
+        // TODO : systemverilog 解析器调试好后去除下面的 filter
+        HDLfiles = HDLfiles.filter(filePath => {
             const langID = HDLFile.getLanguageId(filePath);
             return langID != 'systemverilog';
         });
 
-        for (const filePath of HDLFiles) {
-            const langID = HDLFile.getLanguageId(filePath);
-            const parser = util.selectParserByLangID(langID);
-            let code = fs.readFileSync(filePath, 'utf-8');
-            const json = parser.parse(code);
+        for (const filePath of HDLfiles) {
+            const json = util.getSymbolJSONFromFile(filePath);
             this.InitByJSON(filePath, json);
         }
     },
@@ -183,14 +259,8 @@ const HDLParam = {
      */
     Initialize(HDLfiles) {
         this.InitHDLFiles(HDLfiles);
-        
         for (const moduleFile of this.getAllModuleFiles()) {
             moduleFile.makeInstance();
-        }
-
-        let count = 0;
-        for (const moduleFile of this.getAllModuleFiles()) {
-            count += moduleFile.nameToModule.size;
         }
     },
 
@@ -285,6 +355,27 @@ const HDLParam = {
         }
 
         return dependencies;
+    },
+
+    /**
+     * @param {string} typeName 
+     * @returns {Instance}
+     */
+    findUnhandleInstanceByType(typeName) {
+        for (const inst of this.UnhandleInstances) {
+            if (inst.type == typeName) {
+                return inst;
+            }
+        }
+        return null;
+    },
+
+    addUnhandleInstance(inst) {
+        this.UnhandleInstances.add(inst);
+    },
+
+    deleteUnhandleInstance(inst) {
+        this.UnhandleInstances.delete(inst);
     }
 };
 
@@ -332,9 +423,10 @@ class Instance {
      * @param {vscode.Range} instports                  ports起始
      * @param {Module} parentMod                        所属的 Module
      */
-    constructor(name, type, instModPath, instModPathStatus, instparams, instports, parentMod) {
+    constructor(name, type, instModPath, instModPathStatus, instparams, instports, range, parentMod) {
         this.name = name;
         this.type = type;
+        assert(parentMod, "parentMod can't be null!");
         this.parentMod = parentMod;
         
         // two range, duck type
@@ -343,6 +435,7 @@ class Instance {
 
         this.instModPath = instModPath;
         this.instModPathStatus = instModPathStatus;
+        this.range = range;
 
         this.module = null;
         if (instModPath) {
@@ -350,15 +443,33 @@ class Instance {
         }
     }
 
+    resetType(type) {
+        this.type = type;
+    }
+
+    resetInstParams(instparams) {
+        this.instparams = instparams;
+    }
+
+    resetInstPorts(instports) {
+        this.instports = instports;
+    }
+
+    resetRange(start, end) {
+        this.range = {start, end};
+    }
+
     /**
-     * 将当前的Instance对象加入目标 module 的 refers 中
-     * @param {Module} targetModule 
+     * @description is a instance which parentMod and instMod in the same source
+     * @returns {boolean}
      */
-    addToModuleRefer(targetModule) {
-        targetModule.refers.add(this);
-        if (HDLParam.TopModules.has(targetModule)) {
-            HDLParam.TopModules.delete(targetModule);
+    isSameSource() {
+        const parentMod = this.parentMod;
+        const instMod = this.module;
+        if (instMod) {
+            return parentMod.file.type == instMod.file.type;
         }
+        return false;
     }
 
     locateModule() {
@@ -367,8 +478,12 @@ class Instance {
 
         // 通过 HDLParam 找到 module
         this.module = HDLParam.findModule(instModPath, instModName);
-        // 为 module 增加引用
-        this.addToModuleRefer(this.module);
+        // add refer for module 
+        this.module.addReferInstance(this);
+        // if module and parent module share the same source (e.g both in src folder)
+        if (this.isSameSource()) {
+            this.module.addLocalReferInstance(this);
+        }
     }
 };
 
@@ -394,14 +509,30 @@ class Module {
         this._instances = instances;
         this.unhandleInstances = new Set();
 
-        // 默认情况下刚刚创建时将当前的Module加入
         HDLParam.TopModules.add(this);
+        HDLParam.addSrcSimTopModule(this);
         HDLParam.Modules.add(this);
 
-        // refers 代表实例化了这个Module的所有的Instance对象
+        // represents all the instance from this
         this.refers = new Set();
+
+        // represents all the instance from this created in the same scope
+        // scope: src or sim (lib belongs to src)
+        // localRefers subset to refers
+        this.localRefers = new Set();
     }
 
+    resetPorts(ports) {
+        this.ports = this.makeModPort(ports);
+    }
+
+    resetParams(params) {
+        this.params = this.makeModParams(params);
+    }
+
+    resetRange(start, end) {
+        this.range = {start, end};
+    }
 
     /**
      * 获取当前的 module 对象的文件路径
@@ -417,6 +548,9 @@ class Module {
      * @returns {Array<ModParam>}
      */
     makeModParams(params) {
+        if (!params) {
+            return [];
+        }
         let new_params = [];
         for (const param of params) {
             let range = {start: param.start, end: param.end};
@@ -435,6 +569,9 @@ class Module {
      * @returns {Array<ModPort>}
      */
     makeModPort(ports) {
+        if (!ports) {
+            return [];
+        }
         let new_ports = [];
         for (const port of ports) {
             let range = {start: port.start, end: port.end};
@@ -447,30 +584,69 @@ class Module {
         return new_ports;
     }
 
+    /**
+     * 
+     * @param {common.RawInstance} inst
+     */
+    createInstance(inst) {
+        const instMod = this.searchInstModPath(inst);
+        const range = {start: inst.start, end: inst.end};
+        const new_inst = new Instance(inst.name,
+                                    inst.type,
+                                    instMod.path,
+                                    instMod.status,
+                                    range,
+                                    inst.instparams,
+                                    inst.instports,
+                                    this);
+        if (!instMod.path) {
+            HDLParam.addUnhandleInstance(new_inst);
+            this.addUnhandleInstance(new_inst);
+        }
+        if (this.nameToInstances) {
+            this.nameToInstances.set(inst.name, new_inst);
+        }
+    }
 
     /**
-     * 将 instances 转化为对应的Instance对象
+     * @description delete an Instance and its context by name
+     * @param {string} instName 
+     */
+    deleteInstanceByName(instName) {
+        const targetInst = this.findInstance(instName);
+        this.deleteInstance(targetInst);
+    }
+
+    /**
+     * @description delete an Instance and its context
+     * @param {Instance} inst
+     */
+    deleteInstance(inst) {
+        if (inst) {
+            this.deleteUnhandleInstance(inst);
+            HDLParam.deleteUnhandleInstance(inst);
+            if (this.nameToInstances) {
+                this.nameToInstances.delete(inst.name);
+            }
+            // delete reference from instance's instMod
+            const instMod = inst.module;
+            if (instMod) {
+                instMod.deleteReferInstance(inst);
+                if (inst.isSameSource()) {
+                    instMod.deleteLocalReferInstance(inst);
+                }
+            }
+        }
+    }
+
+    /**
+     * @description transform raw instance to instance object
      */
     makeNameToInstances() {
-        let nameToInstances = new Map();
+        this.nameToInstances = new Map();
         for (const inst of this._instances) {
-            // TODO : 核心，能否更加优雅
-            let instMod = this.searchInstModPath(inst);
-            let new_inst = new Instance(inst.name,
-                                        inst.type,
-                                        instMod.path,
-                                        instMod.status,
-                                        inst.instparams,
-                                        inst.instports,
-                                        this);
-            nameToInstances.set(inst.name, new_inst);
-            if (!instMod.path) {
-                HDLParam.UnhandleInstances.add(new_inst);
-                this.unhandleInstances.add(new_inst);
-            }
-            
+            this.createInstance(inst);
         }
-        this.nameToInstances = nameToInstances;
         delete this._instances;
     }
 
@@ -484,18 +660,101 @@ class Module {
     }
 
     /**
-     * @param {string} instName 
-     * @returns {Instance}
-     */
-    getInstanceByName(instName) {
-        return this.nameToInstances.get(instName);
-    }
-
-    /**
      * @returns {number}
      */
     getInstanceNum() {
+        const nameToInstances = this.nameToInstances;
+        if (!nameToInstances) {
+            console.log("error in getInstanceNum, don't have nameToInstances");
+            return [];
+        }
         return this.nameToInstances.size;
+    }
+
+    /**
+     * @param {string} name 
+     * @returns {Instance}
+     */
+    findInstance(name) {
+        const nameToInstance = this.nameToInstances;
+        if (!nameToInstance) {
+            return null;
+        } 
+        return nameToInstance.get(name);
+    }
+
+    /**
+     * @description get all the instance from the module
+     * @returns {Set<Instance>}
+     */
+    getReferInstances() {
+        return this.refers;
+    }
+
+    /**
+     * @description get all the instances from module from the same source
+     * @returns {Set<Instance>}
+     */
+    getLocalReferInstances() {
+        return this.localRefers;
+    }
+
+    /**
+     * @param {Instance} inst 
+     */
+    deleteReferInstance(inst) {
+        this.refers.delete(inst);
+        if (this.refers.size == 0) {
+            HDLParam.TopModules.add(this);
+        }
+    }
+
+    /**
+     * @param {Instance} inst
+     */
+    addReferInstance(inst) {
+        this.refers.add(inst);
+        if (this.refers.size > 0) {
+            HDLParam.TopModules.delete(this);
+        }
+    }
+
+    /**
+     * 
+     * @param {Instance} inst 
+     */
+    deleteLocalReferInstance(inst) {
+        this.localRefers.delete(inst);
+        if (this.localRefers.size == 0) {
+            const topModule = HDLParam.selectTopModule(this);
+            topModule.add(this);
+        }
+    }
+
+    /**
+     * 
+     * @param {Instance} inst 
+     */
+    addLocalReferInstance(inst) {
+        this.localRefers.add(inst);
+        if (this.localRefers.size > 0) {
+            const topModule = HDLParam.selectTopModule(this);
+            topModule.delete(this);
+        }
+    }
+
+    /**
+     * @param {Instance} inst 
+     */
+    addUnhandleInstance(inst) {
+        this.unhandleInstances.add(inst);
+    }
+
+    /**
+     * @param {Instance} inst 
+     */
+    deleteUnhandleInstance(inst) {
+        this.unhandleInstances.delete(inst);
     }
 
     /**
@@ -538,6 +797,38 @@ class Module {
 
         return {path: null, status: null};
     }
+
+
+    solveUnhandleInstance() {
+        const inst = HDLParam.findUnhandleInstanceByType(this.name);
+
+        if (inst) {
+            const userModule = inst.parentMod;
+            // match a inst with the same type name of the module
+            // remove from unhandle list
+            HDLParam.deleteUnhandleInstance(inst);
+            userModule.deleteUnhandleInstance(inst);
+
+            // assign instModPath
+            inst.instModPath = this.path;
+
+            // judge the type of instModPathStatus
+            if (userModule.path == this.path) {
+                inst.instModPathStatus = common.InstModPathStatus.CURRENT;
+            } else {
+                const userIncludePaths = userModule.file.marco.includes.map(
+                    include => HDLPath.rel2abs(userModule.path, include.path));
+                if (userIncludePaths.includes(this.path)) {
+                    inst.instModPathStatus = common.InstModPathStatus.INCLUDE;
+                } else {
+                    inst.instModPathStatus = common.InstModPathStatus.OTHERS;
+                }
+            }
+            
+            // make
+            inst.locateModule();            
+        }
+    }
 };
 
 
@@ -552,16 +843,20 @@ class ModuleFile {
 
         this.path = HDLPath.toSlash(path);
         this.languageId = languageId;
+        this.type = HDLFile.getModuleFileType(path);
 
         // process in constructor
-        this.marco = this.makeMarco(marco);
-        this.nameToModule = this.makeNameToModule(modules);
+        this.makeMarco(marco);
+        this.makeNameToModule(modules);
         
         // add to global HDLParam
         HDLParam.PathToModuleFiles.set(path, this);
     }
 
-
+    updateType() {
+        this.type = HDLFile.getModuleFileType(this.path);
+    }
+    
     /**
      * @description 根据 name 判断有无 module 对象
      * @param {string} name
@@ -572,53 +867,61 @@ class ModuleFile {
     }
 
     /**
+     * @returns {Array<Module>}
+     */
+    getModules() {
+        const modules = [];
+        for (const module of this.nameToModule.values()) {
+            modules.push(module);
+        }
+        return modules;
+    }
+
+    /**
      * transform wasm format object to real marco object
      * @param {any} 
      * @returns {common.Marco}
      */
     makeMarco(mar) {
-        if (mar instanceof common.Marco) {
-            return mar;
+        if (!mar) {
+            this.marco = null;
         } else {
-            let real_marco = new common.Marco(null, 
-                                             mar.defines, 
-                                             mar.includes, 
-                                             mar.invalid);
-            return real_marco;
+            this.marco = new common.Marco(null, 
+                                          mar.defines, 
+                                          mar.includes, 
+                                          mar.invalid)
         }
     }
 
     /**
-     * @description 初始化 module 数组
-     * @param {Array} modules
+     * @param {string} moduleName
+     * @param {common.RawModule} rawModule
+     * @returns {Module}
+     */
+    createModule(moduleName, rawModule) {
+        const range = {start: rawModule.start, end: rawModule.end};
+
+        const newModule = new Module(this,
+                                     moduleName,
+                                     range,
+                                     rawModule.params,
+                                     rawModule.ports,
+                                     rawModule.instances);
+        this.nameToModule.set(moduleName, newModule);
+        return newModule;
+    }
+
+    /**
+     * @description transfrom RawModules to Modules
+     * @param {object} modules
      * @returns {Map<string, Module>}
      */
     makeNameToModule(modules) {
-        // transform any[] to Module[]
-        let module_names = Object.keys(modules);
-        if (module_names.length > 0 && !(modules[module_names[0]] instanceof Module)) {
-            for (const module_name of module_names) {
-                let module = modules[module_name];
-                // generate range
-                let range = {start: module.start, end: module.end};
-
-                // replace the original object with a Module object
-                modules[module_name] = new Module(this,
-                                                  module_name,
-                                                  range,
-                                                  module.params,
-                                                  module.ports,
-                                                  module.instances)
-            }
-        }
-        
-        // transform to map
-        let nameToModule = new Map();
-        for (let module_name of module_names) {
-            nameToModule.set(module_name, modules[module_name]);
-        }
-        
-        return nameToModule;
+        this.nameToModule = new Map();
+        for (const moduleName of Object.keys(modules)) {
+            const rawModule = modules[moduleName];
+            this.createModule(moduleName, rawModule);
+        }  
     }
 
     /**
@@ -631,13 +934,40 @@ class ModuleFile {
         return module;
     }
 
+    deleteModule(name) {
+        const module = this.findModule(name);
+        if (module) {
+            // delete child reference in the module which use this
+            for (const childInst of module.getReferInstances()) {
+                const userModule = childInst.parentMod;
+                childInst.module = null;
+                childInst.instModPath = null;
+                childInst.instModPathStatus = null;
+
+                HDLParam.addUnhandleInstance(childInst);
+                userModule.addUnhandleInstance(childInst);
+            }
+
+            // delete all the instance in the module
+            for (const inst of module.getInstances()) {
+                module.deleteInstance(inst);
+            }
+
+            // delete any variables containing module
+            HDLParam.TopModules.delete(module);
+            HDLParam.deleteSrcSimTopModule(module);
+            HDLParam.Modules.delete(module);
+            this.nameToModule.delete(module.name);
+        }
+    }
+
 
     /**
      * @description 初始化当前 文件下的每个的module的每个instance对象，必须在所有的
      * moduleFile对象初始化完调用。Instance的依赖关系会在这个函数中被初始化
      */
     makeInstance() {
-        for (const [name, module] of this.nameToModule) {
+        for (const module of this.getModules()) {
             module.makeNameToInstances();
         }
     }

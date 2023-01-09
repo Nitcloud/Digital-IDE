@@ -5,6 +5,7 @@ const path = require('path');
 
 const parser = require('./kernel');
 const HDLPath = require('../../HDLfilesys/operation/path');
+const HDLFile = require('../../HDLfilesys/operation/files');
 
 
 const PathModuleSplit = ' @ ';
@@ -84,6 +85,20 @@ function getSymbolsFromName(name, symbols, callback) {
         results.push(symbol);
     }
     return results;
+}
+
+
+/**
+ * @description get json represent symbol from a path
+ * @param {string} path 
+ * @returns {object}
+ */
+function getSymbolJSONFromFile(path) {
+    const langID = HDLFile.getLanguageId(path);
+    const parser = selectParserByLangID(langID);
+    const code = fs.readFileSync(path, 'utf-8');
+    const json = parser.parse(code);
+    return json;
 }
 
 
@@ -215,6 +230,7 @@ module.exports = {
     makeModuleID,
     getAllFilesFromFolder,
     selectParserByLangID,
+    getSymbolJSONFromFile,
     vhdlParser,
     vlogParser,
     parser

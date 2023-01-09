@@ -69,7 +69,8 @@ function makeMarkdownFromModule(module) {
     const portNum = module.ports.length;
     const paramNum = module.params.length;
     let topModuleDesc = '';
-    if (HDLParam.TopModules.has(module)) {
+
+    if (HDLParam.isTopModule(module.path, module.name)) {
         topModuleDesc = '√';
     } else {
         topModuleDesc = '×';
@@ -158,7 +159,7 @@ async function getDocsFromModule(module) {
     const portPP = patchComment(module.path, module.ports);
 
     let topModuleDesc = '';
-    if (HDLParam.TopModules.has(module)) {
+    if (HDLParam.isTopModule(module.path, module.name)) {
         topModuleDesc = '√';
     } else {
         topModuleDesc = '×';

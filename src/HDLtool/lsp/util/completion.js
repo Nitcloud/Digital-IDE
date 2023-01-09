@@ -92,11 +92,12 @@ function provideMacros(singleWord, defines) {
  * @returns {Promise<Array<vscode.CompletionItem>>} 
  */
 function providePositionPorts(position, currentInst) {
-    console.log(position);
     const params = currentInst.instparams;
     const ports = currentInst.instports;
+    console.log(position);
     console.log(params);
     console.log(ports);
+
     if (params &&
         positionAfterEqual(position, params.start) &&
         positionAfterEqual(params.end, position)) {
@@ -117,6 +118,8 @@ function providePositionPorts(position, currentInst) {
             return clItem;
         })
     }
+
+    return [];
 }
 
 
@@ -130,28 +133,16 @@ async function provideModules(filePath, includes) {
     // support include of all the module
     // use command property to auto add include path
     const suggestModules = [];
-    for (const module of HDLParam.findModuleByPath(filePath)) {
-        const clItem = new vscode.CompletionItem(module.name, vscode.CompletionItemKind.Class);
-        clItem.detail = 'module';
-        suggestModules.push(clItem);
-    }
 
     if (!includes) {
         return suggestModules;
     }
 
-    for (const includePath of Object.keys(includes)) {
-        const includeAbsPath = HDLPath.rel2abs(filePath, includePath);
-        const moduleFile = HDLParam.findModuleFile(includeAbsPath);
-        if (moduleFile) {
-            for (const [name, module] of moduleFile.nameToModule) {
-                const clItem = new vscode.CompletionItem(name, vscode.CompletionItemKind.Class);
-                clItem.detail = 'module';
-                suggestModules.push(clItem);
-            }
-        }
+    for (const module of HDLParam.getAllModules()) {
+        const clItem = new vscode.CompletionItem(module.name, vscode.CompletionItemKind.Class);
+        clItem.detail = 'module';
+        suggestModules.push(clItem);
     }
-
 
     return suggestModules;
 }

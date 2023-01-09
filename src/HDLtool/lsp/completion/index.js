@@ -1,4 +1,5 @@
 const vscode = require('vscode');
+const HDLFile = require('../../../HDLfilesys/operation/files');
 const HDLPath = require('../../../HDLfilesys/operation/path');
 
 const { vlogParser, HDLParam } = require('../../../HDLparser');
@@ -77,13 +78,10 @@ class VlogPositionPortProvider {
             const currentModule = HDLParam.findModule(filePath, scopeSymbols.module.name);
             const currentInst = filterInstanceByPosition(position, scopeSymbols.symbols, currentModule);
             // find instance and instMod is not null (solve the dependence already)
-            console.log(symbolResult);
-            console.log(currentInst);
+
 
             if (currentInst && currentInst.module && currentInst.instModPath) {
-                console.log('enter');
                 const portsparams = providePositionPorts(position, currentInst);
-                console.log(portsparams);
                 suggestPositionPorts.push(...portsparams);
             }
             

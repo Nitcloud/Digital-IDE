@@ -1,10 +1,8 @@
-"use strict";
-/**
- * 实现方式：静态类
- * 输入格式：斜杠路径
- */
 const fs = require("fs");
 const pathfs = require("./path");
+
+const opeParam = require('../../param');
+const { HDLLanguageID, ModuleFileType } = require('../../HDLparser/base/common');
 
 // const 
 const HDLFile = {
@@ -17,7 +15,7 @@ const HDLFile = {
      * @param {string} path 
      * @returns {boolean} (true: illegal | false: legal)
      */
-    isillegal : function (path) {
+    isillegal(path) {
         if (!fs.existsSync(path)) {
             return true;
         }
@@ -35,7 +33,7 @@ const HDLFile = {
      * @param {String} path 文件地址
      * @returns {Boolean} (true : 存在 | false : 不存在)
      */
-    isExist : function (path) {
+    isExist(path) {
         if (fs.existsSync(path)) {
             return true;
         }
@@ -66,7 +64,7 @@ const HDLFile = {
      * @param {String} path 文件的绝对地址 ('/'分隔)
      * @returns {String | Boolean} (文件内容 | false 读取失败)
      */
-    readFile : function (path) {
+    readFile(path) {
         if (this.isillegal(path)) {
             return false;
         }
@@ -85,7 +83,7 @@ const HDLFile = {
      * @param {String} path 文件的绝对地址 ('/'分隔)
      * @returns {String | Boolean} (文件内容 | false 读取失败)
      */
-    writeFile : function (path, content) {
+    writeFile(path, content) {
         try {
             let parent = pathfs.dirname(path);
             fs.mkdirSync(parent, {recursive:true});
@@ -103,7 +101,7 @@ const HDLFile = {
      * @param {String} path 文件的绝对地址 ('/'分隔)
      * @returns {Boolean} (true:成功 | false:失败)
      */
-    removeFile : function (path) {
+    removeFile(path) {
         // 如果不存在或者为dir则直接退出
         if (this.isillegal(path)) {
             return false;
@@ -125,7 +123,7 @@ const HDLFile = {
      * @param {Boolean} cover true:覆盖 | false:不覆盖
      * @returns {Boolean} (true:成功 | false:失败)
      */
-    moveFile : function (src, dest, cover) {
+    moveFile(src, dest, cover) {
         if (src == dest) {
             return false;
         }
@@ -156,7 +154,7 @@ const HDLFile = {
      * @param {Boolean} cover true:覆盖 | false:不覆盖
      * @returns {Boolean} (true:成功 | false:失败)
      */
-    copyFile : function (src, dest, cover) {
+    copyFile(src, dest, cover) {
         if (src == dest) {
             return false;
         }
@@ -336,20 +334,6 @@ const HDLFile = {
 
     /**
      * @state finish-test
-     * @descriptionCn 
-     * @param {String} path 文件夹的绝对地址 ('/'分隔) 同时支持文件夹和单文件
-     */
-    getlines : function (path) {
-        if (this.isillegal(path)) {
-            return [];
-        }
-
-        const content = this.readFile(path);
-        return content ? content.split('\n') : [];
-    },
-
-    /**
-     * @state finish-test
      * @descriptionCn 获取文件夹下的所有HDL文件，已经进行了文件存在性的检查，并且同时支持文件和文件夹
      * @param {String | Array<String>} paths 所指定的文件夹路径
      * @param {Array} HDLFiles 最后输出的HDL文件列表
@@ -399,24 +383,44 @@ const HDLFile = {
     /**
      * @state finish-test
      * @descriptionCn  获取当前文件的语言类型
-     * @param {String} path 文件的绝对路径
-     * @returns {String} 文件的语言类型 (verilog | systemverilog | vhdl)
+     * @param {string} path 文件的绝对路径
+     * @returns {HDLLanguageID} 文件的语言类型 (verilog | systemverilog | vhdl)
      */
-    getLanguageId : function(path) {
+    getLanguageId(path) {
         let vhdlExtensions = [".vhd",".vhdl",".vho",".vht"];
         let vlogExtensions = [".v",".V",".vh",".vl"];
         let svlogExtensions = [".sv",".SV"];
         let value = pathfs.extname(path);
         if (vlogExtensions.includes(value)) {
-            return "verilog";
+            return HDLLanguageID.VERILOG;
         }
         else if (svlogExtensions.includes(value)) {
-            return "systemverilog";
+            return HDLLanguageID.SYSTEM_VERILOG;
         }
         else if (vhdlExtensions.includes(value)) {
-            return "vhdl";
+            return HDLLanguageID.VHDL;
         }
         return null;
+    },
+
+    /**
+     * @param {string} path
+     * @returns {ModuleFileType}
+     */
+    getModuleFileType(path) {
+        path = pathfs.toSlash(path);
+        const srcPath = opeParam.prjInfo.ARCH.Hardware.src;
+        const simPath = opeParam.prjInfo.ARCH.Hardware.sim;
+        const workspace = opeParam.workspacePath;
+        if (path.includes(srcPath)) {
+            return ModuleFileType.SRC;
+        } else if (path.includes(simPath)) {
+            return ModuleFileType.SIM;
+        } else if (path.includes(workspace)) {
+            return ModuleFileType.LOCAL_LIB;
+        } else {
+            return ModuleFileType.REMOTE_LIB;
+        }
     },
 
     /**
@@ -651,4 +655,5 @@ const HDLFile = {
         return res;
     }
 }
+
 module.exports = HDLFile;

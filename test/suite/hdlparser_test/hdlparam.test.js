@@ -33,6 +33,21 @@ const TOP_MODULES = [
         name : 'test_1'
     }
 ];
+
+const DELETE_DEP_TEST = {
+    path : HDLPath.join(TEST_VLOG_FOLDER, 'parent.v'),
+    name : 'Main',
+    includeModules: [
+        {
+            path : HDLPath.join(TEST_VLOG_FOLDER, 'child_1.v'),
+            name : 'dependence_1'
+        },
+        {
+            path : HDLPath.join(TEST_VLOG_FOLDER, 'child_2.v'),
+            name : 'dependence_2'
+        }
+    ]
+}
 const MODULE_NUM = 5;
 
 const HDLParam = base.HDLParam;
@@ -91,22 +106,25 @@ suite('HDLparser HDLParam Test Suite', () => {
         assert.equal(targetModule.path, TEST_MODULE.path);
     });
 
-    test('test HDLParam.deleteModule', () => {
-        HDLParam.deleteModule(TEST_MODULE.path, TEST_MODULE.name);
-        assert(!HDLParam.hasModule(TEST_MODULE.path, TEST_MODULE.name));
-        
-        let target = HDLParam.getAllModules().filter(module => module.name == TEST_MODULE.name && module.path == TEST_MODULE.path);
-        assert.equal(target.length, 0);
-    });
-
     test('test HDLParam.getAllDependences', () => {
         const dependencies = HDLParam.getAllDependences(TEST_TOP_MODULE.path, TEST_TOP_MODULE.name);
-        
         assert.equal(dependencies.current.length, 0);
         assert.equal(dependencies.include.length, 1);
         assert.equal(dependencies.others.length, 1);
         assert.equal(dependencies.include[0], HDLPath.join(TEST_VLOG_FOLDER, 'child_1.v'));
         assert.equal(dependencies.others[0], HDLPath.join(TEST_VLOG_FOLDER, 'child_2.v'));
+    });
+
+    test('test HDLParam.deleteModule', () => {
+        HDLParam.deleteModule(DELETE_DEP_TEST.path, DELETE_DEP_TEST.name);
+        // test not in module
+        assert(!HDLParam.hasModule(DELETE_DEP_TEST.path, DELETE_DEP_TEST.name));
+        assert(!HDLParam.isTopModule(DELETE_DEP_TEST.path, DELETE_DEP_TEST.name));
+
+        // test used module become top module
+        for (const includeMod of DELETE_DEP_TEST.includeModules) {
+            assert(HDLParam.isTopModule(includeMod.path, includeMod.name));
+        }
     });
 
 });
