@@ -1,6 +1,7 @@
 const pathfs = require('./path');
 const files = require('./files');
 const os = require('os');
+const exec  = require("child_process").execSync;
 
 class vrfs {
     constructor(module) {

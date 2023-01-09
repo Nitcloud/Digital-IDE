@@ -3,6 +3,7 @@
 const vscode  = require("vscode");
 const kernel  = require("../../../HDLkernel");
 const fs = require("../../../HDLfilesys");
+const fspath = require("path");
 const opeParam = require("../../../param");
 const HDLParam = require("../../../HDLparser").HDLParam;
 
@@ -13,17 +14,26 @@ class showNetlist {
         this.outputCH = vscode.window.createOutputChannel("kernel");
     }
 
-    open(uri) {
-        const docPath = fs.paths.toSlash(uri.fsPath);
-        if (uri.name) {
-            
-        } else {
-            
-        }
-    }
-
-    async get(files) {
+    async open(uri) {
         // 获取工程依赖
+        let files = [];
+        const path = fs.paths.toSlash(uri.fsPath)
+        if (uri.name) {
+            files = HDLParam.getAllDependences(
+                path,
+                uri.name
+            ).others;
+        } else {
+            const modules = HDLParam.findModuleByPath(path);
+            for (const module of modules) {
+                files = files.concat(HDLParam.getAllDependences(
+                    module.path,
+                    module.name
+                ).others)
+            }
+        }
+
+        files.push(path);
 
         // 向内核中导入工程
         this.synth = new kernel();

@@ -189,10 +189,10 @@ const HDLFile = {
      * @state finish-test
      * @descriptionCn 从指定文件夹下过滤出指定的要求的文件，已做合法性检查
      * @param {String}   path 文件夹的绝对地址 ('/'分隔) 同时支持文件夹和单文件
-     * @param {Object}   options {
+     * @param {{
      *     type : "once", // once:只一级文件搜索 | all:所有文件搜索
      *     ignores : []   // 要忽视的文件所在的文件夹(绝对路径)
-     * };
+     * }}   options ;
      * @param {Function} callback 过滤函数传参为(file)单个文件路径，一定要存在的
      * @returns {Array} 返回满足要求的文件数组(绝对路径)
      */
@@ -262,12 +262,12 @@ const HDLFile = {
      * @state finish-test
      * @descriptionCn 从指定文件夹下找到指定后缀名的文件，已做合法性检查
      * @param {String | Array<String>} paths 文件夹的绝对地址 ('/'分隔)，允许数组输入
-     * @param {Object} options {
+     * @param {{
      *     exts : [] | "" // 可以是数组(多个后缀)，也可以是字符串(单个后缀)
      *     type : "once", // once:只一级文件搜索 | all:所有文件搜索
      *     list : [],     // 支持继续添加
      *     ignores : []   // 要忽视的文件所在的文件夹(绝对路径)
-     * };
+     * }} options ;
      * @param {Function} callback 对检测出的文件进行回调操作，可省缺
      * @returns {Array<string>} 返回文件数组(绝对路径)且去除重复的元素
      */

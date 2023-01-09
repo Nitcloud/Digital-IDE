@@ -5,6 +5,7 @@ const manager = require('./manager');
 const tree = require("./tree/tree");
 
 const instance = require("./sim/instance");
+const simulate = require("./sim/simulate");
 const testbench = require("./sim/testbench");
 
 const html = require('./doc/html');
@@ -41,11 +42,10 @@ function registerLspServer(context) {
 }
 
 function registerSimServer(context) {
-    // var simulate = new simulation.icarus(process);
-
-    // context.subscriptions.push(vscode.commands.registerCommand('TOOL.simulate', (uri) => {
-    //     simulate.simulate(uri);
-    // }));
+    context.subscriptions.push(vscode.commands.registerCommand('TOOL.simulate', (uri) => {
+        const icarus = new simulate.icarus();
+        icarus.simulate(uri);
+    }));
 
     context.subscriptions.push(vscode.commands.registerCommand('TOOL.instance', () => {
         instance.instantiation();

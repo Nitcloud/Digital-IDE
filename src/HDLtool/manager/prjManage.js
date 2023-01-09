@@ -209,7 +209,9 @@ class PrjManage {
 
         // 拉取工程的配置参数
         opeParam.prjInfo = fs.files.pullJsonInfo(opeParam.propertyPath);
-        if (!fs.files.isHasAttr(opeParam.prjInfo, "ARCH")) {
+        if (fs.files.isHasAttr(opeParam.prjInfo, "ARCH")) {
+            
+        } else {
             let hardwarePath = `${opeParam.workspacePath}/user`;
             if (fs.files.isHasAttr(opeParam.prjInfo, "SOC.core") && 
                 opeParam.prjInfo.SOC.core != 'none') {
@@ -230,6 +232,10 @@ class PrjManage {
         }
 
         return;
+    }
+
+    processPath(path) {
+        
     }
 
     /**
