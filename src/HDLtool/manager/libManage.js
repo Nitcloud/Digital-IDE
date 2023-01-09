@@ -10,9 +10,9 @@ const vscode = require("vscode");
  */
 class libManage {
     constructor() {
-        this.err  = vscode.showErrorMessage;
-        this.warn = vscode.showWarningMessage;
-        this.info = vscode.showInformationMessage;
+        this.err  = vscode.window.showErrorMessage;
+        this.warn = vscode.window.showWarningMessage;
+        this.info = vscode.window.showInformationMessage;
 
         this.set  = vscode.workspace.getConfiguration;
 
@@ -61,7 +61,7 @@ class libManage {
      *     'del' : [], // 需要处理的删除文件的数组
      * }
      */
-    async processLibFiles(library) {
+    processLibFiles(library) {
         this.getConfig();
         // 在不设置state属性的时候默认为remote
         this.next.list = this.getLibFiles(library.Hardware);
@@ -69,7 +69,6 @@ class libManage {
             this.next.type = 'remote';
         } else {
             if (library.state !== 'remote' && library.state !== 'local') {
-                this.err("HardwareLib.state was wrong!!")
                 return {
                     'add' : [],
                     'del' : [],
@@ -106,16 +105,19 @@ class libManage {
             break;   
             case 'local-remote':
                 // 本地的lib全部删除，交给monitor进行处理
-                if (fs.files.isExist(this.localLibPath)) {
-                    if (this.set().get("PRJ.file.structure.notice")) {
-                        let select = await this.warn("local lib will be removed.", 'Yes', 'Cancel');
-                        if (select == "Yes") {
+                const fn = async () => {
+                    if (fs.files.isExist(this.localLibPath)) {
+                        if (this.set().get("PRJ.file.structure.notice")) {
+                            let select = await this.warn("local lib will be removed.", 'Yes', 'Cancel');
+                            if (select == "Yes") {
+                                fs.dirs.rmdir(this.localLibPath);
+                            }
+                        } else {
                             fs.dirs.rmdir(this.localLibPath);
                         }
-                    } else {
-                        fs.dirs.rmdir(this.localLibPath);
                     }
-                }
+                };
+                fn();
 
                 // 增加的内容全是remote的，将next的交出去即可
                 add = this.next.list;

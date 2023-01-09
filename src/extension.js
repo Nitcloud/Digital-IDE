@@ -22,7 +22,7 @@ async function launch(context) {
     return vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
         title: 'Initialize the project'
-    }, async () => {
+    }, async progress => {
         // initialize HDLParam
         HDLParam.Initialize(HDLfiles);
 
@@ -35,6 +35,9 @@ async function launch(context) {
         
         // launch monitor
         monitor.start();
+
+        console.log('#module ', HDLParam.Modules.size);
+        console.log(opeParam.prjInfo);
     });
 }
 
@@ -43,12 +46,7 @@ async function launch(context) {
  */
 async function activate(context) {
     const start = Date.now();
-    
     await launch(context);
-    
-    console.log('#module ', HDLParam.Modules.size);
-    console.log(opeParam.prjInfo);
-
     console.log('cost time : ' + (Date.now() - start) / 1000 + 's');
 }
 

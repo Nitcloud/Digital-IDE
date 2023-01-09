@@ -19,22 +19,22 @@ const Event = {
 
 /**
  * @description implement detailed op when monitored HDL event happens
- * @param {chokidar.FSWatcher} monitor 
+ * @param {chokidar.FSWatcher} m 
  */
-function monitorHDL(monitor) {
-    monitor.on(Event.Change, HDLEventActions.change);
-    monitor.on(Event.Add, HDLEventActions.add);
-    monitor.on(Event.Unlink, HDLEventActions.unlink);
+function monitorHDL(m) {
+    m.on(Event.Change, path => HDLEventActions.change(path, monitor));
+    m.on(Event.Add, path => HDLEventActions.add(path, monitor));
+    m.on(Event.Unlink, path => HDLEventActions.unlink(path, monitor));
 }
 
 /**
  * @description implement detailed op when property.json changes
- * @param {chokidar.FSWatcher} monitor 
+ * @param {chokidar.FSWatcher} m 
  */
-function monitorPPY(monitor) {
-    monitor.on(Event.Change, PPYEventActions.change);
-    monitor.on(Event.Add, PPYEventActions.add);
-    monitor.on(Event.Unlink, PPYEventActions.unlink);
+function monitorPPY(m) {
+    m.on(Event.Change, path => PPYEventActions.change(path, monitor));
+    m.on(Event.Add, path => PPYEventActions.add(path, monitor));
+    m.on(Event.Unlink, path => PPYEventActions.unlink(path, monitor));
 }
 
 class HDLMonitor{
@@ -79,17 +79,20 @@ class HDLMonitor{
         const vhdlExts = ['vhd', 'vhdl', 'vho', 'vht'];
         const HDLExts = svlogExts.concat(vhdlExts);
         const HDLGlobExts = `**/*.{${HDLExts.join(',')}}`;
+
+        const srcPath = opeParam.prjInfo.ARCH.Hardware.src;
+        const simPath = opeParam.prjInfo.ARCH.Hardware.sim;
         
-        const srcWatcherPath = HDLPath.join(this.srcPath, HDLGlobExts);
-        const simWatcherPath = HDLPath.join(this.simPath, HDLGlobExts);
+        const srcWatcherPath = HDLPath.join(srcPath, HDLGlobExts);
+        const simWatcherPath = HDLPath.join(simPath, HDLGlobExts);
         
         let watcherPaths = null;
         if (srcWatcherPath == simWatcherPath) {
             watcherPaths = srcWatcherPath;
         } else {
             watcherPaths = [
-                HDLPath.join(this.srcPath, HDLGlobExts),
-                HDLPath.join(this.simPath, HDLGlobExts)
+                HDLPath.join(srcPath, HDLGlobExts),
+                HDLPath.join(simPath, HDLGlobExts)
             ];
         }
         
@@ -102,7 +105,8 @@ class HDLMonitor{
      * @returns {chokidar.FSWatcher}
      */
     getLOGMonitor() {
-        const watcherPath = this.prjPath + '/**/*.log';
+        const prjPath = opeParam.prjInfo.ARCH.PRJ_Path;
+        const watcherPath = prjPath + '/**/*.log';
         return this.getMonitor(watcherPath);
     }
 
@@ -113,10 +117,6 @@ class HDLMonitor{
     }
 
     start() {
-        this.srcPath = opeParam.prjInfo.ARCH.Hardware.src;
-        this.simPath = opeParam.prjInfo.ARCH.Hardware.sim;
-        this.prjPath = opeParam.prjInfo.ARCH.PRJ_Path;
-
         // make monitor
         this.HDLMonitor = this.getHDLMonitor();
         this.LOGMonitor = this.getLOGMonitor();
@@ -124,7 +124,14 @@ class HDLMonitor{
 
         monitorHDL(this.HDLMonitor);
         monitorPPY(this.PPYMonitor);
-        
+    }
+
+    remakeHDLMonitor() {
+        if (this.HDLMonitor) {
+            this.HDLMonitor.close();
+            this.HDLMonitor = this.getHDLMonitor();
+            monitorHDL(this.HDLMonitor);
+        }
     }
 };
 

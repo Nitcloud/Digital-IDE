@@ -43,7 +43,16 @@ function getDefaultProperty() {
         },
         enableShowlog: false,
         Device: "none",
-        ARCH: getDefaultARCH()
+        ARCH: getDefaultARCH(),
+        library: {
+            state: "",         
+            Hardware: {
+                common: [],
+                custom: []
+            }
+        },
+    
+        IP_REPO: [],
     };
 }
 
@@ -187,9 +196,6 @@ class PrjManage {
         // 获取初始配置文件的路径
         opeParam.prjInitParam = `${opeParam.rootPath}/prjInitParam.json`;
         
-        // 初始化工程参数与信息
-        this.getPropertyInfo(opeParam);
-
         return true;
     }
 
@@ -209,8 +215,34 @@ class PrjManage {
 
         // 拉取工程的配置参数
         opeParam.prjInfo = fs.files.pullJsonInfo(opeParam.propertyPath);
-        if (fs.files.isHasAttr(opeParam.prjInfo, "ARCH")) {
-            
+        
+        if (opeParam.prjInfo.ARCH) {
+            const hardware = opeParam.prjInfo.ARCH.Hardware;
+            if (hardware) {
+                const configFolder = HDLPath.join(opeParam.workspacePath, '.vscode');
+                if (typeof hardware.src == 'string') {
+                    const absSrcPath = HDLPath.rel2abs(configFolder, hardware.src);
+                    if (fs.files.isExist(absSrcPath)) {
+                        hardware.src = absSrcPath;
+                    } else {
+                        hardware.src = opeParam.workspacePath;
+                    }
+                } else {
+                    hardware.src = opeParam.workspacePath;
+                }
+
+                if (typeof hardware.sim == 'string') {
+                    const absSimPath = HDLPath.rel2abs(configFolder, hardware.sim);
+                    if (fs.files.isExist(absSimPath)) {
+                        hardware.sim = absSimPath;
+                    } else {
+                        hardware.sim = opeParam.workspacePath;
+                    }
+                } else {
+                    hardware.sim = opeParam.workspacePath;
+                }
+
+            }
         } else {
             let hardwarePath = `${opeParam.workspacePath}/user`;
             if (fs.files.isHasAttr(opeParam.prjInfo, "SOC.core") && 
@@ -229,6 +261,12 @@ class PrjManage {
                     data : `${opeParam.workspacePath}/user/Software/src`
                 }
             }
+        }
+
+        if (opeParam.prjInfo.library) {
+
+        } else {
+            opeParam.prjInfo.library = getDefaultProperty().library;
         }
 
         return;
@@ -333,17 +371,16 @@ class PrjManage {
      * @returns {Array<string>} 
      */
     getPrjFiles() {
-        // 获取ignore .dideignore
+        // TODO: 获取ignore .dideignore
         let ignores = [];
-        // TODO
 
         // 先处理好library，再启动monitor
         let files = [];
         if (opeParam.prjInfo.library) {
-            const res = opeParam.liboperation.processLibFiles(opeParam.prjInfo.library);
+            const res = opeParam.LibManager.processLibFiles(opeParam.prjInfo.library);
             files = res.add;
         }
-        
+
         // 获取本地的源文件
         fs.files.getHDLFiles([
             opeParam.prjInfo.ARCH.Hardware.src,

@@ -1,0 +1,25 @@
+{
+	"TOOL_CHAIN": "xilinx",
+	"PRJ_NAME": {
+		"PL": "template"
+	},
+	"SOC": {
+		"core": "none"
+	},
+	"enableShowlog": false,
+	"Device": "none",
+	"ARCH": {
+		"Hardware": {
+			"src": "./common/Soc",
+			"sim": "./common/Malloc"
+		}
+	},
+	"library": {
+		"Hardware": {
+			"common": [
+				"./common/Apply",
+				"./common/Soc"
+			]
+		}
+	}
+}

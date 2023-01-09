@@ -8,7 +8,11 @@ const { HDLParam,
 
 const { refreshArchTree } = require('../HDLtool/tree/tree');
 
-async function add(path) {
+
+async function add(path, monitor) {
+    if (path.endsWith('.sv')) {
+        return;
+    }
     path = HDLPath.toSlash(path);
     const HDLfiles = [path];
     
@@ -75,7 +79,10 @@ function updateInstance(originalInstance, newInstance) {
 }
 
 
-async function change(path) {
+async function change(path, monitor) {
+    if (path.endsWith('.sv')) {
+        return;
+    }
     path = HDLPath.toSlash(path);
     const json = getSymbolJSONFromFile(path);
     const moduleFile = HDLParam.findModuleFile(path);
@@ -113,7 +120,10 @@ async function change(path) {
     refreshArchTree();
 }
 
-async function unlink(path) {
+async function unlink(path, monitor) {
+    if (path.endsWith('.sv')) {
+        return;
+    }
     path = HDLPath.toSlash(path);
     HDLParam.deleteModuleFile(path);
 

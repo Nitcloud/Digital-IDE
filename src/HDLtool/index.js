@@ -99,9 +99,10 @@ function registerManageServer(context) {
     manager.prj.register();
     const prjManager = new manager.prj.PrjManage();
     const libManager = new manager.lib();
-    opeParam.liboperation = libManager;
+    opeParam.LibManager = libManager;
+    opeParam.PrjManager = prjManager;
 
-    // 初始化
+    // initialize
     prjManager.getOpeParam();
     prjManager.getPropertyInfo();
     // prjManager.refreshPrjFolder();

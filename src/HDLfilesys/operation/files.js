@@ -196,7 +196,7 @@ const HDLFile = {
      * @param {Function} callback 过滤函数传参为(file)单个文件路径，一定要存在的
      * @returns {Array} 返回满足要求的文件数组(绝对路径)
      */
-    filter : function (path, options, callback) {
+    filter(path, options, callback) {
         // 检查 file path 是否存在
         if (!fs.existsSync(path)) {
             return [];
@@ -254,6 +254,7 @@ const HDLFile = {
                 output.push(...(this.filter(`${path}/${file}`, options, callback)));
             }
         }
+
         
         return output;
     },
@@ -329,6 +330,8 @@ const HDLFile = {
                     }
                 });
             }
+
+            return [];
         }
     },
 
