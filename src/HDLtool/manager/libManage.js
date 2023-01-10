@@ -57,10 +57,10 @@ class libManage {
     /**
      * @descriptionCn 处理library文件信息
      * @param {Object} library prjInfo中的HardwareLib属性
-     * @returns {Object} {
+     * @returns {{
      *     'add' : [], // 需要处理的增加文件的数组
      *     'del' : [], // 需要处理的删除文件的数组
-     * }
+     * }} 
      */
     processLibFiles(library) {
         this.getConfig();
@@ -99,8 +99,8 @@ class libManage {
         let del = [];
         switch (state) {
             case 'remote-remote':
-                add = fs.files.diffElement(this.curr.list, this.next.list);
-                del = fs.files.diffElement(this.next.list, this.curr.list);
+                add = fs.files.diffElement(this.next.list, this.curr.list);
+                del = fs.files.diffElement(this.curr.list, this.next.list);
             break;
             case 'remote-local':
                 // 删除的内容全是remote的，将curr的交出去即可
@@ -132,8 +132,8 @@ class libManage {
             break;
             case 'local-local':
                 // 只管理library里面的内容，如果自己再localPath里加减代码，则不去管理
-                add = fs.files.diffElement(this.curr.list, this.next.list);
-                del = fs.files.diffElement(this.next.list, this.curr.list);
+                add = fs.files.diffElement(this.next.list, this.curr.list);
+                del = fs.files.diffElement(this.curr.list, this.next.list);
 
                 this.remote_to_local(add, (src, dist) => {
                     fs.files.copyFile(src, dist);
@@ -172,7 +172,7 @@ class libManage {
                         const commonPath = `${this.SourceLibPath}/common/${element}`
                         fs.files.getHDLFiles(commonPath, libFileList);
                     break;
-                    case "customer":
+                    case "custom":
                         if (fs.dirs.isillegal(this.customerPath)) {
                             this.err(`The PRJ.customer.Lib.repo.path ${this.customerPath} do not exist or not dir.`);
                         } else {
@@ -227,11 +227,12 @@ class libPick {
 
     provide(item) {
         if (item == '..') {
-            if ((this.curPath == this.config.common) || (this.curPath == this.config.custom)) {
+            if ((this.curPath == this.config.common) || 
+                (this.curPath == this.config.custom)) {
                 return this.start;
             } else {
                 this.curPath = fs.paths.dirname(this.curPath);
-                return this.provide(this.curPath);
+                return this.provide('back');
             }
         }
         
@@ -241,7 +242,7 @@ class libPick {
             this.curPath = this.config.common;
         } else if (item == "custom") {
             this.curPath = this.config.custom;
-        } else {
+        } else if (item != "back") {
             this.curPath = `${this.curPath}/${item}`;
         }
 
@@ -263,6 +264,12 @@ class libPick {
 
     pickItems() {
         this.pick = vscode.window.createQuickPick();
+        const button = vscode.QuickInputButtons
+        this.pick.buttons.push({
+            iconPath : `${opeParam.rootPath}/images/svg/dark/boot.svg`,
+            tooltip : 'OK'
+        });
+
         this.pick.items = this.provide('/');
 
         this.pick.onDidChangeSelection(items => {
@@ -274,10 +281,15 @@ class libPick {
 
         this.pick.onDidAccept(() => {
             if (this.select) {
-                this.pick.items = this.provide(this.select.label);
+                if (fs.files.isillegal(`${this.curPath}/${this.select.label}`)) {
+                    this.pick.items = this.provide(this.select.label);
+                }
             }
         });
 
+        this.pick.onDidTriggerButton(() => {
+            console.log();
+        })
 
         this.pick.show();
     }

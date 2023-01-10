@@ -274,6 +274,12 @@ class PrjManage {
     }
 
     processPath(path) {
+        const plname =  fs.files.isHasAttr(opeParam.prjInfo, "PRJ_NAME.PL") ?
+                        opeParam.prjInfo.PRJ_NAME.PL : 'temple';
+        const psname =  fs.files.isHasAttr(opeParam.prjInfo, "PRJ_NAME.PS") ?
+                        opeParam.prjInfo.PRJ_NAME.PS : 'temple';                
+        path = path.replace('${plname}', opeParam.prjInfo.PRJ_NAME.PL)
+                   .replace('${psname}', opeParam.prjInfo.PRJ_NAME.PS);
         
     }
 
