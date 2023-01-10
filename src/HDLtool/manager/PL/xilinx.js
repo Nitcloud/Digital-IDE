@@ -5,7 +5,8 @@ const vscode = require("vscode");
 const child  = require("child_process");
 
 const opeParam = require("../../../param");
-const HDLparam = require("../../../HDLparser").HDLParam;
+const { HDLParam } = require("../../../HDLparser");
+const HDLPath = require("../../../HDLfilesys/operation/path");
 /**
  * @descriptionCn xilinx在PL端下的操作
  * @state unfinish-untest
@@ -46,7 +47,7 @@ class xilinxOperation {
         this.rootPath  = opeParam.rootPath;
         this.prjConfig = opeParam.prjInfo;
 
-        this.customer = {
+        this.custom = {
             "ip_repo" : this.setting.get('PRJ.xilinx.IP.repo.path'),
             "bd_repo" : this.setting.get('PRJ.xilinx.BD.repo.path'),
         }
@@ -167,8 +168,8 @@ class xilinxOperation {
         // 导入 IP_repo_paths
         scripts.push(`set xip_repo_paths {}`);
 
-        if (fs.files.isExist(this.customer.ip_repo)) {
-            scripts.push(`lappend xip_repo_paths ${this.customer.ip_repo}`);
+        if (fs.files.isExist(this.custom.ip_repo)) {
+            scripts.push(`lappend xip_repo_paths ${this.custom.ip_repo}`);
         }
 
         if (this.xip_repo) {
@@ -185,11 +186,11 @@ class xilinxOperation {
             const bd = this.prjConfig.SOC.bd;
             let bdSrcPath = `${this.xbd_path}/${bd}.bd`;
             if (fs.files.isillegal(bdSrcPath)) {
-                bdSrcPath = `${this.customer.bd_repo}/${bd}.bd`;
+                bdSrcPath = `${this.custom.bd_repo}/${bd}.bd`;
             }
     
             if (fs.files.isillegal(bdSrcPath)) {
-                this.err(`can not find ${bd}.bd in ${this.xbd_path} and ${this.customer.bd_repo}`);
+                this.err(`can not find ${bd}.bd in ${this.xbd_path} and ${this.custom.bd_repo}`);
             } else {
                 if (fs.files.copyFile(
                     bdSrcPath, 
@@ -209,7 +210,7 @@ class xilinxOperation {
                 ignores : []
             }, (bd_file) => {
                 scripts.push(`add_files ${bd_file} -quiet`);
-                scripts.push(`add_files ${path.dirname(bd_file)}/hdl -quiet`);
+                scripts.push(`add_files ${HDLPath.dirname(bd_file)}/hdl -quiet`);
             });
     
             if (bd) {
@@ -242,7 +243,7 @@ class xilinxOperation {
         });
 
         // 导入非本地的设计源文件
-        const HDLFiles = HDLparam.getAllModuleFiles();
+        const HDLFiles = HDLParam.getAllModuleFiles();
         for (const file of HDLFiles) {
             scripts.push(`add_files ${file.path} -quiet`);
         }
@@ -571,7 +572,7 @@ class xilinxOperation {
 
     xExecShowLog(logPath) {
         let logPathList = ["runme", "xvlog", "elaborate"];
-        let fileName = path.basename(logPath, ".log");
+        let fileName = HDLPath.basename(logPath, ".log");
 
         if (!logPathList.includes(fileName)) {
             return null;
@@ -734,7 +735,7 @@ const tools = {
         // 声明变量
         let opeParam = this.process.opeParam;
         let BootInfo = {
-            "outsidePath" : `${path.dirname(opeParam.prjStructure.prjPath)}/boot`,
+            "outsidePath" : `${HDLPath.dirname(opeParam.prjStructure.prjPath)}/boot`,
             "insidePath"  : `${opeParam.rootPath}/resources/boot/xilinx`,
             "outputPath"  : `${opeParam.rootPath}/resources/boot/xilinx/output.bif`,
             "elf_path"    : '',

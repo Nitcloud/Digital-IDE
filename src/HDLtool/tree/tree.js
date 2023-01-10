@@ -77,6 +77,9 @@ class ArchTreeProvider {
         this.srcRootElement = this.initItems[0];
         this.simRootElement = this.initItems[1];
 
+        this.itemChildMode = new Set(["vhdl", "systemverilog", "verilog", "remote", "cells"]);
+        this.otherMode = new Set(["src", "sim", "File Error", "cells"]);
+
         this.firstTop = {
             src: null,
             sim: null
@@ -136,17 +139,18 @@ class ArchTreeProvider {
 
     /**
      * 
-     * @param {ArchDataItem} element
+     * @param {ArchDataItem} item
      * @returns {ModuleFileType} 
      */
-    getfileType(element) {
-        if (!element) {
+    getfileType(item) {
+        if (!item) {
             return null;
         }
-        while (element.parent) {
-            element = element.parent;
+        let currentLevel = item;
+        while (currentLevel.parent) {
+            currentLevel = currentLevel.parent;
         }
-        return element.type;
+        return currentLevel.type;
     }
 
     /**
@@ -155,19 +159,8 @@ class ArchTreeProvider {
      * @returns {vscode.TreeItem}
      */
     getTreeItem(element) {
-        const type = this.getfileType(element);
-        if (this.firstTop[type]) {
-            const firstName = this.firstTop[type].name;
-            const firstPath = this.firstTop[type].path;
-            if (element.name == firstName && element.fsPath == firstPath) {
-                element.icon = this.makeFirstTopIconName(type);
-            }
-        }
-
-
         let itemName = element.name;
-        let itemChildMode = new Set(["vhdl", "systemverilog", "verilog", "remote", "cells"]);
-        if (itemChildMode.has(element.icon)) {
+        if (this.itemChildMode.has(element.icon)) {
             itemName = `${element.type}(${itemName})`;
         }
 
@@ -184,8 +177,7 @@ class ArchTreeProvider {
         const treeItem = new vscode.TreeItem(itemName, collapsibleState);
 
         // set contextValue file -> simulate / netlist
-        let otherMode = ["src", "sim", "File Error", "cells"];
-        if (otherMode.includes(element.icon)) {
+        if (this.otherMode.has(element.icon)) {
             treeItem.contextValue = 'other';
         } else {
             treeItem.contextValue = 'file';
@@ -247,6 +239,31 @@ class ArchTreeProvider {
             if (!this.firstTop[type]) {
                 this.firstTop[type] = {name: firstTop.name, path: firstTop.fsPath};
             }
+            const name = this.firstTop[type].name;
+            const path = this.firstTop[type].path;
+            const icon = this.makeFirstTopIconName(type);
+            const tops = topModuleItemList.filter(item => item.fsPath == path && item.name == name);
+            const adjustItemList = [];
+            if (tops.length > 0 || !HDLParam.hasModule(path, name)) {
+                // mean that the seleted top is an original top module
+                // push it to the top of the *topModuleItemList*
+                const headItem = tops[0] ? tops[0] : topModuleItemList[0];
+                
+                headItem.icon = icon;
+                adjustItemList.push(headItem);
+                for (const item of topModuleItemList) {
+                    if (item != headItem) {
+                        adjustItemList.push(item);
+                    }
+                }
+            } else {
+                // mean the selected top is not an original top module
+                // create it and add it to the head of *topModuleItemList*
+                const selectedTopItem = new ArchDataItem(icon, type, name, path, element);
+                adjustItemList.push(selectedTopItem);
+                adjustItemList.push(...topModuleItemList);
+            }
+            return adjustItemList;
         }
         return topModuleItemList;
     }

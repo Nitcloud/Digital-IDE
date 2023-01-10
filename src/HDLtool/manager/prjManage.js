@@ -1,7 +1,6 @@
 "use strict";
 
 const vscode = require("vscode");
-const fs = require("../../HDLfilesys");
 const plXilinx = require("./PL/xilinx");
 const psXilinx = require("./PS/xilinx");
 
@@ -9,6 +8,8 @@ const opeParam = require("../../param");
 const { ModuleFileType, HDLParam } = require('../../HDLparser');
 const { archTreeProvider, ArchDataItem } = require('../tree/tree');
 const HDLPath = require("../../HDLfilesys/operation/path");
+const HDLFile = require("../../HDLfilesys/operation/files");
+const HDLDir = require("../../HDLfilesys/operation/dirs");
 
 
 function getPropertyPath() {
@@ -122,13 +123,8 @@ function register() {
  */
 class PrjManage {
     constructor() {
-        
         this.setting = vscode.workspace.getConfiguration();
         
-        this.log  = vscode.window.showInformationMessage;
-        this.err  = vscode.window.showErrorMessage;
-        this.warn = vscode.window.showWarningMessage;
-
         vscode.commands.registerCommand('TOOL.generate.property', () => {
             this.generate();
         });
@@ -156,13 +152,14 @@ class PrjManage {
      * @returns true : success | false : failed
      */
     generate() {
-        if (fs.files.isExist(opeParam.propertyPath)) {
-            this.warn("property file already exists !!!");
+        if (HDLFile.isExist(opeParam.propertyPath)) {
+            vscode.window.showWarningMessage("property file already exists !!!");
             return false;
         }
+        
 
-        const temp = fs.files.pullJsonInfo(opeParam.prjInitParam);
-        fs.files.pushJsonInfo(opeParam.propertyPath, temp);
+        const temp = HDLFile.pullJsonInfo(opeParam.prjInitParam);
+        HDLFile.pushJsonInfo(opeParam.propertyPath, temp);
         return true;
     }
 
@@ -190,7 +187,7 @@ class PrjManage {
         opeParam.os = process.platform;
 
         // 获取当前根路径
-        let rootPath = fs.paths.resolve(__dirname, '..', '..', '..');
+        let rootPath = HDLPath.resolve(__dirname, '..', '..', '..');
         opeParam.rootPath = rootPath.replace(/\\/g, "\/");
 
         // 获取初始配置文件的路径
@@ -208,13 +205,13 @@ class PrjManage {
         // 初始化基本参数
         opeParam.propertyPath = getPropertyPath();
 
-        if (!fs.files.isExist(opeParam.propertyPath)) {
+        if (!HDLFile.isExist(opeParam.propertyPath)) {
             opeParam.prjInfo.ARCH = getDefaultARCH();
             return;
         }
 
         // 拉取工程的配置参数
-        const property = fs.files.pullJsonInfo(opeParam.propertyPath);
+        const property = HDLFile.pullJsonInfo(opeParam.propertyPath);
         opeParam.prjInfo = property ? property : getDefaultProperty();
         
         if (opeParam.prjInfo.ARCH) {
@@ -223,7 +220,7 @@ class PrjManage {
                 const configFolder = HDLPath.join(opeParam.workspacePath, '.vscode');
                 if (typeof hardware.src == 'string') {
                     const absSrcPath = HDLPath.rel2abs(configFolder, hardware.src);
-                    if (fs.files.isExist(absSrcPath)) {
+                    if (HDLFile.isExist(absSrcPath)) {
                         hardware.src = absSrcPath;
                     } else {
                         hardware.src = opeParam.workspacePath;
@@ -234,7 +231,7 @@ class PrjManage {
 
                 if (typeof hardware.sim == 'string') {
                     const absSimPath = HDLPath.rel2abs(configFolder, hardware.sim);
-                    if (fs.files.isExist(absSimPath)) {
+                    if (HDLFile.isExist(absSimPath)) {
                         hardware.sim = absSimPath;
                     } else {
                         hardware.sim = opeParam.workspacePath;
@@ -246,7 +243,7 @@ class PrjManage {
             }
         } else {
             let hardwarePath = `${opeParam.workspacePath}/user`;
-            if (fs.files.isHasAttr(opeParam.prjInfo, "SOC.core") && 
+            if (HDLFile.isHasAttr(opeParam.prjInfo, "SOC.core") && 
                 opeParam.prjInfo.SOC.core != 'none') {
                 hardwarePath += '/Hardware';
             }
@@ -274,9 +271,9 @@ class PrjManage {
     }
 
     processPath(path) {
-        const plname =  fs.files.isHasAttr(opeParam.prjInfo, "PRJ_NAME.PL") ?
+        const plname =  HDLFile.isHasAttr(opeParam.prjInfo, "PRJ_NAME.PL") ?
                         opeParam.prjInfo.PRJ_NAME.PL : 'temple';
-        const psname =  fs.files.isHasAttr(opeParam.prjInfo, "PRJ_NAME.PS") ?
+        const psname =  HDLFile.isHasAttr(opeParam.prjInfo, "PRJ_NAME.PS") ?
                         opeParam.prjInfo.PRJ_NAME.PS : 'temple';                
         path = path.replace('${plname}', opeParam.prjInfo.PRJ_NAME.PL)
                    .replace('${psname}', opeParam.prjInfo.PRJ_NAME.PS);
@@ -294,26 +291,26 @@ class PrjManage {
 
         // 如果是用户配置文件结构，检查并生成相关文件夹
         if (opeParam.prjInfo.ARCH) {
-            fs.dirs.mkdir(opeParam.prjInfo.ARCH.PRJ_Path);
+            HDLDir.mkdir(opeParam.prjInfo.ARCH.PRJ_Path);
 
             const hardware = opeParam.prjInfo.ARCH.Hardware;
             const software = opeParam.prjInfo.ARCH.Software;
 
             if (hardware) {
-                fs.dirs.mkdir(hardware.src);
-                fs.dirs.mkdir(hardware.sim);
-                fs.dirs.mkdir(hardware.data);
+                HDLDir.mkdir(hardware.src);
+                HDLDir.mkdir(hardware.sim);
+                HDLDir.mkdir(hardware.data);
             }
 
             if (software) {
-                fs.dirs.mkdir(software.src);
-                fs.dirs.mkdir(software.data);
+                HDLDir.mkdir(software.src);
+                HDLDir.mkdir(software.data);
             }
             return;
         }
 
         // 先直接创建工程文件夹
-        fs.dirs.mkdir(`${opeParam.workspacePath}/prj`);
+        HDLDir.mkdir(`${opeParam.workspacePath}/prj`);
 
         // 初试化文件结构的路径
         const userPath = `${opeParam.workspacePath}/user`;
@@ -322,14 +319,14 @@ class PrjManage {
 
         let nextmode = "PL";
         // 再对源文件结构进行创建
-        if (fs.files.isHasAttr(opeParam.prjInfo, "SOC.core")) {
+        if (HDLFile.isHasAttr(opeParam.prjInfo, "SOC.core")) {
             if (opeParam.prjInfo.SOC.core !== 'none') {
                 nextmode = "LS";
             }
         }
 
         let currmode = "PL";
-        if (fs.files.isExist(softwarePath)) {
+        if (HDLFile.isExist(softwarePath)) {
             currmode = "LS";
         }
         
@@ -338,38 +335,38 @@ class PrjManage {
         }
 
         if (currmode == "PL" && nextmode == "LS") {
-            fs.dirs.mkdir(hardwarePath);
-            fs.dirs.readdir(userPath, true, (folder) => {
+            HDLDir.mkdir(hardwarePath);
+            HDLDir.readdir(userPath, true, (folder) => {
                 if (folder != "Hardware") {
-                    fs.dirs.mvdir(`${userPath}/${folder}`, hardwarePath);
+                    HDLDir.mvdir(`${userPath}/${folder}`, hardwarePath);
                 }
             });
 
-            fs.dirs.mkdir(`${softwarePath}/data`);
-            fs.dirs.mkdir(`${softwarePath}/src`);
+            HDLDir.mkdir(`${softwarePath}/data`);
+            HDLDir.mkdir(`${softwarePath}/src`);
         }
         else if (currmode == "LS" && nextmode == "PL") {
             if (this.setting.get("PRJ.file.structure.notice")) {
                 // 删除时进行提醒，yes : 删除，no : 保留
-                let select = await this.warn("Software will be deleted.", 'Yes', 'No');
+                let select = await vscode.window.showWarningMessage("Software will be deleted.", 'Yes', 'No');
                 if (select == "Yes") {
-                    fs.dirs.rmdir(softwarePath);
+                    HDLDir.rmdir(softwarePath);
                 }
             } else {
-                fs.dirs.rmdir(softwarePath);
+                HDLDir.rmdir(softwarePath);
             }
 
-            if (fs.files.isExist(hardwarePath)) {
-                fs.dirs.readdir(hardwarePath, true, (folder) => {
-                    fs.dirs.mvdir(`${hardwarePath}/${folder}`, userPath);
+            if (HDLFile.isExist(hardwarePath)) {
+                HDLDir.readdir(hardwarePath, true, (folder) => {
+                    HDLDir.mvdir(`${hardwarePath}/${folder}`, userPath);
                 })
                 
-                fs.dirs.rmdir(hardwarePath);
+                HDLDir.rmdir(hardwarePath);
             } 
 
-            fs.dirs.mkdir(`${userPath}/src`);
-            fs.dirs.mkdir(`${userPath}/sim`);
-            fs.dirs.mkdir(`${userPath}/data`);
+            HDLDir.mkdir(`${userPath}/src`);
+            HDLDir.mkdir(`${userPath}/sim`);
+            HDLDir.mkdir(`${userPath}/data`);
         }
     }
 
@@ -378,12 +375,13 @@ class PrjManage {
      * @returns {Array<string>} 
      */
     getPrjFiles() {
-        // TODO: 获取ignore .dideignore
-        let ignores = [];
+        // TODO: make something like .gitignore
+        // to avoid parse the HDLs users don't want to parse
+        const ignores = [];
 
-        // 先处理好library，再启动monitor
         const searchFolders = [];
 
+        // search library
         const library = opeParam.prjInfo.library;
         if (library) {
             opeParam.LibManager.processLibFiles(library);
@@ -397,10 +395,9 @@ class PrjManage {
         searchFolders.push(opeParam.prjInfo.ARCH.Hardware.src);
         searchFolders.push(opeParam.prjInfo.ARCH.Hardware.sim);
 
-        
         const files = [];
-        // 获取本地的源文件
-        fs.files.getHDLFiles(searchFolders, files, ignores);
+        // get all HDL files by local file
+        HDLFile.getHDLFiles(searchFolders, files, ignores);
 
         return files;
     }
@@ -478,17 +475,17 @@ class plMarage extends baseManage {
      *  }} 配置信息
      */
     getConfig() {
-        if (fs.files.isHasAttr(opeParam.prjInfo, "TOOL_CHAIN")) {
+        if (HDLFile.isHasAttr(opeParam.prjInfo, "TOOL_CHAIN")) {
             this.config["tool"] = opeParam.prjInfo.TOOL_CHAIN;
         }
 
         switch (this.config["tool"]) {
             case "xilinx":
                 this.config["path"] = this.set('TOOL.vivado.install').get('path');
-                if (fs.dirs.isillegal(this.config["path"])) {
+                if (HDLDir.isillegal(this.config["path"])) {
                     this.config["path"] = 'vivado';
                 } else {
-                    this.config["path"] = fs.paths.toSlash(this.config["path"]);
+                    this.config["path"] = HDLPath.toSlash(this.config["path"]);
                     this.config["path"] += '/vivado';
                     if (opeParam.os == "win32") {
                         this.config["path"] += '.bat';
@@ -633,7 +630,7 @@ class psMarage extends baseManage {
 
     getConfig() {
         // get tool chain
-        if (fs.files.isHasAttr(opeParam.prjInfo, "TOOL_CHAIN")) {
+        if (HDLFile.isHasAttr(opeParam.prjInfo, "TOOL_CHAIN")) {
             this.config["tool"] = opeParam.prjInfo.TOOL_CHAIN;
         }
 
@@ -641,10 +638,10 @@ class psMarage extends baseManage {
         switch (this.config["tool"]) {
             case "xilinx":
                 this.config["path"] = this.set('TOOL.xsdk.install').get('path');
-                if (fs.dirs.isillegal(this.config["path"])) {
+                if (HDLDir.isillegal(this.config["path"])) {
                     this.config["path"] = 'xsct';
                 } else {
-                    this.config["path"] = fs.paths.toSlash(this.config["path"]);
+                    this.config["path"] = HDLPath.toSlash(this.config["path"]);
                     this.config["path"] += '/xsct';
                     if (opeParam.os == "win32") {
                         this.config["path"] += '.bat';
@@ -693,15 +690,15 @@ const toolManage = {
         const wkSpace = opeParam.workspacePath;
         const prjPath = opeParam.prjInfo.ARCH.PRJ_Path + '/xilinx';
 
-        fs.dirs.rmdir(prjPath); 
-        fs.dirs.rmdir(`${wkSpace}/.Xil`); 
+        HDLDir.rmdir(prjPath); 
+        HDLDir.rmdir(`${wkSpace}/.Xil`); 
 
-        fs.files.pickFileFromExt(wkSpace, {
+        HDLFile.pickFileFromExt(wkSpace, {
             exts : [".str", ".log"],
             type : "once",
             ignores : []
         }, (file) => {
-            fs.files.removeFile(file);
+            HDLFile.removeFile(file);
         });
     },
 
@@ -711,13 +708,13 @@ const toolManage = {
     xmove() {
         const prjName = opeParam.prjInfo.PRJ_NAME.PL;
         const srcPath = opeParam.prjInfo.ARCH.Hardware.src;
-        const target_path = fs.paths.dirname(srcPath);
+        const target_path = HDLPath.dirname(srcPath);
 
         const source_ip_path = `${opeParam.workspacePath}/prj/xilinx/${prjName}.srcs/source_1/ip`;
         const source_bd_path = `${opeParam.workspacePath}/prj/xilinx/${prjName}.srcs/source_1/bd`;
 
-        fs.dirs.mvdir(source_ip_path, target_path);
-        fs.dirs.mvdir(source_bd_path, target_path);
+        HDLDir.mvdir(source_ip_path, target_path);
+        HDLDir.mvdir(source_bd_path, target_path);
     }
 }
 
