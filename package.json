@@ -341,7 +341,20 @@
                 }
             ]
         },
-        "keybindings": [],
+        "keybindings": [
+            {
+                "command": "HARD.Launch",
+                "key": "Alt+z",
+                "mac": "Alt+z",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "TOOL.instance",
+                "key": "Alt+i",
+                "mac": "Alt+i",
+                "when": "editorTextFocus"
+            }
+        ],
         "languages": [
             {
                 "id": "tcl",
