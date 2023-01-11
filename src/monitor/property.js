@@ -103,7 +103,6 @@ function recurseUpdateObject(originalObj, newObj, keyTrace, updateCallback) {
                         const originalSet = new Set(originalValue);
                         const newSet = new Set(newValue);
                         if (!sameSet(originalSet, newSet)) {
-                            console.log('change lib');
                             const returnVal = updateCallback(keyTrace, originalValue, newValue);
                             if (returnVal) {
                                 originalObj[newKey] = returnVal;
@@ -149,14 +148,14 @@ function getObjValueByTrace(obj, trace) {
 function updateProperty(newProperty, monitor) {
     const originalPrjInfo = opeParam.prjInfo;
     let HDLFileChanged = false;
-    const configFolder = HDLPath.join(opeParam.workspacePath, '.vscode');
-    const commonFolder = HDLPath.join(opeParam.rootPath, 'lib', 'common', 'Apply');
+    const customPath = HDLPath.toSlash(vscode.workspace.getConfiguration('PRJ.custom.Lib.repo').get("path"));
+    const configFolder = HDLPath.join(customPath, 'Empty');
+    const commonFolder = HDLPath.join(opeParam.rootPath, 'lib', 'common', 'Empty');
 
     const originalHDLfiles = opeParam.PrjManager.getPrjFiles();
     
     recurseUpdateObject(originalPrjInfo, newProperty, [], 
         (keyTrace, oldValue, newValue) => {
-            console.log('enter callback ', keyTrace, oldValue, newValue);
             if (keyTrace.length >= 3 && 
                 keyTrace[0] == 'ARCH' &&
                 keyTrace[1] == 'Hardware' &&
@@ -182,7 +181,6 @@ function updateProperty(newProperty, monitor) {
 
                 for (const path of newValue) {
                     const absPath = HDLPath.rel2abs(rootPath, path);
-                    console.log(absPath);
                     if (fs.existsSync(absPath)) {
                         existPaths.push(absPath);
                     }
@@ -198,7 +196,7 @@ function updateProperty(newProperty, monitor) {
         return vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
             title: 'adjust the project'
-        }, async progress => {
+        }, async () => {
             monitor.remakeHDLMonitor('HDL');
             const uncheckedFiles = new Set(originalHDLfiles);
             const newFilePaths = new Set(opeParam.PrjManager.getPrjFiles());
@@ -220,7 +218,6 @@ function updateProperty(newProperty, monitor) {
 }
 
 async function add(path, monitor) {
-    console.log('add property');
     const ppyPath = getPropertyPath();
     const newProperty = HDLFile.pullJsonInfo(ppyPath);
     if (newProperty) {
@@ -229,7 +226,6 @@ async function add(path, monitor) {
 }
 
 async function change(path, monitor) {
-    console.log('change property');
     const ppyPath = getPropertyPath();
     const newProperty = HDLFile.pullJsonInfo(ppyPath);
     if (newProperty) {
@@ -238,7 +234,6 @@ async function change(path, monitor) {
 }
 
 async function unlink(path, monitor) {
-    console.log('unlink property');
     const defaultProperty = getDefaultProperty();
     return updateProperty(defaultProperty, monitor);
 }

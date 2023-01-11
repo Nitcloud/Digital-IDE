@@ -17,7 +17,7 @@ const monitor = require('./monitor');
 /**
  * @param {vscode.ExtensionContext} context 
  */
-async function launch(context) {
+function launch(context) {
     const HDLfiles = HDLtool.registerManageServer();
     return vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
@@ -46,7 +46,7 @@ async function launch(context) {
  */
 async function activate(context) {
     const start = Date.now();
-    await launch(context);
+    launch(context);
     console.log('cost time : ' + (Date.now() - start) / 1000 + 's');
 }
 

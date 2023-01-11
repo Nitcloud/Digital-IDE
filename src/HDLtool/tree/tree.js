@@ -248,7 +248,7 @@ class ArchTreeProvider {
                 // mean that the seleted top is an original top module
                 // push it to the top of the *topModuleItemList*
                 const headItem = tops[0] ? tops[0] : topModuleItemList[0];
-                
+
                 headItem.icon = icon;
                 adjustItemList.push(headItem);
                 for (const item of topModuleItemList) {
@@ -507,10 +507,10 @@ class SoftwareTreeProvider extends BaseCommandTreeProvoder {
 class ToolTreeProvider extends BaseCommandTreeProvoder {
     constructor() {
         const config = {
-            "Clean": {
-                "command": 'TOOL.Clean',
-                "icon": 'clean',
-                "tooltip": 'Clean the current project'
+            Clean: {
+                cmd: 'TOOL.Clean',
+                icon: 'clean',
+                tip: 'Clean the current project'
             }
         }
         super(config, 'TOOL');

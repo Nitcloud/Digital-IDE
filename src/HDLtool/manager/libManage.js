@@ -414,7 +414,8 @@ class libPick {
                     appendLibraryCommonPath(relPath, prjInfo);
                 } else {
                     // this is a module import from custom, use absolute path
-                    appendLibraryCustomPath(selectedPath, prjInfo);
+                    const relPath = selectedPath.replace(this.customQuickPickItem.path + '/', '');
+                    appendLibraryCustomPath(relPath, prjInfo);
                 }
                 HDLFile.pushJsonInfo(ppyPath, prjInfo);
             }
