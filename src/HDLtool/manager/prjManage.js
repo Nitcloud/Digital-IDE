@@ -275,9 +275,10 @@ class PrjManage {
                         opeParam.prjInfo.PRJ_NAME.PL : 'temple';
         const psname =  HDLFile.isHasAttr(opeParam.prjInfo, "PRJ_NAME.PS") ?
                         opeParam.prjInfo.PRJ_NAME.PS : 'temple';                
-        path = path.replace('${plname}', opeParam.prjInfo.PRJ_NAME.PL)
-                   .replace('${psname}', opeParam.prjInfo.PRJ_NAME.PS);
-        
+        path = path.replace('${workspace}', opeParam.workspacePath)
+                   .replace('${plname}', plname)
+                   .replace('${psname}', psname);
+        return HDLPath.rel2abs(HDLPath.dirname(opeParam.propertyPath), path);
     }
 
     /**
@@ -446,6 +447,14 @@ class baseManage {
  * @note 一次实例，一直使用
  */
 class plMarage extends baseManage {
+    /**
+     * @param {{
+     *      terminal : vscode.Terminal,
+    *      tool : String, // 工具类型
+    *      path : String, // 第三方工具运行路径
+    *      ope  : xilinxOperation,
+    * }} config
+     */
     constructor() {
         super();
         this.set  = vscode.workspace.getConfiguration;
@@ -455,6 +464,7 @@ class plMarage extends baseManage {
             "ope"  : null,
             "terminal" : null
         };
+        this.getConfig();
 
         vscode.commands.registerCommand("HARD.srcTop", (uri) => {
             this.setSrcTop(uri);
@@ -462,6 +472,14 @@ class plMarage extends baseManage {
 
         vscode.commands.registerCommand("HARD.simTop", (uri) => {
             this.setSimTop(uri);
+        });
+
+        vscode.commands.registerCommand("HARD.add.device", () => {
+            this.addDevice();
+        });
+
+        vscode.commands.registerCommand("HARD.del.device", () => {
+            this.delDevice();
         });
     }
 
@@ -497,6 +515,7 @@ class plMarage extends baseManage {
         
             default: this.config["path"] = ""; break;
         }
+        this.config.terminal = this.getTerminal("Hardware");
 
         return this.config;
     }
@@ -583,6 +602,7 @@ class plMarage extends baseManage {
      * @param {ArchDataItem} item
      */
     setSrcTop(item) {
+        this.config.ope.setSrcTop(item.name, this.config);
         const type = archTreeProvider.getfileType(item);
         if (type == ModuleFileType.SRC) {
             archTreeProvider.setFirstTop(ModuleFileType.SRC, item.name, item.fsPath);
@@ -595,6 +615,7 @@ class plMarage extends baseManage {
      * @param {ArchDataItem} item 
      */
     setSimTop(item) {
+        this.config.ope.setSimTop(item.name, this.config);
         const type = archTreeProvider.getfileType(item);
         if (type == ModuleFileType.SIM) {
             archTreeProvider.setFirstTop(ModuleFileType.SIM, item.name, item.fsPath);
@@ -608,6 +629,43 @@ class plMarage extends baseManage {
 
     delFiles(files) {
         this.config.ope.delFiles(files, this.config);
+    }
+
+    addDevice() {
+        const propertySchema = `${opeParam.rootPath}/property-schema.json`;
+        let propertyParam = HDLFile.pullJsonInfo(propertySchema);
+        vscode.window.showInputBox({
+            password: false,
+            ignoreFocusOut: true,
+            placeHolder: 'Please input the name of device',
+        }).then((Device) => {
+            if (!Device) {
+                return;    
+            }
+
+            if (!propertyParam.properties.Device.enum.includes(Device)) {
+                propertyParam.properties.Device.enum.push(Device);
+                HDLFile.pushJsonInfo(propertySchema, propertyParam);
+                vscode.window.showInformationMessage(`Add the ${Device} successfully!!!`)
+            } else {
+                vscode.window.showWarningMessage("The device already exists.")
+            }
+        });
+    }
+
+    delDevice() {
+        const propertySchema = `${opeParam.rootPath}/property-schema.json`;
+        let propertyParam = HDLFile.pullJsonInfo(propertySchema);
+        vscode.window.showQuickPick(propertyParam.properties.Device.enum).then((Device) => {
+            if (!Device) {
+                return;
+            }
+
+            const index = propertyParam.properties.Device.enum.indexOf(Device);
+            propertyParam.properties.Device.enum.splice(index, 1);
+            HDLFile.pushJsonInfo(propertySchema, propertyParam);
+            vscode.window.showInformationMessage(`Delete the ${Device} successfully!!!`)
+        });
     }
 }
 

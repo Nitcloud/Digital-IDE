@@ -10,7 +10,7 @@
 				"xilinx"
 			]
 		},
-        "PRJ_NAME": {
+		"PRJ_NAME": {
 			"type": "object",
 			"default": {
 				"PL": "template"
@@ -28,57 +28,71 @@
 				}
 			}
 		},
-        "ARCH" : {
-            "type" : "object",
-            "properties":{
-                "PRJ_Path": {
-                    "type": "string"
-                },
-                "Hardware" : {
-                    "type" : "object",
-                    "properties":{
-                        "src" : { "type" :"string"},
-                        "sim" : { "type" :"string"},
-                        "data" : { "type" :"string"}
-                    }
-                },
-                "Software" : {
-                    "type" : "object",
-                    "properties":{
-                        "src" : { "type" :"string"},
-                        "data" : { "type" :"string"}
-                    }
-                }
-            }
-        },
-        "library" : {
+		"ARCH": {
 			"type": "object",
 			"properties": {
-                "state": {
-                    "type": "string",
-                    "enum": [
-                        "local",
-                        "remote"
-                    ]
-                },
-                "Hardware" : {
-                    "type": "object",
-                    "properties": {
-                        "common":   { "type": "array" },
-                        "custom": { "type": "array" }
-                    }
-                }
+				"PRJ_Path": {
+					"type": "string"
+				},
+				"Hardware": {
+					"type": "object",
+					"properties": {
+						"src": {
+							"type": "string"
+						},
+						"sim": {
+							"type": "string"
+						},
+						"data": {
+							"type": "string"
+						}
+					}
+				},
+				"Software": {
+					"type": "object",
+					"properties": {
+						"src": {
+							"type": "string"
+						},
+						"data": {
+							"type": "string"
+						}
+					}
+				}
 			}
 		},
-        "IP_REPO" : {
-            "type" :"array"
-        },
-        "INSIDE_BOOT_TYPE" : {
-            "type" :"string",
-            "enum" :[
-                "microphase"
-            ]
-        },
+		"library": {
+			"type": "object",
+			"properties": {
+				"state": {
+					"type": "string",
+					"enum": [
+						"local",
+						"remote"
+					]
+				},
+				"Hardware": {
+					"type": "object",
+					"properties": {
+						"common": {
+							"type": "array"
+						},
+						"custom": {
+							"type": "array"
+						}
+					}
+				}
+			}
+		},
+		"IP_REPO": {
+			"type": "array"
+		},
+		"INSIDE_BOOT_TYPE": {
+			"type": "string",
+			"enum": [
+				"microphase"
+			]
+		},
 		"SOC": {
 			"type": "object",
 			"default": {
