@@ -72,10 +72,10 @@ const instance = {
     /**
      * @descriptionCn verilog模式下对端口信息生成要例化的内容
      * @param {Array<ModPort>} ports 端口信息列表
-     * @returns {Object} {
+     * @returns {{
      *      "wireStr" : wireStr, // output wire 声明
      *      "portStr" : portStr, // 端口例化
-     *  }
+     *  }} 
      */
     vlogPort(ports) {
         let nmax = this.getlmax(ports, 'name');

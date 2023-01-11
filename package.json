@@ -68,12 +68,6 @@
                     "default": "vivado",
                     "description": "Select the vhdl linter."
                 },
-                "HDL.linting.runPath": {
-                    "scope": "window",
-                    "type": "string",
-                    "default": "",
-                    "description": "Simulate tool will be run at the file location for linting. Else it will be run at workspace folder."
-                },
                 "HDL.linting.ghdl.arguments": {
                     "scope": "window",
                     "type": "string",
@@ -197,11 +191,17 @@
                     "default": "",
                     "description": "set the Xilinx SIM LIB path. \n e.g. : D:/APP/vivado_18_3/Vivado/2018.3/data/verilog/src"
                 },
+                "TOOL.simulate.runPath": {
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "Simulate tool will be run at the file location for linting. Else it will be run at workspace folder."
+                },
                 "TOOL.vivado.install.path": {
                     "scope": "window",
                     "type": "string",
                     "default": "",
-                    "description": "set the xilinx install path. \n e.g. : D:/APP/vivado_18_3/Vivado/2018.3/bin/ \n This applies only to WIN For other systems, add it to environment variables"
+                    "description": "set the xilinx install path. \n e.g. : D:/APP/vivado_18_3/Vivado/2018.3/bin \n This applies only to WIN For other systems, add it to environment variables"
                 },
                 "TOOL.modelsim.install.path": {
                     "scope": "window",
@@ -237,13 +237,13 @@
                     "scope": "window",
                     "type": "string",
                     "default": "",
-                    "description": "set the iVerilog install path. \n e.g. : D:/APP/iverilog/bin/"
+                    "description": "set the iVerilog install path. \n e.g. : D:/APP/iverilog/bin"
                 },
                 "TOOL.gtkwave.install.path": {
                     "scope": "window",
                     "type": "string",
                     "default": "",
-                    "description": "set the gtkwave install path. \n e.g. : D:/APP/iverilog/gtkwave/bin/"
+                    "description": "set the gtkwave install path. \n e.g. : D:/APP/iverilog/gtkwave/bin"
                 },
                 "TOOL.doc.webview.backgroundImage": {
                     "type": "string",
