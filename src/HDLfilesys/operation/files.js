@@ -6,8 +6,6 @@ const { HDLLanguageID, ModuleFileType } = require('../../HDLparser/base/common')
 
 // const 
 const HDLFile = {
-    log : console.log,
-
     /**
      * @state finish-test
      * @descriptionCn 非法性检查 存在且为file
@@ -34,10 +32,7 @@ const HDLFile = {
      * @returns {Boolean} (true : 存在 | false : 不存在)
      */
     isExist(path) {
-        if (fs.existsSync(path)) {
-            return true;
-        }
-        return false;
+        return fs.existsSync(path);
     },
 
     /**
@@ -90,7 +85,7 @@ const HDLFile = {
             fs.writeFileSync(path, content);
             return true;
         } catch (error) {
-            this.log(error);
+            console.log(error);
             return false;
         }
     },
@@ -110,7 +105,7 @@ const HDLFile = {
         try {
             fs.unlinkSync(path);
         } catch (error) {
-            this.log(error);
+            console.log(error);
             return false;
         }
     },
@@ -141,7 +136,7 @@ const HDLFile = {
         try {
             fs.unlinkSync(src);
         } catch (error) {
-            this.log(error);
+            console.log(error);
             return false;
         }
     },
@@ -180,7 +175,7 @@ const HDLFile = {
             }
             return true;
         } catch (error) {
-            this.log(error);
+            console.log(error);
             return false;
         }
     },

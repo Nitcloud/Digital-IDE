@@ -150,6 +150,8 @@ function updateProperty(newProperty, monitor) {
     const originalPrjInfo = opeParam.prjInfo;
     let HDLFileChanged = false;
     const configFolder = HDLPath.join(opeParam.workspacePath, '.vscode');
+    const commonFolder = HDLPath.join(opeParam.rootPath, 'lib', 'common', 'Apply');
+
     const originalHDLfiles = opeParam.PrjManager.getPrjFiles();
     
     recurseUpdateObject(originalPrjInfo, newProperty, [], 
@@ -173,11 +175,14 @@ function updateProperty(newProperty, monitor) {
             if (keyTrace.length >= 3 &&
                 keyTrace[0] == 'library' &&
                 keyTrace[1] == 'Hardware' &&
-                (keyTrace[2] == 'common' || keyTrace[2] == 'customer')) {
+                (keyTrace[2] == 'common' || keyTrace[2] == 'custom')) {
                 
                 const existPaths = [];
+                const rootPath = keyTrace[2] == 'common' ? commonFolder : configFolder;
+
                 for (const path of newValue) {
-                    const absPath = HDLPath.rel2abs(configFolder, path);
+                    const absPath = HDLPath.rel2abs(rootPath, path);
+                    console.log(absPath);
                     if (fs.existsSync(absPath)) {
                         existPaths.push(absPath);
                     }
@@ -197,7 +202,6 @@ function updateProperty(newProperty, monitor) {
             monitor.remakeHDLMonitor('HDL');
             const uncheckedFiles = new Set(originalHDLfiles);
             const newFilePaths = new Set(opeParam.PrjManager.getPrjFiles());
-
             
             for (const newFilePath of newFilePaths) {
                 if (!uncheckedFiles.has(newFilePath)) {

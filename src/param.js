@@ -60,7 +60,7 @@ const opeParam = {
     LibManager: null,             // library操作类
     PrjManager: null,             //
     prjInitParam: "",               // 初始配置文件的路径
-    propertyPath: ""                // 用户配置文件的路径
+    propertyPath: "",               // 用户配置文件的路径
 };
 
 

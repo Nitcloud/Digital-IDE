@@ -3,6 +3,52 @@ var opeParam = require("../../param");
 const fs = require("../../HDLfilesys");
 const vscode = require("vscode");
 const HDLPath = require("../../HDLfilesys/operation/path");
+const HDLFile = require("../../HDLfilesys/operation/files");
+const HDLDir = require("../../HDLfilesys/operation/dirs");
+
+const { HDLLanguageID } = require('../../HDLparser/base/common');
+const { getIconConfig } = require('../../HDLfilesys/icons');
+
+
+function checkPrjInfoLibrary(prjInfo) {
+    if (!prjInfo.library) {
+        prjInfo.library = {
+            state: "",         
+            Hardware: {
+                common: [],
+                custom: []
+            }
+        }
+    }
+}
+
+function checkPrjInfoLibraryHardware(prjInfo) {
+    checkPrjInfoLibrary(prjInfo);
+    if (!prjInfo.library.Hardware) {
+        prjInfo.library.Hardware = {
+            common: [],
+            custom: []
+        }
+    }
+}
+
+function appendLibraryCommonPath(path, prjInfo) {
+    checkPrjInfoLibraryHardware(prjInfo);
+    const prjInfoCommon = prjInfo.library.Hardware.common;
+    if (!prjInfoCommon || !(prjInfoCommon instanceof Array)) {
+        prjInfo.library.Hardware.common = [];
+    }
+    prjInfo.library.Hardware.common.push(path);
+}
+
+function appendLibraryCustomPath(path, prjInfo) {
+    checkPrjInfoLibraryHardware(prjInfo);
+    const prjInfoCustom = prjInfo.library.Hardware.custom;
+    if (!prjInfoCustom || !(prjInfoCustom instanceof Array)) {
+        prjInfo.library.Hardware.custom = [];
+    }
+    prjInfo.library.Hardware.custom.push(path);
+}
 
 /**
  * @state finish-untest
@@ -15,7 +61,7 @@ class libManage {
         this.warn = vscode.window.showWarningMessage;
         this.info = vscode.window.showInformationMessage;
 
-        this.set  = vscode.workspace.getConfiguration;
+        this.config  = vscode.workspace.getConfiguration;
 
         this.curr = {
             'type' : null,
@@ -44,7 +90,7 @@ class libManage {
      * @descriptionEn Dynamic update of property configuration
      */
     getConfig() {
-        this.customerPath = this.set().get("PRJ.customer.Lib.repo.path");
+        this.customerPath = this.config().get("PRJ.custom.Lib.repo.path");
 
         this.srcPath = opeParam.prjInfo.ARCH.Hardware.src;
         this.simPath = opeParam.prjInfo.ARCH.Hardware.sim;
@@ -65,7 +111,12 @@ class libManage {
     processLibFiles(library) {
         this.getConfig();
         const configFolder = HDLPath.join(opeParam.workspacePath, '.vscode');
+        const commonFolder = HDLPath.join(opeParam.rootPath, 'lib', 'common', 'Apply');
+
         // transform to abs path
+        if (library.Hardware && library.Hardware.common instanceof Array) {
+            library.Hardware.common = library.Hardware.common.map(path => HDLPath.rel2abs(commonFolder, path));
+        }
 
         if (library.Hardware && library.Hardware.custom instanceof Array) {
             library.Hardware.custom = library.Hardware.custom.map(path => HDLPath.rel2abs(configFolder, path));
@@ -73,7 +124,7 @@ class libManage {
 
         // 在不设置state属性的时候默认为remote
         this.next.list = this.getLibFiles(library.Hardware);
-        if (!fs.files.isHasAttr(library, 'state')) {
+        if (!HDLFile.isHasAttr(library, 'state')) {
             this.next.type = 'remote';
         } else {
             if (library.state !== 'remote' && library.state !== 'local') {
@@ -87,7 +138,7 @@ class libManage {
 
         // 处于初始状态时的情况
         if (!this.curr.type) {
-            if (fs.dirs.isillegal(this.localLibPath)) {
+            if (HDLDir.isillegal(this.localLibPath)) {
                 this.curr.type = 'local';
             } else {
                 this.curr.type = 'remote';
@@ -99,8 +150,8 @@ class libManage {
         let del = [];
         switch (state) {
             case 'remote-remote':
-                add = fs.files.diffElement(this.next.list, this.curr.list);
-                del = fs.files.diffElement(this.curr.list, this.next.list);
+                add = HDLFile.diffElement(this.next.list, this.curr.list);
+                del = HDLFile.diffElement(this.curr.list, this.next.list);
             break;
             case 'remote-local':
                 // 删除的内容全是remote的，将curr的交出去即可
@@ -108,20 +159,20 @@ class libManage {
                 
                 // 将新增的全部复制到本地，交给monitor进行处理
                 this.remote_to_local(this.next.list, (src, dist) => {
-                    fs.files.copyFile(src, dist);
+                    HDLFile.copyFile(src, dist);
                 });
             break;   
             case 'local-remote':
                 // 本地的lib全部删除，交给monitor进行处理
                 const fn = async () => {
-                    if (fs.files.isExist(this.localLibPath)) {
-                        if (this.set().get("PRJ.file.structure.notice")) {
+                    if (HDLFile.isExist(this.localLibPath)) {
+                        if (this.config().get("PRJ.file.structure.notice")) {
                             let select = await this.warn("local lib will be removed.", 'Yes', 'Cancel');
                             if (select == "Yes") {
-                                fs.dirs.rmdir(this.localLibPath);
+                                HDLDir.rmdir(this.localLibPath);
                             }
                         } else {
-                            fs.dirs.rmdir(this.localLibPath);
+                            HDLDir.rmdir(this.localLibPath);
                         }
                     }
                 };
@@ -132,18 +183,18 @@ class libManage {
             break;
             case 'local-local':
                 // 只管理library里面的内容，如果自己再localPath里加减代码，则不去管理
-                add = fs.files.diffElement(this.next.list, this.curr.list);
-                del = fs.files.diffElement(this.curr.list, this.next.list);
+                add = HDLFile.diffElement(this.next.list, this.curr.list);
+                del = HDLFile.diffElement(this.curr.list, this.next.list);
 
                 this.remote_to_local(add, (src, dist) => {
-                    fs.files.copyFile(src, dist);
+                    HDLFile.copyFile(src, dist);
                 });
 
                 this.remote_to_local(del, (src, dist) => {
-                    fs.files.removeFile(dist);
+                    HDLFile.removeFile(dist);
                 });
                 add = []; del = [];
-            break; 
+            break;
             default: break;
         }
 
@@ -170,14 +221,14 @@ class libManage {
                 switch (key) {
                     case "common":
                         const commonPath = `${this.SourceLibPath}/common/${element}`
-                        fs.files.getHDLFiles(commonPath, libFileList);
+                        HDLFile.getHDLFiles(commonPath, libFileList);
                     break;
                     case "custom":
-                        if (fs.dirs.isillegal(this.customerPath)) {
-                            this.err(`The PRJ.customer.Lib.repo.path ${this.customerPath} do not exist or not dir.`);
+                        if (HDLDir.isillegal(this.customerPath)) {
+                            this.err(`The PRJ.custom.Lib.repo.path ${this.customerPath} do not exist or not dir.`);
                         } else {
                             const customerPath = `${this.customerPath}/${element}`
-                            fs.files.getHDLFiles(customerPath, libFileList);
+                            HDLFile.getHDLFiles(customerPath, libFileList);
                         }
                     break;
                 
@@ -187,7 +238,7 @@ class libManage {
         }
 
         // Remove duplicate HDL files
-        libFileList = fs.files.removeDuplicates(libFileList);
+        libFileList = HDLFile.removeDuplicates(libFileList);
         return libFileList;
     }
 
@@ -213,84 +264,162 @@ module.exports = libManage;
 
 class libPick {
     constructor () {
-        this.set  = vscode.workspace.getConfiguration;
-        this.config = {
-            'common' : `${opeParam.rootPath}/lib/common`,
-            'custom' : this.set("PRJ.customer.Lib.repo").get("path"),
+        this.config = vscode.workspace.getConfiguration;
+        this.commonPath = HDLPath.join(opeParam.rootPath, 'lib', 'common');
+        this.customPath = HDLPath.toSlash(this.config("PRJ.custom.Lib.repo").get("path")); 
+
+        this.commonQuickPickItem = {
+            label: "$(libpick-common) common", 
+            description: 'common library provided by us',
+            detail: 'current path: ' + this.commonPath,
+            path: this.commonPath,
+            buttons: [{iconPath: getIconConfig('import'), tooltip: 'import everything in common'}]
         };
-        this.start = [
-            {label: "common", description: fs.files.readFile(this.config.common+'/readme.md')},
-            {label: "custom", description: `custom library by yourself`}
+
+        this.customQuickPickItem = {
+            label: "$(libpick-custom) custom", 
+            description: 'custom library by yourself',
+            detail: 'current path: ' + this.customPath,
+            path: this.customPath,
+            buttons: [{iconPath: getIconConfig('import'), tooltip: 'import everything in custom'}]
+        };
+
+        this.rootItems = [
+            this.commonQuickPickItem,
+            this.customQuickPickItem
         ];
-        this.curPath = '/';
+
+        this.backQuickPickItem = {
+            label: '...', 
+            description: 'return'
+        };
+
+        this.curPath = null;
     }
 
-    provide(item) {
-        if (item == '..') {
-            if ((this.curPath == this.config.common) || 
-                (this.curPath == this.config.custom)) {
-                return this.start;
+    getPathIcon(path) {
+        let prompt;
+        if (HDLDir.isillegal(path)) {
+            const langID = HDLFile.getLanguageId(path);
+            if (langID == HDLLanguageID.VHDL) {
+                prompt = 'vhdl';
+            } else if (langID == HDLLanguageID.VERILOG ||
+                       langID == HDLLanguageID.SYSTEM_VERILOG) {
+                prompt = 'verilog';
             } else {
-                this.curPath = fs.paths.dirname(this.curPath);
-                return this.provide('back');
+                prompt = 'unknown';
             }
+        } else {
+            prompt = 'folder';
         }
-        
-        if (item == "/") {
-            return this.start;
-        } else if (item == "common") {
-            this.curPath = this.config.common;
-        } else if (item == "custom") {
-            this.curPath = this.config.custom;
-        } else if (item != "back") {
-            this.curPath = `${this.curPath}/${item}`;
-        }
-
-        let res = [{
-            label: "..", 
-            description: 'return to last'
-        }];
-        const list = fs.dirs.readdir(this.curPath, false);
-        for (let i = 0; i < list.length; i++) {
-            const element = list[i];
-            const description = fs.files.readFile(`${this.curPath}/${element}/readme.md`);
-            res.push({
-                label : element,
-                description : description ? description : ''
-            })
-        }
-        return res;
+        return `$(libpick-${prompt})`;
     }
 
-    pickItems() {
-        this.pick = vscode.window.createQuickPick();
-        const button = vscode.QuickInputButtons
-        this.pick.buttons.push({
-            iconPath : `${opeParam.rootPath}/images/svg/dark/boot.svg`,
-            tooltip : 'OK'
-        });
+    /**
+     * @param {string} path 
+     * @param {boolean} back 
+     * @returns {Array<vscode.QuickPickItem>}
+     */
+    makeQuicjPickItemsByPath(path, back=true) {
+        const items = [];
+        if (!HDLFile.isExist(path)) {
+            return items;
+        }
+        if (back) {
+            items.push(this.backQuickPickItem);
+        }
 
-        this.pick.items = this.provide('/');
+        for (const fileName of HDLDir.readdir(path, false)) {
+            const filePath = HDLPath.join(path, fileName);
+            const themeIcon = this.getPathIcon(filePath);
+            const label = themeIcon + " " + fileName;
+            const mdPath = HDLPath.join(path, fileName, 'readme.md');
+            const mdText = HDLFile.readFile(mdPath);
+            const description = mdText ? mdText : '';
+            const buttons = [{iconPath: getIconConfig('import'), tooltip: 'import everything in ' + fileName}];
+            items.push({label, description, path: filePath, buttons});
+        }
+        return items;
+    }
 
-        this.pick.onDidChangeSelection(items => {
+    /**
+     * @description provide item for quickpick 
+     * @param {vscode.QuickPickItem} item file/folder name of category name
+     * @returns {Array<vscode.QuickPickItem>}
+     */
+    provideQuickPickItem(item) {
+        if (!item) {
+            return this.rootItems;
+        } else if (item == this.backQuickPickItem) {
+            if ((this.curPath == this.commonPath) || 
+                (this.curPath == this.customPath)) {
+                return this.rootItems;
+            } else {
+                // rollback the current path
+                this.curPath = HDLPath.dirname(this.curPath);
+            }
+        } else if (item == this.commonQuickPickItem) {
+            this.curPath = this.commonPath;
+        } else if (item == this.customQuickPickItem) {
+            this.curPath = this.customPath;
+        } else {
+            const label = item.label;
+            const fileName = label.replace(/\$\([\s\S]*\)/, '').trim();
+            this.curPath = HDLPath.join(this.curPath, fileName);
+        }
+
+        return this.makeQuicjPickItemsByPath(this.curPath);
+    }
+
+    async pickItems() {
+        const pickWidget = vscode.window.createQuickPick();
+        this.pickWidget = pickWidget;
+        
+        pickWidget.placeholder = 'pick the library';
+        pickWidget.items = this.provideQuickPickItem();
+        
+        pickWidget.onDidChangeSelection(items => {
             // --> Do an important action here <--
+            console.log('enter onDidChangeSelection');
             if (items[0]) {
-                this.select = items[0];
+                this.selectedQuickPickItem = items[0];
             }
         });
 
-        this.pick.onDidAccept(() => {
-            if (this.select) {
-                if (fs.files.isillegal(`${this.curPath}/${this.select.label}`)) {
-                    this.pick.items = this.provide(this.select.label);
+        pickWidget.onDidAccept(() => {
+            console.log('enter onDidAccept');
+            if (this.selectedQuickPickItem) {
+                const childernItems = this.provideQuickPickItem(this.selectedQuickPickItem);
+                if (childernItems && childernItems.length > 0) {
+                    pickWidget.items = childernItems;
                 }
             }
         });
 
-        this.pick.onDidTriggerButton(() => {
-            console.log();
+        pickWidget.onDidTriggerItemButton(event => {
+            const selectedPath = event.item.path;
+            if (selectedPath && HDLFile.isExist(selectedPath)) {
+                const ppyPath = HDLPath.join(opeParam.workspacePath, '.vscode', 'property.json');
+                let prjInfo = null;
+                if (!HDLFile.isExist(ppyPath)) {
+                    prjInfo = HDLFile.pullJsonInfo(opeParam.prjInitParam);
+                } else {
+                    prjInfo = HDLFile.pullJsonInfo(ppyPath);
+                }
+
+                
+                if (selectedPath.includes(this.commonQuickPickItem.path)) {
+                    // this is a module import from common, use relative path
+                    const relPath = selectedPath.replace(this.commonQuickPickItem.path + '/', '');
+                    appendLibraryCommonPath(relPath, prjInfo);
+                } else {
+                    // this is a module import from custom, use absolute path
+                    appendLibraryCustomPath(selectedPath, prjInfo);
+                }
+                HDLFile.pushJsonInfo(ppyPath, prjInfo);
+            }
         })
 
-        this.pick.show();
+        pickWidget.show();
     }
 }

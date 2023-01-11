@@ -167,11 +167,11 @@
                     "default": true,
                     "description": "notice when change file structure"
                 },
-                "PRJ.customer.Lib.repo.path": {
+                "PRJ.custom.Lib.repo.path": {
                     "scope": "window",
                     "type": "string",
                     "default": "",
-                    "description": "set the customer lib_repo_path"
+                    "description": "set the custom lib_repo_path"
                 },
                 "PRJ.xilinx.BD.repo.path": {
                     "scope": "window",
@@ -971,6 +971,48 @@
                 "default": {
                     "fontPath": "./icons/iconfont.woff2",
                     "fontCharacter": "\\e684"
+                }
+            },
+            "libpick-folder" :{
+                "description": "libpick folder",
+                "default": {
+                    "fontPath": "./icons/iconfont.woff2",
+                    "fontCharacter": "\\e600"
+                }
+            },
+            "libpick-verilog":{
+                "description": "libpick verilog",
+                "default": {
+                    "fontPath": "./icons/iconfont.woff2",
+                    "fontCharacter": "\\e7a8"
+                }
+            },
+            "libpick-vhdl" :{
+                "description": "libpick vhdl",
+                "default": {
+                    "fontPath": "./icons/iconfont.woff2",
+                    "fontCharacter": "\\e6b3"
+                }
+            },
+            "libpick-common":{
+                "description": "libpick common",
+                "default": {
+                    "fontPath": "./icons/iconfont.woff2",
+                    "fontCharacter": "\\e622"
+                }
+            },
+            "libpick-custom":{
+                "description": "libpick custom",
+                "default": {
+                    "fontPath": "./icons/iconfont.woff2",
+                    "fontCharacter": "\\e623"
+                }
+            },
+            "libpick-unknown":{
+                "description": "libpick unknown",
+                "default": {
+                    "fontPath": "./icons/iconfont.woff2",
+                    "fontCharacter": "\\e62a"
                 }
             }
         }
