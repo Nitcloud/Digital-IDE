@@ -245,7 +245,11 @@ class xilinxOperation {
         // 导入非本地的设计源文件
         const HDLFiles = HDLParam.getAllModuleFiles();
         for (const file of HDLFiles) {
-            scripts.push(`add_files ${file.path} -quiet`);
+            if (file.type == "src") {
+                scripts.push(`add_files ${file.path} -quiet`);
+            } else if (file.type == "sim") {
+                scripts.push(`add_files -fileset sim_1 ${file.path} -quiet`);
+            }
         }
 
         scripts.push(`add_files -fileset constrs_1 ${this.datPath} -quiet`);
@@ -563,7 +567,24 @@ class xilinxOperation {
         this.processFileInPrj(files, config, "remove_files");
     }
 
+    setSrcTop(name, config) {
+        const cmd = `set_property top ${name} [current_fileset]`;
+        if (config.terminal) {
+            config.terminal.sendText(cmd);
+        }
+    }
+
+    setSimTop(name, config) {
+        const cmd = `set_property top ${name} [get_filesets sim_1]`;
+        if (config.terminal) {
+            config.terminal.sendText(cmd);
+        }
+    }
+
     processFileInPrj(files, config, command) {
+        if (!config.terminal) {
+            return;
+        }
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
             config.terminal.sendText(`${command} ${file}`);

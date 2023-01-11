@@ -60,8 +60,17 @@ class simulate {
             simConfig[element] = simConfig[element] ? simConfig[element].groups[element] : null;
         }
 
-        simConfig["runPath"] = this.setting.get('HDL.linting.runPath');
+        simConfig["runPath"] = this.setting.get('TOOL.simulate.runPath');
         simConfig["gtkwavePath"] = this.setting.get('TOOL.gtkwave.install.path');
+        if (simConfig.gtkwavePath !== '' && fs.dirs.isillegal(simConfig.gtkwavePath)) {
+            simConfig.gtkwavePath = 'gtkwave'; // 如果不存在则认为是加入了环境变量
+        } else {
+            if (this.os === 'win32') {
+                simConfig.gtkwavePath += '/gtkwave.exe';
+            } else {
+                simConfig.gtkwavePath += '/gtkwave';
+            }
+        }
 
         // 确保安装路径有效
         simConfig["installPath"] = this.setting.get(`TOOL.${tool}.install.path`);
