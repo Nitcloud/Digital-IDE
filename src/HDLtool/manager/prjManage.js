@@ -65,7 +65,12 @@ function register() {
         'Synth', 'Impl', 'Bit', 'Build', 
         'Simulate', 'simGUI', 'simCLI',
         'Program', 'Refresh',  
-    ]
+    ];
+
+
+    // TODO : delete in the next version
+    vscode.commands.registerCommand('PL.file.add', files => pl.addFiles(files));
+    vscode.commands.registerCommand('PL.file.del', files => pl.delFiles(files));
     
     for (let i = 0; i < plFuncs.length; i++) {
         const fun = plFuncs[i];
@@ -380,6 +385,7 @@ class PrjManage {
         // to avoid parse the HDLs users don't want to parse
         const ignores = [];
 
+        const files = [];
         const searchFolders = [];
 
         // search library
@@ -396,7 +402,6 @@ class PrjManage {
         searchFolders.push(opeParam.prjInfo.ARCH.Hardware.src);
         searchFolders.push(opeParam.prjInfo.ARCH.Hardware.sim);
 
-        const files = [];
         // get all HDL files by local file
         HDLFile.getHDLFiles(searchFolders, files, ignores);
 

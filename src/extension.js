@@ -19,26 +19,26 @@ const monitor = require('./monitor');
  */
 function launch(context) {
     const HDLfiles = HDLtool.registerManageServer();
-    return vscode.window.withProgress({
-        location: vscode.ProgressLocation.Notification,
-        title: 'Initialize the project'
-    }, async progress => {
-        // initialize HDLParam
-        HDLParam.Initialize(HDLfiles);
+    // initialize HDLParam
+    HDLParam.Initialize(HDLfiles);
+    // register command
+    HDLtool.registerSimServer(context);
+    HDLtool.registerTreeServer(context);
+    HDLtool.registerDocumentation(context);
+    HDLtool.registerLspServer(context);
+    HDLtool.registerToolServer(context);
+    
+    // launch monitor
+    monitor.start();
 
-        // register command
-        HDLtool.registerSimServer(context);
-        HDLtool.registerTreeServer(context);
-        HDLtool.registerDocumentation(context);
-        HDLtool.registerLspServer(context);
-        HDLtool.registerToolServer(context);
-        
-        // launch monitor
-        monitor.start();
+    // console.log('#module ', HDLParam.Modules.size);
+    // console.log(opeParam.prjInfo);
+    // return vscode.window.withProgress({
+    //     location: vscode.ProgressLocation.Notification,
+    //     title: 'Initialize the project'
+    // }, async progress => {
 
-        console.log('#module ', HDLParam.Modules.size);
-        console.log(opeParam.prjInfo);
-    });
+    // });
 }
 
 /**
@@ -46,7 +46,9 @@ function launch(context) {
  */
 async function activate(context) {
     const start = Date.now();
+
     launch(context);
+    
     console.log('cost time : ' + (Date.now() - start) / 1000 + 's');
 }
 

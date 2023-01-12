@@ -54,17 +54,17 @@ async function exportCurrentFileDocAsPDF() {
     const HDLFileName = HDLPath.basename(currentFilePath);
     const wsPath = opeParam.workspacePath;
 
-    const html = await makeShowHTML("pdf");
-
-    if (!html) {
-        return;
-    }
-
     return vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
         title: '[Digital-IDE]: Export ' + currentFilePath + '...'
-    }, async () => {
+    }, async progress => {
         try {
+            const html = await makeShowHTML("pdf");
+
+            if (!html) {
+                return;
+            }
+            
             const pdfFolderPath = HDLPath.join(wsPath, 'pdf');
             if (!fs.existsSync(pdfFolderPath)) {
                 fs.mkdirSync(pdfFolderPath);

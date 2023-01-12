@@ -744,6 +744,14 @@
                     "light": "images/svg/light/documentation.svg",
                     "dark": "images/svg/dark/documentation.svg"
                 }
+            },
+            {
+                "command": "PL.file.add",
+                "title": "add file"
+            },
+            {
+                "command": "PL.file.del",
+                "title": "del file"
             }
         ],
         "menus": {

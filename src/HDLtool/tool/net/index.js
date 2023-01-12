@@ -5,6 +5,8 @@ const kernel  = require("../../../HDLkernel");
 const fs = require("../../../HDLfilesys");
 const fspath = require("path");
 const opeParam = require("../../../param");
+const HDLPath = require("../../../HDLfilesys/operation/path");
+const HDLFile = require("../../../HDLfilesys/operation/files");
 const HDLParam = require("../../../HDLparser").HDLParam;
 
 class showNetlist {
@@ -17,7 +19,7 @@ class showNetlist {
     async open(uri) {
         // 获取工程依赖
         let files = [];
-        const path = fs.paths.toSlash(uri.fsPath)
+        const path = fs.paths.toSlash(uri.fsPath);
         if (uri.name) {
             files = HDLParam.getAllDependences(
                 path,
@@ -40,11 +42,9 @@ class showNetlist {
         await this.synth.launch();
 
         // 将执行过程中的日志输出到webview
-        var _this = this;
         this.synth.setMessageCallback((message, type) => {
             if (message != '') {
-                // console.log(`[${type}]: ${message}`);
-                _this.outputCH.append(`[${type}]: ${message}\n`);
+                this.outputCH.append(`[${type}]: ${message}\n`);
             }
             if (type == "error") {
                 vscode.window.showErrorMessage(`${type} : ${message}`);
@@ -75,6 +75,7 @@ class showNetlist {
 
         // Handle messages from the webview
         this.panel.webview.onDidReceiveMessage(message => {
+            console.log(message);
             switch (message.command) {
                 case 'export':
                     this.export(message.type, message.svg);
@@ -93,22 +94,18 @@ class showNetlist {
     send(mode) {
         // 导出模块的netlist  
         this.outputCH.show(true);
-        this.panel.webview.postMessage({ 
-            command: "netlist", 
-            netlist: this.synth.export({
-                'type' : "json"
-            })
-        });
+        const command = 'netlist';
+        const netlist = this.synth.export({type: 'json'});
+        this.panel.webview.postMessage({command, netlist});
     }
 
     getWebviewContent() {
-        const path_regExp = /(<link.+?href="|<script.+?src="|<img.+?src=")(.+?)"/g;
-        const src_path = `${opeParam.rootPath}/resources/netlist`;
-        const html_path = src_path + '/netlist_viewer.html';
-        const html = fs.files.readFile(html_path);
-        return html.replace(path_regExp, (m, $1, $2) => {
+        const netlistPath = HDLPath.join(opeParam.rootPath, 'resources', 'netlist')
+        const htmlIndexPath = HDLPath.join(netlistPath, 'netlist_viewer.html');
+        const html = fs.files.readFile(htmlIndexPath);
+        return html.replace(/(<link.+?href="|<script.+?src="|<img.+?src=")(.+?)"/g, (m, $1, $2) => {
             return $1 + vscode.Uri
-                        .file(fspath.resolve(src_path, $2))
+                        .file(fspath.resolve(netlistPath, $2))
                         .with({ scheme: 'vscode-resource' })
                         .toString() + '"';
         });
@@ -132,7 +129,8 @@ class showNetlist {
                 if (path_full[0] === '/' && require('os').platform() === 'win32') {
                     path_full = path_full.substring(1);
                 }
-                fs.writeFileSync(path_full, `${svg}`, "utf-8");
+                HDLFile.writeFile(path_full, svg);
+                // fs.writeFileSync(path_full, svg, "utf-8");
                 vscode.window.showInformationMessage(`Schematic saved in ${path_full}`);
             }
         });

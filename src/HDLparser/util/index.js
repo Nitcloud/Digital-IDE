@@ -87,7 +87,7 @@ function getSymbolsFromName(name, symbols, callback) {
     return results;
 }
 
-
+let count = 0;
 /**
  * @description get json represent symbol from a path
  * @param {string} path 

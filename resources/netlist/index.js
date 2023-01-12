@@ -12,17 +12,17 @@ class render{
     }
 
     init() {
-        var _this = this;
         document.getElementById("last").onclick = function () {
-            if (_this.curNetIndex > 0) {
-                _this.curNetIndex--;
-                _this.showNetlist(_this.netLists[_this.curNetIndex]);        
+            if (this.curNetIndex > 0) {
+                this.curNetIndex--;
+                this.showNetlist(this.netLists[this.curNetIndex]);        
             }
-        };
+        }
+
         document.getElementById("next").onclick = function () {
-            if (_this.curNetIndex < _this.netLists.length-1) {
-                _this.curNetIndex++;
-                _this.showNetlist(_this.netLists[_this.curNetIndex]);
+            if (this.curNetIndex < this.netLists.length-1) {
+                this.curNetIndex++;
+                this.showNetlist(this.netLists[this.curNetIndex]);
             }
         }
     }
@@ -33,8 +33,11 @@ class render{
             this.netlist = netList;
             this.netLists.push(netList);
         }
-        console.log(this.netLists);
+
         let netnode = this.showTreelist(netList);
+        console.log('net node');
+        console.log(netnode);
+
         var setting = {};
         $(document).ready(function () {
             this.zTreeObj = $.fn.zTree.init($("#netTree"), setting, netnode);
@@ -42,8 +45,8 @@ class render{
 
         // remove embed
         svgPanZoom(this.embed_svg).destroy();
-
         this.svg = await netlistsvg.render(netlistsvg.digitalSkin, netList);
+
         //Add to container
         this.embed_svg.innerHTML = this.svg;
         
@@ -71,6 +74,7 @@ class render{
 
     showTreelist(netlist) {
         let flatModule = netlistsvg.parser(netlistsvg.digitalSkin, netlist);
+
         let netnode = [
             {
                 name: flatModule.moduleName, 

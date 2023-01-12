@@ -6858,6 +6858,7 @@ var FlatModule = /** @class */ (function () {
         });
         // Otherwise default the first one in the file...
         if (this.moduleName == null) {
+
             this.moduleName = Object.keys(netlist.modules)[0];
         }
         var top = netlist.modules[this.moduleName];

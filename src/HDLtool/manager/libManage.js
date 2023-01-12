@@ -110,8 +110,8 @@ class libManage {
      */
     processLibFiles(library) {
         this.getConfig();
-        const configFolder = HDLPath.join(opeParam.workspacePath, '.vscode');
-        const commonFolder = HDLPath.join(opeParam.rootPath, 'lib', 'common', 'Apply');
+        const configFolder = HDLPath.join(this.customerPath, 'Empty');
+        const commonFolder = HDLPath.join(opeParam.rootPath, 'lib', 'common', 'Empty');
 
         // transform to abs path
         if (library.Hardware && library.Hardware.common instanceof Array) {

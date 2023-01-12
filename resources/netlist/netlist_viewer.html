@@ -72,7 +72,7 @@
             <ul id="netTree" class="ztree"></ul>
             <div class="container" id="netlist_container">
                 <div id="component">
-                    <div style=display:flex;justify-content:space-between>
+                    <div style="display: flex;justify-content: space-between">
                         <div>
                             <button id=last>last </button>
                             <button id=next>next </button>
@@ -86,7 +86,8 @@
                                 <option value=1>After Behavioral Synth</option>
                                 <option value=2>After RTL Synth</option>
                             </select>
-                            <button id=exec>exec</button>
+                            <button id='exec'>exec</button>
+                            <button id='debug'>debug</button>
                         </div>
                     </div>
                     <div class="output" id="output"></div>
@@ -111,7 +112,7 @@
 
         let sidebar = document.querySelector(".sidebar");
         let sidebarBtn = document.querySelector(".bx-menu");
-        console.log(sidebarBtn);
+
         sidebar.classList.toggle("close");
         sidebarBtn.addEventListener("click", () => {
             sidebar.classList.toggle("close");
@@ -121,8 +122,8 @@
 
     var Render = new render();
     Render.init();
-
     const vscode = acquireVsCodeApi();
+    
     function export_message(type) {
         vscode.postMessage({
             command: 'export',
@@ -140,24 +141,35 @@
 
     exec(document.getElementById('synthStyle'));
 
-    document.getElementById("exec").onclick = function() {
+    document.getElementById("debug").onclick = () => {
+        vscode.postMessage({
+            command: 'debug',
+            value: 'hello world',
+            svg: Render.svg
+        });
+    }
+
+    document.getElementById("exec").onclick = () => {
         exec(document.getElementById('synthStyle'));
     };
 
-    document.getElementById("export-as-svg").onclick = function() {
+    document.getElementById("export-as-svg").onclick = () => {
         export_message("svg");
     };
-    document.getElementById("export-as-png").onclick = function () {
+    document.getElementById("export-as-png").onclick = () => {
         export_message("png");
     };
 
     window.addEventListener('message', event => {
         const message = event.data;
-        console.log("get the message");
-        console.log(message.command);
-        switch (message.command) {
+        const command = message.command;
+        const netlist = JSON.parse(message.netlist);
+        console.log(typeof netlist);
+        console.log(netlist);
+                
+        switch (command) {
             case 'netlist' : 
-                Render.showNetlist(message.netlist, true);
+                Render.showNetlist(netlist, true);
             break;
         }
     });

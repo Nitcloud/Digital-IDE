@@ -98,13 +98,13 @@ function recurseUpdateObject(originalObj, newObj, keyTrace, updateCallback) {
                 // 3. they don't have the same value
                 keyTrace.push(newKey);
                 if (originalValue instanceof Array) {
-                    // TODO : implement there
+                    // library array
                     if (newValue instanceof Array) {
                         const originalSet = new Set(originalValue);
                         const newSet = new Set(newValue);
                         if (!sameSet(originalSet, newSet)) {
                             const returnVal = updateCallback(keyTrace, originalValue, newValue);
-                            if (returnVal) {
+                            if (returnVal instanceof Array) {
                                 originalObj[newKey] = returnVal;
                             }
                         }
@@ -149,10 +149,13 @@ function updateProperty(newProperty, monitor) {
     const originalPrjInfo = opeParam.prjInfo;
     let HDLFileChanged = false;
     const customPath = HDLPath.toSlash(vscode.workspace.getConfiguration('PRJ.custom.Lib.repo').get("path"));
-    const configFolder = HDLPath.join(customPath, 'Empty');
+    const configFolder = HDLPath.join(opeParam.workspacePath, 'Empty');
+    const customFolder = HDLPath.join(customPath, 'Empty');
     const commonFolder = HDLPath.join(opeParam.rootPath, 'lib', 'common', 'Empty');
 
     const originalHDLfiles = opeParam.PrjManager.getPrjFiles();
+
+    console.log(opeParam.prjInfo.ARCH.Hardware);
     
     recurseUpdateObject(originalPrjInfo, newProperty, [], 
         (keyTrace, oldValue, newValue) => {
@@ -162,6 +165,7 @@ function updateProperty(newProperty, monitor) {
                 (keyTrace[2] == 'src' || keyTrace[2] == 'sim')) {
                 const path = getObjValueByTrace(newProperty, keyTrace);
                 const absPath = HDLPath.rel2abs(configFolder, path);
+
                 if (!fs.existsSync(absPath)) {
                     vscode.window.showErrorMessage(absPath + " dont't exist!");
                     return null;
@@ -177,7 +181,7 @@ function updateProperty(newProperty, monitor) {
                 (keyTrace[2] == 'common' || keyTrace[2] == 'custom')) {
                 
                 const existPaths = [];
-                const rootPath = keyTrace[2] == 'common' ? commonFolder : configFolder;
+                const rootPath = keyTrace[2] == 'common' ? commonFolder : customFolder;
 
                 for (const path of newValue) {
                     const absPath = HDLPath.rel2abs(rootPath, path);
@@ -192,6 +196,8 @@ function updateProperty(newProperty, monitor) {
             return newValue;
         });
     
+    console.log(opeParam.prjInfo.ARCH.Hardware);
+
     if (HDLFileChanged) {
         return vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
@@ -200,18 +206,28 @@ function updateProperty(newProperty, monitor) {
             monitor.remakeHDLMonitor('HDL');
             const uncheckedFiles = new Set(originalHDLfiles);
             const newFilePaths = new Set(opeParam.PrjManager.getPrjFiles());
+
+            const addFiles = [];
+            const delFiles = [];
             
             for (const newFilePath of newFilePaths) {
                 if (!uncheckedFiles.has(newFilePath)) {
                     addFile(newFilePath);
+                    addFiles.push(newFilePath);
                 }
                 uncheckedFiles.delete(newFilePath);
             }
+            const vivadoAddPromise = vscode.commands.executeCommand('PL.file.add', addFiles);
+
             for (const oldFilePath of uncheckedFiles) {
                 unlinkFile(oldFilePath);
+                delFiles.push(oldFilePath);
             }
+            const vivadoDelPromise = vscode.commands.executeCommand('PL.file.del', delFiles);
 
             refreshArchTree();
+            await vivadoAddPromise;
+            await vivadoDelPromise;
         })
     }
     return null;
@@ -226,6 +242,8 @@ async function add(path, monitor) {
 }
 
 async function change(path, monitor) {
+    console.log(opeParam.prjInfo.ARCH.Hardware);
+
     const ppyPath = getPropertyPath();
     const newProperty = HDLFile.pullJsonInfo(ppyPath);
     if (newProperty) {
