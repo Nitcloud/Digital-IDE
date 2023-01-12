@@ -184,7 +184,7 @@ class render{
             try {
                 class_name_i = element.getAttribute("class");
             }
-            catch {
+            catch (error) {
                 class_name_i = '';
             }
     

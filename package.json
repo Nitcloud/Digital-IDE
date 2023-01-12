@@ -1,1064 +1,1069 @@
 {
-    "name": "digital-ide",
-    "displayName": "Digital IDE",
-    "description": "Design For Digital Development",
-    "publisher": "sterben",
-    "homepage": "https://github.com/Bestduan/Digital-IDE",
-    "version": "0.2.4",
-    "main": "./src/extension",
-    "icon": "images/DIDE.png",
-    "keywords": [
-        "FPGA Develop Support",
-        "FPGA",
-        "ASIC",
-        "IC",
-        "Digital",
-        "HDL",
-        "Systemverilog",
-        "Verilog",
-        "VHDL",
-        "Vivado",
-        "Xilinx"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/Bestduan/Digital-IDE"
-    },
-    "bugs": {
-        "url": "https://github.com/Bestduan/Digital-IDE/issues"
-    },
-    "engines": {
-        "vscode": "^1.70.1"
-    },
-    "categories": [
-        "Extension Packs",
-        "Programming Languages",
-        "Snippets"
-    ],
-    "activationEvents": [
-        "*"
-    ],
-    "contributes": {
-        "configuration": {
-            "title": "DIDE",
-            "properties": {
-                "HDL.linting.vlog.linter": {
-                    "scope": "window",
-                    "type": "string",
-                    "enum": [
-                        "vivado",
-                        "modelsim",
-                        "iverilog",
-                        "verible",
-                        "verilator",
-                        "default"
-                    ],
-                    "default": "vivado",
-                    "description": "Select the verilog or systemverilog linter."
-                },
-                "HDL.linting.vhdl.linter": {
-                    "scope": "window",
-                    "type": "string",
-                    "enum": [
-                        "vivado",
-                        "modelsim",
-                        "ghdl",
-                        "default"
-                    ],
-                    "default": "vivado",
-                    "description": "Select the vhdl linter."
-                },
-                "HDL.linting.ghdl.arguments": {
-                    "scope": "window",
-                    "type": "string",
-                    "default": "",
-                    "description": "Add ghdl arguments here. They will be added to ghdl while linting."
-                },
-                "HDL.linting.iverilog.arguments": {
-                    "scope": "window",
-                    "type": "string",
-                    "default": "",
-                    "description": "Add Icarus Verilog arguments here (like macros). They will be added to Icarus Verilog while linting."
-                },
-                "HDL.linting.vivado.arguments": {
-                    "scope": "window",
-                    "type": "string",
-                    "default": "",
-                    "description": "Add Vivado arguments here. They will be added to Vivado while linting."
-                },
-                "HDL.linting.modelsim.arguments": {
-                    "scope": "window",
-                    "type": "string",
-                    "default": "",
-                    "description": "Add Modelsim arguments here. They will be added to Modelsim while linting."
-                },
-                "HDL.linting.verible.arguments": {
-                    "scope": "window",
-                    "type": "string",
-                    "default": "",
-                    "description": "Add verible arguments here. They will be added to verible while linting."
-                },
-                "HDL.linting.verilator.arguments": {
-                    "scope": "window",
-                    "type": "string",
-                    "default": "",
-                    "description": "Add Verilator arguments here (like macros). They will be added to Verilator while linting."
-                },
-                "HDL.linting.vsg.arguments": {
-                    "scope": "window",
-                    "type": "string",
-                    "default": "",
-                    "description": "Add vsg arguments here (like macros). They will be added to vsg while linting."
-                },
-                "HDL.formatter.vlog.default.style": {
-                    "scope": "window",
-                    "type": "string",
-                    "enum": [
-                        "kr",
-                        "ansi",
-                        "gnu"
-                    ],
-                    "default": "kr",
-                    "description": "Select the verilog and systemverilog formatter style."
-                },
-                "HDL.formatter.vlog.default.args": {
-                    "scope": "window",
-                    "type": "string",
-                    "default": "",
-                    "description": "Add verilog formatter arguments here (like istyle)."
-                },
-                "HDL.formatter.vhdl.default.keyword-case": {
-                    "description": "Keyword case",
-                    "type": "string",
-                    "default": "LowerCase",
-                    "enum": [
-                        "LowerCase",
-                        "UpperCase"
-                    ]
-                },
-                "HDL.formatter.vhdl.default.align-comments": {
-                    "description": "Align comments",
-                    "type": "boolean",
-                    "default": false
-                },
-                "HDL.formatter.vhdl.default.type-name-case": {
-                    "description": "Type name case",
-                    "type": "string",
-                    "default": "LowerCase",
-                    "enum": [
-                        "LowerCase",
-                        "UpperCase"
-                    ]
-                },
-                "HDL.formatter.vhdl.default.indentation": {
-                    "description": "Indentation",
-                    "type": "number",
-                    "default": 4
-                },
-                "PRJ.file.limit.number": {
-                    "scope": "window",
-                    "type": "number",
-                    "default": 600,
-                    "description": "PRJ file limit number"
-                },
-                "PRJ.file.structure.notice": {
-                    "scope": "window",
-                    "type": "boolean",
-                    "default": true,
-                    "description": "notice when change file structure"
-                },
-                "PRJ.custom.Lib.repo.path": {
-                    "scope": "window",
-                    "type": "string",
-                    "default": "",
-                    "description": "set the custom lib_repo_path"
-                },
-                "PRJ.xilinx.BD.repo.path": {
-                    "scope": "window",
-                    "type": "string",
-                    "default": "",
-                    "description": "set the xilinx bd_repo_path"
-                },
-                "PRJ.xilinx.IP.repo.path": {
-                    "scope": "window",
-                    "type": "string",
-                    "default": "",
-                    "description": "set the xilinx ip_repo_path \n e.g. : D:/project/FPGA/.Lib/xIP"
-                },
-                "SIM.Xilinx.LIB.path": {
-                    "scope": "window",
-                    "type": "string",
-                    "default": "",
-                    "description": "set the Xilinx SIM LIB path. \n e.g. : D:/APP/vivado_18_3/Vivado/2018.3/data/verilog/src"
-                },
-                "TOOL.simulate.runPath": {
-                    "scope": "window",
-                    "type": "string",
-                    "default": "",
-                    "description": "Simulate tool will be run at the file location for linting. Else it will be run at workspace folder."
-                },
-                "TOOL.vivado.install.path": {
-                    "scope": "window",
-                    "type": "string",
-                    "default": "",
-                    "description": "set the xilinx install path. \n e.g. : D:/APP/vivado_18_3/Vivado/2018.3/bin \n This applies only to WIN For other systems, add it to environment variables"
-                },
-                "TOOL.modelsim.install.path": {
-                    "scope": "window",
-                    "type": "string",
-                    "default": "",
-                    "description": "set the modelsim install path. \n e.g. : D:/APP/modelsim/bin/"
-                },
-                "TOOL.verilator.install.path": {
-                    "scope": "window",
-                    "type": "string",
-                    "default": "",
-                    "description": "set the verilator install path. \n e.g. : D:/APP/verilator/bin/"
-                },
-                "TOOL.verible.install.path": {
-                    "scope": "window",
-                    "type": "string",
-                    "default": "",
-                    "description": "set the verible install path. \n e.g. : D:/APP/verible/bin/"
-                },
-                "TOOL.ghdl.install.path": {
-                    "scope": "window",
-                    "type": "string",
-                    "default": "",
-                    "description": "set the verible install path. \n e.g. : D:/APP/ghdl/bin/"
-                },
-                "TOOL.vsg.install.path": {
-                    "scope": "window",
-                    "type": "string",
-                    "default": "",
-                    "description": "set the vsg install path. \n e.g. : D:/APP/vsg/bin/"
-                },
-                "TOOL.iverilog.install.path": {
-                    "scope": "window",
-                    "type": "string",
-                    "default": "",
-                    "description": "set the iVerilog install path. \n e.g. : D:/APP/iverilog/bin"
-                },
-                "TOOL.gtkwave.install.path": {
-                    "scope": "window",
-                    "type": "string",
-                    "default": "",
-                    "description": "set the gtkwave install path. \n e.g. : D:/APP/iverilog/gtkwave/bin"
-                },
-                "TOOL.doc.webview.backgroundImage": {
-                    "type": "string",
-                    "default": "",
-                    "description": "url of the background image"
-                },
-                "TOOL.doc.pdf.scale": {
-                    "type": "number",
-                    "default": 1,
-                    "description": "scale of the exported pdf"
-                },
-                "TOOL.doc.pdf.printBackground": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "whether print background"
-                },
-                "TOOL.doc.pdf.landscape": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "whether export pdf as a landscape style"
-                },
-                "TOOL.doc.pdf.format": {
-                    "type": "string",
-                    "default": "A4",
-                    "description": "format of pdf size"
-                },
-                "TOOL.doc.pdf.displayHeaderFooter": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "display header and footer in the exported pdf"
-                },
-                "TOOL.doc.pdf.browserPath": {
-                    "type": "string",
-                    "default": "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
-                    "description": "the absolute path of edge or chrome, we need browser to render pdf"
-                },
-                "TOOL.doc.pdf.margin.top": {
-                    "type": "number",
-                    "default": 0.5,
-                    "description": "top margin of exported pdf, unit cm"
-                },
-                "TOOL.doc.pdf.margin.right": {
-                    "type": "number",
-                    "default": 0.5,
-                    "description": "top margin of exported pdf, unit cm"
-                },
-                "TOOL.doc.pdf.margin.bottom": {
-                    "type": "number",
-                    "default": 0.5,
-                    "description": "top margin of exported pdf, unit cm"
-                },
-                "TOOL.doc.pdf.margin.left": {
-                    "type": "number",
-                    "default": 0.5,
-                    "description": "top margin of exported pdf, unit cm"
-                },
-                "TOOL.doc.pdf.headerTemplate": {
-                    "type": "string",
-                    "default": "<div style=\"font-size: 9px; margin-left: 1cm;\"> <span class='title'></span></div> <div style=\"font-size: 9px; margin-left: auto; margin-right: 1cm; \"> <span class='date'></span></div>",
-                    "description": "html template of header, if displayHeaderFooter is set to false, this setting will be ignored"
-                },
-                "TOOL.doc.pdf.footerTemplate": {
-                    "type": "string",
-                    "default": "<div style=\"font-size: 9px; margin-left: 1cm;\"> <span class='title'></span></div> <div style=\"font-size: 9px; margin-left: auto; margin-right: 1cm; \"> <span class='date'></span></div>",
-                    "description": "<div style=\"font-size: 9px; margin: 0 auto;\"> <span class='pageNumber'></span> / <span class='totalPages'></span></div>"
-                }
-            }
-        },
-        "viewsContainers": {
-            "activitybar": [
-                {
-                    "id": "TOOL",
-                    "title": "DIDE Tool",
-                    "icon": "images/svg/DIDE.svg"
-                }
-            ]
-        },
-        "views": {
-            "TOOL": [
-                {
-                    "id": "TOOL-tree-arch",
-                    "name": "architecture"
-                },
-                {
-                    "id": "TOOL-tree-tool",
-                    "name": "TOOL"
-                },
-                {
-                    "id": "TOOL-tree-hardware",
-                    "name": "HARD Options"
-                },
-                {
-                    "id": "TOOL-tree-software",
-                    "name": "SOFT Options"
-                }
-            ]
-        },
-        "keybindings": [
-            {
-                "command": "HARD.Launch",
-                "key": "Alt+z",
-                "mac": "Alt+z",
-                "when": "editorTextFocus"
-            },
-            {
-                "command": "TOOL.instance",
-                "key": "Alt+i",
-                "mac": "Alt+i",
-                "when": "editorTextFocus"
-            }
-        ],
-        "languages": [
-            {
-                "id": "tcl",
-                "aliases": [
-                    "TCL",
-                    "Xilinx Constraints File",
-                    "Synopsis Constraints File"
-                ],
-                "extensions": [
-                    ".tcl",
-                    ".sdc",
-                    ".xdc",
-                    ".fdc"
-                ],
-                "configuration": "./config/tcl.configuration.json"
-            },
-            {
-                "id": "bd",
-                "extensions": [
-                    ".bd"
-                ]
-            },
-            {
-                "id": "vhdl",
-                "aliases": [
-                    "VHDL",
-                    "vhdl"
-                ],
-                "extensions": [
-                    ".vhd",
-                    ".vhdl",
-                    ".vho",
-                    ".vht"
-                ],
-                "configuration": "./config/vhdl.configuration.json"
-            },
-            {
-                "id": "verilog",
-                "aliases": [
-                    "Verilog",
-                    "verilog"
-                ],
-                "extensions": [
-                    ".v",
-                    ".V",
-                    ".vh",
-                    ".vl"
-                ],
-                "configuration": "./config/verilog.configuration.json"
-            },
-            {
-                "id": "systemverilog",
-                "aliases": [
-                    "System Verilog",
-                    "systemverilog"
-                ],
-                "extensions": [
-                    ".sv",
-                    ".SV"
-                ],
-                "configuration": "./config/systemverilog.configuration.json"
-            },
-            {
-                "id": "arm",
-                "aliases": [
-                    "ARM",
-                    "arm"
-                ],
-                "extensions": [
-                    ".s",
-                    ".S",
-                    ".asm",
-                    ".sx"
-                ],
-                "configuration": "./config/arm.configuration.json"
-            },
-            {
-                "id": "linkerscript",
-                "aliases": [
-                    "LinkerScript",
-                    "linkerscript"
-                ],
-                "extensions": [
-                    ".ld",
-                    ".dld"
-                ],
-                "configuration": "./config/link.configuration.json"
-            }
-        ],
-        "jsonValidation": [
-            {
-                "fileMatch": "property.json",
-                "url": "./property-schema.json"
-            }
-        ],
-        "grammars": [
-            {
-                "language": "linkerscript",
-                "scopeName": "source.ld",
-                "path": "./syntaxes/link.json"
-            },
-            {
-                "language": "arm",
-                "scopeName": "source.arm",
-                "path": "./syntaxes/arm.json"
-            },
-            {
-                "language": "tcl",
-                "scopeName": "source.tcl",
-                "path": "./syntaxes/tcl.json"
-            },
-            {
-                "language": "vhdl",
-                "scopeName": "source.vhdl",
-                "path": "./syntaxes/vhdl.json"
-            },
-            {
-                "language": "verilog",
-                "scopeName": "source.verilog",
-                "path": "./syntaxes/verilog.json"
-            },
-            {
-                "language": "systemverilog",
-                "scopeName": "source.systemverilog",
-                "path": "./syntaxes/systemverilog.json"
-            }
-        ],
-        "snippets": [
-            {
-                "language": "tcl",
-                "path": "snippets/tcl.json"
-            },
-            {
-                "language": "vhdl",
-                "path": "snippets/vhdl.json"
-            },
-            {
-                "language": "verilog",
-                "path": "snippets/svlog.json"
-            },
-            {
-                "language": "systemverilog",
-                "path": "snippets/svlog.json"
-            }
-        ],
-        "commands": [
-            {
-                "command": "TOOL.tree.arch.refresh",
-                "title": "Refresh this File List",
-                "icon": "$(refresh)",
-                "category": "FILE"
-            },
-            {
-                "command": "FILE.expand",
-                "title": "Refresh this File List",
-                "icon": "$(expand-all)",
-                "category": "FILE"
-            },
-            {
-                "command": "FILE.collapse",
-                "title": "Refresh this File List",
-                "icon": "$(collapse-all)",
-                "category": "FILE"
-            },
-            {
-                "command": "TOOL.tree.arch.openFile",
-                "title": "Open this File",
-                "category": "FILE"
-            },
-            {
-                "command": "TOOL.generate.property",
-                "title": "generate property file",
-                "category": "TOOL"
-            },
-            {
-                "command": "TOOL.overwrite.property",
-                "title": "Overwrite the InitPropertyParam",
-                "category": "TOOL"
-            },
-            {
-                "command": "TOOL.Clean",
-                "title": "Clean",
-                "category": "TOOL"
-            },
-            {
-                "command": "TOOL.simulate",
-                "title": "Simulate",
-                "icon": {
-                    "light": "images/svg/light/debug.svg",
-                    "dark": "images/svg/dark/debug.svg"
-                },
-                "category": "TOOL"
-            },
-            {
-                "command": "TOOL.libPick",
-                "title": "import library",
-                "icon": {
-                    "light": "images/svg/light/library.svg",
-                    "dark": "images/svg/dark/library.svg"
-                },
-                "category": "TOOL"
-            },
-            {
-                "command": "TOOL.tree.arch.expand",
-                "title": "expand the tree view",
-                "icon": "$(expand-all)",
-                "category": "TOOL"
-            },
-            {
-                "command": "TOOL.tree.arch.collapse",
-                "title": "collapse the tree view",
-                "icon": "$(collapse-all)",
-                "category": "TOOL"
-            },
-            {
-                "command": "TOOL.netlist",
-                "title": "show netlist",
-                "icon": {
-                    "light": "images/svg/light/netlist.svg",
-                    "dark": "images/svg/dark/netlist.svg"
-                },
-                "category": "TOOL"
-            },
-            {
-                "command": "TOOL.FSMGraph",
-                "title": "show FSMGraph",
-                "icon": {
-                    "light": "images/svg/light/fsm.svg",
-                    "dark": "images/svg/dark/fsm.svg"
-                },
-                "category": "TOOL"
-            },
-            {
-                "command": "TOOL.vhdl2vlog",
-                "title": "translate vhdl to vlog",
-                "icon": {
-                    "light": "images/svg/light/translate.svg",
-                    "dark": "images/svg/dark/translate.svg"
-                },
-                "category": "TOOL"
-            },
-            {
-                "command": "TOOL.instance",
-                "title": "Instance",
-                "category": "TOOL"
-            },
-            {
-                "command": "TOOL.testbench",
-                "title": "Testbench",
-                "category": "TOOL"
-            },
-            {
-                "command": "TOOL.overwrite.tb",
-                "title": "Overwrite the template of testbench",
-                "category": "TOOL"
-            },
-            {
-                "command": "TOOL.state_machine.viewer",
-                "title": "State machine viewer",
-                "category": "TOOL"
-            },
-            {
-                "command": "HARD.srcTop",
-                "title": "Set as TOP",
-                "category": "HARD"
-            },
-            {
-                "command": "HARD.simTop",
-                "title": "Set as Testbench TOP",
-                "category": "HARD"
-            },
-            {
-                "command": "HARD.Launch",
-                "title": "Launch",
-                "category": "HARD"
-            },
-            {
-                "command": "HARD.Refresh",
-                "title": "refresh designed file",
-                "category": "HARD"
-            },
-            {
-                "command": "HARD.Simulate",
-                "title": "Run the Simulation",
-                "category": "HARD"
-            },
-            {
-                "command": "HARD.simCLI",
-                "title": "Run the Simulation in CLI",
-                "category": "HARD"
-            },
-            {
-                "command": "HARD.simGUI",
-                "title": "Run the Simulation in GUI",
-                "category": "HARD"
-            },
-            {
-                "command": "HARD.Build",
-                "title": "Build the current fpga project",
-                "category": "HARD"
-            },
-            {
-                "command": "HARD.Synth",
-                "title": "Synth the current fpga project",
-                "category": "HARD"
-            },
-            {
-                "command": "HARD.Impl",
-                "title": "Impl the current fpga project",
-                "category": "HARD"
-            },
-            {
-                "command": "HARD.Bit",
-                "title": "Generate the bit file",
-                "category": "HARD"
-            },
-            {
-                "command": "HARD.Program",
-                "title": "Download the bit file into the device",
-                "category": "HARD"
-            },
-            {
-                "command": "HARD.GUI",
-                "title": "Open the GUI",
-                "category": "HARD"
-            },
-            {
-                "command": "HARD.Exit",
-                "title": "Exit the current project",
-                "category": "HARD"
-            },
-            {
-                "command": "HARD.add.device",
-                "title": "Add devices to the database",
-                "category": "HARD"
-            },
-            {
-                "command": "HARD.del.device",
-                "title": "Remove the device from the database",
-                "category": "HARD"
-            },
-            {
-                "command": "SOFT.Launch",
-                "title": "Launch",
-                "category": "SOFT"
-            },
-            {
-                "command": "SOFT.Build",
-                "title": "Build",
-                "category": "SOFT"
-            },
-            {
-                "command": "SOFT.Download",
-                "title": "Download",
-                "category": "SOFT"
-            },
-            {
-                "command": "xilinx.overwrite.bd",
-                "title": "Overwrite the bd_file",
-                "category": "HARD"
-            },
-            {
-                "command": "xilinx.add.bd",
-                "title": "Add a bd_file",
-                "category": "HARD"
-            },
-            {
-                "command": "xilinx.del.bd",
-                "title": "Delete the bd_file",
-                "category": "HARD"
-            },
-            {
-                "command": "TOOL.export.file",
-                "title": "export the document of current file",
-                "category": "TOOL"
-            },
-            {
-                "command": "TOOL.export.project",
-                "title": "export the document of the project",
-                "category": "TOOL"
-            },
-            {
-                "command": "TOOL.doc.webview.show",
-                "title": "show the document of current file",
-                "category": "TOOL",
-                "icon": {
-                    "light": "images/svg/light/documentation.svg",
-                    "dark": "images/svg/dark/documentation.svg"
-                }
-            },
-            {
-                "command": "PL.file.add",
-                "title": "add file"
-            },
-            {
-                "command": "PL.file.del",
-                "title": "del file"
-            }
-        ],
-        "menus": {
-            "view/title": [
-                {
-                    "command": "TOOL.tree.arch.collapse",
-                    "group": "navigation",
-                    "when": "view == TOOL-tree-arch"
-                },
-                {
-                    "command": "TOOL.libPick",
-                    "group": "navigation",
-                    "when": "view == TOOL-tree-arch"
-                },
-                {
-                    "command": "TOOL.tree.arch.refresh",
-                    "group": "navigation",
-                    "when": "view == TOOL-tree-arch"
-                }
-            ],
-            "view/item/context": [
-                {
-                    "command": "TOOL.simulate",
-                    "group": "inline@1",
-                    "when": "view == TOOL-tree-arch && viewItem == file"
-                },
-                {
-                    "command": "TOOL.netlist",
-                    "group": "inline@3",
-                    "when": "view == TOOL-tree-arch && viewItem == file"
-                },
-                {
-                    "command": "HARD.srcTop",
-                    "group": "navigation@1",
-                    "when": "view == TOOL-tree-arch && viewItem == file"
-                },
-                {
-                    "command": "HARD.simTop",
-                    "group": "navigation@2",
-                    "when": "view == TOOL-tree-arch && viewItem == file"
-                },
-                {
-                    "command": "TOOL.simulate",
-                    "group": "navigation@3",
-                    "when": "view == TOOL-tree-arch && viewItem == file"
-                }
-            ],
-            "editor/title": [
-                {
-                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-                    "command": "TOOL.simulate",
-                    "group": "navigation@1"
-                },
-                {
-                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-                    "command": "TOOL.FSMGraph",
-                    "group": "navigation@2"
-                },
-                {
-                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-                    "command": "TOOL.netlist",
-                    "group": "navigation@3"
-                },
-                {
-                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-                    "command": "TOOL.doc.webview.show",
-                    "group": "navigation@4"
-                },
-                {
-                    "when": "resourceLangId == vhdl",
-                    "command": "TOOL.vhdl2vlog",
-                    "group": "navigation@5"
-                }
-            ],
-            "editor/context": [
-                {
-                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-                    "command": "HARD.srcTop",
-                    "group": "navigation@1"
-                },
-                {
-                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-                    "command": "HARD.simTop",
-                    "group": "navigation@2"
-                },
-                {
-                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-                    "command": "TOOL.instance",
-                    "group": "navigation@3"
-                },
-                {
-                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-                    "command": "TOOL.testbench",
-                    "group": "navigation@4"
-                },
-                {
-                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-                    "command": "TOOL.simulate",
-                    "group": "navigation@5"
-                },
-                {
-                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
-                    "command": "TOOL.netlist",
-                    "group": "navigation@6"
-                },
-                {
-                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
-                    "command": "TOOL.FSMGraph",
-                    "group": "navigation@7"
-                },
-                {
-                    "when": "resourceLangId == vhdl",
-                    "command": "TOOL.vhdl2vlog",
-                    "group": "navigation@8"
-                },
-                {
-                    "when": "editorLangId == bd",
-                    "command": "xilinx.overwrite.bd",
-                    "group": "navigation@9"
-                }
-            ],
-            "explorer/context": [
-                {
-                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
-                    "command": "HARD.srcTop",
-                    "group": "navigation@5"
-                },
-                {
-                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
-                    "command": "HARD.simTop",
-                    "group": "navigation@6"
-                },
-                {
-                    "when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
-                    "command": "TOOL.testbench",
-                    "group": "navigation@7"
-                },
-                {
-                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
-                    "command": "TOOL.simulate",
-                    "group": "navigation@8"
-                },
-                {
-                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
-                    "command": "TOOL.netlist",
-                    "group": "navigation@9"
-                },
-                {
-                    "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
-                    "command": "TOOL.FSMGraph",
-                    "group": "navigation@10"
-                },
-                {
-                    "when": "resourceLangId == vhdl",
-                    "command": "TOOL.vhdl2vlog",
-                    "group": "navigation@11"
-                },
-                {
-                    "when": "editorLangId == bd",
-                    "command": "xilinx.overwrite.bd",
-                    "group": "navigation@12"
-                }
-            ]
-        },
-        "icons": {
-            "instance-verilog": {
-                "description": "icon of verilog in TOOL.instance",
-                "default": {
-                    "fontPath": "./icons/iconfont.woff2",
-                    "fontCharacter": "\\e7a8"
-                }
-            },
-            "instance-vhdl": {
-                "description": "icon of verilog in TOOL.instance",
-                "default": {
-                    "fontPath": "./icons/iconfont.woff2",
-                    "fontCharacter": "\\e6b3"
-                }
-            },
-            "instance-port": {
-                "description": "port of verilog in TOOL.instance",
-                "default": {
-                    "fontPath": "./icons/iconfont.woff2",
-                    "fontCharacter": "\\e638"
-                }
-            },
-            "instance-param": {
-                "description": "param of verilog in TOOL.instance",
-                "default": {
-                    "fontPath": "./icons/iconfont.woff2",
-                    "fontCharacter": "\\e655"
-                }
-            },
-            "instance-module": {
-                "description": "module of verilog in TOOL.instance",
-                "default": {
-                    "fontPath": "./icons/iconfont.woff2",
-                    "fontCharacter": "\\e60b"
-                }
-            },
-            "instance-input": {
-                "description": "input",
-                "default": {
-                    "fontPath": "./icons/iconfont.woff2",
-                    "fontCharacter": "\\e908"
-                }
-            },
-            "instance-output": {
-                "description": "output",
-                "default": {
-                    "fontPath": "./icons/iconfont.woff2",
-                    "fontCharacter": "\\e7b0"
-                }
-            },
-            "instance-inout": {
-                "description": "inout",
-                "default": {
-                    "fontPath": "./icons/iconfont.woff2",
-                    "fontCharacter": "\\ea19"
-                }
-            },
-            "export-html": {
-                "description": "export html",
-                "default": {
-                    "fontPath": "./icons/iconfont.woff2",
-                    "fontCharacter": "\\e633"
-                }
-            },
-            "export-markdown": {
-                "description": "export markdown",
-                "default": {
-                    "fontPath": "./icons/iconfont.woff2",
-                    "fontCharacter": "\\ee68"
-                }
-            },
-            "export-pdf": {
-                "description": "export pdf",
-                "default": {
-                    "fontPath": "./icons/iconfont.woff2",
-                    "fontCharacter": "\\e684"
-                }
-            },
-            "libpick-folder" :{
-                "description": "libpick folder",
-                "default": {
-                    "fontPath": "./icons/iconfont.woff2",
-                    "fontCharacter": "\\e600"
-                }
-            },
-            "libpick-verilog":{
-                "description": "libpick verilog",
-                "default": {
-                    "fontPath": "./icons/iconfont.woff2",
-                    "fontCharacter": "\\e7a8"
-                }
-            },
-            "libpick-vhdl" :{
-                "description": "libpick vhdl",
-                "default": {
-                    "fontPath": "./icons/iconfont.woff2",
-                    "fontCharacter": "\\e6b3"
-                }
-            },
-            "libpick-common":{
-                "description": "libpick common",
-                "default": {
-                    "fontPath": "./icons/iconfont.woff2",
-                    "fontCharacter": "\\e622"
-                }
-            },
-            "libpick-custom":{
-                "description": "libpick custom",
-                "default": {
-                    "fontPath": "./icons/iconfont.woff2",
-                    "fontCharacter": "\\e623"
-                }
-            },
-            "libpick-unknown":{
-                "description": "libpick unknown",
-                "default": {
-                    "fontPath": "./icons/iconfont.woff2",
-                    "fontCharacter": "\\e62a"
-                }
-            }
-        }
-    },
-    "scripts": {
-        "vscode:prepublish": "webpack --mode production"
-    },
-    "devDependencies": {
-        "@types/glob": "^8.0.0",
-        "@types/mocha": "^10.0.0",
-        "@types/node": "16.x",
-        "@types/vscode": "^1.73.0",
-        "@vscode/test-electron": "^2.2.0",
-        "eslint": "^8.26.0",
-        "glob": "^8.0.3",
-        "mocha": "^10.1.0",
-        "typescript": "^4.8.4"
-    },
-    "dependencies": {
-        "chokidar": "^3.5.3",
-        "json5": "^2.2.2",
-        "puppeteer-core": "^19.4.1",
-        "showdown": "^2.1.0",
-        "state-machine-cat": "^9.2.5",
-        "temp": "^0.9.4",
-        "wavedrom": "^2.9.1"
-    }
+	"name": "digital-ide",
+	"displayName": "Digital IDE",
+	"description": "Design For Digital Development",
+	"publisher": "sterben",
+	"homepage": "https://github.com/Bestduan/Digital-IDE",
+	"version": "0.2.7",
+	"main": "./src/extension",
+	"icon": "images/DIDE.png",
+	"keywords": [
+		"FPGA Develop Support",
+		"FPGA",
+		"ASIC",
+		"IC",
+		"Digital",
+		"HDL",
+		"Systemverilog",
+		"Verilog",
+		"VHDL",
+		"Vivado",
+		"Xilinx"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Bestduan/Digital-IDE"
+	},
+	"bugs": {
+		"url": "https://github.com/Bestduan/Digital-IDE/issues"
+	},
+	"engines": {
+		"vscode": "^1.72.0"
+	},
+	"categories": [
+		"Extension Packs",
+		"Programming Languages",
+		"Snippets"
+	],
+	"activationEvents": [
+		"onLanguage:verilog",
+		"onLanguage:vhdl",
+		"onLanguage:systemverilog",
+		"onCommand:TOOL.generate.property",
+		"workspaceContains:.vscode/property.json"
+	],
+	"contributes": {
+		"configuration": {
+			"title": "DIDE",
+			"properties": {
+				"HDL.linting.vlog.linter": {
+					"scope": "window",
+					"type": "string",
+					"enum": [
+						"vivado",
+						"modelsim",
+						"iverilog",
+						"verible",
+						"verilator",
+						"default"
+					],
+					"default": "vivado",
+					"description": "Select the verilog or systemverilog linter."
+				},
+				"HDL.linting.vhdl.linter": {
+					"scope": "window",
+					"type": "string",
+					"enum": [
+						"vivado",
+						"modelsim",
+						"ghdl",
+						"default"
+					],
+					"default": "vivado",
+					"description": "Select the vhdl linter."
+				},
+				"HDL.linting.ghdl.arguments": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "Add ghdl arguments here. They will be added to ghdl while linting."
+				},
+				"HDL.linting.iverilog.arguments": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "Add Icarus Verilog arguments here (like macros). They will be added to Icarus Verilog while linting."
+				},
+				"HDL.linting.vivado.arguments": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "Add Vivado arguments here. They will be added to Vivado while linting."
+				},
+				"HDL.linting.modelsim.arguments": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "Add Modelsim arguments here. They will be added to Modelsim while linting."
+				},
+				"HDL.linting.verible.arguments": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "Add verible arguments here. They will be added to verible while linting."
+				},
+				"HDL.linting.verilator.arguments": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "Add Verilator arguments here (like macros). They will be added to Verilator while linting."
+				},
+				"HDL.linting.vsg.arguments": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "Add vsg arguments here (like macros). They will be added to vsg while linting."
+				},
+				"HDL.formatter.vlog.default.style": {
+					"scope": "window",
+					"type": "string",
+					"enum": [
+						"kr",
+						"ansi",
+						"gnu"
+					],
+					"default": "kr",
+					"description": "Select the verilog and systemverilog formatter style."
+				},
+				"HDL.formatter.vlog.default.args": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "Add verilog formatter arguments here (like istyle)."
+				},
+				"HDL.formatter.vhdl.default.keyword-case": {
+					"description": "Keyword case",
+					"type": "string",
+					"default": "LowerCase",
+					"enum": [
+						"LowerCase",
+						"UpperCase"
+					]
+				},
+				"HDL.formatter.vhdl.default.align-comments": {
+					"description": "Align comments",
+					"type": "boolean",
+					"default": false
+				},
+				"HDL.formatter.vhdl.default.type-name-case": {
+					"description": "Type name case",
+					"type": "string",
+					"default": "LowerCase",
+					"enum": [
+						"LowerCase",
+						"UpperCase"
+					]
+				},
+				"HDL.formatter.vhdl.default.indentation": {
+					"description": "Indentation",
+					"type": "number",
+					"default": 4
+				},
+				"PRJ.file.limit.number": {
+					"scope": "window",
+					"type": "number",
+					"default": 600,
+					"description": "PRJ file limit number"
+				},
+				"PRJ.file.structure.notice": {
+					"scope": "window",
+					"type": "boolean",
+					"default": true,
+					"description": "notice when change file structure"
+				},
+				"PRJ.custom.Lib.repo.path": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "set the custom lib_repo_path"
+				},
+				"PRJ.xilinx.BD.repo.path": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "set the xilinx bd_repo_path"
+				},
+				"PRJ.xilinx.IP.repo.path": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "set the xilinx ip_repo_path \n e.g. : D:/project/FPGA/.Lib/xIP"
+				},
+				"SIM.Xilinx.LIB.path": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "set the Xilinx SIM LIB path. \n e.g. : D:/APP/vivado_18_3/Vivado/2018.3/data/verilog/src"
+				},
+				"TOOL.simulate.runPath": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "Simulate tool will be run at the file location for linting. Else it will be run at workspace folder."
+				},
+				"TOOL.vivado.install.path": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "set the xilinx install path. \n e.g. : D:/APP/vivado_18_3/Vivado/2018.3/bin \n This applies only to WIN For other systems, add it to environment variables"
+				},
+				"TOOL.modelsim.install.path": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "set the modelsim install path. \n e.g. : D:/APP/modelsim/bin/"
+				},
+				"TOOL.verilator.install.path": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "set the verilator install path. \n e.g. : D:/APP/verilator/bin/"
+				},
+				"TOOL.verible.install.path": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "set the verible install path. \n e.g. : D:/APP/verible/bin/"
+				},
+				"TOOL.ghdl.install.path": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "set the verible install path. \n e.g. : D:/APP/ghdl/bin/"
+				},
+				"TOOL.vsg.install.path": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "set the vsg install path. \n e.g. : D:/APP/vsg/bin/"
+				},
+				"TOOL.iverilog.install.path": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "set the iVerilog install path. \n e.g. : D:/APP/iverilog/bin"
+				},
+				"TOOL.gtkwave.install.path": {
+					"scope": "window",
+					"type": "string",
+					"default": "",
+					"description": "set the gtkwave install path. \n e.g. : D:/APP/iverilog/gtkwave/bin"
+				},
+				"TOOL.doc.webview.backgroundImage": {
+					"type": "string",
+					"default": "",
+					"description": "url of the background image"
+				},
+				"TOOL.doc.pdf.scale": {
+					"type": "number",
+					"default": 1,
+					"description": "scale of the exported pdf"
+				},
+				"TOOL.doc.pdf.printBackground": {
+					"type": "boolean",
+					"default": true,
+					"description": "whether print background"
+				},
+				"TOOL.doc.pdf.landscape": {
+					"type": "boolean",
+					"default": false,
+					"description": "whether export pdf as a landscape style"
+				},
+				"TOOL.doc.pdf.format": {
+					"type": "string",
+					"default": "A4",
+					"description": "format of pdf size"
+				},
+				"TOOL.doc.pdf.displayHeaderFooter": {
+					"type": "boolean",
+					"default": false,
+					"description": "display header and footer in the exported pdf"
+				},
+				"TOOL.doc.pdf.browserPath": {
+					"type": "string",
+					"default": "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+					"description": "the absolute path of edge or chrome, we need browser to render pdf"
+				},
+				"TOOL.doc.pdf.margin.top": {
+					"type": "number",
+					"default": 0.5,
+					"description": "top margin of exported pdf, unit cm"
+				},
+				"TOOL.doc.pdf.margin.right": {
+					"type": "number",
+					"default": 0.5,
+					"description": "top margin of exported pdf, unit cm"
+				},
+				"TOOL.doc.pdf.margin.bottom": {
+					"type": "number",
+					"default": 0.5,
+					"description": "top margin of exported pdf, unit cm"
+				},
+				"TOOL.doc.pdf.margin.left": {
+					"type": "number",
+					"default": 0.5,
+					"description": "top margin of exported pdf, unit cm"
+				},
+				"TOOL.doc.pdf.headerTemplate": {
+					"type": "string",
+					"default": "<div style=\"font-size: 9px; margin-left: 1cm;\"> <span class='title'></span></div> <div style=\"font-size: 9px; margin-left: auto; margin-right: 1cm; \"> <span class='date'></span></div>",
+					"description": "html template of header, if displayHeaderFooter is set to false, this setting will be ignored"
+				},
+				"TOOL.doc.pdf.footerTemplate": {
+					"type": "string",
+					"default": "<div style=\"font-size: 9px; margin-left: 1cm;\"> <span class='title'></span></div> <div style=\"font-size: 9px; margin-left: auto; margin-right: 1cm; \"> <span class='date'></span></div>",
+					"description": "<div style=\"font-size: 9px; margin: 0 auto;\"> <span class='pageNumber'></span> / <span class='totalPages'></span></div>"
+				}
+			}
+		},
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "TOOL",
+					"title": "DIDE Tool",
+					"icon": "images/svg/DIDE.svg"
+				}
+			]
+		},
+		"views": {
+			"TOOL": [
+				{
+					"id": "TOOL-tree-arch",
+					"name": "architecture"
+				},
+				{
+					"id": "TOOL-tree-tool",
+					"name": "TOOL"
+				},
+				{
+					"id": "TOOL-tree-hardware",
+					"name": "HARD Options"
+				},
+				{
+					"id": "TOOL-tree-software",
+					"name": "SOFT Options"
+				}
+			]
+		},
+		"keybindings": [
+			{
+				"command": "HARD.Launch",
+				"key": "Alt+z",
+				"mac": "Alt+z",
+				"when": "editorTextFocus"
+			},
+			{
+				"command": "TOOL.instance",
+				"key": "Alt+i",
+				"mac": "Alt+i",
+				"when": "editorTextFocus"
+			}
+		],
+		"languages": [
+			{
+				"id": "tcl",
+				"aliases": [
+					"TCL",
+					"Xilinx Constraints File",
+					"Synopsis Constraints File"
+				],
+				"extensions": [
+					".tcl",
+					".sdc",
+					".xdc",
+					".fdc"
+				],
+				"configuration": "./config/tcl.configuration.json"
+			},
+			{
+				"id": "bd",
+				"extensions": [
+					".bd"
+				]
+			},
+			{
+				"id": "vhdl",
+				"aliases": [
+					"VHDL",
+					"vhdl"
+				],
+				"extensions": [
+					".vhd",
+					".vhdl",
+					".vho",
+					".vht"
+				],
+				"configuration": "./config/vhdl.configuration.json"
+			},
+			{
+				"id": "verilog",
+				"aliases": [
+					"Verilog",
+					"verilog"
+				],
+				"extensions": [
+					".v",
+					".V",
+					".vh",
+					".vl"
+				],
+				"configuration": "./config/verilog.configuration.json"
+			},
+			{
+				"id": "systemverilog",
+				"aliases": [
+					"System Verilog",
+					"systemverilog"
+				],
+				"extensions": [
+					".sv",
+					".SV"
+				],
+				"configuration": "./config/systemverilog.configuration.json"
+			},
+			{
+				"id": "arm",
+				"aliases": [
+					"ARM",
+					"arm"
+				],
+				"extensions": [
+					".s",
+					".S",
+					".asm",
+					".sx"
+				],
+				"configuration": "./config/arm.configuration.json"
+			},
+			{
+				"id": "linkerscript",
+				"aliases": [
+					"LinkerScript",
+					"linkerscript"
+				],
+				"extensions": [
+					".ld",
+					".dld"
+				],
+				"configuration": "./config/link.configuration.json"
+			}
+		],
+		"jsonValidation": [
+			{
+				"fileMatch": "property.json",
+				"url": "./property-schema.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "linkerscript",
+				"scopeName": "source.ld",
+				"path": "./syntaxes/link.json"
+			},
+			{
+				"language": "arm",
+				"scopeName": "source.arm",
+				"path": "./syntaxes/arm.json"
+			},
+			{
+				"language": "tcl",
+				"scopeName": "source.tcl",
+				"path": "./syntaxes/tcl.json"
+			},
+			{
+				"language": "vhdl",
+				"scopeName": "source.vhdl",
+				"path": "./syntaxes/vhdl.json"
+			},
+			{
+				"language": "verilog",
+				"scopeName": "source.verilog",
+				"path": "./syntaxes/verilog.json"
+			},
+			{
+				"language": "systemverilog",
+				"scopeName": "source.systemverilog",
+				"path": "./syntaxes/systemverilog.json"
+			}
+		],
+		"snippets": [
+			{
+				"language": "tcl",
+				"path": "snippets/tcl.json"
+			},
+			{
+				"language": "vhdl",
+				"path": "snippets/vhdl.json"
+			},
+			{
+				"language": "verilog",
+				"path": "snippets/svlog.json"
+			},
+			{
+				"language": "systemverilog",
+				"path": "snippets/svlog.json"
+			}
+		],
+		"commands": [
+			{
+				"command": "TOOL.tree.arch.refresh",
+				"title": "Refresh this File List",
+				"icon": "$(refresh)",
+				"category": "FILE"
+			},
+			{
+				"command": "FILE.expand",
+				"title": "Refresh this File List",
+				"icon": "$(expand-all)",
+				"category": "FILE"
+			},
+			{
+				"command": "FILE.collapse",
+				"title": "Refresh this File List",
+				"icon": "$(collapse-all)",
+				"category": "FILE"
+			},
+			{
+				"command": "TOOL.tree.arch.openFile",
+				"title": "Open this File",
+				"category": "FILE"
+			},
+			{
+				"command": "TOOL.generate.property",
+				"title": "generate property file",
+				"category": "TOOL"
+			},
+			{
+				"command": "TOOL.overwrite.property",
+				"title": "Overwrite the InitPropertyParam",
+				"category": "TOOL"
+			},
+			{
+				"command": "TOOL.Clean",
+				"title": "Clean",
+				"category": "TOOL"
+			},
+			{
+				"command": "TOOL.simulate",
+				"title": "Simulate",
+				"icon": {
+					"light": "images/svg/light/debug.svg",
+					"dark": "images/svg/dark/debug.svg"
+				},
+				"category": "TOOL"
+			},
+			{
+				"command": "TOOL.libPick",
+				"title": "import library",
+				"icon": {
+					"light": "images/svg/light/library.svg",
+					"dark": "images/svg/dark/library.svg"
+				},
+				"category": "TOOL"
+			},
+			{
+				"command": "TOOL.tree.arch.expand",
+				"title": "expand the tree view",
+				"icon": "$(expand-all)",
+				"category": "TOOL"
+			},
+			{
+				"command": "TOOL.tree.arch.collapse",
+				"title": "collapse the tree view",
+				"icon": "$(collapse-all)",
+				"category": "TOOL"
+			},
+			{
+				"command": "TOOL.netlist",
+				"title": "show netlist",
+				"icon": {
+					"light": "images/svg/light/netlist.svg",
+					"dark": "images/svg/dark/netlist.svg"
+				},
+				"category": "TOOL"
+			},
+			{
+				"command": "TOOL.FSMGraph",
+				"title": "show FSMGraph",
+				"icon": {
+					"light": "images/svg/light/fsm.svg",
+					"dark": "images/svg/dark/fsm.svg"
+				},
+				"category": "TOOL"
+			},
+			{
+				"command": "TOOL.vhdl2vlog",
+				"title": "translate vhdl to vlog",
+				"icon": {
+					"light": "images/svg/light/translate.svg",
+					"dark": "images/svg/dark/translate.svg"
+				},
+				"category": "TOOL"
+			},
+			{
+				"command": "TOOL.instance",
+				"title": "Instance",
+				"category": "TOOL"
+			},
+			{
+				"command": "TOOL.testbench",
+				"title": "Testbench",
+				"category": "TOOL"
+			},
+			{
+				"command": "TOOL.overwrite.tb",
+				"title": "Overwrite the template of testbench",
+				"category": "TOOL"
+			},
+			{
+				"command": "TOOL.state_machine.viewer",
+				"title": "State machine viewer",
+				"category": "TOOL"
+			},
+			{
+				"command": "HARD.srcTop",
+				"title": "Set as TOP",
+				"category": "HARD"
+			},
+			{
+				"command": "HARD.simTop",
+				"title": "Set as Testbench TOP",
+				"category": "HARD"
+			},
+			{
+				"command": "HARD.Launch",
+				"title": "Launch",
+				"category": "HARD"
+			},
+			{
+				"command": "HARD.Refresh",
+				"title": "refresh designed file",
+				"category": "HARD"
+			},
+			{
+				"command": "HARD.Simulate",
+				"title": "Run the Simulation",
+				"category": "HARD"
+			},
+			{
+				"command": "HARD.simCLI",
+				"title": "Run the Simulation in CLI",
+				"category": "HARD"
+			},
+			{
+				"command": "HARD.simGUI",
+				"title": "Run the Simulation in GUI",
+				"category": "HARD"
+			},
+			{
+				"command": "HARD.Build",
+				"title": "Build the current fpga project",
+				"category": "HARD"
+			},
+			{
+				"command": "HARD.Synth",
+				"title": "Synth the current fpga project",
+				"category": "HARD"
+			},
+			{
+				"command": "HARD.Impl",
+				"title": "Impl the current fpga project",
+				"category": "HARD"
+			},
+			{
+				"command": "HARD.Bit",
+				"title": "Generate the bit file",
+				"category": "HARD"
+			},
+			{
+				"command": "HARD.Program",
+				"title": "Download the bit file into the device",
+				"category": "HARD"
+			},
+			{
+				"command": "HARD.GUI",
+				"title": "Open the GUI",
+				"category": "HARD"
+			},
+			{
+				"command": "HARD.Exit",
+				"title": "Exit the current project",
+				"category": "HARD"
+			},
+			{
+				"command": "HARD.add.device",
+				"title": "Add devices to the database",
+				"category": "HARD"
+			},
+			{
+				"command": "HARD.del.device",
+				"title": "Remove the device from the database",
+				"category": "HARD"
+			},
+			{
+				"command": "SOFT.Launch",
+				"title": "Launch",
+				"category": "SOFT"
+			},
+			{
+				"command": "SOFT.Build",
+				"title": "Build",
+				"category": "SOFT"
+			},
+			{
+				"command": "SOFT.Download",
+				"title": "Download",
+				"category": "SOFT"
+			},
+			{
+				"command": "xilinx.overwrite.bd",
+				"title": "Overwrite the bd_file",
+				"category": "HARD"
+			},
+			{
+				"command": "xilinx.add.bd",
+				"title": "Add a bd_file",
+				"category": "HARD"
+			},
+			{
+				"command": "xilinx.del.bd",
+				"title": "Delete the bd_file",
+				"category": "HARD"
+			},
+			{
+				"command": "TOOL.export.file",
+				"title": "export the document of current file",
+				"category": "TOOL"
+			},
+			{
+				"command": "TOOL.export.project",
+				"title": "export the document of the project",
+				"category": "TOOL"
+			},
+			{
+				"command": "TOOL.doc.webview.show",
+				"title": "show the document of current file",
+				"category": "TOOL",
+				"icon": {
+					"light": "images/svg/light/documentation.svg",
+					"dark": "images/svg/dark/documentation.svg"
+				}
+			},
+			{
+				"command": "PL.file.add",
+				"title": "add file"
+			},
+			{
+				"command": "PL.file.del",
+				"title": "del file"
+			}
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "TOOL.tree.arch.collapse",
+					"group": "navigation",
+					"when": "view == TOOL-tree-arch"
+				},
+				{
+					"command": "TOOL.libPick",
+					"group": "navigation",
+					"when": "view == TOOL-tree-arch"
+				},
+				{
+					"command": "TOOL.tree.arch.refresh",
+					"group": "navigation",
+					"when": "view == TOOL-tree-arch"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "TOOL.simulate",
+					"group": "inline@1",
+					"when": "view == TOOL-tree-arch && viewItem == file"
+				},
+				{
+					"command": "TOOL.netlist",
+					"group": "inline@3",
+					"when": "view == TOOL-tree-arch && viewItem == file"
+				},
+				{
+					"command": "HARD.srcTop",
+					"group": "navigation@1",
+					"when": "view == TOOL-tree-arch && viewItem == file"
+				},
+				{
+					"command": "HARD.simTop",
+					"group": "navigation@2",
+					"when": "view == TOOL-tree-arch && viewItem == file"
+				},
+				{
+					"command": "TOOL.simulate",
+					"group": "navigation@3",
+					"when": "view == TOOL-tree-arch && viewItem == file"
+				}
+			],
+			"editor/title": [
+				{
+					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+					"command": "TOOL.simulate",
+					"group": "navigation@1"
+				},
+				{
+					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+					"command": "TOOL.FSMGraph",
+					"group": "navigation@2"
+				},
+				{
+					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+					"command": "TOOL.netlist",
+					"group": "navigation@3"
+				},
+				{
+					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+					"command": "TOOL.doc.webview.show",
+					"group": "navigation@4"
+				},
+				{
+					"when": "resourceLangId == vhdl",
+					"command": "TOOL.vhdl2vlog",
+					"group": "navigation@5"
+				}
+			],
+			"editor/context": [
+				{
+					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+					"command": "HARD.srcTop",
+					"group": "navigation@1"
+				},
+				{
+					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+					"command": "HARD.simTop",
+					"group": "navigation@2"
+				},
+				{
+					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+					"command": "TOOL.instance",
+					"group": "navigation@3"
+				},
+				{
+					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+					"command": "TOOL.testbench",
+					"group": "navigation@4"
+				},
+				{
+					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+					"command": "TOOL.simulate",
+					"group": "navigation@5"
+				},
+				{
+					"when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+					"command": "TOOL.netlist",
+					"group": "navigation@6"
+				},
+				{
+					"when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+					"command": "TOOL.FSMGraph",
+					"group": "navigation@7"
+				},
+				{
+					"when": "resourceLangId == vhdl",
+					"command": "TOOL.vhdl2vlog",
+					"group": "navigation@8"
+				},
+				{
+					"when": "editorLangId == bd",
+					"command": "xilinx.overwrite.bd",
+					"group": "navigation@9"
+				}
+			],
+			"explorer/context": [
+				{
+					"when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+					"command": "HARD.srcTop",
+					"group": "navigation@5"
+				},
+				{
+					"when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+					"command": "HARD.simTop",
+					"group": "navigation@6"
+				},
+				{
+					"when": "editorLangId == verilog || editorLangId == systemverilog || editorLangId == vhdl",
+					"command": "TOOL.testbench",
+					"group": "navigation@7"
+				},
+				{
+					"when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+					"command": "TOOL.simulate",
+					"group": "navigation@8"
+				},
+				{
+					"when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+					"command": "TOOL.netlist",
+					"group": "navigation@9"
+				},
+				{
+					"when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
+					"command": "TOOL.FSMGraph",
+					"group": "navigation@10"
+				},
+				{
+					"when": "resourceLangId == vhdl",
+					"command": "TOOL.vhdl2vlog",
+					"group": "navigation@11"
+				},
+				{
+					"when": "editorLangId == bd",
+					"command": "xilinx.overwrite.bd",
+					"group": "navigation@12"
+				}
+			]
+		},
+		"icons": {
+			"instance-verilog": {
+				"description": "icon of verilog in TOOL.instance",
+				"default": {
+					"fontPath": "./icons/iconfont.woff2",
+					"fontCharacter": "\\e7a8"
+				}
+			},
+			"instance-vhdl": {
+				"description": "icon of verilog in TOOL.instance",
+				"default": {
+					"fontPath": "./icons/iconfont.woff2",
+					"fontCharacter": "\\e6b3"
+				}
+			},
+			"instance-port": {
+				"description": "port of verilog in TOOL.instance",
+				"default": {
+					"fontPath": "./icons/iconfont.woff2",
+					"fontCharacter": "\\e638"
+				}
+			},
+			"instance-param": {
+				"description": "param of verilog in TOOL.instance",
+				"default": {
+					"fontPath": "./icons/iconfont.woff2",
+					"fontCharacter": "\\e655"
+				}
+			},
+			"instance-module": {
+				"description": "module of verilog in TOOL.instance",
+				"default": {
+					"fontPath": "./icons/iconfont.woff2",
+					"fontCharacter": "\\e60b"
+				}
+			},
+			"instance-input": {
+				"description": "input",
+				"default": {
+					"fontPath": "./icons/iconfont.woff2",
+					"fontCharacter": "\\e908"
+				}
+			},
+			"instance-output": {
+				"description": "output",
+				"default": {
+					"fontPath": "./icons/iconfont.woff2",
+					"fontCharacter": "\\e7b0"
+				}
+			},
+			"instance-inout": {
+				"description": "inout",
+				"default": {
+					"fontPath": "./icons/iconfont.woff2",
+					"fontCharacter": "\\ea19"
+				}
+			},
+			"export-html": {
+				"description": "export html",
+				"default": {
+					"fontPath": "./icons/iconfont.woff2",
+					"fontCharacter": "\\e633"
+				}
+			},
+			"export-markdown": {
+				"description": "export markdown",
+				"default": {
+					"fontPath": "./icons/iconfont.woff2",
+					"fontCharacter": "\\ee68"
+				}
+			},
+			"export-pdf": {
+				"description": "export pdf",
+				"default": {
+					"fontPath": "./icons/iconfont.woff2",
+					"fontCharacter": "\\e684"
+				}
+			},
+			"libpick-folder": {
+				"description": "libpick folder",
+				"default": {
+					"fontPath": "./icons/iconfont.woff2",
+					"fontCharacter": "\\e600"
+				}
+			},
+			"libpick-verilog": {
+				"description": "libpick verilog",
+				"default": {
+					"fontPath": "./icons/iconfont.woff2",
+					"fontCharacter": "\\e7a8"
+				}
+			},
+			"libpick-vhdl": {
+				"description": "libpick vhdl",
+				"default": {
+					"fontPath": "./icons/iconfont.woff2",
+					"fontCharacter": "\\e6b3"
+				}
+			},
+			"libpick-common": {
+				"description": "libpick common",
+				"default": {
+					"fontPath": "./icons/iconfont.woff2",
+					"fontCharacter": "\\e622"
+				}
+			},
+			"libpick-custom": {
+				"description": "libpick custom",
+				"default": {
+					"fontPath": "./icons/iconfont.woff2",
+					"fontCharacter": "\\e623"
+				}
+			},
+			"libpick-unknown": {
+				"description": "libpick unknown",
+				"default": {
+					"fontPath": "./icons/iconfont.woff2",
+					"fontCharacter": "\\e62a"
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "webpack --mode production"
+	},
+	"devDependencies": {
+		"@types/glob": "^8.0.0",
+		"@types/mocha": "^10.0.0",
+		"@types/node": "16.x",
+		"@types/vscode": "^1.72.0",
+		"@vscode/test-electron": "^2.2.0",
+		"eslint": "^8.26.0",
+		"glob": "^8.0.3",
+		"mocha": "^10.1.0",
+		"typescript": "^4.8.4",
+		"webpack-cli": "^5.0.1"
+	},
+	"dependencies": {
+		"chokidar": "^3.5.3",
+		"json5": "^2.2.2",
+		"puppeteer-core": "^19.4.1",
+		"showdown": "^2.1.0",
+		"state-machine-cat": "^9.2.5",
+		"temp": "^0.9.4",
+		"wavedrom": "^2.9.1"
+	}
 }

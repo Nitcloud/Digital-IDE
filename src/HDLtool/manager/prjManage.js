@@ -191,9 +191,9 @@ class PrjManage {
         // 获取当前平台运行的系统
         opeParam.os = process.platform;
 
-        // 获取当前根路径
-        let rootPath = HDLPath.resolve(__dirname, '..', '..', '..');
-        opeParam.rootPath = rootPath.replace(/\\/g, "\/");
+        // // 获取当前根路径  
+        // let rootPath = HDLPath.resolve(__dirname, '..', '..', '..');
+        // opeParam.rootPath = rootPath.replace(/\\/g, "\/");
 
         // 获取初始配置文件的路径
         opeParam.prjInitParam = `${opeParam.rootPath}/prjInitParam.json`;

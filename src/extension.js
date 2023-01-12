@@ -1,4 +1,3 @@
-// @ts-nocheck
 /*
  * #Author       : sterben(Duan)
  * #LastAuthor   : lstm-kirigaya
@@ -13,11 +12,13 @@ const { HDLParam } = require('./HDLparser');
 const opeParam = require('./param');
 const HDLFile = require('./HDLfilesys/operation/files');
 const monitor = require('./monitor');
+const HDLPath = require('./HDLfilesys/operation/path');
 
 /**
  * @param {vscode.ExtensionContext} context 
  */
 function launch(context) {
+    opeParam.rootPath = HDLPath.resolve(__dirname, '..');
     const HDLfiles = HDLtool.registerManageServer();
     // initialize HDLParam
     HDLParam.Initialize(HDLfiles);
@@ -46,10 +47,14 @@ function launch(context) {
  */
 async function activate(context) {
     const start = Date.now();
+    const output = vscode.window.createOutputChannel("DIDE");
 
+	output.appendLine("[message] DIDE launch");
     launch(context);
+    output.appendLine('[32m[debug] rootPath ' + opeParam.rootPath);
+    output.appendLine('[32m[debug] workspace ' + opeParam.workspacePath);
     
-    console.log('cost time : ' + (Date.now() - start) / 1000 + 's');
+    output.appendLine('[33m[message] cost time : ' + (Date.now() - start) / 1000 + 's');
 }
 
 exports.activate = activate;
