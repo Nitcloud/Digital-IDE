@@ -11,4 +11,4 @@ dist/**/*.map
 webpack.config.js
 node_modules
 src/**
-make.js
+vsixmake.js

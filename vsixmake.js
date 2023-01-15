@@ -31,7 +31,14 @@ changeMain('./out/extension');
 execSync('vsce package');
 changeMain('./src/extension');
 
+// remove orginal digital ide
+execSync('code --uninstall-extension sterben.digital-ide');
+
 const vsix = findVsix();
 const targetPath = path.join(SAVE_FOLDER, vsix);
 HDLFile.moveFile(vsix, targetPath, true);
 HDLPath.deleteFolder(WEBPACK_OUT_FOLDER);
+
+const vsixPath = HDLPath.join(SAVE_FOLDER, vsix);
+// install new one
+execSync('code --install-extension ' + vsixPath);

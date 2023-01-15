@@ -13,7 +13,7 @@ const opeParam = require('./param');
 const HDLFile = require('./HDLfilesys/operation/files');
 const monitor = require('./monitor');
 const HDLPath = require('./HDLfilesys/operation/path');
-
+const { MainOutput } = require('./global');
 /**
  * @param {vscode.ExtensionContext} context 
  */
@@ -22,24 +22,27 @@ function launch(context) {
     const HDLfiles = HDLtool.registerManageServer();
     // initialize HDLParam
     HDLParam.Initialize(HDLfiles);
+    MainOutput.report('finish HDLParam Initialize', 'launch');
+    
     // register command
     HDLtool.registerSimServer(context);
+    MainOutput.report('finish registerSimServer', 'launch');
+
     HDLtool.registerTreeServer(context);
+    MainOutput.report('finish registerTreeServer', 'launch');
+
     HDLtool.registerDocumentation(context);
+    MainOutput.report('finish registerDocumentation', 'launch');
+
     HDLtool.registerLspServer(context);
+    MainOutput.report('finish registerLspServer', 'launch');
+
     HDLtool.registerToolServer(context);
+    MainOutput.report('finish registerToolServer', 'launch');
     
     // launch monitor
     monitor.start();
-
-    // console.log('#module ', HDLParam.Modules.size);
-    // console.log(opeParam.prjInfo);
-    // return vscode.window.withProgress({
-    //     location: vscode.ProgressLocation.Notification,
-    //     title: 'Initialize the project'
-    // }, async progress => {
-
-    // });
+    MainOutput.report('start monitor', 'launch');
 }
 
 /**
@@ -47,14 +50,12 @@ function launch(context) {
  */
 async function activate(context) {
     const start = Date.now();
-    const output = vscode.window.createOutputChannel("DIDE");
 
-	output.appendLine("[message] DIDE launch");
     launch(context);
-    output.appendLine('[32m[debug] rootPath ' + opeParam.rootPath);
-    output.appendLine('[32m[debug] workspace ' + opeParam.workspacePath);
-    
-    output.appendLine('[33m[message] cost time : ' + (Date.now() - start) / 1000 + 's');
+    MainOutput.report('rootPath ' + opeParam.rootPath, 'path');
+    MainOutput.report('workspace ' + opeParam.workspacePath, 'path');
+    const costTime = (Date.now() - start) / 1000;
+    MainOutput.report('launch cost ' + costTime + ' s', 'performance');
 }
 
 exports.activate = activate;

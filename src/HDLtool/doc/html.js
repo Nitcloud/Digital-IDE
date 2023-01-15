@@ -8,7 +8,7 @@ const { getIconConfig } = require('../../HDLfilesys/icons');
 const opeParam = require('../../param');
 const HDLPath = require('../../HDLfilesys/operation/path');
 const { RenderType } = require('./common');
-const Global = require('../../global');
+const { Doc, MainOutput } = require('../../global');
 
 const _cache = {
     css : null
@@ -198,7 +198,7 @@ async function exportCurrentFileDocAsHTML() {
         if (r.type == RenderType.Markdown) {
             body += makeCommonElement(renderResult);
         } else if (r.type == RenderType.Wavedrom) {
-            const svgName = 'wavedrom-' + Global.Doc.svgMakeTimes + '.svg';
+            const svgName = 'wavedrom-' + Doc.svgMakeTimes + '.svg';
             const svgPath = HDLPath.join(figureFolder, svgName);
             fs.writeFileSync(svgPath, renderResult);
             const relatePath = HDLPath.join('./figure', svgName);
@@ -209,7 +209,7 @@ async function exportCurrentFileDocAsHTML() {
     const html = makeExportHTML(relateCssPath, body);    
     const htmlName = 'index.html';
     const htmlPath = HDLPath.join(currentRoot, htmlName);
-    Global.Doc.resetSvgMakeTimes();
+    Doc.resetSvgMakeTimes();
     fs.writeFileSync(htmlPath, html);
 }
 

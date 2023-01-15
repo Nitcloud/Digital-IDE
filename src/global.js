@@ -1,5 +1,7 @@
 const vscode = require('vscode');
 
+const ignoreReportType = [];
+
 const HDLGlobal = {
     context : null,
 
@@ -25,8 +27,19 @@ const Doc = {
     }
 }
 
+const MainOutput = {
+    _output : vscode.window.createOutputChannel('DIDE'),
+    report(message, type='debug') {
+        if (ignoreReportType.includes(type)) {
+            return;
+        }
+        this._output.appendLine('[' + type + '] ' + message);
+    }
+}
+
 
 module.exports = {
     HDLGlobal,
-    Doc
+    Doc,
+    MainOutput
 };

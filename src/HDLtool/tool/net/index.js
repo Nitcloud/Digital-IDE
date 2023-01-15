@@ -7,7 +7,8 @@ const fspath = require("path");
 const opeParam = require("../../../param");
 const HDLPath = require("../../../HDLfilesys/operation/path");
 const HDLFile = require("../../../HDLfilesys/operation/files");
-const HDLParam = require("../../../HDLparser").HDLParam;
+const { HDLParam } = require("../../../HDLparser");
+const { MainOutput } = require('../../../global');
 
 class showNetlist {
     constructor(context) {
@@ -104,10 +105,12 @@ class showNetlist {
         const htmlIndexPath = HDLPath.join(netlistPath, 'netlist_viewer.html');
         const html = fs.files.readFile(htmlIndexPath);
         return html.replace(/(<link.+?href="|<script.+?src="|<img.+?src=")(.+?)"/g, (m, $1, $2) => {
-            return $1 + vscode.Uri
-                        .file(fspath.resolve(netlistPath, $2))
-                        .with({ scheme: 'vscode-resource' })
-                        .toString() + '"';
+            const replaceHref = $1 + vscode.Uri
+                            .file(fspath.resolve(netlistPath, $2))
+                            .with({ scheme: 'vscode-resource' })
+                            .toString() + '"';
+            MainOutput.report(replaceHref, 'netlist');
+            return replaceHref;
         });
     }
 

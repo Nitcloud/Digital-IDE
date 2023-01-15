@@ -2,7 +2,7 @@ const assert = require('assert');
 const vscode = require('vscode');
 const showdown = require('showdown');
 const fs = require('fs');
-const json5 = require('json5');
+const JSON5 = require('./json5');
 
 const renderAny = require('wavedrom/lib/render-any');
 const onmlStringify = require('onml/stringify.js');
@@ -298,8 +298,17 @@ class WavedromString extends RenderString {
  * @returns {string} 
  */
 function makeWaveDromSVG(wavedromComment, style) {
+    let json = null;
     try {
-        const json = json5.parse(wavedromComment);
+        json = JSON5.parse(wavedromComment);
+    } catch (error) {
+        Global.MainOutput.report('error happen when parse json ', 'error');
+        Global.MainOutput.report(error, 'error');
+    }
+    try {
+        if (!json) {
+            return;
+        }
         const index = Global.Doc.svgMakeTimes;
         const skin = SvgStyle[style];
         const renderObj = renderAny(Global.Doc.svgMakeTimes, json, skin);
@@ -307,6 +316,8 @@ function makeWaveDromSVG(wavedromComment, style) {
         Global.Doc.svgMakeTimes += 1;
         return svgString;
     } catch (error) {
+        Global.MainOutput.report('error happen when render ' + wavedromComment, 'error');
+        Global.MainOutput.report(error, 'error');
         return undefined;
     }
 }
@@ -388,6 +399,5 @@ module.exports = {
     WavedromString,
     RenderString,
     makeWaveDromSVG,
-    getWavedromsFromFile,
-    Global
+    getWavedromsFromFile
 };
