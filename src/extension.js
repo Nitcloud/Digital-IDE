@@ -13,7 +13,7 @@ const opeParam = require('./param');
 const HDLFile = require('./HDLfilesys/operation/files');
 const monitor = require('./monitor');
 const HDLPath = require('./HDLfilesys/operation/path');
-const { MainOutput } = require('./global');
+const { MainOutput, HDLGlobal } = require('./global');
 /**
  * @param {vscode.ExtensionContext} context 
  */
@@ -50,7 +50,7 @@ function launch(context) {
  */
 async function activate(context) {
     const start = Date.now();
-
+    HDLGlobal.setContext(context);
     launch(context);
     MainOutput.report('rootPath ' + opeParam.rootPath, 'path');
     MainOutput.report('workspace ' + opeParam.workspacePath, 'path');

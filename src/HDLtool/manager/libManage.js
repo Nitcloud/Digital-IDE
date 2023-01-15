@@ -225,7 +225,7 @@ class libManage {
                     break;
                     case "custom":
                         if (HDLDir.isillegal(this.customerPath)) {
-                            this.err(`The PRJ.custom.Lib.repo.path ${this.customerPath} do not exist or not dir.`);
+                            this.err(`The PRJ.custom.Lib.repo.path ${this.customerPath} do not exist or not dir. Maybe you can check your local Path or reconfigure the PRJ.custom.Lib.repo.path property ?`);
                         } else {
                             const customerPath = `${this.customerPath}/${element}`
                             HDLFile.getHDLFiles(customerPath, libFileList);

@@ -14,7 +14,7 @@ class showNetlist {
     constructor(context) {
         this.panel = null;
         this.context = context;
-        this.outputCH = vscode.window.createOutputChannel("kernel");
+        this.outputCH = vscode.window.createOutputChannel("Yosys Kernel");
     }
 
     async open(uri) {
@@ -103,15 +103,15 @@ class showNetlist {
     getWebviewContent() {
         const netlistPath = HDLPath.join(opeParam.rootPath, 'resources', 'netlist')
         const htmlIndexPath = HDLPath.join(netlistPath, 'netlist_viewer.html');
-        const html = fs.files.readFile(htmlIndexPath);
-        return html.replace(/(<link.+?href="|<script.+?src="|<img.+?src=")(.+?)"/g, (m, $1, $2) => {
-            const replaceHref = $1 + vscode.Uri
-                            .file(fspath.resolve(netlistPath, $2))
-                            .with({ scheme: 'vscode-resource' })
-                            .toString() + '"';
-            MainOutput.report(replaceHref, 'netlist');
+        const html = fs.files.readFile(htmlIndexPath)
+                             .replace(/(<link.+?href="|<script.+?src="|<img.+?src=")(.+?)"/g, (m, $1, $2) => {
+            const absLocalPath = fspath.resolve(netlistPath, $2);
+            const webviewUri = this.panel.webview.asWebviewUri(vscode.Uri.file(absLocalPath));
+        
+            const replaceHref = $1 + webviewUri.toString() + '"';
             return replaceHref;
-        });
+          });
+        return html;
     }
 
     export(type, svg) {

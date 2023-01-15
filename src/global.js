@@ -28,7 +28,7 @@ const Doc = {
 }
 
 const MainOutput = {
-    _output : vscode.window.createOutputChannel('DIDE'),
+    _output : vscode.window.createOutputChannel('DIDE Report'),
     report(message, type='debug') {
         if (ignoreReportType.includes(type)) {
             return;
