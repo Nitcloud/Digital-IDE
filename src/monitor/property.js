@@ -154,6 +154,7 @@ function updateProperty(newProperty, monitor) {
     const commonFolder = HDLPath.join(opeParam.rootPath, 'lib', 'common', 'Empty');
 
     const originalHDLfiles = opeParam.PrjManager.getPrjFiles();
+    opeParam.PrjManager.refreshPrjFolder();
 
     console.log(opeParam.prjInfo.ARCH.Hardware);
     

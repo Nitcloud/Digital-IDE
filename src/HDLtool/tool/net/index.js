@@ -96,6 +96,7 @@ class showNetlist {
         // 导出模块的netlist  
         this.outputCH.show(true);
         const command = 'netlist';
+        this.synth.exec('proc');
         const netlist = this.synth.export({type: 'json'});
         this.panel.webview.postMessage({command, netlist});
     }

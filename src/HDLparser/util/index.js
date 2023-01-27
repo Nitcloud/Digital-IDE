@@ -96,7 +96,7 @@ let count = 0;
 function getSymbolJSONFromFile(path) {
     const langID = HDLFile.getLanguageId(path);
     const parser = selectParserByLangID(langID);
-    const code = fs.readFileSync(path, 'utf-8');
+    const code = fs.readFileSync(path, 'utf-8') + '\n';
     const json = parser.parse(code);
     return json;
 }

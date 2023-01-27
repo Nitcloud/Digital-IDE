@@ -87,20 +87,21 @@ class simulate {
      * @param {String} toolchain 
      * @returns {Array} 所有第三方仿真库的路径数组
      */
-    getLibArr(toolchain) {
+    getSimLibArr(toolchain) {
         let libPath = [];
 
         // 获取xilinx的自带仿真库的路径
         if (toolchain === "xilinx") {
-            let rootPaths = this.setting.get('SIM.Xilinx.LIB.path');
+            const simLibPath = this.setting.get('SIM.Xilinx.LIB.path');
 
-            if (rootPaths != "") {
+            if (fs.dirs.isillegal(simLibPath)) {
                 return [];
             }
-            libPath.push(`${rootPaths}/glbl.v`);
+
+            libPath.push(`${simLibPath}/glbl.v`);
             for (let i = 0; i < this.xilinxLib.length; i++) {
                 const element = this.xilinxLib[i];
-                libPath.push(`${rootPaths}/${element}`);
+                libPath.push(`${simLibPath}/${element}`);
             }
 
             return libPath;
@@ -168,7 +169,7 @@ class icarus extends simulate {
 
         // 获取 third lib path
         let thirdLibPath = ' ';
-        this.getLibArr(this.toolchain).forEach(element => {
+        this.getSimLibArr(this.toolchain).forEach(element => {
             if(fs.dirs.isillegal(element)) {
                 thirdLibPath += element + " ";
             } else {
@@ -176,9 +177,11 @@ class icarus extends simulate {
             }
         })
 
-        let argu = '-g2012'
+        const argu = '-g2012';
+        const cmd  = `${icarusPath} ${argu} -o ${this.simConfig.runPath}/out.vvp -s ${param.name} ${param.path} ${dependencePath} ${thirdLibPath}`;
+        this.outputCH.appendLine(cmd);
 
-        return `${icarusPath} ${argu} -o ${this.simConfig.runPath}/out.vvp -s ${param.name} ${param.path} ${dependencePath} ${thirdLibPath}`
+        return cmd;
     }
 
     exec(command) {

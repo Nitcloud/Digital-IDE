@@ -105,7 +105,7 @@ function registerManageServer(context) {
     // initialize
     prjManager.getOpeParam();
     prjManager.getPropertyInfo();
-    // prjManager.refreshPrjFolder();
+    prjManager.refreshPrjFolder();
     
     return prjManager.getPrjFiles();
 }

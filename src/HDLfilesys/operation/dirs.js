@@ -90,8 +90,12 @@ const HDLDir = {
             return false;
         }
 
-        this.cpdir(src, dest, cover);
-        this.rmdir(src);
+        if (this.cpdir(src, dest, cover)) {
+            this.rmdir(src);
+            return true;
+        } else {
+            return false;
+        }
     },
 
     /**
@@ -122,6 +126,12 @@ const HDLDir = {
         dest = fspath.join(dest, srcName);
 
         let children = fs.readdirSync(src);
+
+        if (!children.length) {
+            this.mkdir(dest);
+            return true;
+        }
+
         for (let i = 0; i < children.length; i++) {
             const element = children[i];
             // child: path/src/element
@@ -150,6 +160,8 @@ const HDLDir = {
                 this.cpdir(child, dest);
             }
         }
+
+        return true;
     },
 
     /**
@@ -172,7 +184,7 @@ const HDLDir = {
             let curPath = chilren[i]; // 不带父级路径
             
             if (withParent) {
-                curPath = `${path}/${element}`;
+                curPath = `${path}/${curPath}`;
             }
 
             if (callback) {

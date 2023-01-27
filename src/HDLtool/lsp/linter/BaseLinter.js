@@ -19,19 +19,18 @@ class BaseLinter {
         // 如果 custom_path 不存在则默认为已经添加到系统变量
         if (options.custom_path) {
             if (os.platform() === "win32") {
-                command = `"${options.custom_path}"`
+                command = `${options.custom_path}`
                         + '/' 
                         + param[options.id] 
-                        + (options.name == 'vivado"' ? '.bat\" ' : '.exe\" ');
+                        + (options.name == 'vivado' ? '.bat' : '.exe');
             } else {
-                command = `"${options.custom_path}`
+                command = `${options.custom_path}`
                         + '/'
-                        + param[options.id]
-                        + '\" ';
+                        + param[options.id];
             }
         }
 
-        command += param.argu[options.id] + ' ';;
+        command += ' ' + param.argu[options.id] + ' ';
 
         if (options.custom_argu) {
             command += options.custom_argu + ' ';

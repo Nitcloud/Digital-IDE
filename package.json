@@ -1,5 +1,5 @@
 {
-	"name": "digital-ide",
+	"name": "fpga-support",
 	"displayName": "Digital IDE",
 	"description": "Design For Digital Development",
 	"publisher": "sterben",
@@ -407,7 +407,7 @@
 					".vh",
 					".vl"
 				],
-				"configuration": "./config/verilog.configuration.json"
+				"configuration": "./config/svlog.configuration.json"
 			},
 			{
 				"id": "systemverilog",
@@ -419,7 +419,7 @@
 					".sv",
 					".SV"
 				],
-				"configuration": "./config/systemverilog.configuration.json"
+				"configuration": "./config/svlog.configuration.json"
 			},
 			{
 				"id": "arm",

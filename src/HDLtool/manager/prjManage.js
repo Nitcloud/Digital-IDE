@@ -295,12 +295,14 @@ class PrjManage {
             return;
         }
 
-        // 如果是用户配置文件结构，检查并生成相关文件夹
-        if (opeParam.prjInfo.ARCH) {
-            HDLDir.mkdir(opeParam.prjInfo.ARCH.PRJ_Path);
+        const prjInfo = HDLFile.pullJsonInfo(opeParam.propertyPath);
 
-            const hardware = opeParam.prjInfo.ARCH.Hardware;
-            const software = opeParam.prjInfo.ARCH.Software;
+        // 如果是用户配置文件结构，检查并生成相关文件夹
+        if (prjInfo.ARCH) {
+            HDLDir.mkdir(prjInfo.ARCH.PRJ_Path);
+
+            const hardware = prjInfo.ARCH.Hardware;
+            const software = prjInfo.ARCH.Software;
 
             if (hardware) {
                 HDLDir.mkdir(hardware.src);
@@ -318,25 +320,36 @@ class PrjManage {
         // 先直接创建工程文件夹
         HDLDir.mkdir(`${opeParam.workspacePath}/prj`);
 
-        // 初试化文件结构的路径
+        // 初始化文件结构的路径
         const userPath = `${opeParam.workspacePath}/user`;
         const softwarePath = `${opeParam.workspacePath}/user/Software`;
         const hardwarePath = `${opeParam.workspacePath}/user/Hardware`;
 
         let nextmode = "PL";
         // 再对源文件结构进行创建
-        if (HDLFile.isHasAttr(opeParam.prjInfo, "SOC.core")) {
-            if (opeParam.prjInfo.SOC.core !== 'none') {
+        if (HDLFile.isHasAttr(prjInfo, "SOC.core")) {
+            if (prjInfo.SOC.core !== 'none') {
                 nextmode = "LS";
             }
         }
 
         let currmode = "PL";
-        if (HDLFile.isExist(softwarePath)) {
+        if (HDLFile.isExist(softwarePath) ||
+            HDLFile.isExist(hardwarePath)) {
             currmode = "LS";
         }
         
         if (currmode == nextmode) {
+            const hardware = opeParam.prjInfo.ARCH.Hardware;
+            const software = opeParam.prjInfo.ARCH.Software;
+
+            HDLDir.mkdir(hardware.src);
+            HDLDir.mkdir(hardware.sim);
+            HDLDir.mkdir(hardware.data);
+            if (currmode == 'LS') {
+                HDLDir.mkdir(software.src);
+                HDLDir.mkdir(software.data);
+            }
             return;
         }
 
@@ -344,7 +357,7 @@ class PrjManage {
             HDLDir.mkdir(hardwarePath);
             HDLDir.readdir(userPath, true, (folder) => {
                 if (folder != "Hardware") {
-                    HDLDir.mvdir(`${userPath}/${folder}`, hardwarePath);
+                    HDLDir.mvdir(folder, hardwarePath);
                 }
             });
 
@@ -364,7 +377,7 @@ class PrjManage {
 
             if (HDLFile.isExist(hardwarePath)) {
                 HDLDir.readdir(hardwarePath, true, (folder) => {
-                    HDLDir.mvdir(`${hardwarePath}/${folder}`, userPath);
+                    HDLDir.mvdir(folder, userPath);
                 })
                 
                 HDLDir.rmdir(hardwarePath);

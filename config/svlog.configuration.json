@@ -7,6 +7,9 @@
 		["{", "}"],
 		["[", "]"],
 		["(", ")"],
+        ["\"", "\""],
+        ["'", "'"],
+        ["begin", "end"],
 		["case", "endcase"],
 		["class", "endclass"],
 		["clocking", "endclocking"],
@@ -22,8 +25,17 @@
 		["task", "endtask"]
 	],
 	"autoClosingPairs": [
+        {"open":"\"", "close":"\""},
+        {"open":"'", "close":"'"},
 		{"open":"(", "close":")", "notIn":["string", "comment"]},
 		{"open":"[", "close":"]", "notIn":["string", "comment"]},
 		{"open":"{", "close":"}", "notIn":["string", "comment"]}
-	]
+	],
+    "surroundingPairs": [
+        ["{", "}"],
+        ["[", "]"],
+        ["(", ")"],
+        ["\"", "\""],
+        ["'", "'"]
+    ]
 }
